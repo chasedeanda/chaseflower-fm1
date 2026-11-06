@@ -34,7 +34,7 @@
 #define CRB_HDR0 0x7Du
 #define CRB_HDR1 0x46u
 #define CRB_HDR2 0x4Cu
-enum { CRB_INFO = 1, CRB_LIST = 65, CRB_GET, CRB_PUT, CRB_RESTART = 72 };
+enum { CRB_INFO = 1, CRB_LIST = 65, CRB_GET, CRB_PUT, CRB_RESTART = 72, CRB_USB = 79 };
 #define CRB_VA 9u
 #define CRB_FM6S 10u                                 /* 10, 11: the FM6 patch store's halves */
 #define CFB_SET 30u                                  /* CoralFlower's settings record */
@@ -447,6 +447,30 @@ static uint32_t crb_put(const uint8_t *a, uint32_t n)
     return 0;
 }
 
+#if FELUCCA_UAC
+/* Read-only USB diagnostics. Keep ChoralRoot's command 79/version 1 first fourteen values intact, then append
+ * CoralFlower's stream and CPU counters (tools/fm1_install.py DEBUG_USB). No flash access or counter reset. */
+static void cfb_usb(void)
+{
+    const uint32_t v[] = {
+        ua.r48 ? UA_RATE48 : UA_RATE,
+        !ua_dbg.open_close_ms ? 0u : ua_dbg.rate_last_open ? UA_RATE48 : UA_RATE,
+        ua.rate_sets, ua.rate_changes, ua_dbg.pk576, ua_dbg.pk564, ua_dbg.pk588,
+        ua.rs_blocks, ua.rs_blocks ? ua.rs_ticks / ua.rs_blocks / FM1_TICKS_PER_US : 0u,
+        ua.rs_max_ticks / FM1_TICKS_PER_US, UA_PACKET, !(ua_off & UA_OFF_48), ua_dbg.rate_refused, ua_replugs,
+        fm1_ms, ua.cap_alt, ua_dbg.opens, ua_dbg.open_ms + (ua.cap_alt ? fm1_ms - ua_dbg.open_at : 0u),
+        ua_dbg.open_close_ms, ua_dbg.frames_open, ua_dbg.frames_last_open, ua.tx_packets, ua_dbg.sofs,
+        ua.cap_overruns, ua.cap_underruns, ua.missed_frames, ua.cap_nudges_up, ua.cap_nudges_down,
+        ua_dbg.holds, ua_dbg.first_take_ms, ua_dbg.pk528, ua_dbg.pk540, ua_dbg.pk_other,
+        ua_dbg.stalls, usb.resets, song.cpu_q8, audio_max_us, felucca_dbg.late, cr_dbg.stale
+    };
+    uint32_t i;
+    _Static_assert(7u + 5u * (sizeof v / sizeof v[0]) <= 400u, "USB diagnostic reply fits the backup reply buffer");
+    crb_b(1); crb_b(sizeof v / sizeof v[0]);
+    for (i = 0; i < sizeof v / sizeof v[0]; i++) crb_u32(v[i]);
+}
+#endif
+
 /* ------------------------------------------------------------------ the dispatcher --- */
 /* f: the bytes between F0 and F7 (7D 46 4C cmd args); 1 = answered */
 static int crb_handle(const uint8_t *f, uint32_t n)
@@ -459,6 +483,12 @@ static int crb_handle(const uint8_t *f, uint32_t n)
     na = n - 4u;
     crb_n = from;
     switch (cmd) {
+#if FELUCCA_UAC
+    case CRB_USB:
+        if (na) return 0;
+        cfb_usb();
+        break;
+#endif
     case CRB_INFO: {                                 /* Felucca's INFO layout, no editor: 0 engines, 0 tracks */
         const char *v = FELUCCA_VERSION;             /* ("CoralFlower X.Y": the installers tell CoralFlower by it) */
         uint32_t i;

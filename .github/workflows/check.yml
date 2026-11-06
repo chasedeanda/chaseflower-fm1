@@ -74,6 +74,9 @@ jobs:
           cc -std=gnu11 -O2 -Wall -Wno-unused-function -Ifirmware/src -o build/host/st_log_test tests/st_log_test.c
           build/host/st_log_test
 
+      - name: USB audio protocol and real-render regression tests (host HAL)
+        run: sh tools/test_usb.sh
+
       - name: The tracked tree is as it was
         run: |
           set -euo pipefail

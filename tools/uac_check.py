@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: GPL-3.0-only
-"""Measure ChoralRoot In (the FM-1's USB recording) on a Mac: record it with ffmpeg while MIDI chords play the FM-1,
+"""Measure ChaseFlower In (the FM-1's USB recording) on a Mac: record it with ffmpeg while MIDI chords play the FM-1,
 and report what the FM-1 itself sent during the capture (docs/USB-AUDIO.md, "Measuring the recording on a Mac").
 
 usage: tools/uac_check.py OUT.wav [SECONDS] [--nonotes] [--debug] [--device NAME] [--rate 44100|48000]
@@ -8,7 +8,7 @@ usage: tools/uac_check.py OUT.wav [SECONDS] [--nonotes] [--debug] [--device NAME
   SECONDS     the capture's wall time (default 14)
   --nonotes   no chords: the stream's behaviour in silence
   --debug     also print the counters as read, before and after (fm1_install.py --debug's names)
-  --device    the capture device's name (default "ChoralRoot In")
+  --device    the capture device's name (default "ChaseFlower In"; use "ChoralRoot In" for legacy firmware)
   --rate      the rate ChoralRoot In is expected to run at, 44100 or 48000 (0.19: 48 kHz is offered when Options >
               USB Rate is 44.1 + 48 kHz, else the tool says "the unit does not offer 48 kHz" and records nothing;
               then the host chooses; on a Mac it is
@@ -67,7 +67,7 @@ USB_KEYS = ("ua_rate", "ua_rate_last_open", "ua_rate_sets", "ua_rate_changes", "
 RAW_KEYS = ("ms", "ua_cap_alt", "ua_opens", "ua_open_ms", "ua_open_close_ms", "ua_frames_this_open",
             "ua_frames_last_open", "ua_tx_packets", "ua_sofs", "ua_overruns", "ua_underruns", "ua_missed_frames",
             "ua_nudges_up", "ua_nudges_down", "ua_holds", "ua_first_take_ms", "ua_pk528", "ua_pk540", "ua_pk_other",
-            "usb_stalls", "usb_resets") + USB_KEYS
+            "usb_stalls", "usb_resets", "audio_cpu_q8", "audio_max_us", "audio_late", "audio_stale") + USB_KEYS
 OPEN_SLACK_MS = 100                                     # an open's own: the first read ~14 ms in, the last before the close
 
 
@@ -86,8 +86,9 @@ def counters(up):
             return None, ("the FM-1 is in update mode" if dev else "no FM-1 answers on USB-MIDI" +
                           (f" ({up.gave_up} did not return in time)" if up.gave_up else ""))
         try:
-            vals = fi.debug_values(dev.link, 3.0)
             usb = fi.usb_values(dev.link)                # (0.19: the rate, the 48 kHz counters; {} before)
+            # ChaseFlower exposes all capture counters through read-only command 79; it has no legacy 73 DEBUG.
+            vals = [] if "ua_opens" in usb else fi.debug_values(dev.link, 3.0)
         finally:
             dev.link.close()
     except fi.InstallError as e:
@@ -276,7 +277,7 @@ def main():
     ap.add_argument("seconds", nargs="?", type=float, default=14.0)
     ap.add_argument("--nonotes", action="store_true")
     ap.add_argument("--debug", action="store_true")
-    ap.add_argument("--device", default="ChoralRoot In")
+    ap.add_argument("--device", default="ChaseFlower In")
     ap.add_argument("--rate", type=int, choices=RATES, default=None)
     a = ap.parse_args()
     secs = a.seconds
@@ -287,13 +288,14 @@ def main():
     no48 = rate_offered(before, a.rate)
     if no48:                                             # (nothing is recorded: the WAV would be the host's resampling)
         sys.exit(no48)
-    port_name = next((n for n in up.names(outs=True) if "ChoralRoot" in n), None)
+    port_name = next((n for n in up.names(outs=True) if any(brand in n for brand in ("ChaseFlower", "CoralFlower", "ChoralRoot"))), None)
     if port_name is None and not a.nonotes:
-        sys.exit("no ChoralRoot MIDI output (use --nonotes to record without notes)" +
+        sys.exit("no ChaseFlower/CoralFlower/ChoralRoot MIDI output (use --nonotes to record without notes)" +
                  (f": {up.gave_up} did not return in time" if up.gave_up else ""))
     try:
         rec = subprocess.Popen(["ffmpeg", "-y", "-loglevel", "error", "-f", "avfoundation", "-i", f":{a.device}",
-                                "-t", str(secs), "-ac", "2", "-ar", str(a.rate or RATE), a.out])
+                                "-t", str(secs), "-af", "pan=stereo|c0=c0|c1=c1", "-ac", "2",
+                                "-c:a", "pcm_s16le", "-ar", str(a.rate or RATE), a.out])
     except OSError as e:
         sys.exit(f"ffmpeg did not start: {e}")
     time.sleep(2.0)                                      # the stream settles before the notes

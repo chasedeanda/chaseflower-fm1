@@ -2191,7 +2191,12 @@ LATE_STAGE = ["none", "tick", "part0", "part1", "fx", "master", "wait"]
 # the host's requests for 48 kHz while it was not offered, the times the FM-1 left the bus for a USB option
 DEBUG_USB = ["ua_rate", "ua_rate_last_open", "ua_rate_sets", "ua_rate_changes", "ua_pk576", "ua_pk564", "ua_pk588",
              "ua_rs_blocks", "ua_rs_avg_us", "ua_rs_max_us", "ua_packet_max", "ua_48k_offered", "ua_48k_refused",
-             "ua_replugs"]
+             "ua_replugs",
+             # ChaseFlower appends the capture/CPU counters here; legacy fourteen-value replies still parse.
+             "ms", "ua_cap_alt", "ua_opens", "ua_open_ms", "ua_open_close_ms", "ua_frames_this_open",
+             "ua_frames_last_open", "ua_tx_packets", "ua_sofs", "ua_overruns", "ua_underruns", "ua_missed_frames",
+             "ua_nudges_up", "ua_nudges_down", "ua_holds", "ua_first_take_ms", "ua_pk528", "ua_pk540", "ua_pk_other",
+             "usb_stalls", "usb_resets", "audio_cpu_q8", "audio_max_us", "audio_late", "audio_stale"]
 USB_RATE_OPTION = "Options > USB Rate"             # the entry's name on the unit (cr_ui.c O_NAME)
 
 

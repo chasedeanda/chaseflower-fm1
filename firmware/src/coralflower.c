@@ -23,7 +23,7 @@
 #define FELUCCA_CDC 1
 #endif
 #ifndef FELUCCA_UAC
-#define FELUCCA_UAC 0            /* USB audio recording: later (the settings that switch it are not here yet) */
+#define FELUCCA_UAC 1            /* ChaseFlower: six-channel UAC1 capture, MIDI remains available */
 #endif
 #ifndef FELUCCA_UART
 #define FELUCCA_UART 1
@@ -85,7 +85,7 @@ static void cf_boot_note(void);            /* (cf_fx.c) */
 #define FELUCCA_ID "FM-1_930"    /* package identity (build.py: the .fwsc marker string) */
 #endif
 #ifndef FELUCCA_VERSION
-#define FELUCCA_VERSION "CoralFlower 0.6-chase1" /* keep the updater's family prefix; the UI says ChaseFlower */
+#define FELUCCA_VERSION "CoralFlower 0.6-chase2" /* keep the updater's family prefix; the UI says ChaseFlower */
 #endif
 #if FELUCCA_OTA && !FELUCCA_FLASH
 #error "FELUCCA_OTA needs FELUCCA_FLASH"

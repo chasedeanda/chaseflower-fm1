@@ -92,28 +92,15 @@ static inline void ua_isr_service(void)                 /* the recording's endpo
 static void audio_block(int32_t *out, uint32_t n)       /* mix (fx.c), then Q15 -> 24 bit */
 {
     uint32_t i;
+#if FELUCCA_UAC
+    uint32_t capture_epoch = ua.cap_epoch;
+    /* Enable the mixer's chord/bass taps for this block only while the host is actually taking audio. */
+    ua_stage_on = usb.up && usb.config && !usb.suspended && !USB_CDC_ON &&
+                  !UAC_BLOCKED() && ua.cap_alt && !ua.cap_hold;
+#endif
     mix_block(out, n);
     if (fx_usb_fixed)                                   /* Options > USB Level = Fixed: USB took the full level, the */
         usb_fixed_dac(out, n);                          /* DAC (speaker, headphones) gets MASTER's (fx.c) */
-#if FELUCCA_UAC
-    /* the USB recording's ring (usb_audio_stream.c): the capture frames in (fx.c ua_stage). TIMER5 serves the
-     * endpoint nested in this render (main.c): only this short copy goes without IRQs, stream resets and alternate
-     * changes included, not the synth and FX work (Melodee's). 0.19: when the host runs ChoralRoot In at 48 kHz the
-     * block is resampled first, with the IRQs on (ua_block48: 34 or 35 frames for the 32); at 44.1 kHz that is one
-     * test of the rate and the frames go in as they are */
-    if (ua_stage_on) {                                  /* (the computer records: else no IRQ-off section at all) */
-        const int16_t *st = ua_stage;
-        uint32_t fn = n, r48 = ua.r48;
-        if (r48) {
-            fn = ua_block48(ua_stage, n);
-            st = ua.rs_out;
-        }
-        fm1_irq_off();
-        if (usb.up && usb.config && !usb.suspended && !USB_CDC_ON)
-            ua_feed(st, fn, r48);
-        fm1_irq_on();
-    }
-#endif
     for (i = 0; i < n; i++) {
         if (i & 1u)
             scope_buf[scope_w++ & (SCOPE_N - 1u)] = (int16_t)out[2u * i];
@@ -123,6 +110,29 @@ static void audio_block(int32_t *out, uint32_t n)       /* mix (fx.c), then Q15 
     if (fx_out_blk)                                     /* Output Clean (fx.c): the 7 bits under the Q15 sample */
         for (i = 0; i < 2u * n; i++)
             out[i] += out_frac[i & (2u * CTL - 1u)];
+#if FELUCCA_UAC
+    if (ua_stage_on) {
+        const int16_t *st = ua_stage;
+        uint32_t fn = n, r48 = ua.r48;
+        /* The exact signed 24-bit words sent to I2S, reduced to PCM16. This is after CoralFlower's effects,
+         * metronome, MASTER and Clean's fractional bits; it includes all four parts and the outgoing sound tail.
+         * Keep the same normalized level as the physical output (OUT_SHIFT's -6 dB ceiling included). */
+        for (i = 0; i < n; i++) {
+            ua_stage[i * UA_CAP_CHANNELS] = ua_sat(out[2u * i] >> 8);
+            ua_stage[i * UA_CAP_CHANNELS + 1u] = ua_sat(out[2u * i + 1u] >> 8);
+        }
+        /* The inherited 44.1 -> 48 kHz resampler runs with interrupts enabled. Only the bounded ring copy
+         * excludes USB service; no allocation, flash write or USB register access is added to the mixer. */
+        if (r48) {
+            fn = ua_block48(ua_stage, n);
+            st = ua.rs_out;
+        }
+        fm1_irq_off();
+        if (usb.up && usb.config && !usb.suspended && !USB_CDC_ON && !UAC_BLOCKED() && capture_epoch == ua.cap_epoch)
+            ua_feed(st, fn, r48);
+        fm1_irq_on();
+    }
+#endif
 }
 
 /* Overload: two halves in a row above 85 % (the render plus TIMER5 nested in it), fade one voice over the

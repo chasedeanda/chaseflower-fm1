@@ -92,10 +92,13 @@ static struct {
      * the first UA_RS_HIST of the block being resampled (ua_resample) */
     int16_t rs_in[2u * UA_RS_HIST * UA_CAP_CHANNELS];
     int16_t rs_out[UA_RS_OUT * UA_CAP_CHANNELS];   /* a block at 48 kHz, for ua_feed */
+    volatile uint32_t cap_epoch;                 /* a USB-side reset while the audio ISR renders invalidates its block */
 } ua UA_POOL;
 
 static void ua_cap_reset(void)
 {
+    ua.cap_epoch++;
+    ua.rs_on = 0;                              /* a paused host must not resume with FIR history from before the gap */
     ua.cw = ua.cr = ua.cap_frac = 0;
     ua.cap_nudge = 0;
     ua.cap_pend = 0;

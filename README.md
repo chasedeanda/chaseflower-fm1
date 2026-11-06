@@ -1,11 +1,16 @@
 # ChaseFlower
 
-Chase's personal build of [CoralFlower](https://github.com/FicusFicusov/CoralFlower). The first candidate changes the
-startup name and USB names to **ChaseFlower** while keeping the existing instrument behavior. See
-[the ChaseFlower build and installation notes](docs/CHASEFLOWER.md).
+Chase's personal build of [CoralFlower](https://github.com/FicusFicusov/CoralFlower).
 
-USB audio and new rhythm patterns are follow-up work after a successful FM-1 boot test. The upstream documentation
-and credits follow below.
+**Current candidate: 0.6-chase2 — USB recording.**
+[Download the firmware](releases/0.6-chase2/chaseflower-0.6-chase2.fwsc) and read
+[installation, channel routing, tests and GarageBand setup](docs/USB-AUDIO.md).
+Select this `.fwsc` in the upstream installer's **Another version, or a build of your own** section before pressing
+Install; the installer's default choice is upstream CoralFlower.
+
+The first build, [0.6-chase1](docs/CHASEFLOWER.md), was installed and booted successfully by Chase. The USB-audio
+candidate passes host tests and the firmware build, but still needs physical USB enumeration and recording tests.
+New rhythm patterns remain future work. The upstream documentation and credits follow below.
 
 ## CoralFlower
 

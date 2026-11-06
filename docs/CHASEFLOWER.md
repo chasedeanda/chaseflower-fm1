@@ -1,5 +1,9 @@
 # ChaseFlower — first boot candidate
 
+Historical build: Chase confirmed that `0.6-chase1` installs and boots with the ChaseFlower title. The next
+[USB-audio candidate, `0.6-chase2`](USB-AUDIO.md), is now available for recording tests. The instructions below
+describe the original boot-only package.
+
 Personal firmware for Chase's M-VAVE FM-1, based on CoralFlower commit
 `272cad9e85a444d879d72598807b7ca01a098d6d`.
 
