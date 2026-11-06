@@ -40,13 +40,25 @@ See [the verification report](CHASEFLOWER-VERIFICATION.md) for measured build si
 
 ## Install manually
 
+The site's main **Install on your FM-1** button starts with the newest upstream CoralFlower release selected.
+Select the ChaseFlower file first. Opening the website or its custom-build section alone does not select ChaseFlower.
+
 1. Save a backup of your current sounds and settings. Keep the installer's downloaded backup somewhere safe.
-2. Open <https://ficusficusov.github.io/CoralFlower/> in Chrome or Edge on the Mac.
-3. Connect the FM-1 directly with a data-capable USB cable and provide reliable power.
-4. Choose the local `.fwsc` file in the installer's **Choose a .fwsc file** control. Confirm that the chosen filename
-   is `chaseflower-0.6-chase1.fwsc` before starting. Installing the site's default release would install upstream instead.
-5. Use the installer's update flow, keep the cable connected and page open, and wait for the restart.
-6. Confirm the **ChaseFlower** startup title, then the normal HOME screen. Play several notes and chords, test bass,
+   Chase's November 6 backup is also preserved unchanged in `backups/coralflower-backup-20261106.json` in this repo.
+2. Download `chaseflower-0.6-chase1.fwsc` from this repo's `releases/0.6-chase1/` folder, or use the delivered local file.
+3. In Chrome or Edge, open <https://ficusficusov.github.io/CoralFlower/#own>. This expands **Another version, or a build
+   of your own**, under **Safety > Tools**. If it is collapsed, expand it manually.
+4. Click **Choose a .fwsc file**, below the list of CoralFlower releases, and select `chaseflower-0.6-chase1.fwsc`.
+5. Wait until the selected filename is shown and the status says **Ready to install chaseflower-0.6-chase1.fwsc**.
+   The validator may still call it a "CoralFlower build" because the compatible package identity is intentional.
+   Check the SHA-256 below it against `releases/0.6-chase1/SHA256SUMS` if needed. If the status instead says
+   **Ready to install CoralFlower 0.6.1**, the upstream release is still selected: return to step 4.
+6. Connect the FM-1 directly with a data-capable USB cable and provide reliable power. Press **Install on your FM-1**
+   in that same expanded section only after confirming the custom filename. Keep backup-before-install enabled,
+   the cable connected and the page open until Done and the restart. Do not refresh or choose a release chip after
+   selecting your file: reloading the page selects upstream again. If an upstream install has already started writing,
+   let it finish before attempting the custom install.
+7. Confirm the **ChaseFlower** startup title, then the normal HOME screen. Play several notes and chords, test bass,
    effects and the sequencer, and confirm existing sounds/settings survived. Check **ChaseFlower FM-1** in MIDI Studio.
 
 This candidate has no USB audio device yet, so GarageBand digital audio and Aggregate Device testing belong to the
