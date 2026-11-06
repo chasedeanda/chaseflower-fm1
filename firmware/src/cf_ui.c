@@ -130,6 +130,25 @@ static void kint(char *b, int v, const char *unit)
         b[i++] = *unit++;
     b[i] = 0;
 }
+/* HOME view cycling contributed by Michael Norris (@norrismw), CoralFlower issue #8.
+ * HOME's view (ChoralRoot's views, HOME tapped on HOME steps to the next): the flower; the chord, its name big and
+ * the notes it voices under it; a keyboard with the chord's and the bass's notes lit. Kept in cs.seq_hint's top two
+ * bits (those hints test bits 0..2 only; every older record has 0 there: the flower) */
+enum { HV_FLOWER, HV_CHORD, HV_KEYS, HV_N };
+#define HV_SHIFT 6u
+static uint32_t home_view(void)
+{
+    uint32_t v = (uint32_t)cs.seq_hint >> HV_SHIFT & 3u;
+    return v < HV_N ? v : HV_FLOWER;
+}
+static void home_view_next(void)
+{
+    static const char *const NAME[HV_N] = {"View: Flower", "View: Chord", "View: Keyboard"};
+    uint32_t v = (home_view() + 1u) % HV_N;
+    cs.seq_hint = (uint8_t)((cs.seq_hint & ((1u << HV_SHIFT) - 1u)) | v << HV_SHIFT);
+    cf_message(NAME[v]);
+}
+
 static void kpc(char *b, int pc)
 {
     char n[4];
@@ -324,6 +343,16 @@ static void ui_knob_info(int k, cf_knob_t *o)
     case SCR_SQED: sq_knob_info(k, o); break;
     case SCR_GLO:
         switch (cu.page[SCR_GLO]) {
+        case 5: /* Library: filter only; the loaded sound and its edits stay put. */
+            if (k < 3u) {
+                static const char *const PART[3] = {"CHORDS", "BASS", "LAYER"};
+                kfmt(o->name, 12, PART[k]);
+                kfmt(o->val, 14, CHASE_BANK_NAMES[cf_bank[k]]);
+            } else {
+                kfmt(o->name, 12, "RESET");
+                kfmt(o->val, 14, "All banks");
+            }
+            break;
         case 0: /* Display */
             if (k == 0) { kfmt(o->name, 12, "COLOR"); kfmt(o->val, 14, CF_THEMES[cs.accent % CF_NTHEMES].name); }
             if (k == 1) {
@@ -539,6 +568,10 @@ static void ui_knob_turn(int k, int d)
     case SCR_SQED: sq_knob_turn(k, d); break;
     case SCR_GLO:
         switch (cu.page[SCR_GLO]) {
+        case 5:
+            if (k < 3u) cf_bank[k] = (uint8_t)clampi(cf_bank[k] + d, 0, 10);
+            else cf_bank[0] = cf_bank[1] = cf_bank[2] = 0;
+            break;
         case 0:
             if (k == 0)
                 cs.accent = (uint8_t)wrapi(cs.accent + d, CF_NTHEMES);
@@ -633,7 +666,7 @@ static void ui_say(const char *a, const char *b)
 static uint32_t screen_pages(uint32_t scr)
 {
     if (scr == SCR_GLO)
-        return 5u;                               /* Display, MIDI, Channels, Play, Reset */
+        return 6u;                               /* Display, MIDI, Channels, Play, Reset, Library */
     if (scr == SCR_ENV)
         return 3u;                               /* chord + bass, chord, bass */
     if (scr == SCR_ARP)
@@ -718,7 +751,7 @@ static void ui_select(int d)                     /* SELECT: the bass sound, or a
         cu.sel_btn = (uint8_t)wrapi(cu.sel_btn + d, nb);
         return;
     }
-    cf_snd_step(CF_PART_BASS, d);
+    if (!cf_snd_step(CF_PART_BASS, d)) return;
     if (cs.env_link)
         cf_env_follow();
     ui_snd_heard(CF_PART_BASS);
@@ -734,7 +767,7 @@ static void ui_presets(int d)                    /* PRESETS: the chord sound (a 
         sq_presets(d);                           /* (the pattern's own sound for the frame's track: 0.5) */
         return;
     }
-    cf_snd_step(CF_PART_CHORD, d);
+    if (!cf_snd_step(CF_PART_CHORD, d)) return;
     if (cs.env_link)                             /* linked: the bass takes the new sound's envelope */
         cf_env_follow();
     ui_snd_heard(CF_PART_CHORD);
@@ -966,7 +999,12 @@ static void ui_button(uint32_t b)
         }
     }
     switch (b) {
-    case B_HOME: ui_open(SCR_HOME); break;
+    case B_HOME:                                 /* (on HOME: the next view, as ChoralRoot's HOME) */
+        if (cu.scr == SCR_HOME)
+            home_view_next();
+        else
+            ui_open(SCR_HOME);
+        break;
     case B_SCL:                                  /* (the drum machine: SEL takes the rhythm's own KIT and SWING back) */
         if (cu.scr == SCR_DRUM)
             dm_sel();

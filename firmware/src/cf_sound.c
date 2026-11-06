@@ -70,8 +70,14 @@ static int cf_named(const cf_named_t *t, uint32_t n, uint32_t e, const char *nam
 static int cf_fac_part(uint32_t e, uint32_t f)   /* factory preset f of engine e */
 {
     const char *nm = ENGINES[e % NENGINES]->presets[f].name;
-    if (cf_named(CF_DROP, NELEM(CF_DROP), e, nm))
-        return -1;
+#if CHASE_LIBRARY
+    if (e == ENGI_FM6 && f >= CHASE_FM_BASE) return 0;
+#if FELUCCA_VA
+    if (e == ENGI_VA && f >= CHASE_VA_BASE) return CHASE_VA_BASS[f - CHASE_VA_BASE];
+#endif
+#else
+    if (cf_named(CF_DROP, NELEM(CF_DROP), e, nm)) return -1;
+#endif
     return cf_named(CF_BASS, NELEM(CF_BASS), e, nm);
 }
 static int cf_ent_part(uint32_t e, uint32_t pos)
@@ -89,21 +95,54 @@ static int cf_ent_part(uint32_t e, uint32_t pos)
 }
 
 /* the lists, rebuilt when the user's sounds change (up_gen): (engine, pool position) per place */
-#define CF_LIST_MAX 160u
+#define CF_LIST_MAX 224u
 typedef struct { uint8_t e, pos; } cf_ent_t;
 static struct { uint32_t gen; uint8_t ok; uint16_t n[2]; cf_ent_t at[2][CF_LIST_MAX]; } cf_lst;
+/* The old row first, across all engines; all additions and restored hidden presets follow.
+ * This keeps chase1/chase2's saved global indices without a settings-format migration. */
+static int cf_ent_extra(uint32_t e, uint32_t pos)
+{
+    pool_ent_t en = pool_entry(e, pos);
+    if (en.fk == PF_NONE) return 0;
+    return en.fk >= pool_f0(e) + pool_base_nf(e) ||
+           (en.kind == PK_FACTORY && cf_named(CF_DROP, NELEM(CF_DROP), e, ENGINES[e]->presets[en.fk].name));
+}
+/* Browsing filters are session-local: changing one never changes the sound being played or saved. */
+static uint8_t cf_bank[3];
+static uint32_t cf_entry_bank(uint32_t e, uint32_t pos)
+{
+    pool_ent_t en = pool_entry(e, pos);
+#if CHASE_LIBRARY
+    if (en.fk != PF_NONE) {
+        if (e == ENGI_FM6 && en.fk >= CHASE_FM_BASE) return CHASE_FM_BANK[en.fk - CHASE_FM_BASE];
+#if FELUCCA_VA
+        if (e == ENGI_VA && en.fk >= CHASE_VA_BASE) return CHASE_VA_BANK[en.fk - CHASE_VA_BASE];
+#endif
+    }
+#endif
+    return en.kind == PK_USER ? 10u : 9u;
+}
+static int cf_bank_match(uint32_t part, uint32_t e, uint32_t pos)
+{
+    uint32_t b = cf_bank[part % 3u];
+    if (!b) return 1;
+    if (b == 10u) return pool_entry(e, pos).kind == PK_USER;
+    return b == cf_entry_bank(e, pos);
+}
 static void cf_list_build(void)
 {
-    uint32_t i, pos, p;
+    uint32_t i, pos, p, pass;
     if (cf_lst.ok && cf_lst.gen == up_gen)
         return;
     cf_lst.ok = 1;
     cf_lst.gen = up_gen;
     cf_lst.n[0] = cf_lst.n[1] = 0;
+    for (pass = 0; pass < 2u; pass++)
     for (i = 0; i < CF_NENG; i++) {
         uint32_t e = CF_ENGINES[i], np = pool_count(e);
         for (pos = 0; pos < np && pos < 256u; pos++) {
             int w = cf_ent_part(e, pos);
+            if ((uint32_t)cf_ent_extra(e, pos) != pass) continue;
             for (p = 0; p < 2u; p++)
                 if ((w == 2 || w == (int)p) && cf_lst.n[p] < CF_LIST_MAX) {
                     cf_lst.at[p][cf_lst.n[p]].e = (uint8_t)e;
@@ -139,9 +178,12 @@ static uint32_t cf_eng_ord(uint32_t e)
 /* the place of (e, pos) in the part's list: its index, or (not in the list) the place it would take there */
 static uint32_t cf_snd_index(uint32_t part, uint32_t e, uint32_t pos)
 {
-    uint32_t i, n = cf_snd_count(part), o = cf_eng_ord(e);
+    uint32_t i, n = cf_snd_count(part), o = (uint32_t)cf_ent_extra(e, pos) * CF_NENG + cf_eng_ord(e);
+    for (i = 0; i < n; i++)
+        if (cf_lst.at[part & 1u][i].e == e && cf_lst.at[part & 1u][i].pos == pos) return i;
     for (i = 0; i < n; i++) {
-        uint32_t oi = cf_eng_ord(cf_lst.at[part & 1u][i].e);
+        uint32_t ei = cf_lst.at[part & 1u][i].e, pi = cf_lst.at[part & 1u][i].pos;
+        uint32_t oi = (uint32_t)cf_ent_extra(ei, pi) * CF_NENG + cf_eng_ord(ei);
         if (oi > o || (oi == o && cf_lst.at[part & 1u][i].pos >= pos))
             break;
     }
@@ -284,8 +326,7 @@ static void cf_pool_load(uint32_t part, uint32_t e, uint32_t pos)
     en = pool_entry(e, pos);
     if (en.kind == PK_USER) {
         cf_load_user(part, en.slot);
-        if (en.fk != PF_NONE)
-            trk[part].trim = cb_trim(e, en.fk);
+        trk[part].trim = cb_saved_trim(en.slot, e, en.fk);
     } else if (en.kind == PK_FACTORY) {
         cf_load_factory(part, e, en.fk);
         trk[part].trim = cb_trim(e, en.fk);
@@ -344,8 +385,7 @@ static void cf_snd_build(uint32_t part, uint32_t e, uint32_t pos, cf_stage_t *s)
             if (!param_kept(i))
                 s->p[i] = v[i];
         s->user = (uint8_t)(pe.slot + 1u);
-        if (pe.fk != PF_NONE)
-            s->trim = cb_trim(e, pe.fk);
+        s->trim = cb_saved_trim(pe.slot, e, pe.fk);
         up_name(pe.slot, s->meta.name);
     } else if (pe.kind == PK_FACTORY && en->npresets) {
         const preset_t *pr = &en->presets[pe.fk % en->npresets];
@@ -560,15 +600,24 @@ static void cf_snd_load_index(uint32_t part, uint32_t idx)
     cf_snd_at(part, idx, &e, &pos);
     cf_pool_load(part, e, pos);
 }
-static void cf_snd_step(uint32_t part, int32_t d)
+static int cf_snd_step(uint32_t part, int32_t d)
 {
-    int32_t n = (int32_t)cf_snd_count(part), i = (int32_t)cf_snd_pos(part) + d;
-    if (n <= 0)
-        return;
-    i %= n;
-    if (i < 0)
-        i += n;
-    cf_snd_load_index(part, (uint32_t)i);
+    int32_t n = (int32_t)cf_snd_count(part), i = (int32_t)cf_snd_pos(part);
+    int32_t dir = d < 0 ? -1 : 1, steps = d < 0 ? -d : d, found = 0;
+    if (n <= 0 || !steps) return 0;
+    if (steps > n) steps = n;
+    while (steps--) {
+        int32_t tries;
+        for (tries = 0; tries < n; tries++) {
+            uint32_t e, pos;
+            i = (i + dir + n) % n;
+            cf_snd_at(part, (uint32_t)i, &e, &pos);
+            if (cf_bank_match(part, e, pos)) { found = 1; break; }
+        }
+        if (tries == n) return 0;
+    }
+    if (found) cf_snd_load_index(part, (uint32_t)i);
+    return found;
 }
 /* a sound by its name in an engine's factory list (the defaults), 0 when not there */
 static int cf_snd_find(uint32_t part, uint32_t e, const char *name)
@@ -651,7 +700,15 @@ static uint32_t cf_snd_save_index(uint32_t part, int as_new)
     if (!as_new && cf_snd[part].kind != PK_INIT)
         return cf_snd_pos(part);
     k = cb_free_slot();
-    return cf_snd_index(part, e, k < UP_SLOTS ? pool_pos_new(e, k) : pool_count(e));
+    {   /* A new user entry enters the legacy row, before the appended factory banks. */
+        uint32_t pos = k < UP_SLOTS ? pool_pos_new(e, k) : pool_count(e);
+        uint32_t i, n = cf_snd_count(part), ord = cf_eng_ord(e);
+        for (i = 0; i < n; i++) {
+            uint32_t ei = cf_lst.at[part & 1u][i].e, pi = cf_lst.at[part & 1u][i].pos;
+            if (cf_ent_extra(ei, pi) || cf_eng_ord(ei) > ord || (ei == e && pi >= pos)) break;
+        }
+        return i;
+    }
 }
 
 /* SAVE > ACTION Delete: the part's user sound erased (its slot freed, its patch with it). One bound to a factory

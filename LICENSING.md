@@ -36,6 +36,18 @@ and one orientation rule per plant. This is a design reference only: no PlantStu
 | --- | --- | --- |
 | Departure Mono font by Helena Zhang (<https://departuremono.com>): the screens' pixel font (rasterised at build time by `tools/gen_pixfont.py`) and the web pages' font | SIL OFL 1.1 | `assets/fonts/DepartureMono-Regular.otf`, `LICENSES/OFL-DepartureMono.txt` |
 
+## ChaseFlower additions
+
+ChaseFlower's changes and original synth/drum designs are GPL-3.0-only. The HOME Chord and Keyboard views were
+contributed by **Michael Norris (@norrismw)** in [CoralFlower issue #8](https://github.com/FicusFicusov/CoralFlower/issues/8),
+as a patch to the GPL firmware. The integration retains the existing file licenses and credits the contributor.
+
+The chase3 library also contains 32 original **Aquanode / aquanodemusic** DX7 voices, published under **CC0-1.0**.
+Their packed voice bytes are unchanged; ChaseFlower adds browsing names, genre assignments and output trims.
+The original banks, license, pinned source revision, hashes and per-slot audit are in
+`assets/sounds/candidates/aquanode/`. The 128-sound release catalog maps each imported sound back to its original
+bank and slot in `assets/sounds/chase3-catalog.json`. No Infinite Cycles remake banks are included.
+
 ## JieLi SDK files in the packages (Apache-2.0)
 
 A `.fwsc` package made by `tools/build.py` holds three unmodified files from the JieLi AC79 SDK:

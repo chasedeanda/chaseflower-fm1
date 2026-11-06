@@ -119,8 +119,23 @@ static const dm_rhythm_t DM_RHY[] = {
      {[DM_K] = 100, [DM_S] = 90, [DM_H] = 55, [DM_X] = 45}},
     /* the other TIME SIGs: modern takes (the owner's pick B for rc4: "3/4 trap-waltz, 6/8 afro-house, 5/4 and 7/4
      * math-rock, 2/4 baile"; rc3's Waltz, Jazz3, March, Polka, Five, Odd5, Blues, Bembe and Seven gone). A 6/8 bar is
-     * 6 beats of 8ths: its tempo counts 8ths */
-    /* (3/4 and 6/8: none since rc7, TrapWaltz and AfroHouse cut by the owner: "полная ебанина", "кринж") */
+     * six eighth-note counts; ChaseFlower keeps TEMPO in quarter-note BPM */
+    /* ChaseFlower adds the three original 6/8 grooves below. */
+    /* ChaseFlower: 6/8, twelve sixteenth-note steps, grouped 3 + 3 eighths.
+     * Quarter-note BPM, as MIDI clock: a bar is three quarters. IDs are append-only. */
+    {"Ballad", 48, 6, 2, 16, 0, 65,
+     {[DM_K] = "x..........." "x.........x.", [DM_R] = "......x....." "......x.....",
+      [DM_H] = "x.x.x.x.x.x." "x.x.x.x.x.x."},
+     {[DM_K] = 85, [DM_R] = 62, [DM_H] = 30}},
+    {"Electro", 49, 6, 2, 21, 0, 90,
+     {[DM_K] = "x.......x..." "x.........x.", [DM_C] = "......x....." "......x.....",
+      [DM_H] = "x.x.x.x.x.x." "x.x.x.x.x...", [DM_O] = "............" "..........x.",
+      [DM_B] = "....x......." "....x......."},
+     {[DM_K] = 92, [DM_C] = 70, [DM_H] = 33, [DM_O] = 35, [DM_B] = 25}},
+    {"Lo-Fi 6", 50, 6, 2, 14, 0, 72,
+     {[DM_K] = "x..........." "x.......x...", [DM_S] = "......x....." "......x.....",
+      [DM_R] = "............" ".........x..", [DM_H] = "x.x.x.x.x.x." "x.x.x.x.x..."},
+     {[DM_K] = 88, [DM_S] = 65, [DM_R] = 28, [DM_H] = 28}},
     /* 2/4: 8 steps */
     {"Tamborzao", 47, 2, 2, DMK_808, 0, 130,
      {[DM_K] = "x..x..x." "x..x..x.", [DM_MT] = ".x...x.." ".x...x.x", [DM_LT] = "..x....x" "..x.....",
@@ -305,15 +320,15 @@ static void dmp_tick(uint32_t n, uint32_t pulses)   /* every audio block, as sqp
     if (!dmp.on)
         return;
     if (cfx_in.active) {
-        for (k = 0; k < pulses * (SQ_PPQN / 24u) && dmp.on; k++)
+        for (k = 0; k < pulses * (SQ_PPQN / 24u) * cf_meter_rate() && dmp.on; k++)
             dmp_tick1();
         return;
     }
-    dmp.acc += n * cfm.bpm * SQ_PPQN;
-    if (dmp.acc < FS * 60u)
-        return;
-    dmp.acc -= FS * 60u;
-    dmp_tick1();
+    dmp.acc += n * cfm.bpm * SQ_PPQN * cf_meter_rate();
+    while (dmp.acc >= FS * 60u && dmp.on) {
+        dmp.acc -= FS * 60u;
+        dmp_tick1();
+    }
 }
 /* PLAY on a rhythm, or SELECT in the drum machine while one plays: the next comes in at the bar line */
 static void dmp_queue(uint32_t r, uint32_t kit, uint32_t swing)

@@ -115,6 +115,14 @@ static int cb_streq(const char *a, const char *b)
 static int8_t cb_trim(uint32_t e, uint32_t k)     /* factory preset k of engine e's trim */
 {
     uint32_t i;
+#if CHASE_LIBRARY
+    if (e == ENGI_FM6 && k >= CHASE_FM_BASE && k < CHASE_FM_BASE + CHASE_FM_N)
+        return CHASE_FM_TRIM[k - CHASE_FM_BASE];
+#if FELUCCA_VA
+    if (e == ENGI_VA && k >= CHASE_VA_BASE && k < CHASE_VA_BASE + CHASE_VA_N)
+        return CHASE_VA_TRIM[k - CHASE_VA_BASE];
+#endif
+#endif
     for (i = 0; i < NELEM(CB_TRIM); i++)
         if (CB_TRIM[i].engine == e && cb_trim_k[i] == k)
             return CB_TRIM[i].trim;
@@ -143,6 +151,7 @@ static int8_t cb_trim(uint32_t e, uint32_t k)     /* factory preset k of engine 
 /* CoralFlower: a sound saved from the LAYER (part 2) has note[14] = CB_LAYER_MARK. It keeps its voice (a mono or
  * legato melody, its glide) and is still a chord sound: the lists go by the voice otherwise (cf_sound.c cf_ent_part) */
 #define CB_LAYER_MARK 0xA7u
+#define CB_TRIM_MARK 0xD3u                 /* unused note bytes; an old build ignores them */
 #define PF_NONE 0xFFu
 enum { PK_INIT, PK_FACTORY, PK_USER };
 typedef struct { uint8_t kind, fk, slot; } pool_ent_t;   /* fk: the factory preset index (PK_FACTORY; PK_USER: the
@@ -161,6 +170,18 @@ static uint32_t pool_nf(uint32_t e)               /* the factory presets in the 
 {
     uint32_t n = ENGINES[e % NENGINES]->npresets;
     return n > pool_f0(e) ? n - pool_f0(e) : 0u;
+}
+/* ChaseFlower appends factory sounds AFTER the original pool's user entries.
+ * Old pool positions (including every added user slot) therefore keep their meaning. */
+static uint32_t pool_base_nf(uint32_t e)
+{
+#if CHASE_LIBRARY
+    if (e == ENGI_FM6) return CHASE_FM_BASE;
+#if FELUCCA_VA
+    if (e == ENGI_VA) return CHASE_VA_BASE;
+#endif
+#endif
+    return pool_nf(e);
 }
 #define CB_RETIRED_POOL (FELUCCA_ANALOG ? 0u : ENGI_VA)   /* a retired engine's records (cr_ui.c cu_load_user) */
 static uint32_t cb_rec_engine(uint32_t k)          /* the pool a used slot's record is in */
@@ -195,6 +216,13 @@ static uint32_t cb_bound(uint32_t k)               /* .. unless an earlier slot 
     return f;
 }
 static int cb_added(uint32_t e, uint32_t k) { return up_used(k) && cb_rec_engine(k) == e && cb_bound(k) == PF_NONE; }
+static int8_t cb_saved_trim(uint32_t slot, uint32_t e, uint32_t fk)
+{
+    const up_rec_t *r = up_rec(slot);
+    if (r->note[12] == CB_TRIM_MARK && r->note[13] < 128u)
+        return (int8_t)((int)r->note[13] - 64);
+    return fk == PF_NONE ? 0 : cb_trim(e, fk);
+}
 
 static uint32_t pool_count(uint32_t e)             /* INIT + the factory presets + the added ones */
 {
@@ -214,7 +242,7 @@ static uint32_t pool_bound_slot(uint32_t e, uint32_t f)   /* the slot bound to f
 static pool_ent_t pool_entry(uint32_t e, uint32_t pos)    /* past the end: INIT */
 {
     pool_ent_t r = {PK_INIT, PF_NONE, PF_NONE};
-    uint32_t nf = pool_nf(e), k;
+    uint32_t nf = pool_base_nf(e), k;
     if (!pos)
         return r;
     if (pos <= nf) {
@@ -226,14 +254,32 @@ static pool_ent_t pool_entry(uint32_t e, uint32_t pos)    /* past the end: INIT 
     }
     pos -= nf + 1u;
     for (k = 0; k < UP_SLOTS; k++)
-        if (cb_added(e, k) && !pos--) {
-            r.kind = PK_USER;
-            r.slot = (uint8_t)k;
-            return r;
+        if (cb_added(e, k)) {
+            if (!pos) {
+                r.kind = PK_USER;
+                r.slot = (uint8_t)k;
+                return r;
+            }
+            pos--;
         }
+    if (pos < pool_nf(e) - nf) {
+        r.fk = (uint8_t)(pool_f0(e) + nf + pos);
+        k = pool_bound_slot(e, r.fk);
+        r.kind = k < UP_SLOTS ? PK_USER : PK_FACTORY;
+        r.slot = (uint8_t)(k < UP_SLOTS ? k : PF_NONE);
+    }
     return r;
 }
-static uint32_t pool_pos_factory(uint32_t e, uint32_t f) { return f >= pool_f0(e) ? f - pool_f0(e) + 1u : 0u; }
+static uint32_t pool_pos_factory(uint32_t e, uint32_t f)
+{
+    uint32_t pos, k;
+    if (f < pool_f0(e) || f >= ENGINES[e % NENGINES]->npresets) return 0u;
+    pos = f - pool_f0(e) + 1u;
+    if (pos > pool_base_nf(e))
+        for (k = 0; k < UP_SLOTS; k++)
+            pos += (uint32_t)cb_added(e, k);
+    return pos;
+}
 static uint32_t pool_pos_slot(uint32_t e, uint32_t k)     /* the place of used slot k in pool e (0: not in it) */
 {
     uint32_t j, f, n;
@@ -242,14 +288,14 @@ static uint32_t pool_pos_slot(uint32_t e, uint32_t k)     /* the place of used s
     f = cb_bound(k);
     if (f != PF_NONE)
         return pool_pos_factory(e, f);
-    n = 1u + pool_nf(e);
+    n = 1u + pool_base_nf(e);
     for (j = 0; j < k; j++)
         n += (uint32_t)cb_added(e, j);
     return n;
 }
 static uint32_t pool_pos_new(uint32_t e, uint32_t k)      /* the place a preset added into free slot k will take */
 {
-    uint32_t j, n = 1u + pool_nf(e);
+    uint32_t j, n = 1u + pool_base_nf(e);
     for (j = 0; j < k && j < UP_SLOTS; j++)
         n += (uint32_t)cb_added(e, j);
     return n;
@@ -294,6 +340,11 @@ static int cb_store(const track_t *t, uint32_t part, uint32_t k, const char *nam
         up_set_value(&r, i, (int16_t)clamp(v, -64, 127));
     }
     r.note[15] = CB_BIND_MARK;                    /* the binding (docs/PRESETS.md "Storage") */
+#if CHASE_LIBRARY
+    /* Preserve the audition trim when a factory patch is saved as an unbound user sound. */
+    r.note[12] = CB_TRIM_MARK;
+    r.note[13] = (uint8_t)(clamp(t->trim, -64, 63) + 64);
+#endif
     if (part == 2u)
         r.note[14] = CB_LAYER_MARK;
     r.flags[15] = (uint8_t)bind;

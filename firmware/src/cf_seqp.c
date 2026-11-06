@@ -633,7 +633,7 @@ static void sqp_rec_watch(void)
     if (sqp.cin >= SQ_PPQN / 4u)                 /* (the count-in: only its last sixteenth counts, as the first step;
                                                   * a chord begun before it, since REC went down: sqp_pre) */
         return;
-    back = sqp.rage * SQ_PPQN * cfm.bpm / 60000u;   /* (the key's age: where in the bar it was played) */
+    back = sqp.rage * SQ_PPQN * cfm.bpm * cf_meter_rate() / 60000u;   /* (the key's age: where in the bar it was played) */
     sqp.rage = 0;
     e.pat = sqp.pat;
     e.bar = sqp.sb[sqp.rec % SQ_NTRK];           /* (the take's track's own bar) */
@@ -708,7 +708,7 @@ static void sqp_pre_flush(void)
     }
     e.kind = 2;
     e.dur = sqp_pre.t1 - sqp_pre.t0;
-    e.dur = (e.dur < 30000u ? e.dur : 30000u) * SQ_PPQN * (cfx_in.active ? cfx_in.bpm : cfm.bpm) / 60000u;
+    e.dur = (e.dur < 30000u ? e.dur : 30000u) * SQ_PPQN * (cfx_in.active ? cfx_in.bpm : cfm.bpm) * cf_meter_rate() / 60000u;
     if (!e.dur)
         e.dur = 1;
     sqp_rpush(&e);
@@ -817,15 +817,15 @@ static void sqp_tick(uint32_t n, uint32_t pulses)
         sqp_pre_flush();
     sqp_rec_watch();
     if (cfx_in.active) {
-        for (k = 0; k < pulses * (SQ_PPQN / 24u); k++)
+        for (k = 0; k < pulses * (SQ_PPQN / 24u) * cf_meter_rate(); k++)
             sqp_tick1();
         return;
     }
-    sqp.acc += n * cfm.bpm * SQ_PPQN;
-    if (sqp.acc < FS * 60u)
-        return;
-    sqp.acc -= FS * 60u;
-    sqp_tick1();
+    sqp.acc += n * cfm.bpm * SQ_PPQN * cf_meter_rate();
+    while (sqp.acc >= FS * 60u && sqp.on) {
+        sqp.acc -= FS * 60u;
+        sqp_tick1();
+    }
 }
 
 /* PLAY on another pattern than the one playing (or the song): it comes in when this one ends */

@@ -161,5 +161,8 @@ static const ds_kit_t DS_KITS[] = {
         DS(DSW_SINE, DSN_RING, DSF_BP, 0, 0, 0, 1270, 0, 0, 0, 0, 0, 0, 100, 10, 115, 120, 38, 12, 40, 30, 96),
      },
      48, 55, 2, 12, 15, 88},
+#if CHASE_LIBRARY
+#include "chase_drum_rows.h"
+#endif
 };
 #define DS_NKIT ((uint32_t)(sizeof DS_KITS / sizeof DS_KITS[0]))

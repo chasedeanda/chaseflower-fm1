@@ -193,13 +193,239 @@ static void draw_fx(void)
 }
 
 /* ------------------------------------------------------------------ HOME --- */
+/* the chord the Chord and Keyboard views show (HOME, cf_ui.c home_view), kept as the name is: the keys' chord while it
+ * sounds (as voiced, low to high, the bass's notes with it), else the sequencer's CHORDS track's while it plays; it
+ * stays after both let go */
+static uint8_t hv_n, hv_note[CF_MAX_NOTES], hv_nb, hv_bass[2], hv_root, hv_single;
+static uint32_t hv_mask;
+static void hv_keep(uint32_t n, const uint8_t *note, uint32_t nb, const uint8_t *bass, uint32_t root, uint32_t mask,
+                    int single)
+{
+    uint32_t i;
+    hv_n = (uint8_t)(n < CF_MAX_NOTES ? n : CF_MAX_NOTES);
+    for (i = 0; i < hv_n; i++)
+        hv_note[i] = note[i];
+    hv_nb = (uint8_t)(nb < 2u ? nb : 2u);
+    for (i = 0; i < hv_nb; i++)
+        hv_bass[i] = bass[i];
+    hv_root = (uint8_t)(root % 12u);
+    hv_mask = mask;
+    hv_single = (uint8_t)single;
+}
+static void hv_update(void)
+{
+    const cf_chord_out_t *o = &cf_sn.out;
+    if (o->sounding && o->n)
+        hv_keep(o->n, o->note, cs.bass_on ? cf_sn.nb : 0u, cf_sn.bass, o->root_pc, o->mask, o->single);
+    else if (cf_sn.sq_on && cf_sn.sq_dn)
+        hv_keep(cf_sn.sq_dn, cf_sn.sq_dnote, cf_sn.sq_bn, cf_sn.sq_bass, cf_sn.sq_droot, cf_sn.sq_dmask,
+                cf_sn.sq_dsingle);
+}
+/* a note with its octave, "F#4" (signs as the UI face draws them; raw: '#' and 'b' as typed, for the micro face,
+ * which has no signs) */
+static void hv_note_name_raw(uint32_t n, char *b, int raw)
+{
+    char a[4], t[8];
+    uint32_t k;
+    int o = (int)n / 12 - 1;
+    cf_pc_name((int)(n % 12u), &cu_spell, a);
+    k = str_len(a);
+    a[k] = 0;
+    str_cpy(t, a, sizeof t);
+    k = str_len(t);
+    if (o < 0)
+        t[k++] = '-', o = -o;
+    t[k++] = (char)('0' + o % 10);
+    t[k] = 0;
+    if (raw)
+        str_cpy(b, t, 8);
+    else
+        fb_signs(t, b, 8);
+}
+#define hv_note_name(n, b) hv_note_name_raw((n), (b), 0)
+/* the arpeggiator's note now (it hops along the notes, as ChoralRoot's): the key it plays (hv_arp_at), or, in the
+ * Chord view's row, the chord tone it plays in any octave (hv_arp_pc: OCTAVE 2..4 plays the tones higher up). Not
+ * for Strum, as ChoralRoot: its notes all sound after the strum, the last one is no more "now" than the others */
+static int hv_arp_live(void)
+{
+    return cf_sn.arp_on && cf_sn.out.sounding && !CF_ARP_STRUMMING(cs.arp.mode);
+}
+static int hv_arp_at(uint32_t n)
+{
+    return hv_arp_live() && cf_sn.arp_note == n;
+}
+static int hv_arp_pc(uint32_t n)
+{
+    return hv_arp_live() && cf_sn.arp_note % 12u == n % 12u;
+}
+
+/* Chord: the plant faint, the name big in the middle (the root large, the rest small at its top, the scale degree
+ * over it), the voiced notes in a row under it with each one's degree under it, the bass's under them */
+static void draw_home_chord(void)
+{
+    char b[20], r[4], nm[8];
+    int n, w, x, y = Y_VIEW + 44, i, cnt = hv_n, gap, sc;
+    fb_veil(0, Y_VIEW, FB_W, H_VIEW, FL_BG);
+    if (!cu_name[0]) {
+        fb_text_c(&CF_FONT_UI, 120, Y_VIEW + 58, "play a chord", FL_INK3, 1);
+        return;
+    }
+    /* the name as HOME writes it, twice its size: the root 4x, what follows it 2x on the root's top, white; the scale
+     * degree after it in grey (draw_chord_name's proportions); single notes all at 3x */
+    n = cu_name_single ? (int)str_len(cu_name) : 1 + (cu_name[0] && (cu_name[1] == '#' || cu_name[1] == 'b'));
+    str_cpy(r, cu_name, (uint32_t)(n < 3 ? n : 3) + 1u);
+    if (cu_name_single) {
+        fb_signs(cu_name, b, sizeof b);
+        sc = fb_text_w(&CF_FONT_UI, b, 3) <= 224 ? 3 : 2;
+        fb_text_c(&CF_FONT_UI, 120, y - 3 * sc, b, FL_INK, sc);
+    } else {
+        char tail[20], deg[12];
+        int wr, wt, wd, ts = 2;
+        fb_signs(r, b, sizeof b);
+        tail[0] = deg[0] = 0;
+        if (cu_name[n])
+            fb_signs(cu_name + n, tail, sizeof tail);
+        if (cu_name_sub[0])
+            fb_signs(cu_name_sub, deg, sizeof deg);
+        sc = 4;
+        wr = fb_text_w(&CF_FONT_UI, b, sc);
+        for (;;) {                               /* (a long name: the tail and the degree at 1x) */
+            wt = tail[0] ? 2 + fb_text_w(&CF_FONT_UI, tail, ts) : 0;
+            wd = deg[0] ? 6 * ts + fb_text_w(&CF_FONT_UI, deg, ts) : 0;
+            if (wr + wt + wd <= 228 || ts == 1)
+                break;
+            ts = 1;
+        }
+        x = 120 - (wr + wt + wd) / 2;
+        x += fb_text_halo(&CF_FONT_UI, x, y - 3 * sc, b, FL_INK, FL_BG, sc);
+        if (tail[0])
+            x += 2 + fb_text_halo(&CF_FONT_UI, x + 2, y - 3 * ts, tail, FL_INK, FL_BG, ts);
+        if (deg[0])
+            fb_text_halo(&CF_FONT_UI, x + 6 * ts, y - 3 * ts, deg, FL_INK2, FL_BG, ts);
+    }
+    /* the notes, low to high: name over, degree under; the arpeggiator's now lit */
+    if (cnt > 8)
+        cnt = 8;
+    for (i = 0, w = 0; i < cnt; i++) {
+        hv_note_name(hv_note[i], nm);
+        w += fb_text_w(&CF_FONT_UI, nm, 1);
+    }
+    gap = cnt > 1 ? (200 - w) / (cnt - 1) : 0;
+    if (gap > 22)
+        gap = 22;
+    if (gap < 4)
+        gap = 4;
+    x = 120 - (w + gap * (cnt - 1)) / 2;
+    for (i = 0; i < cnt; i++) {
+        int nw, hot = hv_arp_pc(hv_note[i]);
+        hv_note_name(hv_note[i], nm);
+        nw = fb_text_w(&CF_FONT_UI, nm, 1);
+        fb_text_halo(&CF_FONT_UI, x, Y_VIEW + 84, nm, hot ? C_ACC(0) : FL_INK, FL_BG, 1);
+        if (hot)
+            fb_rect(x, Y_VIEW + 98, nw, 2, C_ACC(0));
+        if (!hv_single) {
+            const char *dg = cv_degree((int)hv_note[i] - (int)hv_root + 120, hv_mask);
+            fb_text_halo(&CF_FONT_UI, x + (nw - fb_text_w(&CF_FONT_UI, dg, 1)) / 2, Y_VIEW + 100, dg, FL_INK3, FL_BG, 1);
+        }
+        x += nw + gap;
+    }
+    if (hv_nb) {                                 /* the bass: what it plays now */
+        char t[24];
+        str_cpy(t, "bass ", sizeof t);
+        for (i = 0; i < hv_nb; i++) {
+            hv_note_name(hv_bass[i], nm);
+            str_cpy(t + str_len(t), nm, (uint32_t)(sizeof t - str_len(t)));
+            if (i + 1 < hv_nb)
+                str_cpy(t + str_len(t), "  ", 3);
+        }
+        fb_text_halo(&CF_FONT_UI, 120 - fb_text_w(&CF_FONT_UI, t, 1) / 2, Y_VIEW + 120, t, C_SEC(1), FL_BG, 1);
+    }
+}
+
+/* Keyboard: the name as on the flower, five octaves of keys (C1 .. B5; moved up or down when OCT or the bass's
+ * OCTAVE take the notes past them, the chord's kept first) with the chord's notes lit in the accent, the bass's in the
+ * second colour, the arpeggiator's now in white, each lit note named under its key */
+static uint8_t hv_key_mark(int n)
+{
+    int i;
+    for (i = 0; i < hv_nb; i++)
+        if (n == hv_bass[i])
+            return C_SEC(1);
+    if (hv_arp_at((uint32_t)n))
+        return FL_INK;
+    for (i = 0; i < hv_n; i++)
+        if (n == hv_note[i])
+            return hv_arp_at((uint32_t)n) ? FL_INK : C_ACC(0);
+    return 0;
+}
+static void draw_home_keys(void)
+{
+    const int octs = 5, wk = 6, x0 = 120 - octs * 7 * wk / 2, ky = Y_VIEW + 62, kh = 44;
+    char nm[8];
+    int i, o, lo = 24, mn = 127, mx = 0, xs[CF_MAX_NOTES + 2], rows[CF_MAX_NOTES + 2], nl = 0;
+    for (i = 0; i < hv_nb + hv_n; i++) {         /* the window: C1 .. B5 if the notes are in it, else from the lowest
+                                                  * note's C, or up to the highest's octave (the chord kept) */
+        int n = i < hv_nb ? hv_bass[i] : hv_note[i - hv_nb];
+        mn = n < mn ? n : mn;
+        mx = n > mx ? n : mx;
+    }
+    if (mx && (mn < lo || mx >= lo + octs * 12)) {
+        lo = mn / 12 * 12;
+        if (mx >= lo + octs * 12)
+            lo = (mx / 12 - (octs - 1)) * 12;
+        lo = lo < 0 ? 0 : lo > 127 - octs * 12 + 1 ? (127 - octs * 12 + 1) / 12 * 12 : lo;
+    }
+    fb_veil(0, Y_VIEW, FB_W, H_VIEW, FL_BG);
+    if (cu_name[0])
+        draw_chord_name(6, Y_VIEW + 7, cu_name, cu_name_sub, cu_name_single);
+    else
+        fb_text(&CF_FONT_UI, 6, Y_VIEW + 4, "play a chord", FL_INK3, 1);
+    fb_rect(x0 - 2, ky - 2, octs * 7 * wk + 3, kh + 4, FL_BG);
+    draw_piano(x0, ky, lo, octs, wk, kh, hv_key_mark);
+    for (o = 0; o < octs; o++) {                 /* the octaves, over the keys */
+        int on = lo / 12 - 1 + o;
+        char b[4] = {'C', on < 0 ? '-' : (char)('0' + on), on < 0 ? (char)('0' - on) : 0, 0};
+        fb_text(&CF_FONT_MICRO, x0 + o * 7 * wk + 1, ky - 8, b, FL_INK3, 1);
+    }
+    for (i = 0; i < hv_nb + hv_n; i++) {         /* the lit notes named under their keys (stepped down when close) */
+        int n = i < hv_nb ? hv_bass[i] : hv_note[i - hv_nb], cx;
+        if (n < lo || n >= lo + octs * 12)
+            continue;
+        int row = 0, k, busy;
+        for (k = 0; k < i && (k < hv_nb ? hv_bass[k] : hv_note[k - hv_nb]) != n; k++)
+            ;
+        if (k < i)
+            continue;                            /* (the bass on a chord tone's key: named once) */
+        cx = piano_cx(x0, lo, wk, n);
+        hv_note_name_raw((uint32_t)n, nm, 1);
+        do {                                     /* the first row with no label near this one */
+            for (k = 0, busy = 0; k < nl; k++)
+                busy |= rows[k] == row && cx - xs[k] < 16 && xs[k] - cx < 16;
+            row += busy;
+        } while (busy && row < 3);
+        xs[nl] = cx;
+        rows[nl++] = row;
+        {
+            int tw = fb_text_w(&CF_FONT_MICRO, nm, 1);
+            fb_text_halo(&CF_FONT_MICRO, cx + 1 - tw / 2, ky + kh + 4 + row * 8, nm, i < hv_nb ? C_SEC(1) : FL_INK,
+                         FL_BG, 1);
+        }
+    }
+}
+
 static void draw_home(void)
 {
     char key[16], k2[8];
+    uint32_t view = home_view();
     flora_render(&flo, &fl_cv);
     draw_plant(Y_VIEW);
     name_update();
-    if (cu_name[0])
+    hv_update();
+    if (view == HV_CHORD)
+        draw_home_chord();
+    else if (view == HV_KEYS)
+        draw_home_keys();
+    else if (cu_name[0])
         draw_chord_name(6, Y_VIEW + 7, cu_name, cu_name_sub, cu_name_single);   /* (C MAJ's caps are at + 7) */
     /* the key in the corner */
     if (cs.chord.quantize != CF_Q_OFF) {
@@ -352,18 +578,18 @@ static void draw_edit(void)
 
 static void draw_generic(void)
 {
-    static const char *const PG_GLO[5] = {"Display", "MIDI", "Channels", "Play", "Reset"};
+    static const char *const PG_GLO[6] = {"Display", "MIDI", "Channels", "Play", "Reset", "Library"};
     flora_render(&flo, &fl_cv);
     draw_plant(Y_VIEW);
     fb_veil(0, Y_VIEW, FB_W, H_VIEW, FL_BG);   /* (the plant faint: the picture leads) */
     switch (cu.scr) {
     case SCR_GLO: {
         static const char *const H[2] = {"SELECT", "page"};
-        static void (*const V[5])(int) = {view_display, view_midi, view_midi, view_play, view_reset};   /* (MIDI and
+        static void (*const V[6])(int) = {view_display, view_midi, view_midi, view_play, view_reset, view_library};   /* (MIDI and
                                                                                                * Channels: one picture) */
-        uint32_t p = cu.page[SCR_GLO] % 5u;
+        uint32_t p = cu.page[SCR_GLO] % 6u;
         draw_head(PG_GLO[p]);
-        draw_pager((int)p, 5, 1, 0);
+        draw_pager((int)p, 6, 1, 0);
         draw_view(V[p]);
         draw_hints(H, 1);
         break;

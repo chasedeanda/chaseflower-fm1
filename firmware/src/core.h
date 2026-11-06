@@ -8,6 +8,17 @@
  * Sections: sizes, parameters, voices and engines, tracks and the song, system. */
 #include <stdint.h>
 
+#ifndef CHASE_LIBRARY
+#if defined(CF_UNIT) || defined(CF_EMU)
+#define CHASE_LIBRARY 1
+#else
+#define CHASE_LIBRARY 0
+#endif
+#endif
+#if CHASE_LIBRARY
+#include "chase_meta.h"
+#endif
+
 /* ------------------------------------------------------------ sizes --- */
 #define NVOICE 16                /* voice slots per part (FM6 plays Dexed's 16; Melodee's voice model) */
 #define TRK_XPN 16u                 /* note-ons kept through an engine switch's fade (voice.c trk_note_on): a pattern's

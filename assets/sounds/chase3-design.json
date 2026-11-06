@@ -1,0 +1,194 @@
+[
+  {
+    "name": "Dusty Room",
+    "style": "lo-fi hip-hop",
+    "chords": [
+      "Dusty EP",
+      "Felt Keys",
+      "Worn Tines",
+      "Muted Bell",
+      "Cassette Organ",
+      "Pillow Chords",
+      "Hazy Clav",
+      "Soft Toy Keys",
+      "Dull Pluck",
+      "Smoke Pad",
+      "Velvet Reed",
+      "Night Window"
+    ],
+    "bass": [
+      "Rounded Sub",
+      "Muted Finger",
+      "Soft Punch"
+    ],
+    "kit": "Dust Kit"
+  },
+  {
+    "name": "Tape Garden",
+    "style": "ambient lo-fi",
+    "chords": [
+      "Tape Bloom",
+      "Warped Choir",
+      "Dusk Strings",
+      "Slow Cassette",
+      "Drift Organ",
+      "Flutter Keys",
+      "Faded Glass",
+      "Brown Air",
+      "Warm Fog",
+      "Memory Pad",
+      "Uneven Bells",
+      "Sleep Drone"
+    ],
+    "bass": [
+      "Tape Sub",
+      "Warm Triangle",
+      "Slow Bloom Bass"
+    ],
+    "kit": "Tape Kit"
+  },
+  {
+    "name": "Night Jazz",
+    "style": "mellow / neo-soul",
+    "chords": [
+      "Velvet EP",
+      "Hollow Tines",
+      "Lounge Organ",
+      "Soft Vibra",
+      "Woody Keys",
+      "Warm Clav",
+      "Mellow Brass",
+      "Reed Chords",
+      "Velvet Strings",
+      "Gentle Mallet",
+      "Soft Poly",
+      "Late Bell"
+    ],
+    "bass": [
+      "Round Finger",
+      "Plucked Wood",
+      "Warm Mono"
+    ],
+    "kit": "Brush-like Kit"
+  },
+  {
+    "name": "Soft Focus",
+    "style": "warm ambient",
+    "chords": [
+      "Soft Horizon",
+      "Cloud Choir",
+      "Long Bloom",
+      "Quiet Strings",
+      "Breathing Pad",
+      "Still Water",
+      "Warm Ensemble",
+      "Low Halo",
+      "Slow Reed",
+      "Gentle Swell",
+      "Dark Velvet",
+      "Floating Organ"
+    ],
+    "bass": [
+      "Deep Sine",
+      "Soft Floor",
+      "Warm Drift"
+    ],
+    "kit": "Air Kit"
+  },
+  {
+    "name": "Glass Cloud",
+    "style": "bright ambient",
+    "chords": [
+      "Glass Rain",
+      "Ice Choir",
+      "Crystal Veil",
+      "Air Bells",
+      "Shimmer Bed",
+      "Star Mallet",
+      "Halo Glass",
+      "Thin Light",
+      "High Bloom",
+      "Slow Chimes",
+      "Soft Prism",
+      "Silver Organ"
+    ],
+    "bass": [
+      "Clear Sub",
+      "Bell Bass",
+      "Glass Pulse"
+    ],
+    "kit": "Glass Kit"
+  },
+  {
+    "name": "Dub Bloom",
+    "style": "dub ambient / downtempo",
+    "chords": [
+      "Dark Stab",
+      "Hollow Chord",
+      "Round Organ",
+      "Muted Skank",
+      "Filter Bloom",
+      "Fog Stab",
+      "Low Brass",
+      "Soft Wire",
+      "Resonant Pad",
+      "Dim Chime",
+      "Warm Pulse",
+      "Deep Reed"
+    ],
+    "bass": [
+      "Dub Sub",
+      "Round Pulse",
+      "Soft Rubber"
+    ],
+    "kit": "Dub Kit"
+  },
+  {
+    "name": "Wood & Water",
+    "style": "organic / plucked",
+    "chords": [
+      "Wood Mallet",
+      "Soft Kalimba",
+      "Muted Marimba",
+      "Bamboo Bell",
+      "Nylon-like Pluck",
+      "Hollow Reed",
+      "Dew Drops",
+      "Wind Organ",
+      "Wooden Keys",
+      "Water Chime",
+      "Air Flute",
+      "Gentle Bowl"
+    ],
+    "bass": [
+      "Wood Pluck",
+      "Round Thumb",
+      "Low Marimba"
+    ],
+    "kit": "Hand Kit"
+  },
+  {
+    "name": "Chill Circuit",
+    "style": "chill electronic",
+    "chords": [
+      "Soft PWM",
+      "Round Poly",
+      "Gentle Sync",
+      "Muted Arp",
+      "Faded Digital",
+      "Hush Lead",
+      "Slow Filter",
+      "Soft Circuit",
+      "Dream Pluck",
+      "Distant Bell",
+      "Motion Pad",
+      "Neon Haze"
+    ],
+    "bass": [
+      "Clean Mono",
+      "Dark Pulse",
+      "Mellow Reese"
+    ],
+    "kit": "Chill Kit"
+  }
+]

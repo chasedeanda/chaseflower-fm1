@@ -1628,7 +1628,20 @@ static void sq_snd_turn(uint32_t pat, uint32_t part, int d)
         return;
     if (cfps_where(pat, part, &e, &pos))
         at = (cf_snd_index(part, e, pos) + n - home) % n + 1u;
-    at = (uint32_t)(((int32_t)at + d) % (int32_t)m + (int32_t)m) % m;
+    {   /* HOME remains reachable in every bank; filter only concrete sound choices. */
+        int steps = d < 0 ? -d : d, dir = d < 0 ? -1 : 1;
+        if (steps > (int)m) steps = (int)m;
+        if (!steps) return;
+        while (steps--) {
+            uint32_t tries;
+            for (tries = 0; tries < m; tries++) {
+                at = (uint32_t)((int32_t)at + dir + (int32_t)m) % m;
+                if (!at) break;
+                cf_snd_at(part, (home + at - 1u) % n, &e, &pos);
+                if (cf_bank_match(part, e, pos)) break;
+            }
+        }
+    }
     cfk_drop(pat + 1u, part);                    /* (another sound: its tweak goes) */
     if (!at) {
         cfps_set(pat, part, 0);

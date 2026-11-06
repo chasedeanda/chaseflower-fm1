@@ -2,16 +2,18 @@
 
 Chase's personal build of [CoralFlower](https://github.com/FicusFicusov/CoralFlower).
 
-**Current candidate: 0.6-chase2 — USB recording.**
-[Download the firmware](releases/0.6-chase2/chaseflower-0.6-chase2.fwsc) and read
-[installation, channel routing, tests and GarageBand setup](docs/USB-AUDIO.md).
+**Current candidate: 0.6-chase3 — 6/8, ambient/lo-fi banks, Chord and Keyboard views.**
+[Download the firmware](releases/0.6-chase3/chaseflower-0.6-chase3.fwsc) and read
+[installation and new controls](docs/CHASE3.md). USB recording and the
+[GarageBand/Spark setup](docs/USB-AUDIO.md) remain available.
 Select this `.fwsc` in the upstream installer's **Another version, or a build of your own** section before pressing
 Install; the installer's default choice is upstream CoralFlower.
 
-Chase installed both builds and reports that chase2 is working. Host verification and remaining measurement limits
-are documented in the USB guide. The [next release plan](docs/CHASEFLOWER-NEXT-RELEASE.md) covers three 6/8 grooves,
-Chord/Keyboard HOME views, and a broad ambient/lo-fi library. Four original external sound banks are saved as
-[audition candidates](assets/sounds/candidates/aquanode/); they are not yet integrated into firmware.
+Chase installed chase1 and chase2 and reports that chase2 is working. Chase3 adds 128 sound options in eight style
+banks (96 chord/layer sounds, 24 basses, eight kits), restores eight hidden FM sounds, and keeps the existing sound
+order. It incorporates 32 original CC0 Aquanode voices with [source records](assets/sounds/candidates/aquanode/).
+The [release guide](docs/CHASE3.md) distinguishes host verification from the remaining device listening check.
+The [original plan](docs/CHASEFLOWER-NEXT-RELEASE.md) is retained for context.
 The upstream documentation and credits follow below.
 
 ## CoralFlower

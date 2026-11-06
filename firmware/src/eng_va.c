@@ -504,6 +504,9 @@ static const uint8_t VAP_REESE[] = {OSC(0, SAW, 70, 0, -14), OSC(1, SAW, 70, 0, 
     M_(0, VS_LFO1, VD_CUT, 8), M_(1, VS_LFO1 + 1, VD_PIT1, 2), 0xFF};
 
 /* {CUT, RES, FENV, DRIVE, MIX, DTN, ATK, REL}: the macros as the patch has them (cr_va_test checks) */
+#if CHASE_LIBRARY
+#include "chase_va_defs.h"
+#endif
 static const preset_t VA_PRESETS[] = {
     {"LUSH PAD", {70, 14, 10, 0, 64, 0, 86, 98}, {86, 90, 120, 98}, 0, 0, FX(0, 60, 20, 70), PAT(5)},
     {"WARM PAD", {62, 10, 6, 0, 64, 0, 80, 92}, {80, 90, 115, 92}, 0, 0, FX(0, 50, 20, 65), PAT(5)},
@@ -542,13 +545,23 @@ static const preset_t VA_PRESETS[] = {
     {"ACID BASS", {34, 96, 48, 40, 64, 0, 0, 36}, {0, 80, 90, 36}, 0, 1, FX(0, 0, 15, 10), PAT(1)},
     {"WOOD BASS", {50, 10, 30, 0, 64, 0, 0, 50}, {0, 88, 30, 50}, 0, 1, FX(0, 0, 10, 15), PAT(2)},
     {"REESE BASS", {50, 16, 10, 30, 64, 0, 2, 50}, {2, 90, 120, 50}, 0, 1, FX(0, 0, 10, 10), PAT(2)},
+#if CHASE_LIBRARY
+#include "chase_va_rows.h"
+#endif
 };
 static const uint8_t *const VA_PRESET_EDITS[] = {VAP_LUSH, VAP_WARM, VAP_GLASS, VAP_SLOWSTR, VAP_ENSEMBLE, VAP_BRASS,
     VAP_SOFTBRASS, VAP_POLYKEYS, VAP_PWMKEYS, VAP_CLAV, VAP_SOFTLEAD, VAP_HOLLOW, VAP_BELLS, VAP_SWEEP, VAP_AAH,
     VAP_ORGAN, VAP_SUB, VAP_PUNCH, VAP_RUBBER, VAP_SYNCBASS, VAP_MORPHPAD, VAP_VINYLKEYS, VAP_WIDESTR, VAP_CLOUD,
     VAP_SHIMMER, VAP_BREATH, VAP_TAPESTR, VAP_AURORA, VAP_GLOWPLUCK, VAP_DREAMBELL, VAP_HAZE, VAP_STARKEYS, VAP_PWMPAD,
-    VAP_FATBASS, VAP_ACID, VAP_WOODBASS, VAP_REESE};
-_Static_assert(NELEM(VA_PRESETS) == NELEM(VA_PRESET_EDITS) && NELEM(VA_PRESETS) == 37, "a patch per VA preset");
+    VAP_FATBASS, VAP_ACID, VAP_WOODBASS, VAP_REESE,
+#if CHASE_LIBRARY
+#include "chase_va_ptrs.h"
+#endif
+};
+_Static_assert(NELEM(VA_PRESETS) == NELEM(VA_PRESET_EDITS), "a patch per VA preset");
+#if CHASE_LIBRARY
+_Static_assert(NELEM(VA_PRESETS) == CHASE_VA_BASE + CHASE_VA_N, "append-only VA factory IDs");
+#endif
 #define VA_NPRESETS ((uint32_t)NELEM(VA_PRESETS))
 #undef O_
 #undef E_

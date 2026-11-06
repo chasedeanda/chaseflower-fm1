@@ -1392,3 +1392,25 @@ static void view_save(int x0)
     }
 }
 
+
+/* ChaseFlower genre filters. Counts are the actual selectable entries, including saved replacements. */
+static void view_library(int x)
+{
+    static const char *const PART[3] = {"Chords", "Bass", "Layer"};
+    uint32_t p, i;
+    for (p = 0; p < 3u; p++) {
+        char n[8];
+        uint32_t count = 0, total = cf_snd_count(p);
+        int y = VIEW_Y + (int)p * 22;
+        for (i = 0; i < total; i++) {
+            uint32_t e, pos;
+            cf_snd_at(p, i, &e, &pos);
+            count += (uint32_t)cf_bank_match(p, e, pos);
+        }
+        fb_text(&CF_FONT_UI, x + 2, y, PART[p], FL_INK3, 1);
+        fb_text(&CF_FONT_UI, x + 56, y, CHASE_BANK_NAMES[cf_bank[p]], FL_INK, 1);
+        kint(n, (int)count, 0);
+        fb_text(&CF_FONT_UI, x + 192, y, n, C_ACC(0), 1);
+    }
+    fb_text(&CF_FONT_MICRO, x + 2, VIEW_Y + 71, "K4: ALL / FILTERS RESET AT BOOT", FL_INK2, 1);
+}

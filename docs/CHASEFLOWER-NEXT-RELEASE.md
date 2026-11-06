@@ -1,6 +1,8 @@
 # ChaseFlower 0.6-chase3 — release plan and sound catalog
 
-Updated 2026-11-06. **Planning and source research; no chase3 firmware has been built.**
+Original planning record, 2026-11-06. **Chase3 is now implemented; see [the release guide](CHASE3.md).**
+The design names and investigation notes below document the pre-implementation plan. The actual source catalog is
+`assets/sounds/chase3-catalog.json`; 32 exploratory Aquanode voices replace 32 of the proposed design slots.
 Chase confirmed that the installed chase2 build boots and works. Keep that release available while developing this one.
 
 ## Release scope

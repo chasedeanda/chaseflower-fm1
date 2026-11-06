@@ -302,6 +302,9 @@ static struct {
     uint16_t bpm;                /* the tempo they make (0: none yet) */
 } cfx_in;
 
+/* In 6/8 the six visual counts are eighths; MIDI and TEMPO always count quarters. */
+static uint32_t cf_meter_rate(void) { return cfm.beats == 6u ? 2u : 1u; }
+
 static void cfm_tick(uint32_t n, uint32_t pulses)
 {
     uint32_t k;
@@ -316,13 +319,13 @@ static void cfm_tick(uint32_t n, uint32_t pulses)
         cfm.beat_ms = cf_now_ms;
     }
     if (cfx_in.active) {                         /* the clock's pulses: FS x 60 / 24 each */
-        cfm.acc += pulses * (FS * 60u / 24u);
+        cfm.acc += pulses * (FS * 60u / 24u) * cf_meter_rate();
     } else {
-        cfm.acc += n * cfm.bpm;
+        cfm.acc += n * cfm.bpm * cf_meter_rate();
     }
     for (k = 0; k < 4u && cfm.acc >= FS * 60u; k++) {
         cfm.acc -= FS * 60u;
-        cfm.click = cfm.beat == 0 ? 2u : 1u;
+        cfm.click = cfm.beat == 0 || (cfm.beats == 6u && cfm.beat == 3u) ? 2u : 1u;
         cfm.beat = (uint8_t)((cfm.beat + 1u) % cfm.beats);
         cfm.beats_done++;
         cfm.beat_ms = cf_now_ms;
@@ -331,9 +334,10 @@ static void cfm_tick(uint32_t n, uint32_t pulses)
 #endif
     }
     cf_grid.on = 1;                              /* (the arpeggiator's lock: where the beat is, in 1/24 beats) */
-    cf_grid.g24 = cfm.beats_done * 24u + cfm.acc / (FS * 60u / 24u);   /* (FS x 60 / 24 is whole: acc x 24 / (FS x 60)
-                                                                          * without a 64-bit division, which the
-                                                                          * device has none of) */
+    {   /* Keep the arp/MIDI grid in quarter-note units (24 PPQN), including its old origin. */
+        uint32_t q = 24u / cf_meter_rate();
+        cf_grid.g24 = 24u + (cfm.beats_done - 1u) * q + cfm.acc / (FS * 60u / q);
+    }
 }
 /* MIDI clock out (CLOCK Out): while the beat runs (PLAY, the sequencer), 24 pulses a beat on the metronome's
  * own grid (cf_grid.g24: a beat's first pulse is its downbeat), a start when it begins, a stop when it ends. USB MIDI

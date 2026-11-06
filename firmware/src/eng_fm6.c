@@ -51,7 +51,14 @@ typedef struct {
 #define ENGI_FM6 12u             /* engines.c ENGINES[] (append-only) */
 #define FM6_NFAC (FM6_NFACTORY + FM6_NROM)        /* F1..F24: the factory patches */
 #define FM6_BANK_N 32u           /* patch bank slots (fm6_bank.c): a DX7 cartridge */
-#define FM6_NSLOT (FM6_NFAC + FM6_BANK_N + FM6_NXROM)   /* PTCH: F1..F24, B1..B32, F25.. (CoralFlower's pads) */
+#define FM6_CHASE_SLOT (FM6_NFAC + FM6_BANK_N + FM6_NXROM)
+#if CHASE_LIBRARY
+#include "chase_fm_data.h"
+#define FM6_NSLOT (FM6_CHASE_SLOT + CHASE_FM_N)
+_Static_assert(FM6_NSLOT <= 128u, "FM6 slots must survive the signed user-parameter store");
+#else
+#define FM6_NSLOT FM6_CHASE_SLOT
+#endif
 #define FM6_PACKED 128u
 #define FM6_ON_ALL 0x3Fu
 #ifndef FM6_POLY
@@ -265,7 +272,11 @@ static void fm6_slot_get(uint32_t s, uint8_t *pk)
 {
     if (s < FM6_NFAC) {
         fm6_factory(s, pk);
-    } else if (s >= FM6_NFAC + FM6_BANK_N && s < FM6_NSLOT) {
+#if CHASE_LIBRARY
+    } else if (s >= FM6_CHASE_SLOT && s < FM6_NSLOT) {
+        memcpy(pk, CHASE_FM_PATCHES[s - FM6_CHASE_SLOT], FM6_PACKED);
+#endif
+    } else if (s >= FM6_NFAC + FM6_BANK_N && s < FM6_CHASE_SLOT) {
         uint8_t v[FP_SIZE + 1u];
         fm6_rom_patch(&FM6_XROM[s - FM6_NFAC - FM6_BANK_N], v);
         memset(pk, 0, FM6_PACKED);
@@ -1134,7 +1145,11 @@ static const char *const N_FM6_PATCH[] = {
     "F18", "F19", "F20", "F21", "F22", "F23", "F24",
     "B1", "B2", "B3", "B4", "B5", "B6", "B7", "B8", "B9", "B10", "B11", "B12", "B13", "B14", "B15", "B16", "B17",
     "B18", "B19", "B20", "B21", "B22", "B23", "B24", "B25", "B26", "B27", "B28", "B29", "B30", "B31", "B32",
-    "F25", "F26", "F27", "F28", "F29", "F30", 0};
+    "F25", "F26", "F27", "F28", "F29", "F30",
+#if CHASE_LIBRARY
+#include "chase_fm_names.h"
+#endif
+    0};
 _Static_assert(NELEM(N_FM6_PATCH) == FM6_NSLOT + 1u, "a PTCH name per slot");
 
 /* {ALG, FB, MLVL, MRAT, MEG, VMOD, DTUN, PTCH}: F1..F8 (Felucca's) as they are, DTUN on the pad; F9..F24
@@ -1193,7 +1208,13 @@ static const preset_t FM6_PRESETS[] = {
     FM6_PR("BLOOM PAD", FM6_NFAC + FM6_BANK_N + 3, 0, FX(0, 60, 25, 75)),
     FM6_PR("WAVE PAD", FM6_NFAC + FM6_BANK_N + 4, 0, FX(0, 60, 25, 75)),
     FM6_PR("ICE PAD", FM6_NFAC + FM6_BANK_N + 5, 0, FX(0, 50, 30, 80)),
+#if CHASE_LIBRARY
+#include "chase_fm_rows.h"
+#endif
 };
+#if CHASE_LIBRARY
+_Static_assert(NELEM(FM6_PRESETS) == CHASE_FM_BASE + CHASE_FM_N, "append-only FM factory IDs");
+#endif
 #undef FM6_PR
 #undef FM6_NM
 #undef FM6_CF
