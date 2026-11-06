@@ -1,4 +1,13 @@
-# CoralFlower
+# ChaseFlower
+
+Chase's personal build of [CoralFlower](https://github.com/FicusFicusov/CoralFlower). The first candidate changes the
+startup name and USB names to **ChaseFlower** while keeping the existing instrument behavior. See
+[the ChaseFlower build and installation notes](docs/CHASEFLOWER.md).
+
+USB audio and new rhythm patterns are follow-up work after a successful FM-1 boot test. The upstream documentation
+and credits follow below.
+
+## CoralFlower
 
 **Your M-VAVE FM-1, made for chords.** CoralFlower is free firmware for the FM-1. Press a chord key, and every note
 you play becomes a whole chord, with a bass underneath. While you play, a pixel flower grows from your chords.

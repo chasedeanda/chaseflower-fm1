@@ -6,22 +6,11 @@
 #   /firmware/  the packages web/releases.json lists, each downloaded from its release and checked against its
 #               sha256 (a browser cannot fetch a release asset: no CORS), with releases.json, SHA256SUMS and the
 #               licences
-# Runs on a push to main that touches the site's sources, by hand (workflow_dispatch), and from release.yml after a
-# release. Settings -> Pages -> Source: "GitHub Actions".
+# ChaseFlower keeps site publication manual: pushing personal firmware should not publish the inherited site.
+# Run by hand (workflow_dispatch), or from release.yml after a release. Settings -> Pages -> Source: "GitHub Actions".
 name: pages
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - "tools/emu/**"
-      - "web/**"
-      - "firmware/**"
-      - "assets/**"
-      - "tools/*.py"
-      - "tools/make_site.sh"
-      - "docs/images/**"
-      - ".github/workflows/pages.yml"
   workflow_dispatch:
 
 permissions: {}

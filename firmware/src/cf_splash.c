@@ -7,7 +7,7 @@
 
 static void cf_splash_frame(uint32_t t)
 {
-    static const char *const NAME = "CoralFlower";
+    static const char *const NAME = "ChaseFlower";
     int i, n = (int)str_len(NAME), shown, x;
     flora_render(&flo, &fl_cv);
     fb_fill(FL_BG);
@@ -24,8 +24,13 @@ static void cf_splash_frame(uint32_t t)
             fb_text(&CF_FONT_UI, x, 180, ch, age > 3 ? FL_INK : age > 1 ? C_ACC(0) : C_ACC(2), 2);
         x += fb_text_w(&CF_FONT_UI, ch, 2);
     }
-    if (t > 900u)
-        fb_text_c(&CF_FONT_UI, 120, 212, FELUCCA_VERSION, FL_INK3, 1);
+    if (t > 900u) {
+        const char *version = FELUCCA_VERSION;
+        /* INFO keeps the upstream family prefix for existing installers; the title above names this build. */
+        if (str_len(version) >= 12u && !memcmp(version, "CoralFlower ", 12u))
+            version += 12;
+        fb_text_c(&CF_FONT_UI, 120, 212, version, FL_INK3, 1);
+    }
 }
 
 /* main.c's splash (IRQs off): the first picture only, the scene before the seed sprouts; the UI's first frames grow it

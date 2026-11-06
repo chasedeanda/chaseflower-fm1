@@ -33,6 +33,7 @@
 #define UP_PER_BANK 16u
 typedef struct { uint8_t used, ver, engine, np; } up_rec_t;
 static struct { up_rec_t r[UP_PER_BANK]; } up_bank[UP_SLOTS / UP_PER_BANK];
+static int8_t up_src = -1;                    /* upreset.c's current save source (va_store.c) */
 static int16_t up_value(const up_rec_t *r, uint32_t i) { (void)r; (void)i; return 0; }
 #include "../firmware/src/va_store.c"
 static const char *const N_VA_FTYPE[] = {"LP", "BP", "HP", "NOTCH"};
