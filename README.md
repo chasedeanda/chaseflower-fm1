@@ -8,9 +8,11 @@ Chase's personal build of [CoralFlower](https://github.com/FicusFicusov/CoralFlo
 Select this `.fwsc` in the upstream installer's **Another version, or a build of your own** section before pressing
 Install; the installer's default choice is upstream CoralFlower.
 
-The first build, [0.6-chase1](docs/CHASEFLOWER.md), was installed and booted successfully by Chase. The USB-audio
-candidate passes host tests and the firmware build, but still needs physical USB enumeration and recording tests.
-New rhythm patterns remain future work. The upstream documentation and credits follow below.
+Chase installed both builds and reports that chase2 is working. Host verification and remaining measurement limits
+are documented in the USB guide. The [next release plan](docs/CHASEFLOWER-NEXT-RELEASE.md) covers three 6/8 grooves,
+Chord/Keyboard HOME views, and a broad ambient/lo-fi library. Four original external sound banks are saved as
+[audition candidates](assets/sounds/candidates/aquanode/); they are not yet integrated into firmware.
+The upstream documentation and credits follow below.
 
 ## CoralFlower
 
