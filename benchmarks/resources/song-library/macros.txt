@@ -49,15 +49,15 @@
 #define CF_ARP_NRATES ((uint32_t)sizeof CF_ARP_UNITS)
 #define CF_ARP_STRUMMING(m) ((m) >= CF_ARP_STRUM_UP)
 #define CF_BOOT_N ((uint32_t)(sizeof CF_BOOT / sizeof CF_BOOT[0]))
-#define CF_BROWSER_H 
+#define CF_BROWSER_H
 #define CF_BTN_T0(i) fm1_in.btn_t0[i]
-#define CF_CHORD_H 
+#define CF_CHORD_H
 #define CF_DRUM_VARY 1
 #define CF_EVQ 128u
-#define CF_FONTS_H 
+#define CF_FONTS_H
 #define CF_FX_OWN 1
-#define CF_FX_PRESET_H 
-#define CF_FX_TYPES_H 
+#define CF_FX_PRESET_H
+#define CF_FX_TYPES_H
 #define CF_GLO_ACCOMP 9u
 #define CF_GLO_BROWSE 10u
 #define CF_GLO_HARMONY 7u
@@ -65,7 +65,7 @@
 #define CF_GLO_NPAGES 13u
 #define CF_GLO_RECORDINGS 11u
 #define CF_GLO_VARIATION 8u
-#define CF_HARMONY_H 
+#define CF_HARMONY_H
 #define CF_H_EVENT 0x8000u
 #define CF_H_SLOTS 11
 #define CF_INCH_ALL 1u
@@ -73,7 +73,7 @@
 #define CF_KEY_EXT 32
 #define CF_KEY_T0(k) fm1_in.note_t0[k]
 #define CF_LAB_CHOICES 3
-#define CF_LAB_H 
+#define CF_LAB_H
 #define CF_LAB_HISTORY 3
 #define CF_LIST_MAX 224u
 #define CF_LOOP_DEFAULT {0, 0, 0, 1}
@@ -97,7 +97,7 @@
 #define CF_PART_DRUM 3u
 #define CF_PART_DRUMS 3u
 #define CF_PART_LAYER 2u
-#define CF_PROGRESSION_H 
+#define CF_PROGRESSION_H
 #define CF_PUMP() cf_ui_pump()
 #define CF_P_DRAFT 254u
 #define CF_P_MAX 16
@@ -119,15 +119,15 @@
 #define CF_SET_SILENT_MS 1000u
 #define CF_SET_VERSION 2u
 #define CF_SIDE_NBTN 7
-#define CF_SONG_H 
+#define CF_SONG_H
 #define CF_SONG_MAX 16u
 #define CF_SONG_NAME 24u
 #define CF_SONG_WIRE 344u
-#define CF_THEORY_H 
+#define CF_THEORY_H
 #define CF_TOP_NBTN 11
 #define CF_TYPE_DEFAULT 0xFFu
 #define CF_UNIT 1
-#define CF_VISUAL_H 
+#define CF_VISUAL_H
 #define CF_VLOAD 1
 #define CF_XQ 64u
 #define CHAIN_ROWS 16u
@@ -192,7 +192,7 @@
 #define CRM_WIN 24u
 #define CR_A_STRIPES 1
 #define CR_BACKUP_SERVICE 1
-#define CR_BOOTGUARD_H 
+#define CR_BOOTGUARD_H
 #define CR_C1_IDX(t) (cr_c1_split && (t) == &trk[1])
 #define CR_CHORUS_MONO 0
 #define CR_CORE1_TEST 0
@@ -300,11 +300,11 @@
 #define FELUCCA_VERSION "CoralFlower 0.6-chase7"
 #define FELUCCA_VOICE 0
 #define FLH 70
-#define FLORA_CANVAS_H 
-#define FLORA_H 
-#define FLORA_LUT_H 
-#define FLORA_MATH_H 
-#define FLORA_PAL_H 
+#define FLORA_CANVAS_H
+#define FLORA_H
+#define FLORA_LUT_H
+#define FLORA_MATH_H
+#define FLORA_PAL_H
 #define FLW 120
 #define FL_C(r,s) ((uint8_t)(FL_RAMP0 + (r) * 4 + (s)))
 #define FL_DATA_HI 0x000E0000u
@@ -929,11 +929,11 @@
 #define Y_TOP 0
 #define Y_VIEW 16
 #define _ILP32 1
-#define _INTPTR_T 
-#define _PTRDIFF_T 
-#define _SIZE_T 
-#define _UINTPTR_T 
-#define _WCHAR_T 
+#define _INTPTR_T
+#define _PTRDIFF_T
+#define _SIZE_T
+#define _UINTPTR_T
+#define _WCHAR_T
 #define __ATOMIC_ACQUIRE 2
 #define __ATOMIC_ACQ_REL 4
 #define __ATOMIC_CONSUME 1
@@ -945,8 +945,8 @@
 #define __CHAR16_TYPE__ unsigned short
 #define __CHAR32_TYPE__ unsigned int
 #define __CHAR_BIT__ 8
-#define __CLANG_MAX_ALIGN_T_DEFINED 
-#define __CLANG_STDINT_H 
+#define __CLANG_MAX_ALIGN_T_DEFINED
+#define __CLANG_STDINT_H
 #define __CONSTANT_CFSTRINGS__ 1
 #define __DBL_DECIMAL_DIG__ 17
 #define __DBL_DENORM_MIN__ 4.9406564584124654e-324
@@ -998,12 +998,12 @@
 #define __GNUC__ 4
 #define __GXX_ABI_VERSION 1002
 #define __ILP32__ 1
-#define __INT16_C_SUFFIX__ 
+#define __INT16_C_SUFFIX__
 #define __INT16_FMTd__ "hd"
 #define __INT16_FMTi__ "hi"
 #define __INT16_MAX__ 32767
 #define __INT16_TYPE__ short
-#define __INT32_C_SUFFIX__ 
+#define __INT32_C_SUFFIX__
 #define __INT32_FMTd__ "d"
 #define __INT32_FMTi__ "i"
 #define __INT32_MAX__ 2147483647
@@ -1013,7 +1013,7 @@
 #define __INT64_FMTi__ "lli"
 #define __INT64_MAX__ 9223372036854775807LL
 #define __INT64_TYPE__ long long int
-#define __INT8_C_SUFFIX__ 
+#define __INT8_C_SUFFIX__
 #define __INT8_FMTd__ "hhd"
 #define __INT8_FMTi__ "hhi"
 #define __INT8_MAX__ 127
@@ -1131,8 +1131,8 @@
 #define __STDC_UTF_32__ 1
 #define __STDC_VERSION__ 201112L
 #define __STDC__ 1
-#define __STDDEF_H 
-#define __UINT16_C_SUFFIX__ 
+#define __STDDEF_H
+#define __UINT16_C_SUFFIX__
 #define __UINT16_FMTX__ "hX"
 #define __UINT16_FMTo__ "ho"
 #define __UINT16_FMTu__ "hu"
@@ -1153,7 +1153,7 @@
 #define __UINT64_FMTx__ "llx"
 #define __UINT64_MAX__ 18446744073709551615ULL
 #define __UINT64_TYPE__ long long unsigned int
-#define __UINT8_C_SUFFIX__ 
+#define __UINT8_C_SUFFIX__
 #define __UINT8_FMTX__ "hhX"
 #define __UINT8_FMTo__ "hho"
 #define __UINT8_FMTu__ "hhu"
@@ -1229,7 +1229,7 @@
 #define __UINT_LEAST8_MAX UINT8_MAX
 #define __UINT_LEAST8_MAX__ 255
 #define __UINT_LEAST8_TYPE__ unsigned char
-#define __USER_LABEL_PREFIX__ 
+#define __USER_LABEL_PREFIX__
 #define __VERSION__ "4.2.1 Compatible Clang 4.0.1 () ()"
 #define __WCHAR_MAX__ 2147483647
 #define __WCHAR_TYPE__ int
@@ -1245,7 +1245,7 @@
 #define __int32_c_suffix __INT32_C_SUFFIX__
 #define __int64_c_suffix __INT64_C_SUFFIX__
 #define __int8_c_suffix __INT8_C_SUFFIX__
-#define __int8_t_defined 
+#define __int8_t_defined
 #define __int_c(v,suffix) __int_c_join(v, suffix)
 #define __int_c_join(a,b) a ## b
 #define __int_least16_t int16_t
@@ -1253,10 +1253,10 @@
 #define __int_least64_t int64_t
 #define __int_least8_t int8_t
 #define __intn_t(n) __stdint_join3( int, n, _t)
-#define __intptr_t_defined 
+#define __intptr_t_defined
 #define __llvm__ 1
 #define __stdint_join3(a,b,c) a ## b ## c
-#define __uint32_t_defined 
+#define __uint32_t_defined
 #define __uint_c(v,suffix) __int_c_join(v##U, suffix)
 #define __uint_least16_t uint16_t
 #define __uint_least32_t uint32_t
