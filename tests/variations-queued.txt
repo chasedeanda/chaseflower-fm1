@@ -1,0 +1,23 @@
+wait 8000
+btn ARP
+btn GLO
+turn SELECT 8
+turn K2 1
+key 1 down
+key 1 up
+key 7 down
+wait 300
+turn K3 1
+wait 600
+shot variation-queued
+key 7 up
+wait 2200
+shot variation-applied
+key 7 down
+wait 300
+turn K3 1
+wait 300
+turn K4 1
+wait 2200
+shot variation-canceled
+key 7 up

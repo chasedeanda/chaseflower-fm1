@@ -1562,6 +1562,7 @@ static void cf_ui_input(void)
     for (i = 0; i < 4u; i++)
         if ((d = panel_enc(EN_K1 + i)) != 0)
             ui_knob_turn((int)i, d), cu.idle_ms = 0;
+    cvr_poll();                                  /* queued variation, after input/cancel */
 }
 
 /* ------------------------------------------------------------ key caps --- */

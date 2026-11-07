@@ -1,7 +1,7 @@
 wait 8000
 btn ARP
 btn GLO
-turn SELECT 9
+turn SELECT 8
 wait 2200
 shot variation-arp
 turn K2 1

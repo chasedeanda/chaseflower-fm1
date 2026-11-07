@@ -14,4 +14,4 @@ for rate in 44100 48000; do
     done
     cmp "build/variation-tests/$rate-0.raw" "build/variation-tests/$rate-1.raw"
 done
-echo 'PASS: rejected variations preserve identical physical and six-channel USB audio at both rates.'
+echo 'PASS: queued variations preserve identical physical/six-channel USB audio while waiting at both rates.'

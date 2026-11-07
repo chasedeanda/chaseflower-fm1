@@ -18,6 +18,7 @@ static struct {
     dm_rec_t previous_drums;
     uint32_t seed;
     uint8_t context, level, part, have_previous, previous_context, previous_view, previous_beats;
+    uint8_t pending, pending_context, pending_level, pending_part, pending_sound_gen;
 } cvr;
 static const uint8_t CV_FM_BYTE[5] = {FP_R1, FP_R1 + 1, FP_R1 + 2, FP_L1 + 2, FP_R1 + 3};
 static const uint8_t CV_ENV_PARAM[4] = {P_ATK, P_DEC, P_SUS, P_REL};
@@ -64,6 +65,7 @@ static uint8_t cvr_vary(uint32_t *s, int x, int radius, int lo, int hi)
 {
     return (uint8_t)clampi(x + (int)(cvr_random(s) % (unsigned)(radius * 2 + 1)) - radius, lo, hi);
 }
+static unsigned cvr_tempo_gap(unsigned a, unsigned b) { return a > b ? a - b : b - a; }
 static int cvr_generate(cv_value_t *v, unsigned context, unsigned level, uint32_t seed)
 {
     uint32_t rng = seed;
@@ -100,13 +102,28 @@ static int cvr_generate(cv_value_t *v, unsigned context, unsigned level, uint32_
         break;
     case CV_DRUMS:
         if (level) {
-            unsigned n = dm_count(v->beats);
-            if (!n) return 0;
-            v->rhythm = (uint8_t)dm_nth(v->beats, cvr_random(&rng) % n);
-            v->kit = level == 1 ? DM_RHY[v->rhythm].kit : (uint8_t)(cvr_random(&rng) % SQ_NKIT);
+            /* Choose a different groove near the player's tempo. Do not turn a
+             * slow pocket into a slowed-down breakcore, or scramble kit/swing. */
+            unsigned closest = 1000, count = 0;
+            for (unsigned i = 0; i < DM_N; i++) if (i != v->rhythm && DM_RHY[i].beats == v->beats) {
+                unsigned gap = cvr_tempo_gap(DM_RHY[i].bpm, v->bpm);
+                if (gap < closest) closest = gap;
+            }
+            unsigned limit = closest + (level == 1 ? 12u : 24u);
+            for (unsigned i = 0; i < DM_N; i++)
+                if (i != v->rhythm && DM_RHY[i].beats == v->beats &&
+                    cvr_tempo_gap(DM_RHY[i].bpm, v->bpm) <= limit) count++;
+            if (count) {
+                unsigned pick = cvr_random(&rng) % count;
+                for (unsigned i = 0; i < DM_N; i++)
+                    if (i != v->rhythm && DM_RHY[i].beats == v->beats &&
+                        cvr_tempo_gap(DM_RHY[i].bpm, v->bpm) <= limit && !pick--) {
+                        v->rhythm = (uint8_t)i; break;
+                    }
+            }
+            v->kit = DM_RHY[v->rhythm].kit;
             v->swing = DM_RHY[v->rhythm].swing;
-        }
-        v->swing = cvr_vary(&rng, v->swing, level == 2 ? 20 : 5, 0, 100);
+        } else v->swing = cvr_vary(&rng, v->swing, 2, 0, 100);
         break;
     case CV_FX:
         for (unsigned e = 0; e < CFX_N; e++) {
@@ -152,20 +169,25 @@ static int cvr_generate(cv_value_t *v, unsigned context, unsigned level, uint32_
 }
 static int cvr_ready(unsigned context, const cv_value_t *v)
 {
-    if (cr_safe || cfs_restore_lock) { cf_message("Discovery is protected"); return 0; }
+    if (cr_safe || cfs_restore_lock) { cf_message("Discovery is protected"); return -1; }
     if (context == CV_SOUND && (v->sound.engine != cf_snd[v->part].engine ||
         v->sound.kind != cf_snd[v->part].kind || v->sound.fk != cf_snd[v->part].fk ||
         v->sound.slot != cf_snd[v->part].slot || memcmp(v->sound.name, cf_snd[v->part].name, 13))) {
-        cf_message("Recall the original sound\nbefore its variation"); return 0;
+        cf_message("Recall the original sound\nbefore its variation"); return -1;
     }
     if (context == CV_SOUND && v->env_kind != (cfe_fm6(v->part) ? 1 : cfe_va(v->part) && cfe_deep(v->part) ? 2 : 0)) {
-        cf_message("Sound envelope is incompatible"); return 0;
+        cf_message("Sound envelope is incompatible"); return -1;
     }
     if (context == CV_HARMONY || context == CV_FX) return 1;
-    if (context == CV_DRUMS && cf_sn.dm_on && !sqk.on && cf_sn.sq_rec == 0xFFu && v->bpm == cs.bpm) return 1;
-    if (cf_sn.running || cf_sn.sq_on || sqk.on || cf_sn.sq_rec != 0xFFu || cf_sn.n || cf_sn.nb || cu.keys || cfs_sounding()) {
-        cf_message("Stop playback and release\nnotes; let tails finish"); return 0;
-    }
+    if (context == CV_DRUMS && cf_sn.dm_on && !sqk.on && !cf_sn.dm_rin && cf_sn.sq_rec == 0xFFu && v->bpm == cs.bpm) return 1;
+    if (cf_sn.sq_on || sqk.on || cf_sn.dm_rin || cf_sn.sq_rec != 0xFFu || cf_sn.n || cf_sn.nb ||
+        cf_sn.out.sounding || cf_sn.arp_n || cu.keys) return 0;
+    /* These are settings changes, not flash writes: an enabled metronome and
+     * old FX tails or an independent drum groove do not make them unsafe.
+     * Only sound edits need voice tails
+     * on that part to finish before changing its envelope. */
+    if (context == CV_SOUND) for (unsigned i = 0; i < NVOICE; i++)
+        if (trk[v->part].v[i].active) return 0;
     return 1;
 }
 static void cvr_apply(const cv_value_t *v, unsigned context)
@@ -204,11 +226,24 @@ static void cvr_remember(unsigned context, unsigned part)
     cvr_capture(&cvr.previous, part); cvr.previous_context = (uint8_t)context; cvr.have_previous = 1;
     cvr.previous_drums = dmr; cvr.previous_view = dm_view; cvr.previous_beats = cs.beats;
 }
+static void cvr_defer(unsigned action, unsigned part)
+{
+    cvr.pending = (uint8_t)action; cvr.pending_context = cvr.context;
+    cvr.pending_level = cvr.level; cvr.pending_part = cvr.part;
+    cvr.pending_sound_gen = cf_snd_gen[part];
+    cf_message(cf_sn.sq_on || sqk.on || cf_sn.dm_rin || cf_sn.sq_rec != 0xFFu ?
+        "Queued: finish playback\nthen applies automatically" :
+        cf_sn.out.hold || cf_sn.arp_latched ? "Queued: turn off HOLD/Latch\nthen applies automatically" :
+        "Queued: release played notes\nthen applies automatically");
+}
 static void cvr_new(void)
 {
     cv_value_t value;
     cvr_capture(&value, cvr.part);
-    if (!cvr_ready(cvr.context, &value)) return;
+    int ready = cvr_ready(cvr.context, &value);
+    if (ready < 0) return;
+    if (!ready) { cvr_defer(1, cvr.part); return; }
+    cvr.pending = 0;
     if (!cvr_generate(&value, cvr.context, cvr.level, cvr.seed)) {
         cf_message("No compatible material\nin this context"); return;
     }
@@ -221,8 +256,11 @@ static void cvr_undo(void)
 {
     cv_value_t current;
     dm_rec_t drums = dmr; uint8_t view = dm_view, beats = cs.beats;
+    if (cvr.pending) { cvr.pending = 0; cf_message("Queued change canceled"); return; }
     if (!cvr.have_previous) { cf_message("No previous variation"); return; }
-    if (!cvr_ready(cvr.previous_context, &cvr.previous)) return;
+    int ready = cvr_ready(cvr.previous_context, &cvr.previous);
+    if (ready < 0) return;
+    if (!ready) { cvr_defer(2, cvr.previous.part); return; }
     cvr_capture(&current, cvr.previous.part);
     cvr_apply(&cvr.previous, cvr.previous_context); cvr.previous = current;
     if (cvr.previous_context == CV_DRUMS) {
@@ -231,6 +269,29 @@ static void cvr_undo(void)
         cvr.previous_drums = drums; cvr.previous_view = view; cvr.previous_beats = beats;
     }
     cf_message("Previous / current swapped");
+}
+/* A single pending action; generate against the current settings when idle,
+ * so intervening manual edits are not overwritten by an old snapshot. Leaving
+ * the page or changing context/amount cancels it. No new menu or storage. */
+static void cvr_poll(void)
+{
+    if (!cvr.pending) return;
+    if (cu.scr != SCR_GLO || cu.page[SCR_GLO] != CF_GLO_VARIATION ||
+        cvr.context != cvr.pending_context || cvr.level != cvr.pending_level || cvr.part != cvr.pending_part) {
+        cvr.pending = 0; return;
+    }
+    unsigned context = cvr.pending == 1 ? cvr.context : cvr.previous_context;
+    unsigned part = cvr.pending == 1 ? cvr.part : cvr.previous.part;
+    if (context == CV_SOUND && cvr.pending_sound_gen != cf_snd_gen[part]) {
+        cvr.pending = 0; cf_message("Sound changed: queue canceled"); return;
+    }
+    cv_value_t current;
+    if (cvr.pending == 1) cvr_capture(&current, part);
+    int ready = cvr_ready(context, cvr.pending == 1 ? &current : &cvr.previous);
+    if (ready < 0) { cvr.pending = 0; return; }
+    if (!ready) return;
+    unsigned action = cvr.pending; cvr.pending = 0;
+    if (action == 1) cvr_new(); else cvr_undo();
 }
 static void cvr_context_from_screen(void)
 {
@@ -248,7 +309,11 @@ static void cvr_knob_info(int k, cf_knob_t *o)
     static const char *const KN[4] = {"CONTEXT", "AMOUNT", "GENERATE", "UNDO"};
     kfmt(o->name, 12, KN[k]);
     kfmt(o->val, 14, k == 0 ? CV_NAMES[cvr.context] : k == 1 ? CV_LEVELS[cvr.level] : "Turn +");
-    if (k == 3) o->dis = !cvr.have_previous;
+    if (k == 2 && cvr.pending) kfmt(o->val, 14, "Queued");
+    if (k == 3) {
+        if (cvr.pending) kfmt(o->name, 12, "CANCEL");
+        o->dis = !cvr.have_previous && !cvr.pending;
+    }
 }
 static void cvr_knob_turn(int k, int d)
 {
@@ -260,6 +325,7 @@ static void cvr_knob_turn(int k, int d)
 }
 static void cvr_save(void)
 {
+    if (cvr.pending) { cf_message("Change queued; K4 cancels"); return; }
     if (cvr.context == CV_FX) {
         ui_open(SCR_FX); fxp_manage_open(); /* existing empty-slot-first FX workflow */
     } else if (cvr.context == CV_SOUND) {
