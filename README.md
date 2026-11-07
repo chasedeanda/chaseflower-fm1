@@ -42,6 +42,9 @@ instrument's intro runs for 2.4 seconds and any input skips it.
 [Scenes and controls](docs/VISUALS.md) · [Sound banks and 6/8](docs/CHASE3.md) ·
 [Diagnostics](docs/DIAGNOSTICS.md) · [USB recording](docs/USB-AUDIO.md)
 
+[Refreshed drum grooves and audio auditions](docs/DRUM-LOOPS.md): 38 two-bar patterns spanning lo-fi, trap, gaze,
+hip-hop, house, garage and breaks, including 12 new grooves. Available in the development source.
+
 **Auto Harmony:** Open **GLO → Harmony** and turn **K1 to Auto** to enable
 [scale-aware chords and smart modifiers](docs/AUTO-HARMONY.md). Manual remains the default.
 

@@ -80,6 +80,9 @@ jobs:
       - name: ChaseFlower library, saved sounds, HOME views and 6/8 timing (host HAL)
         run: sh tools/test_chase3.sh
 
+      - name: Built-in drum bank, stable IDs, sequencer copies and real audio (host HAL)
+        run: sh tools/test_drum_bank.sh
+
       - name: Auto harmony, controls, persistence, MIDI and recording (host HAL)
         run: sh tools/test_auto.sh
 
