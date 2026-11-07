@@ -101,11 +101,11 @@ also remain required. Linked resources and package hashes accompany the build.
 Host captures and a device link are not physical listening, input-latency, TFT or
 sustained USB workload measurements.
 
-The `0.6-mascot` package, including main's progression LED guide, links at
-**554,952 / 573,440 bytes XIP**, **88,728 / 98,304 bytes ordinary RAM**, and
+The `0.6-mascot` package, including main's progression LED guide and Keyboard Learn, links at
+**562,024 / 573,440 bytes XIP**, **89,416 / 98,304 bytes ordinary RAM**, and
 **316,792 / 344,064 bytes POOL**.
 [Measured resources and exact compile inputs](../benchmarks/resources/mascot-home/report.md).
 The package SHA256 is
-`4e487632ffcc0f4b7a771cb7e0536c662f7cf08abe90276b4ae39f33aadefecb`.
+`334f7c53f88e6c5e050aa7eac3e9d41a23ecb2c1c77b59e54d17e198391be1fb`.
 
 [Artwork and prompt provenance](../assets/mascots/README.md).

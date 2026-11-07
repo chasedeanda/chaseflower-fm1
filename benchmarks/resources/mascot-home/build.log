@@ -44,11 +44,11 @@ samples: 1 sets, 18 zones, 68326 B ADPCM, SLICE BREAK 44100 samples (cached)
 loader: image 8416 B at 0x1c0a800, bss end 0x1c0f4ac
 loader: ota.bin 7157 B
   ok    .ram_text: 932 insns, no calls
-  ok    image 558760 B (stub 3808 + app 554952); RAM .data+.bss 88732 B of 98304; pool 316792 B of 344064
+  ok    image 565832 B (stub 3808 + app 562024); RAM .data+.bss 89420 B of 98304; pool 316792 B of 344064
   ok    register access: hal/ only (src/, loader/ clean)
-size: .text 538516 B, .ram_text 3000 B, .c1_text 128 B (RAMTEXT 3128 of 24576), .data 13308 B, .bss 75420 B; XIP 554952 B of 573440 (96.8%), RAM 88728 B of 98304 (90.3%), POOL 316792 B of 344064 (92.1%), NOINIT 216 B of 15664 (1.4%)
-sector 0x4000 (the directory and the stub: constant while the stub is) sha256 0f33c838a23961d8; marker at 0x91fe0, body 554952 B
-app      /Users/chase/.codex/worktrees/mascot-home/FM1 Custom Firmware/build/coralflower.bin  558760 B
+size: .text 545588 B, .ram_text 3000 B, .c1_text 128 B (RAMTEXT 3128 of 24576), .data 13308 B, .bss 76108 B; XIP 562024 B of 573440 (98.0%), RAM 89416 B of 98304 (91.0%), POOL 316792 B of 344064 (92.1%), NOINIT 216 B of 15664 (1.4%)
+sector 0x4000 (the directory and the stub: constant while the stub is) sha256 0f33c838a23961d8; marker at 0x91fe0, body 562024 B
+app      /Users/chase/.codex/worktrees/mascot-home/FM1 Custom Firmware/build/coralflower.bin  565832 B
 loader   /Users/chase/.codex/worktrees/mascot-home/FM1 Custom Firmware/build/loader/ota.bin  7157 B
 package  /Users/chase/.codex/worktrees/mascot-home/FM1 Custom Firmware/build/coralflower-0.6-mascot.fwsc  610313 B, identity FM-1_930
 release  /Users/chase/.codex/worktrees/mascot-home/FM1 Custom Firmware/build/release-0.6-mascot/

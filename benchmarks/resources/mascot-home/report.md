@@ -1,13 +1,13 @@
 # Device resource audit
 
-Source: `01504c673cd6ca44ff0fcfcf33a23dc7dba1b1c5`.
-ELF SHA256: `51462a79f3e000af83c99a027e0364f80f5bf56d38e489b9a6abf0402e397e96`.
+Source: `3b7e8927e6870014e28243153d0cea28ef6bfd92`.
+ELF SHA256: `66e718f4f7ccf5a093f09e87189fa5b429af68810c67d38bf795f89722378b9c`.
 
 | Region | Linked bytes | Capacity | Headroom |
 | --- | ---: | ---: | ---: |
-| ordinary_ram | 88,728 | 98,304 | 9,576 |
+| ordinary_ram | 89,416 | 98,304 | 8,888 |
 | pool | 316,792 | 344,064 | 27,272 |
-| xip | 554,952 | 573,440 | 18,488 |
+| xip | 562,024 | 573,440 | 11,416 |
 | ram_code | 3,128 | 24,576 | 21,448 |
 | noinit | 216 | 15,664 | 15,448 |
 
@@ -114,9 +114,9 @@ Allocation groups are gross linked objects, not promised savings.
 
 | Region | Delta bytes |
 | --- | ---: |
-| ordinary_ram | +1,088 |
+| ordinary_ram | +1,776 |
 | pool | +0 |
-| xip | +86,020 |
+| xip | +93,092 |
 | ram_code | +0 |
 | noinit | +0 |
 

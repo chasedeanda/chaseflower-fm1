@@ -63,12 +63,12 @@ coralflower.o: firmware/src/coralflower.c firmware/hal/fm1_time.h \
   firmware/src/cf_screens.c firmware/src/cf_views.c \
   firmware/src/cf_motion.c firmware/src/cf_stage.c \
   build/gen/cf_native_fonts.h firmware/src/cf_mascot.c \
-  firmware/src/cf_acc_screen.c firmware/src/cf_draft_screen.c \
-  firmware/src/cf_lab_screen.c firmware/src/cf_library_screen.c \
-  firmware/src/cf_seqv.c firmware/src/cf_dmv.c \
-  firmware/src/cf_diag_view.c firmware/src/cf_variation_view.c \
-  firmware/src/cf_native_pages.c firmware/src/cf_splash.c \
-  firmware/src/cf_boot_cord.c firmware/src/fm6_store.c \
-  firmware/src/cf_backup.c firmware/src/cf_shim.c firmware/src/ota.c \
-  firmware/src/ota_hw.c firmware/src/console.c firmware/src/main.c \
-  firmware/src/master.c
+  firmware/src/cf_keyboard_learn.c firmware/src/cf_acc_screen.c \
+  firmware/src/cf_draft_screen.c firmware/src/cf_lab_screen.c \
+  firmware/src/cf_library_screen.c firmware/src/cf_seqv.c \
+  firmware/src/cf_dmv.c firmware/src/cf_diag_view.c \
+  firmware/src/cf_variation_view.c firmware/src/cf_native_pages.c \
+  firmware/src/cf_splash.c firmware/src/cf_boot_cord.c \
+  firmware/src/fm6_store.c firmware/src/cf_backup.c \
+  firmware/src/cf_shim.c firmware/src/ota.c firmware/src/ota_hw.c \
+  firmware/src/console.c firmware/src/main.c firmware/src/master.c

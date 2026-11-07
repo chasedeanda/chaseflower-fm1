@@ -165,3 +165,33 @@ PASS: accompaniment transport and identical physical output with USB capture/dra
 LED guide: 55 checks, 0 failures
 Actual 0.6-mascot package parsed by web/fm1pkg.js: FM-1_930, 610313 bytes, appBase 0x4000, update loader present.
 Package SHA256: 4e487632ffcc0f4b7a771cb7e0536c662f7cf08abe90276b4ae39f33aadefecb
+
+Final six-page HOME validation (source 3b7e8927e6870014e28243153d0cea28ef6bfd92):
+ARM syntax: PASS
+--- mascot-keyboard-final.log
+boot: normal reset power-on failed 0 pending 1 counted 0 prev_stage 0 (none)
+Keyboard: 143 checks, 0 failures
+--- mascot-mascots-final.log
+boot: normal reset power-on failed 0 pending 1 counted 0 prev_stage 0 (none)
+Mascot art, bounds, motion and migration: 12970727 checks, 0 failures
+--- mascot-stage-final.log
+boot: normal reset power-on failed 0 pending 1 counted 0 prev_stage 0 (none)
+Mascot HOME: 270 checks, 0 failures
+--- mascot-perform-final.log
+performance: 215267 checks, 0 failures
+--- mascot-home_banks-final.log
+boot: normal reset power-on failed 0 pending 1 counted 0 prev_stage 0 (none)
+HOME banks: 3 checks, 0 failures
+PASS: identical audio with HOME bank cycling and drawing.
+--- mascot-final-native_pages.log
+native pages and motion: 5 checks / 0 routes, 0 failures
+native pages and motion: 5 checks / 0 routes, 0 failures
+PASS: Motion On/Off preserve identical physical audio, six USB channels and MIDI at both rates.
+--- mascot-final-progressions.log
+suggestions: 4454 checks, 0 failures
+suggestions: 4454 checks, 0 failures
+PASS: complete catalog, automatic setup, HOME controls, live highlighting and identical audio with/without drawing at both rates.
+--- mascot-final-performance-render.log
+performance: 215307 checks, 0 failures
+Actual final 0.6-mascot package parser: PASS, FM-1_930, 610313 bytes, update loader present.
+Final package SHA256: 334f7c53f88e6c5e050aa7eac3e9d41a23ecb2c1c77b59e54d17e198391be1fb
