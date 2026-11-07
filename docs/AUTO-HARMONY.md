@@ -71,6 +71,12 @@ The most recently pressed quality wins; the most recently pressed suspension
 wins. Quality and suspension can combine. Conflicting choices show `!` and are
 excluded from active lighting. HOME names the actual generated chord.
 
+Root-key LEDs light at full brightness for every pitch in the sounding Auto
+chord that has a matching root key in the current key/scale mapping, across
+octaves. The top keys continue to show modifier selection. Note lights follow
+the generated voicing, stay on under HOLD, and clear when the chord stops.
+Unsupported-scale single-note fallback and Auto Off keep their normal lighting.
+
 HOLD still sustains roots independently of modifiers. A new root with none
 physically down replaces sustained roots; turning HOLD off releases roots held
 only by HOLD. Switching Auto On/Off clears modifier selection and inversion
