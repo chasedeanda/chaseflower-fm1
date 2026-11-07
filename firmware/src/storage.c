@@ -33,7 +33,7 @@
  * not used here) the parts' unsaved sound edits, OBJ_CFEDIT0..2, three A/B pairs, cf_settings.c; 0xCA000 / 0xCB000
  * the patterns' own sounds, OBJ_CFPSND, 0.5; 0xCC000 .. 0xDBFFF, the rest of ChoralRoot's loop slots, eight tweaked
  * pattern sounds, OBJ_CFTWK0..7, 0.5). ChaseFlower uses the unused 0xB2000 / 0xB3000 pair for
- * OBJ_CFXPRESET, and 0xB4000 / 0xB5000 for OBJ_CFHARM; both are append-only enum additions. */
+ * OBJ_CFXPRESET, 0xB0000 / 0xB1000 for progression favorites (OBJ_CFPREFS), and 0xB4000 / 0xB5000 for OBJ_CFHARM; both are append-only enum additions. */
 enum { OBJ_SETTINGS, OBJ_PROJECT0, OBJ_UPRESET0 = OBJ_PROJECT0 + 4, OBJ_FM6BANK = OBJ_UPRESET0 + 2,
 #if FELUCCA_CZ && FELUCCA_QUAD
        OBJ_CZSTORE1, OBJ_CZBANK0, OBJ_QUADSTORE = OBJ_CZBANK0 + 8, OBJ_SESSION, OBJ_COUNT
@@ -51,6 +51,7 @@ enum { OBJ_SETTINGS, OBJ_PROJECT0, OBJ_UPRESET0 = OBJ_PROJECT0 + 4, OBJ_FM6BANK 
        OBJ_CFTWK7 = OBJ_CFTWK0 + 7,
        OBJ_CFHARM,                            /* Auto harmony: unused CF session pair 0xB4000 / 0xB5000 */
        OBJ_CFXPRESET,                         /* FX bank: unused CF QUAD pair 0xB2000 / 0xB3000 */
+       OBJ_CFPREFS,                           /* favorites: unused CZ pair 0xB0000 / 0xB1000 */
 #endif
        OBJ_COUNT
 #endif
@@ -107,6 +108,8 @@ static uint32_t st_sector(uint32_t obj, uint32_t copy)  /* flash offset of copy 
 #if defined(CF_LOOP_STORE) && !FELUCCA_CZ
     if (obj == OBJ_CFLOOP)
         return 0xB6000u + copy * ST_SECTOR;
+    if (obj == OBJ_CFPREFS)
+        return 0xB0000u + copy * ST_SECTOR;
     if (obj == OBJ_CFXPRESET)
         return 0xB2000u + copy * ST_SECTOR;
     if (obj == OBJ_CFHARM)
@@ -149,10 +152,10 @@ static uint8_t st_buf[ST_PAYLOAD_MAX] __attribute__((aligned(4)));
 /* the old looper's object keeps the drum machine's record since 0.6 (cf_dmui.c), a log of 256-byte entries too, once
  * no loop of 0.3.1 waits in it (dm_load: such a loop's record is longer than an entry) */
 static uint8_t st_loop_log;
-#define ST_LOGGED(obj) ((obj) == (uint32_t)(ST_LOG_OBJ) || (obj) == OBJ_CFHARM || (obj) == OBJ_CFXPRESET || ((obj) >= OBJ_CFEDIT0 && (obj) <= OBJ_CFTWK7) || \
+#define ST_LOGGED(obj) ((obj) == (uint32_t)(ST_LOG_OBJ) || (obj) == OBJ_CFHARM || (obj) == OBJ_CFXPRESET || (obj) == OBJ_CFPREFS || ((obj) >= OBJ_CFEDIT0 && (obj) <= OBJ_CFTWK7) || \
                         ((obj) == OBJ_CFLOOP && st_loop_log))
 #define ST_LSZ(obj) ((obj) == OBJ_CFXPRESET ? 1024u : ST_LSZ_SMALL(obj))
-#define ST_LSZ_SMALL(obj) ((obj) == (uint32_t)(ST_LOG_OBJ) || (obj) == OBJ_CFPSND || (obj) == OBJ_CFHARM || (obj) == OBJ_CFLOOP ? 256u : 512u)
+#define ST_LSZ_SMALL(obj) ((obj) == (uint32_t)(ST_LOG_OBJ) || (obj) == OBJ_CFPSND || (obj) == OBJ_CFHARM || (obj) == OBJ_CFPREFS || (obj) == OBJ_CFLOOP ? 256u : 512u)
 #else
 #define ST_LOGGED(obj) 0
 #define ST_LSZ(obj) 256u

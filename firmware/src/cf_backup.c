@@ -44,12 +44,13 @@ enum { CRB_INFO = 1, CRB_LIST = 65, CRB_GET, CRB_PUT, CRB_RESTART = 72, CRB_USB 
 #define CFB_PSND 59u                                 /* 59: the patterns' own sounds (OBJ_CFPSND, 0.5) */
 #define CFB_TWK 60u                                  /* 60..67: the tweaked pattern sounds (OBJ_CFTWK0..7, 0.5) */
 #define CFB_HARM 68u                                 /* versioned Auto harmony preferences */
+#define CFB_PREFS 70u                                /* browser order and favorites */
 #define CFB_FX 69u                                   /* versioned user FX preset bank */
 static const uint8_t CRB_IDS[] = {6, 7, 8, CRB_VA, CRB_FM6S, CRB_FM6S + 1u, CFB_SET, CFB_LOOP,
                                   CFB_SEQ, CFB_SEQ + 1u, CFB_SEQ + 2u, CFB_SEQ + 3u, CFB_SEQ + 4u, CFB_SEQ + 5u,
                                   CFB_EDIT, CFB_EDIT + 1u, CFB_EDIT + 2u, CFB_PSND,
                                   CFB_TWK, CFB_TWK + 1u, CFB_TWK + 2u, CFB_TWK + 3u, CFB_TWK + 4u, CFB_TWK + 5u,
-                                  CFB_TWK + 6u, CFB_TWK + 7u, CFB_HARM, CFB_FX};
+                                  CFB_TWK + 6u, CFB_TWK + 7u, CFB_HARM, CFB_FX, CFB_PREFS};
 _Static_assert(SQ_NCHUNK == 6u, "backup: one id per sequencer object");
 #define CRB_N ((uint32_t)sizeof CRB_IDS)
 /* an FM6 bank of earlier firmware, as fm6_bank.c fm6_bank_import takes it at boot: Felucca 1.0's (27 records, version
@@ -154,6 +155,7 @@ static uint32_t crb_obj(uint32_t id)                 /* storage.c's object of an
 {
     if (id == CFB_SET)
         return CF_SET_OBJ;
+    if (id == CFB_PREFS) return OBJ_CFPREFS;
     if (id == CFB_FX)
         return OBJ_CFXPRESET;
     if (id == CFB_HARM)
@@ -206,6 +208,9 @@ static void crb_list(void)
 {
     uint32_t i, crc[CRB_N];
     st_hdr_t h;
+    if (!cr_safe && !cfs_restore_lock && cpb_dirty && cpb_write(ST_NOERASE)) {
+        crb.listed = 0; crb_b(1); crb_b(4); crb_b(0); return;
+    }
     /* Do not offer a stale FX bank if its explicit save is still deferred. */
     if (!cr_safe && !cfs_restore_lock && fxp_pending() && fxp_write(ST_NOERASE)) {
         crb.listed = 0; crb_b(1); crb_b(4); crb_b(0); return;
@@ -216,6 +221,7 @@ static void crb_list(void)
         sq_save_write();                             /* .. the sequencer's too (playing or not: a backup is taken now) */
     if (!cr_safe && !cfs_restore_lock) {
         cfh_flush();
+        cpb_flush();
         cfk_flush();                                 /* .. and the sounds' edits, the patterns' own sounds */
         cfps_flush();
         dm_flush();                                  /* .. the drum machine's (0.6) */
@@ -269,6 +275,7 @@ static void crb_get(const uint8_t *a, uint32_t n)
 /* ------------------------------------------------------------------ PUT --- */
 static int crb_size_ok(uint32_t id, uint32_t len)   /* a begin's size for this id (0: the object erased) */
 {
+    if (id == CFB_PREFS) return !len || len == sizeof(cpb_rec_t);
     if (id == CFB_FX) return !len || len == sizeof(fxp_bank_t);
     if (id == CFB_HARM) return !len || len == sizeof(cfh_rec_t);
     if (id == 6u || id == 7u)
@@ -315,6 +322,13 @@ static uint32_t crb_commit(void)
     uint32_t id = crb.id, len = crb.len;
     if (crb.pos != len || st_crc32(raw, len) != crb.crc)
         return 2;
+    if (id == CFB_PREFS) {
+        if (len && !cpb_valid((const cpb_rec_t *)raw)) return 2;
+        if (st_save(OBJ_CFPREFS, raw, len)) return 4;
+        cfs_restore_lock = 1;
+        cf_message("Favorites restored: restart");
+        return 0;
+    }
     if (id == CFB_FX) {
         if (len && !fxp_bank_valid((const fxp_bank_t *)raw)) return 2;
         if (st_save(OBJ_CFXPRESET, raw, len)) return 4;

@@ -41,6 +41,9 @@ typedef struct {                /* the looper's settings up to 0.3.1: unused sin
 /* a note the keys' player sounds, a note the sequencer sounds (each leaves such a note sounding when it lets it go:
  * the last of the two lets it go) */
 static int cfp_holds(uint32_t part, uint32_t note);   /* (below: a note the keys' player sounds) */
+static int cpa_running(void);
+static void cpa_stop(void);
+static void cpa_overlay_cfg(cf_chord_cfg_t *cfg);
 static int sqp_holds(uint32_t part, uint32_t note);   /* (cf_seqp.c: a note the sequencer sounds) */
 
 enum { CF_NI_KEYS = 0, CF_NI_ROOTS, CF_NI_DIRECT, CF_NI_N };   /* NOTES IN (0.5): the FM-1's keys, roots, as before */
@@ -535,7 +538,9 @@ static void cfp_config(void)                         /* CFE_CONFIG: the UI's set
     }
     cfc.keep = cfp_cfg.retrig == CF_RT_WAIT;
     cf_chord_harmony(&cfc, &cfh_shadow);
-    cf_chord_config(&cfc, &cfc_shadow);
+    cf_chord_cfg_t cfg = cfc_shadow;
+    cpa_overlay_cfg(&cfg);
+    cf_chord_config(&cfc, &cfg);
     cfa_config(cfc.out.sounding);
     if (cfa.on != was) {                             /* ARP switched: part 0's notes go to the arpeggiator, or back */
         if (cfa.on)

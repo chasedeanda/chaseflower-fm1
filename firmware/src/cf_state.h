@@ -94,8 +94,13 @@ typedef struct {
 #define CF_INCH_ALL 1u         /* cs.in_ch: every channel; 2..17 channels 1..16 */
 
 static cf_set_t cs;
+static cf_browser_t cpb;
 static cf_harmony_t ch;                         /* separate versioned record; cf_set_t stays 188 bytes */
-static struct { uint8_t idea; } cpg;             /* Browser selection only; never persisted */
+static struct {
+    uint8_t idea, rhythm, mode, explored;
+    uint8_t saved_tonic, saved_scale, saved_quantize, saved_beats;
+    uint32_t revision, modifiers;
+} cpg;             /* Browser selection only; never persisted */
 
 static void cs_defaults(cf_set_t *s)
 {

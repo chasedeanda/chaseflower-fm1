@@ -400,6 +400,7 @@ static void dmp_stop(void)
 }
 static void dmp_start(uint32_t r, uint32_t kit, uint32_t swing)
 {
+    cpa_stop();
     sqp_stop();
     dmp.r = (uint8_t)(r % DM_N);
     dmp.kit = (uint8_t)kit;

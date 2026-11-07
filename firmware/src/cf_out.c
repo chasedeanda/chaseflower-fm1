@@ -236,6 +236,7 @@ static void events_block(uint32_t n)
 /* ------------------------------------------------------------ the queue --- */
 /* UI -> ISR. One producer (the main loop), one consumer (the audio ISR): the index stores are the publication */
 enum {
+    CFE_ACCOMP,       /* a: start/stop; plans published by UI in bounded mailboxes */
     CFE_KEY,          /* a: key 0..26, v: down */
     CFE_CONFIG,       /* the chord settings: cfc_shadow (cf_play.c) */
     CFE_PANIC,
@@ -318,7 +319,7 @@ static void cfm_tick(uint32_t n, uint32_t pulses)
         cfm.beats_done++;
         cfm.beat_ms = cf_now_ms;
     }
-    if (cfx_in.active) {                         /* the clock's pulses: FS x 60 / 24 each */
+    if (cfx_in.active || (cpa_running() && cfp_cfg.clock_in)) { /* the clock's pulses: FS x 60 / 24 each */
         cfm.acc += pulses * (FS * 60u / 24u) * cf_meter_rate();
     } else {
         cfm.acc += n * cfm.bpm * cf_meter_rate();
@@ -383,6 +384,7 @@ static void cfm_restart(void)
 #include "cf_seqd.c"                             /* (the sequencer's patterns and song) */
 #include "cf_seqp.c"                             /* (.. playing them) */
 #include "cf_drum.c"                             /* (the drum machine's rhythms and their player, 0.6) */
+#include "cf_accomp.c"
 
 /* the metronome's sounds: a decaying resonator (the accent on the downbeat a different pitch), some with noise.
  * a1 = 2 r cos w and a2 = r^2 (Q14), s = sin w (x 10000) sets the start; len: samples to -60 dB; noise: % */
@@ -409,7 +411,9 @@ static void cf_click_mix(int32_t *out, uint32_t n)
                                                   * little over a usual chord, the median of the 51 sounds' peaks
                                                   * +1 dB: "я бы наоборот чуть громче сделал", the owner, 2026-10-20;
                                                   * a LEVEL the player set is used as it is) */
+        if (cpa.on && cpa.plan.rhythm == CPA_CLICK && !lv) lv = 65;
         int32_t amp = (cfm.on || cfm.running) ? 100 * lv : 0;
+        if (cpa.on && (cpa.paused || cpa.plan.rhythm != CPA_CLICK)) amp = 0;
         int acc = cfm.click == 2u;
         if (!fx_usb_fixed)                       /* MASTER on it, as on the music: it was mixed in after MASTER, and the
                                                   * volume knob at its bottom left the click as loud as ever (the
@@ -502,6 +506,9 @@ static void cf_midi_in(void)
                 }
                 cfx_in.pulses++;
                 cfx_in.last_ms = cf_now_ms;
+            } else if (cpa.on) {
+                if (status == 0xFAu || status == 0xFBu || status == 0xFCu) cfx_in.pulses = 0;
+                cpa_realtime(status);
             } else if (status == 0xFAu || status == 0xFBu) {   /* start / continue: from beat 1 */
                 cfm_restart();
                 cfm.running = 1;
@@ -548,7 +555,11 @@ static void cf_apply(const cf_ev_in_t *e)
         cfp_key(CF_KEY_EXT + e->a, e->v);
         break;
     case CFE_CONFIG: cfp_config(); break;
+    case CFE_ACCOMP:
+        if (e->a) cpa_start(); else cpa_stop();
+        break;
     case CFE_PANIC:
+        cpa_stop();
         sqp_stop();
         dmp_stop();
         cfp_panic();
@@ -576,6 +587,14 @@ static void cf_apply(const cf_ev_in_t *e)
             sqp_stop();
         break;
     case CFE_DRUM:
+        if (cpa.on) {
+            if (e->a == 0) cpa_stop();
+            else if (e->a == 1 && e->b < DM_N && DM_RHY[e->b].beats == cpa.plan.beats) {
+                if (!cpa_edit.flags) cpa_edit.plan = cpa.plan;
+                cpa_edit.plan.rhythm = e->b; cpa_edit.flags |= CPA_GROOVE;
+            }
+            break;
+        }
         if (e->a == 1)
             dmp_queue(e->b, (uint32_t)e->v & 0xFFu, ((uint32_t)e->v >> 8) & 0xFFu);
         else if (e->a == 2 && dmp.on) {
@@ -596,9 +615,10 @@ static void cf_apply(const cf_ev_in_t *e)
         cfm.on = e->a;
         cfm.level = e->b;
         break;
-    case CFE_TEMPO: cfm.bpm = (uint16_t)(e->v < 30 ? 30 : e->v > 300 ? 300 : e->v); break;
-    case CFE_SIG: cfm.beats = (uint8_t)(e->v < 1 ? 1 : e->v > 12 ? 12 : e->v); break;
+    case CFE_TEMPO: if (cfp_cfg.clock_in) break; cfm.bpm = (uint16_t)(e->v < 30 ? 30 : e->v > 300 ? 300 : e->v); break;
+    case CFE_SIG: if (cpa.on) break; cfm.beats = (uint8_t)(e->v < 1 ? 1 : e->v > 12 ? 12 : e->v); break;
     case CFE_TRANSPORT:
+        if (cpa.on) { if (!e->v) cpa_stop(); break; }
         if (e->v)
             cfm_restart();
         cfm.running = (uint8_t)(e->v != 0);
@@ -651,15 +671,20 @@ static void cf_audio_block(uint32_t n)
         cfa_tick(n);                             /* (the arpeggiator: its steps, its strum) */
         sqp_arp_tick(n);                         /* (the sequencer's tracks' with ARP on) */
         sqp_pre_watch();                         /* (since REC went down, before a take begins) */
+        if (cpa.on) cpa_tick(n, pulses);
+        else {
         sqp_tick(n, pulses);                     /* (the sequencer) */
         dmp_tick(n, pulses);                     /* (.. or the drum machine's rhythm) */
-        cfm_tick(n, pulses);
+        }
+        if (!cpa.on) cfm_tick(n, pulses);
         cf_clock_out();
     }
 }
 
 /* ---------------------------------------------------- what the UI reads --- */
 typedef struct {
+    uint32_t ac_revision;
+    uint8_t ac_on, ac_paused, ac_slot, ac_idea, ac_tonic, ac_scale, ac_beats, ac_rhythm, ac_mode, ac_next, ac_edits, ac_next_tonic, ac_next_scale, ac_next_rhythm;
     cf_chord_out_t out;          /* the chord model's answer */
     uint8_t n, note[CF_MAX_NOTES], nb, bass[2];
     uint8_t onset;
@@ -694,6 +719,14 @@ static void cf_snapshot(void)
 {
     uint32_t i;
     fm1_irq_off();
+    cf_sn.ac_revision = cpa.revision;
+    cf_sn.ac_on = cpa.on; cf_sn.ac_paused = cpa.paused; cf_sn.ac_slot = cpa.slot;
+    cf_sn.ac_idea = cpa.plan.idea; cf_sn.ac_tonic = cpa.plan.tonic; cf_sn.ac_scale = cpa.plan.scale;
+    cf_sn.ac_beats = cpa.plan.beats; cf_sn.ac_rhythm = cpa.plan.rhythm; cf_sn.ac_mode = cpa.plan.mode;
+    cf_sn.ac_next = cpa.on && cpa_setup.flags ? cpa_setup.plan.idea : CF_P_NONE;
+    cf_sn.ac_edits = cpa.on ? cpa_edit.flags : 0;
+    cf_sn.ac_next_tonic = cpa_edit.plan.tonic; cf_sn.ac_next_scale = cpa_edit.plan.scale;
+    cf_sn.ac_next_rhythm = cpa_edit.plan.rhythm;
     cf_sn.out = cfc.out;
     cf_sn.n = cfp.n;
     for (i = 0; i < cfp.n; i++)
@@ -739,14 +772,14 @@ static void cf_snapshot(void)
     cf_sn.sq_cbtns = sqp.on && sqp.n ? sqp.cbtns : 0u;
     cf_sn.sq_lkey = sqp.on && sqp.ln ? sqp.lkey : 0xFFu;
     cf_sn.sq_lbtns = sqp.on && sqp.ln ? sqp.lbtns : 0u;
-    cf_sn.sq_dn = sqp.on ? sqp.dn : 0u;
+    cf_sn.sq_dn = (sqp.on || cpa.on) ? sqp.dn : 0u;
     for (i = 0; i < 6u; i++)
         cf_sn.sq_dnote[i] = sqp.dnote[i];
     cf_sn.sq_droot = sqp.droot;
     cf_sn.sq_dmask = sqp.dmask;
     cf_sn.sq_dsingle = sqp.dsingle;
     cf_sn.sq_dser = sqp.dser;
-    cf_sn.sq_bn = sqp.on ? sqp.nb : 0u;
+    cf_sn.sq_bn = (sqp.on || cpa.on) ? sqp.nb : 0u;
     cf_sn.sq_bass[0] = sqp.bass[0];
     cf_sn.sq_bass[1] = sqp.bass[1];
     cf_sn.dm_on = dmp.on;

@@ -456,6 +456,7 @@ static void dm_hold_poll(void);
 static void dm_poll(void)
 {
     static uint8_t was = 0xFF;
+    if (cf_sn.ac_on) return;
     if (cu.scr == SCR_DRUM && was != SCR_DRUM && !sqk.on)   /* (opened, even only looked at: what PLAY on HOME plays) */
         dmr.last = 1;
     else if (sq_screen(cu.scr) && ((squ.pat < SQ_NPAT && sq_has(squ.pat)) ||

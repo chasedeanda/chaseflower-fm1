@@ -1432,7 +1432,7 @@ static uint8_t cf_progression_live(const cf_progression_t *p, int scale)
     const cf_chord_out_t *o = &cf_sn.out;
     if (o->sounding && o->n)
         return o->single ? 0 : cf_progression_highlight(p, scale, cs.chord.tonic, o->root_pc, o->mask);
-    if (cf_sn.sq_on && cf_sn.sq_dn && !cf_sn.sq_dsingle)
+    if ((cf_sn.sq_on || cf_sn.ac_on) && cf_sn.sq_dn && !cf_sn.sq_dsingle)
         return cf_progression_highlight(p, scale, cs.chord.tonic, cf_sn.sq_droot % 12, cf_sn.sq_dmask);
     return 0;
 }
@@ -1460,10 +1460,16 @@ static void view_progressions(int x)
     fb_rect(0, Y_VIEW, FB_W, H_VIEW, FL_BG);
     cf_key_spell(cfg.tonic, cfg.scale, &spell);
     fb_text(&CF_FONT_MICRO, x, y, "PROGRESSIONS", FL_INK2, 1);
-    if (ch.mode == CF_H_MANUAL) fb_text(&CF_FONT_MICRO, x + 90, y, "AUTO OFF", FL_INK3, 1);
+    if (cf_sn.ac_on) {
+        str_cpy(text,cf_sn.ac_paused?"PAUSE ":"PLAY ",sizeof text);
+        kint(text+str_len(text),cf_sn.ac_slot+1,"/");
+        kint(text+str_len(text),p->n,0);
+        fb_text(&CF_FONT_MICRO, x + 90, y, text, C_ACC(1), 1);
+    } else if (ch.mode == CF_H_MANUAL) fb_text(&CF_FONT_MICRO, x + 90, y, "AUTO OFF", FL_INK3, 1);
     kint(text, cpg.idea + 1, 0);
     str_cpy(text + str_len(text), "/", sizeof text - str_len(text));
     kint(text + str_len(text), (int)cf_progression_count(), 0);
+    if(cf_browser_favorite(&cpb,cpg.idea))str_cpy(text+str_len(text),"*",sizeof text-str_len(text));
     fb_text_r(&CF_FONT_UI, x + 216, y - 1, text, C_ACC(0), 1);
     int longform = p->n > 4;
     int size = !longform && fb_text_w(&CF_FONT_UI, p->name, 2) <= 216 ? 2 : 1;
@@ -1473,6 +1479,21 @@ static void view_progressions(int x)
         str_cpy(text + str_len(text), " / ", sizeof text - str_len(text));
         str_cpy(text + str_len(text), cf_progression_tag(tag), sizeof text - str_len(text));
         break;
+    }
+    if (cf_sn.ac_on && cf_sn.ac_next != CF_P_NONE) {
+        str_cpy(text, "Next: ", sizeof text);
+        str_cpy(text + 6, cf_progression_get(cf_sn.ac_next)->name, sizeof text - 6);
+    }
+    else if (cf_sn.ac_edits) {
+        str_cpy(text, "Next: ", sizeof text);
+        if (cf_sn.ac_edits & CPA_NOTES) {
+            cf_spell_t nextspell; char nextkey[4];
+            cf_key_spell(cf_sn.ac_next_tonic, cf_sn.ac_next_scale, &nextspell);
+            cf_pc_name(cf_sn.ac_next_tonic, &nextspell, nextkey);
+            str_cpy(text + 6, nextkey, sizeof text - 6);
+            str_cpy(text + str_len(text), " ", sizeof text - str_len(text));
+            str_cpy(text + str_len(text), cf_progression_mode(cf_sn.ac_next_scale), sizeof text - str_len(text));
+        } else str_cpy(text + 6, cpa_rhythm_name(cf_sn.ac_next_rhythm), sizeof text - 6);
     }
     fb_text(&CF_FONT_MICRO, x, y + (longform ? 27 : 36), text, FL_INK2, 1);
     cf_pc_name(cfg.tonic, &spell, raw);
@@ -1496,6 +1517,8 @@ static void view_progressions(int x)
         int on = (active >> i) & 1;
         uint32_t mask = cf_progression_mask(cfg.scale, cfg.tonic, p->degree[i], &ch);
         fb_rbox(cx - 25, top, 51, longform ? 31 : 49, 3, on ? C_ACC(1) : cf_panel(1));
+        if (cf_sn.ac_on && cf_sn.ac_slot == i)
+            fb_rect(cx - 20, top + (longform ? 29 : 47), 41, 2, C_ACC(0));
         cf_harmony_numeral(cfg.scale, cfg.tonic, root, raw);
         fb_signs(raw, signs, sizeof signs);
         fb_text_c(&CF_FONT_UI, cx, top + 1, signs, on ? FL_BG : C_ACC(0), 1);
@@ -1513,6 +1536,7 @@ static void view_progressions(int x)
     str_cpy(text + 5, signs, sizeof text - 5);
     fb_text(&CF_FONT_UI, x, y + (longform ? 123 : 119), text, FL_INK, 1);
     if (cf_sn.out.hold) fb_text_r(&CF_FONT_MICRO, x + 216, y + (longform ? 126 : 122), "HOLD", C_ACC(0), 1);
+    else fb_text_r(&CF_FONT_MICRO, x + 216, y + (longform ? 126 : 122), "hold GLO", FL_INK3, 1);
 }
 
 /* Diagnostic controls: musical encoders retain their normal roles on HOME. */
