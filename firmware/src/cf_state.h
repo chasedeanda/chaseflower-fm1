@@ -105,6 +105,7 @@ enum { CF_HB_CORE, CF_HB_SOUND, CF_HB_TEXTURE, CF_HB_GROOVE, CF_HB_N };
 static const char *const CF_HOME_BANK_NAME[] = {"CORE", "SOUND", "TEXTURE", "GROOVE"};
 static uint8_t cf_home_bank;
 static uint32_t cf_home_bank_ms, cf_motion_epoch;
+static int8_t cf_nav_dir = 1;
 static uint8_t cf_click_level = 35;
 enum { CF_ACC_GROOVE, CF_ACC_LOOP, CF_ACC_MIX, CF_ACC_CLICK, CF_ACC_N };
 static const char *const CF_ACC_NAME[] = {"Groove", "Loop", "Mix", "Click"};

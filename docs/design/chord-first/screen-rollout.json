@@ -442,9 +442,10 @@
       "group": "Motion",
       "sharedTemplate": "params",
       "musicalMilestone": 1,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "MOTION_FEEL",
@@ -452,9 +453,10 @@
       "group": "Motion",
       "sharedTemplate": "params",
       "musicalMilestone": 1,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "BASS_SOUND",
@@ -462,9 +464,10 @@
       "group": "Bass",
       "sharedTemplate": "params",
       "musicalMilestone": 1,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "BASS_BEHAVIOR",
@@ -472,9 +475,10 @@
       "group": "Bass",
       "sharedTemplate": "params",
       "musicalMilestone": 1,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "ENV_ENVELOPE",
@@ -482,9 +486,10 @@
       "group": "Sound",
       "sharedTemplate": "params",
       "musicalMilestone": 1,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "SOUND_PRESETS",
@@ -492,9 +497,10 @@
       "group": "Sound",
       "sharedTemplate": "picker",
       "musicalMilestone": 2,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "SOUND_ACTIONS",
@@ -512,9 +518,10 @@
       "group": "Sound",
       "sharedTemplate": "text",
       "musicalMilestone": 2,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "SOUND_OVERWRITE_CONFIRM",
@@ -542,9 +549,10 @@
       "group": "Effects",
       "sharedTemplate": "params",
       "musicalMilestone": 1,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "FX_DRIVE",
@@ -552,9 +560,10 @@
       "group": "Effects",
       "sharedTemplate": "params",
       "musicalMilestone": 1,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "FX_CHORUS",
@@ -562,9 +571,10 @@
       "group": "Effects",
       "sharedTemplate": "params",
       "musicalMilestone": 1,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "FX_PHASER",
@@ -572,9 +582,10 @@
       "group": "Effects",
       "sharedTemplate": "params",
       "musicalMilestone": 1,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "FX_DELAY",
@@ -582,9 +593,10 @@
       "group": "Effects",
       "sharedTemplate": "params",
       "musicalMilestone": 1,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "FX_REVERB",
@@ -592,9 +604,10 @@
       "group": "Effects",
       "sharedTemplate": "params",
       "musicalMilestone": 1,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "FX_ORDER",
@@ -602,9 +615,10 @@
       "group": "Effects",
       "sharedTemplate": "timeline",
       "musicalMilestone": 1,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "FX_PRESETS",
@@ -612,9 +626,10 @@
       "group": "Effects",
       "sharedTemplate": "picker",
       "musicalMilestone": 2,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "FX_SAVE",
@@ -622,9 +637,10 @@
       "group": "Effects",
       "sharedTemplate": "text",
       "musicalMilestone": 2,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "REC_EMPTY",
@@ -862,9 +878,10 @@
       "group": "Controls",
       "sharedTemplate": "params",
       "musicalMilestone": 1,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "CTRL-FORMS",
@@ -872,9 +889,10 @@
       "group": "Controls",
       "sharedTemplate": "params",
       "musicalMilestone": 2,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "DISPLAY-STYLE",
@@ -883,7 +901,7 @@
       "sharedTemplate": "params",
       "musicalMilestone": 1,
       "designStatus": "Native preview alongside selected prototype; device review pending",
-      "implementationStatus": "Implemented preview: three persisted palettes; physical validation pending",
+      "implementationStatus": "Implemented for all retained screens: three native themes and one Motion On/Off choice; finite transitions cancel completely with Off; physical tuning pending",
       "deviceVerification": "Pending — host captures and device link only"
     },
     {
@@ -893,7 +911,7 @@
       "sharedTemplate": "params",
       "musicalMilestone": 1,
       "designStatus": "Native preview alongside selected prototype; device review pending",
-      "implementationStatus": "Partial implementation: persisted On/Off, bounded HOME activity, finite clipped bank/page/chord transitions and settled caches; audio-tail metadata and hardware tuning pending",
+      "implementationStatus": "Implemented for all retained screens: three native themes and one Motion On/Off choice; finite transitions cancel completely with Off; physical tuning pending",
       "deviceVerification": "Pending — host captures and device link only"
     },
     {
@@ -912,9 +930,10 @@
       "group": "MIDI/USB",
       "sharedTemplate": "params",
       "musicalMilestone": 1,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "SYS-MIDI-CHANNELS",
@@ -922,9 +941,10 @@
       "group": "MIDI/USB",
       "sharedTemplate": "params",
       "musicalMilestone": 1,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "SYS-CLOCK-WAIT",
@@ -982,9 +1002,10 @@
       "group": "Advanced FM6",
       "sharedTemplate": "params",
       "musicalMilestone": 2,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "SND-FM6-OP1-LEVEL",
@@ -992,9 +1013,10 @@
       "group": "Advanced FM6",
       "sharedTemplate": "params",
       "musicalMilestone": 2,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "SND-FM6-OP1-TUNING",
@@ -1002,9 +1024,10 @@
       "group": "Advanced FM6",
       "sharedTemplate": "params",
       "musicalMilestone": 2,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "SND-FM6-OP1-SENS",
@@ -1012,9 +1035,10 @@
       "group": "Advanced FM6",
       "sharedTemplate": "params",
       "musicalMilestone": 2,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "SND-FM6-OP1-SCALING",
@@ -1022,9 +1046,10 @@
       "group": "Advanced FM6",
       "sharedTemplate": "params",
       "musicalMilestone": 2,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "SND-FM6-OP1-CURVES",
@@ -1032,9 +1057,10 @@
       "group": "Advanced FM6",
       "sharedTemplate": "params",
       "musicalMilestone": 2,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "SND-FM6-OP2-RATE",
@@ -1042,9 +1068,10 @@
       "group": "Advanced FM6",
       "sharedTemplate": "params",
       "musicalMilestone": 2,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "SND-FM6-OP2-LEVEL",
@@ -1052,9 +1079,10 @@
       "group": "Advanced FM6",
       "sharedTemplate": "params",
       "musicalMilestone": 2,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "SND-FM6-OP2-TUNING",
@@ -1062,9 +1090,10 @@
       "group": "Advanced FM6",
       "sharedTemplate": "params",
       "musicalMilestone": 2,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "SND-FM6-OP2-SENS",
@@ -1072,9 +1101,10 @@
       "group": "Advanced FM6",
       "sharedTemplate": "params",
       "musicalMilestone": 2,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "SND-FM6-OP2-SCALING",
@@ -1082,9 +1112,10 @@
       "group": "Advanced FM6",
       "sharedTemplate": "params",
       "musicalMilestone": 2,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "SND-FM6-OP2-CURVES",
@@ -1092,9 +1123,10 @@
       "group": "Advanced FM6",
       "sharedTemplate": "params",
       "musicalMilestone": 2,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "SND-FM6-OP3-RATE",
@@ -1102,9 +1134,10 @@
       "group": "Advanced FM6",
       "sharedTemplate": "params",
       "musicalMilestone": 2,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "SND-FM6-OP3-LEVEL",
@@ -1112,9 +1145,10 @@
       "group": "Advanced FM6",
       "sharedTemplate": "params",
       "musicalMilestone": 2,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "SND-FM6-OP3-TUNING",
@@ -1122,9 +1156,10 @@
       "group": "Advanced FM6",
       "sharedTemplate": "params",
       "musicalMilestone": 2,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "SND-FM6-OP3-SENS",
@@ -1132,9 +1167,10 @@
       "group": "Advanced FM6",
       "sharedTemplate": "params",
       "musicalMilestone": 2,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "SND-FM6-OP3-SCALING",
@@ -1142,9 +1178,10 @@
       "group": "Advanced FM6",
       "sharedTemplate": "params",
       "musicalMilestone": 2,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "SND-FM6-OP3-CURVES",
@@ -1152,9 +1189,10 @@
       "group": "Advanced FM6",
       "sharedTemplate": "params",
       "musicalMilestone": 2,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "SND-FM6-OP4-RATE",
@@ -1162,9 +1200,10 @@
       "group": "Advanced FM6",
       "sharedTemplate": "params",
       "musicalMilestone": 2,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "SND-FM6-OP4-LEVEL",
@@ -1172,9 +1211,10 @@
       "group": "Advanced FM6",
       "sharedTemplate": "params",
       "musicalMilestone": 2,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "SND-FM6-OP4-TUNING",
@@ -1182,9 +1222,10 @@
       "group": "Advanced FM6",
       "sharedTemplate": "params",
       "musicalMilestone": 2,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "SND-FM6-OP4-SENS",
@@ -1192,9 +1233,10 @@
       "group": "Advanced FM6",
       "sharedTemplate": "params",
       "musicalMilestone": 2,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "SND-FM6-OP4-SCALING",
@@ -1202,9 +1244,10 @@
       "group": "Advanced FM6",
       "sharedTemplate": "params",
       "musicalMilestone": 2,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "SND-FM6-OP4-CURVES",
@@ -1212,9 +1255,10 @@
       "group": "Advanced FM6",
       "sharedTemplate": "params",
       "musicalMilestone": 2,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "SND-FM6-OP5-RATE",
@@ -1222,9 +1266,10 @@
       "group": "Advanced FM6",
       "sharedTemplate": "params",
       "musicalMilestone": 2,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "SND-FM6-OP5-LEVEL",
@@ -1232,9 +1277,10 @@
       "group": "Advanced FM6",
       "sharedTemplate": "params",
       "musicalMilestone": 2,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "SND-FM6-OP5-TUNING",
@@ -1242,9 +1288,10 @@
       "group": "Advanced FM6",
       "sharedTemplate": "params",
       "musicalMilestone": 2,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "SND-FM6-OP5-SENS",
@@ -1252,9 +1299,10 @@
       "group": "Advanced FM6",
       "sharedTemplate": "params",
       "musicalMilestone": 2,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "SND-FM6-OP5-SCALING",
@@ -1262,9 +1310,10 @@
       "group": "Advanced FM6",
       "sharedTemplate": "params",
       "musicalMilestone": 2,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "SND-FM6-OP5-CURVES",
@@ -1272,9 +1321,10 @@
       "group": "Advanced FM6",
       "sharedTemplate": "params",
       "musicalMilestone": 2,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "SND-FM6-OP6-RATE",
@@ -1282,9 +1332,10 @@
       "group": "Advanced FM6",
       "sharedTemplate": "params",
       "musicalMilestone": 2,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "SND-FM6-OP6-LEVEL",
@@ -1292,9 +1343,10 @@
       "group": "Advanced FM6",
       "sharedTemplate": "params",
       "musicalMilestone": 2,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "SND-FM6-OP6-TUNING",
@@ -1302,9 +1354,10 @@
       "group": "Advanced FM6",
       "sharedTemplate": "params",
       "musicalMilestone": 2,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "SND-FM6-OP6-SENS",
@@ -1312,9 +1365,10 @@
       "group": "Advanced FM6",
       "sharedTemplate": "params",
       "musicalMilestone": 2,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "SND-FM6-OP6-SCALING",
@@ -1322,9 +1376,10 @@
       "group": "Advanced FM6",
       "sharedTemplate": "params",
       "musicalMilestone": 2,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "SND-FM6-OP6-CURVES",
@@ -1332,9 +1387,10 @@
       "group": "Advanced FM6",
       "sharedTemplate": "params",
       "musicalMilestone": 2,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "SND-FM6-PITCH-RATE",
@@ -1342,9 +1398,10 @@
       "group": "Advanced FM6",
       "sharedTemplate": "params",
       "musicalMilestone": 2,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "SND-FM6-PITCH-LEVEL",
@@ -1352,9 +1409,10 @@
       "group": "Advanced FM6",
       "sharedTemplate": "params",
       "musicalMilestone": 2,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "SND-FM6-GLOBAL-VOICE",
@@ -1362,9 +1420,10 @@
       "group": "Advanced FM6",
       "sharedTemplate": "params",
       "musicalMilestone": 2,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "SND-FM6-GLOBAL-LFO",
@@ -1372,9 +1431,10 @@
       "group": "Advanced FM6",
       "sharedTemplate": "params",
       "musicalMilestone": 2,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "SND-FM6-GLOBAL-LFO2",
@@ -1382,9 +1442,10 @@
       "group": "Advanced FM6",
       "sharedTemplate": "params",
       "musicalMilestone": 2,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "SND-VA-OSC1",
@@ -1392,9 +1453,10 @@
       "group": "Advanced VA",
       "sharedTemplate": "params",
       "musicalMilestone": 2,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "SND-VA-OSC1-DETAIL",
@@ -1402,9 +1464,10 @@
       "group": "Advanced VA",
       "sharedTemplate": "params",
       "musicalMilestone": 2,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "SND-VA-OSC2",
@@ -1412,9 +1475,10 @@
       "group": "Advanced VA",
       "sharedTemplate": "params",
       "musicalMilestone": 2,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "SND-VA-OSC2-DETAIL",
@@ -1422,9 +1486,10 @@
       "group": "Advanced VA",
       "sharedTemplate": "params",
       "musicalMilestone": 2,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "SND-VA-OSC3",
@@ -1432,9 +1497,10 @@
       "group": "Advanced VA",
       "sharedTemplate": "params",
       "musicalMilestone": 2,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "SND-VA-OSC3-DETAIL",
@@ -1442,9 +1508,10 @@
       "group": "Advanced VA",
       "sharedTemplate": "params",
       "musicalMilestone": 2,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "SND-VA-OSC4",
@@ -1452,9 +1519,10 @@
       "group": "Advanced VA",
       "sharedTemplate": "params",
       "musicalMilestone": 2,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "SND-VA-OSC4-DETAIL",
@@ -1462,9 +1530,10 @@
       "group": "Advanced VA",
       "sharedTemplate": "params",
       "musicalMilestone": 2,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "SND-VA-FILTER",
@@ -1472,9 +1541,10 @@
       "group": "Advanced VA",
       "sharedTemplate": "params",
       "musicalMilestone": 2,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "SND-VA-FILTER-DETAIL",
@@ -1482,9 +1552,10 @@
       "group": "Advanced VA",
       "sharedTemplate": "params",
       "musicalMilestone": 2,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "SND-VA-ENV1",
@@ -1492,9 +1563,10 @@
       "group": "Advanced VA",
       "sharedTemplate": "params",
       "musicalMilestone": 2,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "SND-VA-ENV1-DETAIL",
@@ -1502,9 +1574,10 @@
       "group": "Advanced VA",
       "sharedTemplate": "params",
       "musicalMilestone": 2,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "SND-VA-ENV2",
@@ -1512,9 +1585,10 @@
       "group": "Advanced VA",
       "sharedTemplate": "params",
       "musicalMilestone": 2,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "SND-VA-ENV2-DETAIL",
@@ -1522,9 +1596,10 @@
       "group": "Advanced VA",
       "sharedTemplate": "params",
       "musicalMilestone": 2,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "SND-VA-ENV3",
@@ -1532,9 +1607,10 @@
       "group": "Advanced VA",
       "sharedTemplate": "params",
       "musicalMilestone": 2,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "SND-VA-ENV3-DETAIL",
@@ -1542,9 +1618,10 @@
       "group": "Advanced VA",
       "sharedTemplate": "params",
       "musicalMilestone": 2,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "SND-VA-ENV4",
@@ -1552,9 +1629,10 @@
       "group": "Advanced VA",
       "sharedTemplate": "params",
       "musicalMilestone": 2,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "SND-VA-ENV4-DETAIL",
@@ -1562,9 +1640,10 @@
       "group": "Advanced VA",
       "sharedTemplate": "params",
       "musicalMilestone": 2,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "SND-VA-LFO1",
@@ -1572,9 +1651,10 @@
       "group": "Advanced VA",
       "sharedTemplate": "params",
       "musicalMilestone": 2,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "SND-VA-LFO2",
@@ -1582,9 +1662,10 @@
       "group": "Advanced VA",
       "sharedTemplate": "params",
       "musicalMilestone": 2,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "SND-VA-LFO3",
@@ -1592,9 +1673,10 @@
       "group": "Advanced VA",
       "sharedTemplate": "params",
       "musicalMilestone": 2,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "SND-VA-LFO4",
@@ -1602,9 +1684,10 @@
       "group": "Advanced VA",
       "sharedTemplate": "params",
       "musicalMilestone": 2,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "SND-VA-LFO-SYNC",
@@ -1612,9 +1695,10 @@
       "group": "Advanced VA",
       "sharedTemplate": "params",
       "musicalMilestone": 2,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "SND-VA-VOICE",
@@ -1622,9 +1706,10 @@
       "group": "Advanced VA",
       "sharedTemplate": "params",
       "musicalMilestone": 2,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "SND-VA-MOD1",
@@ -1632,9 +1717,10 @@
       "group": "Advanced VA",
       "sharedTemplate": "params",
       "musicalMilestone": 2,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "SND-VA-MOD2",
@@ -1642,9 +1728,10 @@
       "group": "Advanced VA",
       "sharedTemplate": "params",
       "musicalMilestone": 2,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "SND-VA-MOD3",
@@ -1652,9 +1739,10 @@
       "group": "Advanced VA",
       "sharedTemplate": "params",
       "musicalMilestone": 2,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "SND-VA-MOD4",
@@ -1662,9 +1750,10 @@
       "group": "Advanced VA",
       "sharedTemplate": "params",
       "musicalMilestone": 2,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "SND-VA-MOD5",
@@ -1672,9 +1761,10 @@
       "group": "Advanced VA",
       "sharedTemplate": "params",
       "musicalMilestone": 2,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "SND-VA-MOD6",
@@ -1682,9 +1772,10 @@
       "group": "Advanced VA",
       "sharedTemplate": "params",
       "musicalMilestone": 2,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "SND-VA-MOD7",
@@ -1692,9 +1783,10 @@
       "group": "Advanced VA",
       "sharedTemplate": "params",
       "musicalMilestone": 2,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "SND-VA-MOD8",
@@ -1702,9 +1794,10 @@
       "group": "Advanced VA",
       "sharedTemplate": "params",
       "musicalMilestone": 2,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "SND-SAVED",
@@ -1712,9 +1805,10 @@
       "group": "Sound",
       "sharedTemplate": "status",
       "musicalMilestone": 2,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "SYS-TOOLS",
@@ -1742,9 +1836,10 @@
       "group": "System",
       "sharedTemplate": "status",
       "musicalMilestone": 1,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "SYS-DIAG-TIMING",
@@ -1752,9 +1847,10 @@
       "group": "System",
       "sharedTemplate": "status",
       "musicalMilestone": 1,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "SYS-DIAG-MEMORY",
@@ -1762,9 +1858,10 @@
       "group": "System",
       "sharedTemplate": "status",
       "musicalMilestone": 1,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "SYS-DIAG-USB",
@@ -1772,9 +1869,10 @@
       "group": "System",
       "sharedTemplate": "status",
       "musicalMilestone": 1,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "SYS-BACKUP",
@@ -1832,9 +1930,10 @@
       "group": "System",
       "sharedTemplate": "picker",
       "musicalMilestone": 2,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "SYS-LEGACY-LOOP",
@@ -1872,9 +1971,10 @@
       "group": "Sound",
       "sharedTemplate": "params",
       "musicalMilestone": 2,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "SYS-RESET-ARM",
@@ -1882,9 +1982,10 @@
       "group": "System",
       "sharedTemplate": "confirm",
       "musicalMilestone": 1,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "SYS-RESET-HOLD",
@@ -1892,9 +1993,10 @@
       "group": "System",
       "sharedTemplate": "confirm",
       "musicalMilestone": 1,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "SYS-RESET-CONFIRM",
@@ -1902,9 +2004,10 @@
       "group": "System",
       "sharedTemplate": "confirm",
       "musicalMilestone": 1,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "SYS-RESET-BUSY",
@@ -1912,9 +2015,10 @@
       "group": "System",
       "sharedTemplate": "status",
       "musicalMilestone": 1,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "SYS-UPDATE",
@@ -1932,9 +2036,10 @@
       "group": "System",
       "sharedTemplate": "status",
       "musicalMilestone": 1,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "SYS-UPDATE-ACTIVE",
@@ -1942,9 +2047,10 @@
       "group": "System",
       "sharedTemplate": "status",
       "musicalMilestone": 1,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "SYS-BOOT",
@@ -1952,9 +2058,10 @@
       "group": "System",
       "sharedTemplate": "status",
       "musicalMilestone": 1,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "SYS-SAFE",
@@ -1962,9 +2069,10 @@
       "group": "System",
       "sharedTemplate": "status",
       "musicalMilestone": 1,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "SYS-RECOVERY",
@@ -1972,9 +2080,10 @@
       "group": "System",
       "sharedTemplate": "text",
       "musicalMilestone": 1,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "SYS-CALIBRATION",
@@ -2002,9 +2111,10 @@
       "group": "Sound",
       "sharedTemplate": "status",
       "musicalMilestone": 2,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "SYS-BACKUP-STATUS",
@@ -2042,9 +2152,10 @@
       "group": "Sound",
       "sharedTemplate": "params",
       "musicalMilestone": 1,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+      "deviceVerification": "Pending — native host captures and device link only",
+      "evidence": "native-pages/README.md"
     },
     {
       "id": "DISPLAY-ACCENT",

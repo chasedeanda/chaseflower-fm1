@@ -37,11 +37,23 @@ static void cfn_fit(const cfn_font_t *f,int x,int baseline,const char *s,int wid
     }
     cfn_text(f,x,baseline,b,ink);
 }
+/* Translate a freshly composed panel in place, never a second framebuffer.
+ * Used only for the finite workspace arrival; controls and header stay fixed. */
+static void cfn_shift_panel(int dx,int y0,int y1)
+{
+    if(!dx)return;
+    for(int y=y0;y<y1;y++) {
+        volatile uint8_t *row=fb+y*FB_W;
+        if(dx>0){for(int p=FB_W-1;p>=dx;p--)row[p]=row[p-dx];for(int p=0;p<dx;p++)row[p]=FL_BG;}
+        else {for(int p=0;p<FB_W+dx;p++)row[p]=row[p-dx];for(int p=FB_W+dx;p<FB_W;p++)row[p]=FL_BG;}
+        if((y&15)==15)CF_PUMP();
+    }
+}
 typedef struct {
     char chord[24],degree[12],notes[48],idea[40],sound[16],context[48],status[24],pending[48],next_setup[48];
     char rail[4][24],numeral[4][12];
     char value[4][14],label[4][12];
-    uint8_t live,hold,slot,first,count,total,skin,motion,battery,halo,rec,bank,disabled[4];
+    uint8_t live,hold,slot,first,count,total,skin,motion,battery,halo,rec,bank,disabled[4],emphasis[4],cursor_width;
     int8_t bank_dx,chord_dy;
 } cf_stage_model_t;
 static cf_stage_model_t cf_stage_last;
@@ -55,7 +67,7 @@ static void cf_stage_model(cf_stage_model_t *m)
 {
     memset(m,0,sizeof *m);name_update();
     m->bank=cf_home_bank;
-    m->bank_dx=(int8_t)cf_tween_offset(cf_home_bank_ms,160,10);
+    m->bank_dx=(int8_t)(cf_tween_offset(cf_home_bank_ms,160,10)*(cf_nav_dir<0?-1:1));
     m->live=cu_name_live;m->hold=cf_sn.out.hold;m->skin=cf_skin;m->motion=cf_motion;m->battery=(uint8_t)cf_batt();
     str_cpy(m->chord,cu_name[0]?cu_name:"--",sizeof m->chord);
     str_cpy(m->degree,cu_name_sub,sizeof m->degree);
@@ -107,21 +119,11 @@ static void cf_stage_model(cf_stage_model_t *m)
         cf_harmony_numeral(cs.chord.scale,cs.chord.tonic,root,m->numeral[i]);
     }
     for(int i=0;i<4;i++){cf_knob_t k;memset(&k,0,sizeof k);ui_knob_info(i,&k);str_cpy(m->label[i],k.name,sizeof m->label[i]);str_cpy(m->value[i],k.val,sizeof m->value[i]);m->disabled[i]=k.dis;}
-    /* Documented volume/activity fallback, not a measured audio envelope.
-     * Real hits only: a selected/muted drum pattern alone cannot animate. */
-    unsigned parts=(n && cs.level_chord?1:0)+(cf_sn.nb && cs.bass_level?1:0);
-    if(cs.level_drums && cf_sn.sq_lit_t[SQ_DRUMS] && cf_sn.now_ms-cf_sn.sq_lit_t[SQ_DRUMS]<150)parts++;
-    unsigned v=song.master_q12>4096?4096:song.master_q12;
-    unsigned raw=parts?v*(204+17*parts)/4096:0;if(raw>255)raw=255;
-    unsigned dt=cu.now-cf_stage_tick;cf_stage_tick=cu.now;if(dt>100)dt=100;
-    if(!cf_motion){cf_stage_energy=0;m->halo=0;}
-    else {
-        int delta=(int)raw-cf_stage_energy;unsigned tau=delta>0?60:450;
-        int step=delta*(int)dt/(int)(tau+dt);if(!step && dt && delta)step=delta>0?1:-1;
-        cf_stage_energy=(uint16_t)((int)cf_stage_energy+step);
-        unsigned beat=cf_sn.beats_done && cf_sn.now_ms-cf_sn.beat_ms<120?1:0;
-        m->halo=(uint8_t)(cf_stage_energy/64+(beat?cf_stage_energy/64:0));
-    }
+    cf_stage_energy=cfn_motion.energy;cf_stage_tick=cu.now;
+    unsigned beat=cf_motion && cf_sn.running && !cf_sn.ac_lost && !cf_sn.ac_waiting && !cf_sn.ac_paused && cf_sn.beats_done && cf_sn.now_ms-cf_sn.beat_ms<120;
+    m->halo=cf_motion && cfn_motion.active?(uint8_t)(1+cfn_motion.energy/64+(cfn_motion.parts>1?1:0)+(beat?1:0)):0;
+    for(unsigned k=0;k<4;k++)m->emphasis[k]=cfn_knob(k);
+    m->cursor_width=cfn_cursor(0x10000u|m->slot);
 }
 static void cf_stage_chord(const char *name,int y,uint8_t ink)
 {
@@ -166,7 +168,7 @@ static void cf_stage_draw(void)
         fb_clip((int)i*60,157,(int)(i+1)*60,195);
         cfn_center(&CFN_16,x,174,m.numeral[i],C_ACC(0));
         cfn_center(&CFN_12,x,190,m.rail[i],FL_INK);
-        if(m.slot==m.first+i)fb_hline((int)i*60+9,193,42,C_ACC(0));
+        if(m.slot==m.first+i)fb_hline((int)i*60+9,193,42*m.cursor_width/100,C_ACC(0));
     }
     fb_unclip();fb_hline(10,198,220,FL_BG3);
     char bank[24];str_cpy(bank,CF_HOME_BANK_NAME[m.bank],sizeof bank);
@@ -175,7 +177,8 @@ static void cf_stage_draw(void)
     for(int i=0;i<4;i++) {
         int x=i*60;fb_clip(x+3,211,x+57,240);
         cfn_center(&CFN_12,x+30,223,m.label[i],FL_INK2);
-        cfn_fit(cfn_width(&CFN_16,m.value[i])<=54?&CFN_16:&CFN_12,x+3,239,m.value[i],54,m.disabled[i]?FL_INK2:FL_INK);
+        cfn_fit(cfn_width(&CFN_16,m.value[i])<=54?&CFN_16:&CFN_12,x+3,237,m.value[i],54,m.disabled[i]?FL_INK2:FL_INK);
+        if(m.emphasis[i])fb_hline(x+30-m.emphasis[i],225,2*m.emphasis[i],C_ACC(0));
     }
-    fb_unclip();cf_present();
+    fb_unclip();if(!cu.pop)cf_present();
 }

@@ -74,10 +74,27 @@ static void panel_setup(void) { cf_message("Calibration: default panel"); }
 #define CRB_STUB_GO(w) ((void)(w))
 #endif
 #endif
+/* Recovery draws directly to the LCD, independent of the live UI, palette,
+ * framebuffer, input pump and audio IRQ. Also usable from the fault handler. */
+static void cf_recovery_text(int x,int baseline,const char *s)
+{
+    const cfn_font_t *f=&CFN_16;
+    for(;*s;s++) {
+        const cfn_glyph_t *g=&f->g[cfn_code((uint8_t)*s)-32];
+        for(unsigned y=0;y<g->h;y++)for(unsigned a=0;a<g->w;) {
+            unsigned bit=y*g->w+a;
+            if(!(f->bits[g->off+bit/8]&(128u>>(bit&7)))){a++;continue;}
+            unsigned b=a++;while(a<g->w){bit=y*g->w+a;if(!(f->bits[g->off+bit/8]&(128u>>(bit&7))))break;a++;}
+            lcd_fill(x+g->x+b,baseline+g->y+y,a-b,1,0xF7DE);
+        }
+        x+=g->adv;
+    }
+}
+static void cf_recovery_screen(const char *title)
+{lcd_fill(0,0,240,240,0x00C3);cf_recovery_text(10,48,title);}
 #ifndef CRB_UPDATE_SCREEN
 #ifdef FM1_HAVE_STUB
-#define CRB_UPDATE_SCREEN(t) do { fm1_audio_stop(); lcd_fill(0, 0, 240, 240, T_BG); \
-                                  draw_text_box(0, 110, 240, &AF_M, (t), T_THEME, 1); } while (0)
+#define CRB_UPDATE_SCREEN(t) do { fm1_audio_stop(); cf_recovery_screen(t); } while (0)
 #define CRB_UBOOT_GO() do { usb_detach(); fm1_delay_ms(30); bootguard_intentional(&bootguard); fm1_enter_uboot(); } while (0)
 #else
 #define CRB_UPDATE_SCREEN(t) ((void)(t))

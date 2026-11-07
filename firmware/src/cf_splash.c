@@ -21,9 +21,9 @@ static void cf_splash(void)
     fb_full = 1;
     if (cr_safe) {
         fb_fill(FL_BG);
-        fb_text_c(&CF_FONT_UI, 120, 90, "SAFE MODE", C_ACC(0), 2);
-        fb_text_c(&CF_FONT_UI, 120, 130, "settings and sounds", FL_INK2, 1);
-        fb_text_c(&CF_FONT_UI, 120, 144, "are not loaded", FL_INK2, 1);
+        cfn_center(&CFN_32,120,92,"Safe mode",C_ACC(0));
+        cfn_center(&CFN_16,120,132,"Settings and sounds",FL_INK2);
+        cfn_center(&CFN_16,120,154,"are not loaded",FL_INK2);
         cf_present();
         return;
     }
