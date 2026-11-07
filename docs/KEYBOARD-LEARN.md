@@ -29,8 +29,10 @@ the third and adds a ninth. In Harmony On, 7 follows chord quality: major chord
 maj7 / minor chord m7. Manual form help names its assigned type and added tones.
 Unsupported Harmony scale/quantize settings explicitly say unavailable.
 
-**All four knobs do nothing on this page.** There are no parameter columns or
-hidden musical edits. The freed area belongs to the keyboard and explanations.
+**K1 turns Harmony On/Off. K2 restores factory Harmony defaults**, including
+Off and the default modifier assignments, inversions and bass tones. Turn K2
+either way to reset. K3 and K4 are inactive. The keyboard and explanation layout
+stays the same, with a short control reminder in the existing footer.
 SELECT, PRESETS, MASTER, OCT, transport and destination buttons keep their usual
 behavior. HOLD and note releases remain owned by the existing chord player.
 
@@ -39,7 +41,7 @@ view setting. This sixth page teaches the physical controls and assignments.
 
 ## Verification
 
-- Keyboard suite: **143 assertions**, covering inactive knobs during playback,
+- Keyboard suite: regression assertions, covering Harmony controls and inactive K3/K4 during playback,
   current/edited Manual and Auto labels, all modifier explanations, unsupported
   contexts, real note/latched-seventh/HOLD/release handling, transposed register,
   six-page navigation and settled redraw/flash behavior.

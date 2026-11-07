@@ -11,19 +11,35 @@ static void setup(void)
     cu.keys=0;cu.pop=POP_NONE;cf_motion=0;cf_intro_on=cf_boot_go=0;cf_learn_focus=255;
     cpg.idea=0;cpg.rhythm=dm_nth(4,0);cpg.mode=CPA_BOTH;cf_send_config();cf_send_metro();cu_spell_update();blocks(4);
 }
-static void inactive_knobs(void)
+static void harmony_knobs(void)
 {
     setup();CHECK(CF_HB_N==6 && CF_HB_PERFORM==4 && CF_HB_LEARN==5);
     ui_button(B_PLAY);blocks(4);CHECK(cpa.on);
     unsigned cfg=cfs_fnv(&cs,sizeof cs),sounds=cfs_fnv(trk,sizeof trk),patterns=cfs_fnv(&sq_st,sizeof sq_st);
     unsigned plan=cfs_fnv(&cpa,sizeof cpa),grooves=cfs_fnv(&dmr,sizeof dmr),queue=cf_evq_w,writes=emu_flash_writes;
-    for(int knob=0;knob<4;knob++) {
+    for(int knob=2;knob<4;knob++) {
         cf_knob_t k={0};ui_knob_info(knob,&k);CHECK(k.dis && !k.name[0] && !k.val[0]);
         ui_knob_turn(knob,1000);ui_knob_turn(knob,-1000);ui_knob_turn(knob,0);
     }
     CHECK(cfg==cfs_fnv(&cs,sizeof cs) && sounds==cfs_fnv(trk,sizeof trk));
     CHECK(patterns==cfs_fnv(&sq_st,sizeof sq_st) && grooves==cfs_fnv(&dmr,sizeof dmr));
     CHECK(plan==cfs_fnv(&cpa,sizeof cpa) && queue==cf_evq_w && writes==emu_flash_writes);
+    cf_knob_t control={0};ui_knob_info(0,&control);CHECK(!control.dis && !strcmp(control.val,"Off"));
+    ui_knob_info(1,&control);CHECK(!control.dis && !strcmp(control.name,"RESET"));
+    cf_chord_cfg_t manual=cs.chord;
+    cf_harmony_t defaults;cf_harmony_defaults(&defaults);
+    ui_knob_turn(0,1);blocks(2);CHECK(ch.mode==CF_H_AUTO && cfc.harmony.mode==CF_H_AUTO && cpa.on);
+    cf_ui_draw();CHECK(cf_stage_last.learn.automatic);
+    ui_knob_turn(0,-1);blocks(2);CHECK(ch.mode==CF_H_MANUAL && cfc.harmony.mode==CF_H_MANUAL && cpa.on);
+    for(int direction=-1;direction<=1;direction+=2) {
+        ch.mode=CF_H_AUTO;ch.slot[0]=CF_MOD_DIM;ch.inv[0]=2;ch.bass[0]=4;
+        cf_harmony_t before=ch;ui_knob_turn(1,0);CHECK(!memcmp(&before,&ch,sizeof ch));
+        ui_knob_turn(1,direction);blocks(2);
+        CHECK(!memcmp(&defaults,&ch,sizeof ch) && !memcmp(&defaults,&cfc.harmony,sizeof ch));
+        CHECK(!memcmp(&manual,&cs.chord,sizeof manual) && cpa.on && cf_home_bank==CF_HB_LEARN);
+    }
+    CHECK(patterns==cfs_fnv(&sq_st,sizeof sq_st) && grooves==cfs_fnv(&dmr,sizeof dmr));
+    cu.pop=POP_NONE;
     cf_ui_draw();CHECK(cf_home_bank==CF_HB_LEARN && cf_stage_last.bank==CF_HB_LEARN);
     ui_button(B_HOME);CHECK(home_stage() && cf_home_bank==CF_HB_CORE && cpa.on);
     for(unsigned i=0;i<5;i++)ui_button(B_HOME);CHECK(cf_home_bank==CF_HB_LEARN);
@@ -92,6 +108,6 @@ static void render(const char *dir)
 int main(int argc,char **argv)
 {
     emu_fw_options(NULL,1,0,1);emu_hal.ready=2;emu_fw_init(0);
-    if(argc==3 && !strcmp(argv[1],"--render"))render(argv[2]);else{inactive_knobs();assignments();live_keys();}
+    if(argc==3 && !strcmp(argv[1],"--render"))render(argv[2]);else{harmony_knobs();assignments();live_keys();}
     printf("Keyboard: %u checks, %u failures\n",checks,failures);return failures!=0;
 }
