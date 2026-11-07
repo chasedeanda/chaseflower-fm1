@@ -3,7 +3,7 @@
 Chase's personal firmware for the **M-VAVE FM-1**, built on [CoralFlower](https://github.com/FicusFicusov/CoralFlower).
 Explore chord progressions, build a groove, play over it, edit your own phrase and learn what makes the chords work.
 
-**Release 0.6-chase9: native Instrument Teal UI, Songs and Chord Lab.**
+**Release 0.6-chase9: CORD boot, responsive HOME motion, Songs and Chord Lab.**
 
 **[Download the firmware (.fwsc)](https://github.com/chasedeanda/chaseflower-fm1/releases/download/v0.6-chase9/coralflower-0.6-chase9.fwsc)** ·
 [Release notes](docs/releases/0.6-chase9.md) · [Build current main](#build-current-main)
@@ -182,7 +182,9 @@ The separate chord-library picker remains deferred.
   go to **GLO → MIDI** and set CLOCK Off. After clock loss, send MIDI Start/Continue to resume.
 - **Make the display yours:** **GLO → Display**, K1 chooses Instrument/Studio/Editorial; K4 sets **Motion On/Off**.
   Off settles all visual animation while notes, recording and transport keep updating.
-- **HOME feedback:** with Motion On and audible output, the rings respond to sound and the beat.
+- **CORD startup:** piano keys assemble inside a complete ring in your saved theme, then open HOME / CORE.
+  Touch a key, button or encoder to skip. Motion Off shows the finished logo during startup.
+- **HOME feedback:** with Motion On and audible output, a round pulse expands and fades with sound and the beat.
   A small top-right indicator follows the playing clock. Filled progression cards match the chord you are playing;
   the underline remains the sequence's actual position. Matching still works with Motion Off.
 - **Record to a computer:** USB inputs **1/2 are the complete stereo mix**, **3/4 the chord stem**, **5/6 the bass stem**.
@@ -227,7 +229,7 @@ GitHub Actions runs the complete regression suite. [Local emulator](tools/emu/RE
 3. Expand **Another version, or a build of your own**, choose the downloaded **`coralflower-0.6-chase9.fwsc`**
    or your own **`build/coralflower.fwsc`**, and install
    from that section. Check the selected file first: the installer's default download is upstream CoralFlower.
-4. Keep the cable connected and the page open until restart. The current build opens directly to native **HOME / CORE**.
+4. Keep the cable connected and the page open until restart. The **CORD** piano-key boot screen leads to native **HOME / CORE**.
 
 The separate app `.bin` and GitHub source archives are not installer packages.
 This release reports **CoralFlower 0.6-chase9**. The compatible `CoralFlower` INFO prefix, `FM-1_930` package identity

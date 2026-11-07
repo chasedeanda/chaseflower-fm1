@@ -12,5 +12,5 @@ firmware/src/cf_lab_screen.c:54:39: warning: suggest braces around initializatio
                                       {}
 2 warnings generated.
 size: 95 main-loop functions built for size (783 not in this build)
-size: .text 444544 B, .ram_text 3000 B, .c1_text 128 B (RAMTEXT 3128 of 24576), .data 13308 B, .bss 74572 B; XIP 460980 B of 573440 (80.4%), RAM 87880 B of 98304 (89.4%), POOL 316792 B of 344064 (92.1%), NOINIT 216 B of 15664 (1.4%)
-checks: [] ['.ram_text: 932 insns, no calls', 'image 464788 B (stub 3808 + app 460980); RAM .data+.bss 87884 B of 98304; pool 316792 B of 344064']
+size: .text 448544 B, .ram_text 3000 B, .c1_text 128 B (RAMTEXT 3128 of 24576), .data 13308 B, .bss 74748 B; XIP 464980 B of 573440 (81.1%), RAM 88056 B of 98304 (89.6%), POOL 316792 B of 344064 (92.1%), NOINIT 216 B of 15664 (1.4%)
+checks: [] ['.ram_text: 932 insns, no calls', 'image 468788 B (stub 3808 + app 464980); RAM .data+.bss 88060 B of 98304; pool 316792 B of 344064']

@@ -52,6 +52,7 @@
 #define CF_BROWSER_H
 #define CF_BTN_T0(i) fm1_in.btn_t0[i]
 #define CF_CHORD_H
+#define CF_CORD_BOOT_MS 1300u
 #define CF_DRUM_VARY 1
 #define CF_EVQ 128u
 #define CF_FONTS_H
@@ -264,7 +265,7 @@
 #define EP1_ROOM (16u + 8u)
 #define EP1_TX_IDLE() (mo_w == mo_r && so_w == so_r && !SX_UNSEEN())
 #define FB_H 240
-#define FB_PAL 64
+#define FB_PAL 128
 #define FB_TS 16
 #define FB_TX (FB_W / FB_TS)
 #define FB_TY (FB_H / FB_TS)

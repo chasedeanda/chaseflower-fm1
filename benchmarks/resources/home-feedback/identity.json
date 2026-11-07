@@ -1,6 +1,6 @@
 {
   "audit_tool_sha256": "71271bfdbf530d480c210e8f9937e06e196204c375bfc63d94ee84ef152b8c36",
-  "build_log_sha256": "15f2ffe7091599dc8e87dd9ac65f0d06758b2cb1ba71bb42235a63232cfcd5ce",
+  "build_log_sha256": "a05e7ae05bb355af5046631a13ad13bdf0d1119f06f66f215033878a31eeb7cd",
   "build_recipe_sha256": "46c72d745ef5fe21426838e293ce3bf28ca349fa8bfb0d444e9b1c13c85299c8",
   "compiler_flags": [
     "-Os",
@@ -16,7 +16,7 @@
   "compiler_version": "clang version 4.0.1 () ()\nTarget: x86_64-unknown-linux-gnu\nThread model: posix\nInstalledDir: /opt/jieli/pi32v2/bin",
   "dependency_sha256": {
     "build/gen/cf_fonts.h": "fa7100adc7013f2b5b10d02f2cdd36e485b890a3daa8dd2d7bd147d0a7b779ca",
-    "build/gen/cf_native_fonts.h": "2d0df134b6ac099552ba4a4470081396ee280014ecb40c820140e730384c4ef5",
+    "build/gen/cf_native_fonts.h": "877da3032abe0e45733304d2b282289f16f65c0d18e41204a7ee7699176001ef",
     "build/gen/felucca_fm6.h": "d1859b8194443ecbe099505909d6ea4db866d919100c81d738bb06d56004f791",
     "build/gen/felucca_tables.h": "15acfe4c88be3a16c3036cdb98962aa7eeeaf7d115d78ca92dbdb2cb8aa9750e",
     "build/gen/ui_fonts.h": "63a0bb48c6f74c2e55c45edc241ae178c47e1016f596664ba9a48fc01f80aa3d",
@@ -46,6 +46,7 @@
     "firmware/src/cf_accomp_ui.c": "8e6744c2b5ba5ee904af45894be700d9124b86ac887692e38c66fd287e017453",
     "firmware/src/cf_arp.c": "007da8cd2f1cfa7bc0053a0f3c02ee1f91492751c67c52b12b8e3ce2061c31e5",
     "firmware/src/cf_backup.c": "87b61fe52927e85d5d5a302265cb471451455e26820776b90939d0c9acdb1ada",
+    "firmware/src/cf_boot_cord.c": "056662561035aa06dea7337e30b1cef704c7e8d93cfd91940ddb9cdcdc5df744",
     "firmware/src/cf_browser.c": "1d026bf2308137c56fdb1e068a90e373b3bf0a5132149f3578ca5cfdbb90ec69",
     "firmware/src/cf_browser.h": "36c2d5f0852c6b7a98237e1dafe95b8e886085104ba0acc31979f98bb3e474f4",
     "firmware/src/cf_browser_store.c": "c6b52247dfaf369aae762407dd6b8e2f349b487f3071b5e69b2a41408bf389cf",
@@ -63,7 +64,7 @@
     "firmware/src/cf_draw.c": "08b25ac60f2b6233567f734f04f916af226a08491dbe432ea5969119b11adf31",
     "firmware/src/cf_drum.c": "c5c6a487523c96d844ce77ff9878381b8f41a6bead80d31561f8a86d7a611f9f",
     "firmware/src/cf_edit.c": "84e24add6a172c9edfc291e090ad2ff04e2d2df3b6b9724db70ac4c6884eecf4",
-    "firmware/src/cf_fb.c": "2bc3fd0457a7412b4cf12f08a0c2363e043bdaabbef79b6febdf55b97ff35a7d",
+    "firmware/src/cf_fb.c": "c2047730de7784ca13f9868fe7764d85f4eac06097ef3e56b0ca769f944ed4af",
     "firmware/src/cf_fx.c": "1c4558e62673e1318f828d186766d2e8c26de552a6466ee5f73ee00280e37177",
     "firmware/src/cf_fx_factory.c": "07e370a7c7d00402d5d19869ec29c2849a114b6f50546d43d49bbe927deaf460",
     "firmware/src/cf_fx_preset.c": "53c4fb4005adca6e4259d5491c88197b61f8df011cf1a060f8c4fbe777d9b573",
@@ -103,9 +104,9 @@
     "firmware/src/cf_song.c": "09614667e0410e29c535fc745ed8862401de43fef9ae7a7824f0aba03c17fd43",
     "firmware/src/cf_song.h": "2467e7e40a9a333ba05243d6756b4503119b55b34460de11a8a30f36c455946c",
     "firmware/src/cf_sound.c": "27f7147b3b0f6f89b991152d2fe17d70866643689248ad33e62deed9130f33d7",
-    "firmware/src/cf_splash.c": "8a6d3d270b2bbacc3f83db236ae154f491a1b287eb882f6dc207cbb678b1a162",
-    "firmware/src/cf_stage.c": "cfe2a8b22235a6169e8db79a37860333228ef7aee80be05f172e7290b0cfd99e",
-    "firmware/src/cf_state.h": "d942ee95fc6db34e34059c942639f8c740c0f0109201ac49bc213cf788110010",
+    "firmware/src/cf_splash.c": "194db8174c904750df03aa90ef2b19ef44ca065d0e4ba938299606ee72a5d3ef",
+    "firmware/src/cf_stage.c": "8ea42cc96cf0b099528643424e4c703664bf682f40c53953c0752126a6cbdea0",
+    "firmware/src/cf_state.h": "4995c777d65835aa6bb61bb04c530779a8105d9b5fc78271c410240636ffd749",
     "firmware/src/cf_theory.c": "cc879807635429d58d443f1226766e82beb49688bfbbca65e0addee2341fe2f7",
     "firmware/src/cf_theory.h": "cd838872bdd4e88ca1e4bfecc1c3592ee83e3af19f08d06980a7a778b5ec20a3",
     "firmware/src/cf_ui.c": "4edac83b3111949b154d80fcde9443d983dc60bd6ed1db59b33aaf0058d12dcb",
@@ -175,7 +176,7 @@
     "firmware/src/voice.c": "d2fccf2b970075d17a668282be813a5c200100bf55b76ebdde40cbeffe6dd2e1"
   },
   "design_revision": "845325136418dd038c7ef81eaca01ec64ac5e61e",
-  "elf_sha256": "cd537c6c65e7f58f2a1ac1e728632fa95c9ee9a561239aed64293cb63acfabe1",
+  "elf_sha256": "e90be319a7d9b656db911a71ab8dd888e0e3f8756f5d6a46126b28d3f97d9e23",
   "memory_regions": {
     "NOINIT": {
       "capacity": 15664,
@@ -199,7 +200,7 @@
     }
   },
   "recipe": "build.build_app(padded existing stub); build.check; audit_resources.capture/make_report",
-  "revision": "ea0692c4d7619a9f84f691cf6469ed402a96453e",
+  "revision": "29104121ce7519f5e99c0d96be491d07f19cbbe8",
   "size_pass": true,
   "source_base": "28aeabb2fcf08e97bdd694f9411714f78a3a0ef6",
   "source_status": "clean firmware at committed revision; evidence files pending"

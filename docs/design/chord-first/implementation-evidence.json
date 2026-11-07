@@ -1,11 +1,11 @@
 {
   "sourceBase": "0d76e5b3370f6b7e43a41ed09089491e1f4320a0",
   "designRevision": "845325136418dd038c7ef81eaca01ec64ac5e61e",
-  "summary": "Engineering preview: every retained old screen now routes through native Instrument Teal parameter, list, grid, name/confirmation and result families, including advanced FM6/VA, Layer, effects, recordings, system, diagnostics and recovery. HOME/banks, Groove/Loop/Mix/Click and the protected sixteen-slot editor retain their existing musical owners. Finite chord/cursor/knob/bank/workspace/focus/save transitions and a real post-MASTER output-driven halo share the single On/Off setting; Off cancels visual work and settled views skip rendering. The current manual-take/latest-three policy remains intact. Chord Lab adds Now/Last/planned-slot notes and intervals, fixed-context comparisons, offline Next suggestions, explicit one-bar audition and undoable insertion. Songs now adds six saved semantic ideas and existing recording rows, protected quiet-boundary writes, complete musical snapshots, progression rename/duplicate/delete and recording load/delete. SAVE opens Songs; SELECT Save current then SEL creates a new copy. Full arranged recording, recording rename/duplicate, bulk clear and physical verification remain pending. Chord library/audition remains explicitly deferred. See docs/SONGS-LIBRARY.md for native preview controls and limits.",
+  "summary": "Engineering preview: every retained old screen now routes through native Instrument Teal parameter, list, grid, name/confirmation and result families, including advanced FM6/VA, Layer, effects, recordings, system, diagnostics and recovery. HOME/banks, Groove/Loop/Mix/Click and the protected sixteen-slot editor retain their existing musical owners. Finite chord/cursor/knob/bank/workspace/focus/save transitions and a real post-MASTER output-driven halo share the single On/Off setting; Off cancels visual work and settled views skip rendering. The current manual-take/latest-three policy remains intact. Chord Lab adds Now/Last/planned-slot notes and intervals, fixed-context comparisons, offline Next suggestions, explicit one-bar audition and undoable insertion. Songs now adds six saved semantic ideas and existing recording rows, protected quiet-boundary writes, complete musical snapshots, progression rename/duplicate/delete and recording load/delete. SAVE opens Songs; SELECT Save current then SEL creates a new copy. Full arranged recording, recording rename/duplicate, bulk clear and physical verification remain pending. Chord library/audition remains explicitly deferred. See docs/SONGS-LIBRARY.md for native preview controls and limits. CORD now supplies the selected piano-key/ring boot in three saved themes; HOME fixes cross-clock freshness and clipped ellipses, adds accepted-beat header activity and lights live progression matches.",
   "screens": {
     "HOME_STAGE": {
       "designStatus": "Native preview alongside selected prototype; device review pending",
-      "implementationStatus": "Native HOME with audio-clock-safe motion, accepted-beat header indicator, actual sounding chord and live match fills independent of playback underline; physical fix verification pending",
+      "implementationStatus": "Native HOME with audio-clock-safe complete round pulses, accepted-beat header indicator, sounding chord and live match fills independent of playback underline; physical verification pending",
       "deviceVerification": "Pending — host captures and device link only"
     },
     "HOME_PENDING": {
@@ -861,10 +861,16 @@
       "hostChecks": 2128
     },
     "homeFeedback": {
-      "implementationStatus": "Fixed audio/UI clock-origin freshness, bounded transient peak window, visible accepted-beat rings/header indicator and live progression-card matching independent of cursor/Motion",
+      "implementationStatus": "Fixed audio/UI clock-origin freshness and transient peak window; complete round expanding/fading HOME pulse, accepted-beat header indicator and live progression-card matching independent of cursor/Motion; supplied three-theme CORD piano-key/ring boot with finite input-skippable presentation",
       "evidence": "home-feedback/README.md",
-      "hostChecks": 180,
+      "hostChecks": 315,
       "deviceVerification": "Pending after reported missing rings on 0.6-chase8"
+    },
+    "cordBoot": {
+      "implementationStatus": "Native CORD piano keys and ring, saved theme before splash, static Motion Off, finite completion, input skip and SAFE notice",
+      "evidence": "home-feedback/README.md",
+      "hostChecks": 5924317,
+      "deviceVerification": "Pending: startup/TFT/input review"
     }
   },
   "learningEvidence": {
