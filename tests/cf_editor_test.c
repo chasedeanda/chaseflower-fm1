@@ -39,6 +39,7 @@ static void scheduler(void)
     cf_snapshot();char pending[48],setup_text[48];cf_acc_pending(pending,sizeof pending,setup_text,sizeof setup_text);CHECK(strstr(pending,"Chord next / bar:")!=0);
     for(unsigned i=0;i<24;i++)cpa_tick1();CHECK(cpa.plan.rhythm==r && (cpa_edit.flags&CPA_GROOVE));
     while(cpa.t)cpa_tick1();CHECK(cpa.plan.rhythm!=r && !(cpa_edit.flags&CPA_GROOVE));
+    cpa_home_key(1,1);while(cpa_edit.flags&CPA_NOTES)cpa_tick1();CHECK(cfc.cfg.tonic==cpa.plan.tonic);
     cpa_stop();
     /* Identical tied voicing crosses the real slot boundary without retrigger. */
     next=cfwd.song;next.n=2;next.slot[1]=next.slot[0];next.slot[0].tie=1;next.slot[0].gate=100;next.repeat_off=0;cfd_commit(&next);cpg.idea=CF_P_DRAFT;cpg.repeat_off=0;cpg.rhythm=CPA_OFF;

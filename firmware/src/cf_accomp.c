@@ -118,7 +118,7 @@ static void cpa_groove(int reset)
 static void cpa_commit(void)
 {
     cfm.beats = sq_beats = cpa.plan.beats;
-    if(cpa.plan.idea==CF_P_DRAFT){cpa.revision++;return;}
+    if(cpa.plan.idea==CF_P_DRAFT && cfc.cfg.tonic==cpa.plan.tonic && cfc.cfg.scale==cpa.plan.scale && cfc.cfg.quantize==CF_Q_BASIC){cpa.revision++;return;}
     cf_chord_cfg_t cfg = cfc.cfg;
     cpa_overlay_source();
     cpa_overlay_cfg(&cfg); cf_chord_config(&cfc, &cfg); cfp_sync(1);
