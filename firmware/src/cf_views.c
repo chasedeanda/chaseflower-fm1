@@ -1189,6 +1189,16 @@ static void view_sel(int x0)
     uint32_t mask = off ? 1u : cf_form_mask(f);
     uint8_t note[12];
     char a[4];
+    cf_form_t autoform;
+    if (!off && ch.mode == CF_H_AUTO) {
+        uint32_t stamps[CF_H_SLOTS] = {0};
+        uint16_t used, conflict;
+        autoform = *f;
+        autoform.inv = ch.inv[cu.sel_btn]; autoform.bass = ch.bass[cu.sel_btn];
+        f = &autoform;
+        mask = cf_harmony_supported(cs.chord.scale, cs.chord.quantize) ?
+            cf_harmony_mask(&ch, cs.chord.scale, cs.chord.tonic, tonic, (uint16_t)(1u << cu.sel_btn), stamps, &used, &conflict) : 1u;
+    }
     n = off ? 1 : cf_voice(base, mask, f->inv < 0 ? 0 : f->inv, note);
     if (off)
         note[0] = (uint8_t)base;

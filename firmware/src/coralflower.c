@@ -145,6 +145,7 @@ static void cf_fx_chain(int32_t *l, int32_t *r, uint32_t n);
 
 /* ------------------------------------------------- the instrument --- */
 #include "cf_theory.c"
+#include "cf_harmony.c"
 #include "cf_chord.c"
 #include "cf_play.c"
 #include "cf_out.c"

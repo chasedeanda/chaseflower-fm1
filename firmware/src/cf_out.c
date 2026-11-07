@@ -683,7 +683,7 @@ typedef struct {
     uint16_t sq_cbtns, sq_lbtns;
     uint8_t sq_dn, sq_dnote[6], sq_droot, sq_dsingle, sq_dser, sq_bn, sq_bass[2];   /* .. the CHORDS track's chord
                                   * for HOME (cf_seqp.c sqp.dn ..), the bass sounding */
-    uint16_t sq_dmask;
+    uint32_t sq_dmask;
     uint8_t dm_on, dm_r, dm_next, dm_bar, dm_rin;   /* the drum machine: a rhythm plays, which, the next, its bar;
                                   * REC in the SEQUENCER waits for its bar line (pattern + 1) */
     uint32_t dm_t, dm_left;      /* .. ticks into its bar; ticks till REC in's pattern takes over */

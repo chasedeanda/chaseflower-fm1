@@ -230,6 +230,13 @@ static void render(int part, int clean, int effects, int capture, const char *pa
         }
         p->ev[0].mask = 1; p->hit[0][0] = 1; p->dlev[0] = 100;
         cf_post(CFE_SEQ, 1, 0, 0);
+    } else if (part == 7) {
+        cf_harmony_defaults(&cfh_shadow);
+        cfh_shadow.mode = CF_H_AUTO; cfh_shadow.style = CF_H_RICH;
+        cfh_shadow.slot[0] = CF_MOD_13;
+        cfp_config();
+        cfp_key(1, 1); cfp_key(1, 0); cfp_key(7, 1);
+        CHECK(cfc.out.automatic && cfc.out.n == 6 && cfp.n == 6 && cfp.nb);
     }
     for (b = 0; b < 1600u; b++) {
         uint32_t w = ua.cw;
@@ -253,8 +260,8 @@ static void render(int part, int clean, int effects, int capture, const char *pa
     if (f) fclose(f);
     if (capture) {
         CHECK(master_nonzero > 0u);
-        CHECK((chord_nonzero > 0u) == (part == 0 || part == 6));
-        CHECK((bass_nonzero > 0u) == (part == 1 || part == 6));
+        CHECK((chord_nonzero > 0u) == (part == 0 || part == 6 || part == 7));
+        CHECK((bass_nonzero > 0u) == (part == 1 || part == 6 || part == 7));
         CHECK((ua.rs_blocks > 0u) == (hz == 48000u));
         printf("render %u Hz part %d clean %d effects %d: master/chord/bass nonzero frames %u/%u/%u\n", hz, part, clean, effects,
                master_nonzero, chord_nonzero, bass_nonzero);

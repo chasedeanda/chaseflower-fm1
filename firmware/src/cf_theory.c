@@ -335,16 +335,27 @@ void cf_chord_name(int root_pc, uint32_t mask, int bass_pc, const cf_spell_t *sp
     int a5 = (mask >> 8) & 1u, b7 = (mask >> 10) & 1u, M7 = (mask >> 11) & 1u, six = (mask >> 9) & 1u;
     int n9 = (mask >> 14) & 1u, f9 = (mask >> 13) & 1u, s9 = (mask >> 15) & 1u;
     int n11 = (mask >> 17) & 1u, s11 = (mask >> 18) & 1u, n13 = (mask >> 21) & 1u;
+    int f13 = (mask >> 20) & 1u, f6 = (mask >> 8) & 1u;
     int a2 = (mask >> 2) & 1u, a4 = (mask >> 5) & 1u, seventh = b7 || M7;
+    int f2 = (mask >> 1) & 1u, s4 = d5 && P5;
     cf_pc_name(root_pc, sp, nm);
     k = put(out, k, 16, nm);
     if (mask == 1u)
         goto bass;
     if (!M3 && !b3) { /* no third: sus, power, or a bare set of degrees */
-        if (a4 || a2) {
-            if (seventh)
-                k = put(out, k, 16, M7 ? "maj7" : (n9 ? "9" : "7"));
-            k = put(out, k, 16, a4 && a2 ? "sus24" : a4 ? "sus4" : "sus2");
+        if (a4 || a2 || f2 || s4) {
+            if (seventh) {
+                if (M7) k = put(out, k, 16, "maj");
+                k = put(out, k, 16, n13 ? "13" : n11 ? "11" : n9 ? "9" : "7");
+            }
+            k = put(out, k, 16, a4 && a2 ? "sus24" : a4 ? "sus4" : a2 ? "sus2" : f2 ? "susb2" : "sus#4");
+            if (f2 && (a4 || a2)) k = put(out, k, 16, "addb2");
+            if (s4 && (a4 || a2 || f2)) k = put(out, k, 16, "#4");
+            if (!seventh && n9) k = put(out, k, 16, "add9");
+            if (f9) k = put(out, k, 16, "b9");
+            if (s9) k = put(out, k, 16, "#9");
+            if (s11) k = put(out, k, 16, "#11");
+            if (f13) k = put(out, k, 16, "b13");
             goto bass;
         }
         if (P5 && !seventh && !six && !n9) {
@@ -356,12 +367,17 @@ void cf_chord_name(int root_pc, uint32_t mask, int bass_pc, const cf_spell_t *sp
         if (six && !b7 && !M7)
             k = put(out, k, 16, "dim7");
         else if (b7)
-            k = put(out, k, 16, "m7b5");
+            k = put(out, k, 16, n13 ? "m13b5" : n11 ? "m11b5" : n9 ? "m9b5" : "m7b5");
+        else if (M7)
+            k = put(out, k, 16, n9 ? "dim(maj9)" : "dim(maj7)");
         else
             k = put(out, k, 16, "dim");
         has = 1;
     } else if (M3 && a5 && !P5) {
-        k = put(out, k, 16, seventh ? (M7 ? "maj7#5" : "7#5") : "aug");
+        if (seventh) {
+            if (M7) k = put(out, k, 16, "maj");
+            k = put(out, k, 16, n13 ? "13#5" : n11 ? "11#5" : n9 ? "9#5" : "7#5");
+        } else k = put(out, k, 16, "aug");
         has = 1;
     } else {
         if (b3 && !M3)
@@ -388,6 +404,10 @@ void cf_chord_name(int root_pc, uint32_t mask, int bass_pc, const cf_spell_t *sp
             k = put(out, k, 16, "#9");
         if (s11)
             k = put(out, k, 16, "#11");
+        if (f13)
+            k = put(out, k, 16, "b13");
+        if (f6 && !(M3 && !P5))
+            k = put(out, k, 16, "b6");
         if (!seventh) {
             if (n9 && !six)
                 k = put(out, k, 16, "add9");
@@ -400,6 +420,14 @@ void cf_chord_name(int root_pc, uint32_t mask, int bass_pc, const cf_spell_t *sp
             k = put(out, k, 16, "add2");
         if (a4 && (M3 || b3))
             k = put(out, k, 16, "add4");
+        if (f2 && (M3 || b3))
+            k = put(out, k, 16, "addb2");
+        if (s4 && (M3 || b3))
+            k = put(out, k, 16, "add#4");
+        if (M3 && b3)
+            k = put(out, k, 16, "add#2");
+        if (!M3 && !b3)
+            k = put(out, k, 16, "no3");
     }
 bass:
     if (bass_pc >= 0 && pc12(bass_pc) != pc12(root_pc)) {

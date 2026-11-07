@@ -78,6 +78,7 @@ static struct { uint8_t on; uint32_t g24, gen; } cf_grid;
 static uint32_t cf_now_ms, cf_ms_rem;                /* the engine clock: audio samples -> ms (cf_out.c) */
 static cf_chord_t cfc;                               /* the chord model: the ISR's */
 static cf_chord_cfg_t cfc_shadow;                    /* the UI's copy; CFE_CONFIG takes it (IRQ off while written) */
+static cf_harmony_t cfh_shadow;
 static cf_play_cfg_t cfp_cfg = {0, 0, 100, 1, 0, 0, 1, 0, 1, 0, 0, CF_ARP_DEFAULT, 120, CF_LOOP_DEFAULT, 0};
 static uint8_t cfp_cp;                               /* the part the keys' chords sound on now (cfp_cfg.cpart, taken
                                                      * at a CFE_CONFIG with the notes let go) */
@@ -533,6 +534,7 @@ static void cfp_config(void)                         /* CFE_CONFIG: the UI's set
         cfp_bo = cfp_cfg.bass_only;
     }
     cfc.keep = cfp_cfg.retrig == CF_RT_WAIT;
+    cf_chord_harmony(&cfc, &cfh_shadow);
     cf_chord_config(&cfc, &cfc_shadow);
     cfa_config(cfc.out.sounding);
     if (cfa.on != was) {                             /* ARP switched: part 0's notes go to the arpeggiator, or back */
@@ -567,6 +569,7 @@ static void cfp_panic(void)
 static void cfp_init(void)
 {
     cf_chord_defaults(&cfc_shadow);
+    cf_harmony_defaults(&cfh_shadow);
     cf_chord_init(&cfc, &cfc_shadow);
     cfp.n = cfp.nb = 0;
 }

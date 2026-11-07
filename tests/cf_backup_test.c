@@ -208,7 +208,7 @@ int main(void)
     CHECK(a && a[1] == 5, "GET before LIST: 5");
 
     /* ---- a fresh device: the 8 objects, nothing stored but what the boot wrote ---- */
-    CHECK(t_list() == 0 && nman == 26, "LIST on a fresh flash: 26 objects (%u)", nman);
+    CHECK(t_list() == 0 && nman == 27, "LIST on a fresh flash: 27 objects (%u)", nman);
     CHECK(t_find(50) && !t_find(50)->size && t_find(55) && !t_find(55)->size, "LIST: no patterns stored yet");
 
     /* ---- content: a user sound, the settings, a loop ---- */
