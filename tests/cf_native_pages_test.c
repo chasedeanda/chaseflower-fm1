@@ -65,6 +65,7 @@ static void motion_checks(void)
     cu.now+=170;cfn_motion_frame();CHECK(!cfn_page_dx());
     cu.knob_ms[2]=cu.now;CHECK(cfn_knob(2)==20);cu.now+=90;CHECK(!cfn_knob(2));
     CHECK(cfn_cursor(789)==60);cu.now+=120;CHECK(cfn_cursor(789)==100);
+    CHECK(cfn_cursor(255)==100 && !cfn_motion.cursor_ms);
     CHECK(cfn_focus(789)==2);cu.now+=100;CHECK(!cfn_focus(789));
     cf_sn.visual_peak=16000;cf_sn.visual_ms=cu.now;cf_sn.visual_muted=0;cu.now+=60;cfn_motion_frame();CHECK(cfn_motion.energy>0);
     cf_motion=0;cfn_motion_frame();CHECK(!cf_visual_want && !cfn_motion.energy && !cfn_page_dx() && cfn_cursor(789)==100 && !cfn_focus(789));

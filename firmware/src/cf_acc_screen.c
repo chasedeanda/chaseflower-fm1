@@ -24,7 +24,7 @@ static void cf_acc_model(cf_acc_model_t *m)
     uint32_t arrival=(int32_t)(cf_acc_page_ms-cfn_motion.page_ms)>0?cf_acc_page_ms:cfn_motion.page_ms;
     m->dx=(int8_t)(cf_tween_offset(arrival,170,8)*(cf_nav_dir<0?-1:1));
     const cf_progression_t *p=cf_progression_current();m->n=p->n;m->focus=cf_acc_focus%p->n;
-    m->slot=cf_sn.ac_on?cf_sn.ac_slot:255;m->bass_on=cs.bass_on;
+    m->slot=cf_sn.ac_on && !(cf_sn.ac_waiting&&!cf_sn.ac_paused)?cf_sn.ac_slot:255;m->bass_on=cs.bass_on;
     m->level[0]=cs.level_chord;m->level[1]=cs.bass_level;m->level[2]=cs.level_drums;
     char b[24],key[4];cf_pc_name(cs.chord.tonic,&cu_spell,key);str_cpy(m->sub,key,sizeof m->sub);
     str_cpy(m->sub+str_len(m->sub)," ",sizeof m->sub-str_len(m->sub));str_cpy(m->sub+str_len(m->sub),CF_SCALES[cs.chord.scale].shrt,sizeof m->sub-str_len(m->sub));

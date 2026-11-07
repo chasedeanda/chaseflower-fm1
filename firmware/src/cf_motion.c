@@ -56,6 +56,7 @@ static unsigned cfn_focus(unsigned key)
 }
 static unsigned cfn_cursor(unsigned key)
 {
+    if((key&255u)==255u){cfn_motion.cursor_key=key;cfn_motion.cursor_ms=0;return 100;}
     if(cfn_motion.cursor_key!=key){cfn_motion.cursor_key=key;cfn_motion.cursor_ms=cf_motion?(cu.now?cu.now:1):0;}
     return 100u-(unsigned)cf_tween_offset(cfn_motion.cursor_ms,120,40);
 }
