@@ -128,6 +128,58 @@ mapping above is the engineering contract. Bank switching changes presentation
 and encoder ownership immediately, with no synthetic knob movement or value
 jump. Verify the HOME gesture on hardware and document it in the player guide.
 
+## 4a. Physical keyboard, Top Lock and chord feedback
+
+**Top Lock stays the normal playing model.** The new interface does not turn
+the physical keyboard into a permanent menu pad or remove chord modifiers.
+
+- The 16 lower keys retain root playing and the existing key/scale/quantization
+  mapping. Do not silently change their musical mapping when switching a live
+  control bank or appearance palette.
+- The 11 upper keys retain the user's saved modifier/form assignments. The
+  default Harmony-On assignments, left to right, are
+  `6  7  9 | Sus2 Sus4 | Add2 11 Add9 | Major Minor | HOLD`.
+- Tap a modifier to latch it; tap the same selection again to clear it. A new
+  gesture replaces the preceding selection; hold compatible keys together to
+  combine them. New roots inherit the latched selection. Preserve conflict,
+  retrigger and pending-versus-sounding behavior rather than simplifying these
+  into an inaccurate visual toggle.
+- HOLD stays independent: it sustains the live roots and remains visible while
+  active. Preserve proper releases and the existing replacement-root behavior.
+- Harmony On supplies the agreed major/minor chord assistance; Harmony Off
+  retains normal chord/form playing. Top Lock is not another name for Harmony On.
+  Preserve saved assignments; the on-screen Color study is not a replacement for
+  the physical modifier row.
+- During progression PLAY, a live root can take over through the existing
+  ownership contract while groove/cursor continue. Upper modifiers shape that
+  live performance. Playing a key does not silently rewrite an arranged slot;
+  storing changes remains an explicit edit or recording operation.
+
+The supplied prototype omits physical-key feedback. Complete that design before
+engineering the final HOME layout:
+
+1. **HOME:** reserve a compact, readable modifier/HOLD status cue near the actual
+   chord. Show the sounding selection and, when retrigger policy defers a change,
+   a separately labelled pending selection. Do not force all eleven tiny labels
+   into the main screen or cover the degree/name phrase rail.
+2. **SEL chord detail:** retain a functional 12-note pitch-class wheel with
+   actual chord tones, root/bass distinction, note/interval labels and modifier
+   context. This is a musical readout, independent of accent/theme selection.
+   Motion follows accepted note/selection changes; Off updates it instantly.
+3. **Physical LEDs:** distinguish held keys, latched modifiers, HOLD and pending
+   changes consistently with the sounding chord. Rejected conflicts must not
+   look active.
+4. **Assignment editing:** keep saved modifier/form editing discoverable under
+   Controls → Modifiers, with the selected physical slot named. Dedicated editor
+   or drum-entry contexts must label any temporary keyboard use; HOME restores
+   root/modifier playing immediately without leaving notes or modifiers stuck.
+
+Acceptance: latch 7, play E then B then D♯ in E major and obtain
+Emaj7 → Bmaj7 → D♯m7; clear 7 and return to triads; exercise compatible gestures,
+deferred retrigger, HOLD, bank changes, live takeover, recording and return from
+an editor. Verify the hero, wheel, pending cue and physical LEDs agree with
+actual note ownership. Motion Off changes presentation only.
+
 ## 5. Adaptive motion contract
 
 **One setting: On / Off. Default: On (adaptive).** Instrument Teal is independent
