@@ -21,9 +21,9 @@ the matching optional exploration profile, rather than mixing unrelated builds.
 
 | Region | Exploration | Scene-free | Freed | New headroom |
 | --- | ---: | ---: | ---: | ---: |
-| Ordinary RAM | 96,776 | 96,328 | 448 | 1,976 |
+| Ordinary RAM | 97,512 | 97,048 | 464 | 1,256 |
 | POOL | 333,852 | 308,980 | 24,872 | 35,084 |
-| XIP/flash | 427,860 | 410,020 | 17,840 | 163,420 |
+| XIP/flash | 437,892 | 419,652 | 18,240 | 153,788 |
 | RAM code | 3,016 | 3,016 | 0 | 21,560 |
 | NOINIT | 216 | 216 | 0 | 15,448 |
 
@@ -36,9 +36,10 @@ buffer or replacement renderer was introduced in this cut.
 Full captured inputs, symbol inventories and paired reports:
 [exploration](../benchmarks/resources/scene-profiles/exploration/report.md),
 [scene-free](../benchmarks/resources/scene-profiles/scene-free/report.md).
-The original main baseline at `5bfd500` remains separately recorded. The small
-build-flag/helper refactor changes the exploration XIP total by 48 bytes compared
-with that original baseline; the table above uses the matched pair.
+The original main baseline at `5bfd500` remains separately recorded. Both profiles
+above include main's progression playback/browser changes through `29c3ba6`,
+merged into this branch at `1da70f0`; the earlier baseline predates those features.
+Use the matched pair to attribute savings to scene removal.
 
 This creates graphics memory headroom; it does not establish a CPU percentage,
 polyphony increase or hardware input-latency improvement. Progressions already
@@ -68,7 +69,8 @@ The scene-free suite checks immediate musical HOME, old settings/backdrop bits,
 unchanged recorder/undo sizes, static screens, safe-mode notice and HOME views.
 Separate real-render processes compare every physical output word, all six USB
 capture channels and MIDI between profiles at 44.1/48 kHz, with Auto/HOLD, arp,
-bass, sequencer drums and FX. The optional scenes retain their existing renderer,
+bass, sequencer drums and FX, followed by catalogue playback with tempo, idea
+and key changes. The optional scenes retain their existing renderer,
 boot-exit/skip, persistence and audio regressions. The normal feature suites,
 backup, storage power-cut tests, sanitizers and real device builds pass.
 

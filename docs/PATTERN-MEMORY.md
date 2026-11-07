@@ -7,6 +7,8 @@ up to 32 pattern entries.
 
 The 100 browseable progression ideas are a separate catalogue of constant tables
 and strings in flash. They are not the source of this 25 KB RAM allocation.
+The new progression player and its two bounded mailboxes use 476 bytes in the
+measured device build; it does not copy ideas into the eight recorder slots.
 
 | What is reserved | RAM bytes | What it gives you |
 | --- | ---: | --- |

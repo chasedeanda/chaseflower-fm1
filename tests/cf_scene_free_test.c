@@ -65,7 +65,26 @@ static void render(unsigned rate,const char *path)
     }
     CHECK(flash==emu_flash_writes && patterns==cfs_fnv(&sq_st,sizeof sq_st) && cfc.out.hold && sqp.on);
     cf_post(CFE_KEY,25,0,1);cf_post(CFE_KEY,25,0,0);cf_post(CFE_SEQ,0,0,0);blocks(1);
-    CHECK(!sqp.on);fclose(file);
+    CHECK(!sqp.on);
+    /* The new catalogue PLAY path must also match across scene profiles. */
+    cpa_stop();dmp_stop();cfp_panic();
+    cpg.idea=0;cpg.rhythm=dm_nth(4,0);cpg.mode=CPA_BOTH;
+    const cf_progression_t *idea=cf_progression_get(0);
+    cs.chord.tonic=idea->tonic;cs.chord.scale=idea->scale;cs.beats=idea->beats;
+    cs.chord.quantize=CF_Q_BASIC;cs.bpm=120;cs.clock_in=0;cs.bass_on=1;
+    cf_send_config();cf_send_metro();blocks(1);ui_button(B_PLAY);
+    for(unsigned b=0;b<FS*6u/CTL;b++) {
+        if(b==FS/CTL)ui_knob_turn(3,40);
+        if(b==FS*2u/CTL){ui_select(11);ui_knob_turn(1,2);}
+        uint32_t w=ua.cw;audio_block(out,CTL);cf_snapshot();cpa_ui_poll();
+        if(b%37==0)cf_ui_draw();
+        fwrite(out,sizeof out,1,file);
+        for(unsigned i=w;i<ua.cw;i++)fwrite(ua.cap+(i&(UA_CAP_RING-1u))*6u,6*sizeof(int16_t),1,file);
+        ua.cr=ua.cw;
+        while(mo_r!=mo_w){uint32_t ev=midi_out_q[mo_r++%MQ];fwrite(&ev,sizeof ev,1,file);}
+    }
+    CHECK(cpa.on && cpg.idea==11 && flash==emu_flash_writes && patterns==cfs_fnv(&sq_st,sizeof sq_st));
+    ui_button(B_PLAY);blocks(1);CHECK(!cpa.on && !sqp.n && !sqp.nb);fclose(file);
 }
 int main(int argc,char **argv)
 {

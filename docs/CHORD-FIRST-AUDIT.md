@@ -8,8 +8,9 @@ Product reference: [approved direction, revision 4654c34](https://github.com/cha
 This initial audit measures the existing exploration build and proposes decisions.
 It originally removed no features and changed no save formats. The user then
 approved removing scenes from the development default; that implementation and
-paired measurements are recorded in [SCENE-FREE.md](SCENE-FREE.md). PLAY → selected
-progression remains the next product milestone. Actual device timings, the
+paired measurements are recorded in [SCENE-FREE.md](SCENE-FREE.md). The subsequent
+[progression playback](PROGRESSION-PLAYBACK.md) change from main is integrated in
+the paired scene profiles. Actual device timings, the
 successor UI and storage migration remain open; this report does not complete
 either issue.
 
@@ -170,17 +171,14 @@ edits, notes/velocities/releases, tempo/metre, scene, duration and polling const
 Record audio pressure/lag, same-half work, late/shed/stale estimates, USB loss,
 core state, input response and display work. Host timing is not device timing.
 
-## Recommended first implementation slice
+## Implementation status and next work
 
-1. Finish the playback/session ownership boundary and #50's measured renderer
-   baseline alongside the first useful PLAY flow.
-2. Add a default-on scene build option and a separately identified scene-free
-   candidate. Keep the exploration build unchanged. Exclude fish boot, scene
-   geometry/state/canvases and their call sites; retain recovery rendering.
-3. Produce paired reports, prove the intended symbols disappeared, inspect the
-   first musical HOME, and compare audio/MIDI/USB and physical response.
-4. Only then size the semantic draft/legacy-take model and decide LAYER/grid/store
-   migration. Leave deep editors in Advanced and preserve audible FX meanwhile.
-
-This order gives a measurable first cut without making data loss or a new
-scheduler the price of a simpler instrument.
+1. Progression playback/session ownership has landed on main and is retained here.
+2. The default scene-free build and optional exploration profile are implemented;
+   see [SCENE-FREE.md](SCENE-FREE.md) for paired device-link and host audio evidence.
+3. Measure #50's runtime rendering/input baseline on physical hardware before
+   claiming timing or polyphony gains.
+4. Size the semantic draft/legacy-take model and decide LAYER/grid/store migration.
+   [PATTERN-MEMORY.md](PATTERN-MEMORY.md) explains the existing recorder and undo
+   allocation. Keep both capabilities and legacy data recoverability while sizing
+   a replacement. Leave deep editors in Advanced and preserve audible FX meanwhile.
