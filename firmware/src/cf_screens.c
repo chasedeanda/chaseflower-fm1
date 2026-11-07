@@ -86,6 +86,7 @@ static void draw_top_sound(uint32_t part, int xmax)   /* xmax: where the chips o
 }
 
 #include "cf_views.c"                           /* (the heads, the pager, the central pictures) */
+#include "cf_stage.c"
 #include "cf_seqv.c"                            /* (the SEQUENCER screens' pictures) */
 #include "cf_dmv.c"                             /* (the drum machine's, 0.6) */
 static void draw_title(const char *t, const char *note);
@@ -144,7 +145,7 @@ static void draw_fx_graph(uint32_t e, int x0, int yb, int w, int h)
             py = yy;
         }
     } else if (e == CFX_CHORUS || e == CFX_PHASER) {   /* the sweep: a sine moving with the rate */
-        uint32_t ph = (uint32_t)cu.now * (uint32_t)(20 + v[0] * 6) * 1000u;
+        uint32_t ph = cf_art_ms() * (uint32_t)(20 + v[0] * 6) * 1000u;
         int amp = (h / 2 - 1) * (10 + (int)v[1]) / 110;
         for (x = 0; x < w; x++) {
             int yy = yb - h / 2 - (osc_sine(ph + (uint32_t)x * (e == CFX_PHASER ? 60000000u : 28000000u)) * amp) / 32768;
@@ -224,7 +225,7 @@ static void draw_fx(void)
     draw_title(CFX_NAME[e], sub);
     fb_hline(x0, y0 + 13, run, FL_BG3);          /* the signal's way, a dot running along it */
     {
-        int d = (int)((cu.now / 10u) % (uint32_t)run);
+        int d = (int)((cf_art_ms() / 10u) % (uint32_t)run);
         fb_rect(x0 + d, y0 + 12, 2, 3, C_ACC(1));
     }
     for (i = 0; i < CFX_N; i++) {
@@ -836,8 +837,10 @@ static void cf_ui_draw(void)
 {
     char top[24];
     fb_unclip();
-    if (cf_intro_draw(cu.frame_dt))
-        return;
+    if (cf_intro_draw(cu.frame_dt)) { cf_stage_valid = 0; return; }
+    if (cu.scr == SCR_HOME && home_view() == HV_FLOWER && cf_scene() == CF_SCENE_PROGRESSIONS &&
+        !cu.pop && !cu.upd_left) { cf_stage_draw(); return; }
+    cf_stage_valid = 0; cf_stage_energy = 0; cf_stage_tick = cu.now;
     if (cu.scr == SCR_HOME) {
         /* the layout's name, and a padlock for the Lock ones */
         const char *an = ch.mode == CF_H_AUTO ?

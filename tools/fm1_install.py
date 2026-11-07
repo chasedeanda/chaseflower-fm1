@@ -1063,7 +1063,7 @@ def object_name(i):
     if i in CF_TAKE_IDS:
         return "ChaseFlower recording " + "ABC"[i - 71]
     if i == CF_PREFS_ID:
-        return "ChaseFlower progression favorites"
+        return "ChaseFlower favorites and appearance"
     if i == CF_FX_ID:
         return "ChaseFlower FX presets"
     if i == CF_HARM_ID:

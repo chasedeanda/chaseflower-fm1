@@ -45,6 +45,7 @@ static uint8_t cf_intro_on = 1;
 static uint32_t cf_intro_t;
 static int cf_intro_draw(uint32_t dt)
 {
+    if (!cf_motion) cf_intro_on = 0;
     if (!cf_intro_on || cr_safe)
         return 0;
     if (!cf_intro_t) {

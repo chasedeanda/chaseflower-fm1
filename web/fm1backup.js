@@ -54,7 +54,7 @@ export function objectName(id) {
   if (id === 30) return "CoralFlower settings";
   if (id === CF_REC_PREF_ID) return "ChaseFlower recording preferences";
   if (CF_TAKE_IDS.includes(id)) return "ChaseFlower recording " + "ABC"[id - 71];
-  if (id === CF_PREFS_ID) return "ChaseFlower progression favorites";
+  if (id === CF_PREFS_ID) return "ChaseFlower favorites and appearance";
   if (id === CF_FX_ID) return "ChaseFlower FX presets";
   if (id === CF_HARM_ID) return "ChaseFlower Auto harmony";
   if (id === 31) return "CoralFlower loop";

@@ -38,9 +38,9 @@ static void draw_battery(int x, int y)
     uint8_t c = b == 0u ? FL_C(FL_R_ROSE, 1) : b == 4u ? FL_C(FL_R_LIME, 1) : FL_INK2;
     fb_rframe(x, y, 18, 10, c);
     fb_rect(x + 18, y + 3, 2, 4, c);
-    n = b == 4u ? (cu.now / 450u) % 4u : b;      /* charging: the cells fill one by one */
+    n = b == 4u ? (cf_motion ? (cu.now / 450u) % 4u : 3u) : b;      /* charging: the cells fill one by one */
     if (b == 0u)
-        n = (cu.now / 500u) & 1u;                /* empty: one cell blinks */
+        n = cf_motion ? (cu.now / 500u) & 1u : 1u;                /* empty: one cell blinks */
     for (i = 0; i < n; i++)
         fb_rect(x + 2 + (int)i * 5, y + 2, 4, 6, c);
 }
@@ -229,7 +229,7 @@ static void draw_knobs(void)
         o.dis = 0;
         o.sel = 0;
         ui_knob_info(k, &o);
-        lit = (int32_t)(cu.now - cu.knob_ms[k]) < 900 && cu.knob_ms[k];
+        lit = cf_motion && (int32_t)(cu.now - cu.knob_ms[k]) < 900 && cu.knob_ms[k];
         fb_rbox(x + 2, Y_KNOBS, 56, 37, 2, cf_panel(lit ? 2 : 1));
         if (!o.name[0])
             continue;

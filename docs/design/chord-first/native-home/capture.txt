@@ -1,0 +1,19 @@
+# Host firmware capture; not a physical TFT or device timing result.
+wait 600
+shot ready
+key 7 down
+wait 200
+shot live
+key 7 up
+wait 500
+shot last
+turn SELECT 9
+btn PLAY
+wait 1500
+shot playing
+btn PLAY
+btn GLO
+turn K4 -1
+btn HOME
+wait 500
+shot motion-off
