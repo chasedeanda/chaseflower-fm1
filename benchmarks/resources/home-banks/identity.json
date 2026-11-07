@@ -1,5 +1,6 @@
 {
   "build_log_sha256": "fc2fcf7399606a3b8b5cb4361469b9c4573acc69d30b3bd1078fb89443ea983f",
+  "capture_note": "Linked before commit; every compilation dependency hash verified unchanged at this committed source revision.",
   "compiler_flags": [
     "-Os",
     "-ffunction-sections",
@@ -179,8 +180,8 @@
     }
   },
   "recipe": "tools/build.py build_app with padded boot stub; app link/check only, no install package",
-  "revision": "66de758561ab68caca5acd757b22e7a0f275ff0a",
+  "revision": "85ea2889333abbaabc9204f1d6a34d9d80232793",
   "size_pass": true,
   "source_base": "4e678049762279740f750ec3566ed1e0939c26a1",
-  "source_status": "M docs/CHORD-FIRST-USER-GUIDE.md\n M docs/design/chord-first/ENGINEERING-HANDOFF.md\n M docs/design/chord-first/README.md\n M docs/design/chord-first/board-data.json\n M docs/design/chord-first/design-board.html\n M docs/design/chord-first/implementation-evidence.json\n M docs/design/chord-first/screen-rollout.json\n M firmware/src/cf_stage.c\n M tests/cf_home_banks_test.c\n?? benchmarks/resources/home-banks/\n?? docs/design/chord-first/native-home-banks/"
+  "source_status": ""
 }
