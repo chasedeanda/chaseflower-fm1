@@ -10,6 +10,9 @@ build/host/cf_progression_test
 cc -std=gnu11 -O1 -w -Itools/emu/web/compat -Ibuild/gen -Ifirmware/src -Itests \
     -o build/host/cf_suggestion_test tests/cf_suggestion_test.c -lm
 build/host/cf_suggestion_test
+cc -std=gnu11 -O1 -w -Itools/emu/web/compat -Ibuild/gen -Ifirmware/src -Itests \
+    -o build/host/cf_led_guide_test tests/cf_led_guide_test.c -lm
+build/host/cf_led_guide_test
 for rate in 44100 48000; do
     for browse in 0 1; do
         build/host/cf_suggestion_test --audio "$browse" "$rate" "build/progression-tests/$rate-$browse.raw" \

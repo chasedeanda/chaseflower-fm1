@@ -742,6 +742,7 @@ typedef struct {
     cf_chord_out_t out;          /* the chord model's answer */
     uint8_t n, note[CF_MAX_NOTES], nb, bass[2];
     uint8_t onset;
+    uint32_t root_press; /* gesture count for the foreground LED guide */
     uint8_t beat, metro_on, running, metro_level;
     uint32_t beats_done, beat_ms, beat_acc, now_ms;
     uint32_t keys_held;          /* bit k: key k is down in the chord model's view */
@@ -805,6 +806,7 @@ static void cf_snapshot(void)
     cf_sn.bass[0] = cfp.bass[0];
     cf_sn.bass[1] = cfp.bass[1];
     cf_sn.onset = cfp.onset;
+    cf_sn.root_press = cfp.root_press;
     cf_sn.arp_on = cfa.on;
     cf_sn.arp_latched = cfa.latched;
     cf_sn.arp_steps = cfa.steps;

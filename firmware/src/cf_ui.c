@@ -1796,6 +1796,93 @@ static void cf_led(uint8_t *m, uint32_t id, int on)
         m[q >> 3] |= (uint8_t)(1u << (q & 7u));
 }
 
+/* The guide follows gestures, not the beat or redraws. Keep the next step across
+ * rests; repeated chords consume one card per root press, including with HOLD.
+ * Selection/key/scale changes and leaving the progression view start it over. */
+static struct {
+    uint32_t press;
+    uint16_t matches;
+    uint8_t valid, idea, tonic, scale, quantize, current, next, src, seq;
+} cpg_follow;
+
+static uint16_t cf_progression_cue(uint16_t *playing)
+{
+    const cf_chord_out_t *o = &cf_sn.out;
+    *playing = 0;
+    if (!home_stage() ||
+        !cf_harmony_supported(cs.chord.scale, cs.chord.quantize)) {
+        cpg_follow.valid = 0;
+        cpg_follow.press = cf_sn.root_press;
+        cpg_follow.seq = cf_sn.sq_dser;
+        return 0;
+    }
+    if (cf_sn.ac_on && cf_sn.ac_mode == CPA_BOTH) {
+        cpg_follow.valid = 0;
+        cpg_follow.press = cf_sn.root_press;
+        cpg_follow.seq = cf_sn.sq_dser;
+        if (o->sounding && !o->single)
+            for (unsigned i = 0; i < o->n; i++) *playing |= (uint16_t)(1u << (o->note[i] % 12));
+        if (!cf_sn.sq_dsingle)
+            for (unsigned i = 0; i < cf_sn.sq_dn; i++) *playing |= (uint16_t)(1u << (cf_sn.sq_dnote[i] % 12));
+        if (!cf_sn.ac_n || cf_sn.ac_slot >= cf_sn.ac_n || cf_sn.ac_paused) return 0;
+        unsigned next = cf_sn.ac_waiting ? cf_sn.ac_slot : (cf_sn.ac_slot + 1u) % cf_sn.ac_n;
+        if (!cf_sn.ac_waiting && !next && cf_sn.ac_repeat_off) return 0;
+        uint16_t cue = 0;
+        for (unsigned i = 0; i < 32; i++)
+            if (cf_sn.ac_mask[next] & (1u << i))
+                cue |= (uint16_t)(1u << ((cf_sn.ac_root[next] + i) % 12));
+        return cue;
+    }
+    const cf_progression_t *p = cf_progression_current();
+    uint8_t src = o->sounding && o->n ? 1u : cf_sn.sq_on && cf_sn.sq_dn ? 2u : 0u;
+    uint16_t matches = src == 1u ? (o->single ? 0 : cf_progression_highlight(p, cs.chord.scale,
+        cs.chord.tonic, o->root_pc, o->mask)) : src == 2u ? (cf_sn.sq_dsingle ? 0 :
+        cf_progression_highlight(p, cs.chord.scale, cs.chord.tonic, cf_sn.sq_droot % 12, cf_sn.sq_dmask)) : 0;
+    if ((src == 1u && !o->single) || (src == 2u && !cf_sn.sq_dsingle)) {
+        unsigned n = src == 1u ? o->n : cf_sn.sq_dn;
+        for (unsigned i = 0; i < n; i++)
+            *playing |= (uint16_t)(1u << ((src == 1u ? o->note[i] : cf_sn.sq_dnote[i]) % 12));
+    }
+    int reset = !cpg_follow.valid || cpg_follow.idea != cpg.idea || cpg_follow.tonic != cs.chord.tonic ||
+        cpg_follow.scale != cs.chord.scale || cpg_follow.quantize != cs.chord.quantize;
+    int gesture = src == 1u ? cf_sn.root_press != cpg_follow.press :
+        src == 2u && cf_sn.sq_dser != cpg_follow.seq;
+    if (reset) {
+        cpg_follow.valid = 1;
+        cpg_follow.idea = cpg.idea;
+        cpg_follow.tonic = cs.chord.tonic;
+        cpg_follow.scale = cs.chord.scale;
+        cpg_follow.quantize = cs.chord.quantize;
+        cpg_follow.current = CF_P_NONE;
+        cpg_follow.next = 0;
+    }
+    int correction = matches != cpg_follow.matches && (cpg_follow.current == CF_P_NONE ||
+        !(matches & (1u << cpg_follow.current)));
+    if (matches && (gesture || (!reset && (src != cpg_follow.src || correction)))) {
+        unsigned step = cpg_follow.next;
+        /* Prefer the expected card. Replaying the current chord waits there;
+         * another matching chord resynchronizes forward through the idea. */
+        if (!(matches & (1u << step)) && cpg_follow.current < p->n &&
+            (matches & (1u << cpg_follow.current))) step = cpg_follow.current;
+        for (unsigned i = 0; i < p->n; i++, step = (step + 1u) % p->n)
+            if (matches & (1u << step)) {
+                cpg_follow.current = (uint8_t)step;
+                cpg_follow.next = (uint8_t)((step + 1u) % p->n);
+                break;
+            }
+    }
+    cpg_follow.src = src;
+    cpg_follow.matches = matches;
+    cpg_follow.press = cf_sn.root_press;
+    cpg_follow.seq = cf_sn.sq_dser;
+    uint32_t mask = cf_progression_slot_mask(p, cpg_follow.next, cs.chord.scale, cs.chord.tonic, &ch);
+    int root = cf_progression_root(p, cpg_follow.next, cs.chord.scale, cs.chord.tonic);
+    uint16_t cue = 0;
+    for (unsigned i = 0; i < 32; i++)
+        if (mask & (1u << i)) cue |= (uint16_t)(1u << ((root + (int)i) % 12));
+    return cue;
+}
+
 /* the sequencer's lights. The buttons say what works here: EDIT blinks on the tracks (open one), SAVE (back) and SEL
  * (clear, when there is something to clear) are up in a track, REC goes dark (it does nothing here), PLAY is up when
  * there is something to play. The keys: DRUMS as a drum machine's (the lower keys the drum's steps in the bar, a
@@ -1881,11 +1968,13 @@ static void cf_leds(void)
     const cf_chord_out_t *out = &cf_sn.out;
     uint32_t k, blink = (cu.now / 250u) & 1u, sq = sq_screen(cu.scr), rm = cu.scr == SCR_DRUM;
     uint16_t auto_notes = 0;
+    uint16_t guide_playing, guide_next = cf_progression_cue(&guide_playing);
     /* Auto's generated tones light their mapped root keys as brightly as the modifiers.
      * Use the sounding voicing, including HOLD and Wait's unchanged chord. */
     if (out->automatic && !out->fallback && out->sounding)
         for (k = 0; k < out->n; k++)
             auto_notes |= (uint16_t)(1u << (out->note[k] % 12));
+    auto_notes |= guide_playing;
     /* buttons: the open screen lit, the others dim; PLAY with the beat. The sequencer: only what works there is up
      * (HOME, SEQ, GLO here; EDIT, SAVE, SEL, PLAY, REC below); the other screens' buttons do nothing there, dark */
     for (k = 0; k < SCR_N; k++)                  /* (the rhythm machine: as the sequencer, cf_dmui.c) */
@@ -1975,6 +2064,8 @@ static void cf_leds(void)
             int pc = cf_key_root_note(&cs.chord, (int)k) % 12;
             if ((auto_notes >> pc) & 1u)
                 cf_led(lit, (uint32_t)id, 1);
+            else if ((guide_next >> pc) & 1u)
+                cf_led((cu.now / 500u) & 1u ? dim : faint, (uint32_t)id, 1);
             else if (out->sounding && pc == out->root_pc)
                 cf_led(mid, (uint32_t)id, 1);
             else if (cs.lights && cs.chord.quantize != CF_Q_OFF && pc == cs.chord.tonic)
