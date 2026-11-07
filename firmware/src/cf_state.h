@@ -81,8 +81,8 @@ typedef struct {
                                                       * bass_level) */
     uint16_t snd_layer;          /* the LAYER's sound (part 2): its index in the chord sounds' row; 0xFFFF: the default */
     uint8_t ch_layer, ch_drums;  /* GLO > Channels: the sequencer's LAYER and DRUMS out on MIDI, 0..15 */
-    uint8_t seq_hint;            /* the SEQUENCER's hints shown once (0.4, cf_sequi.c SQH_*): bit 0 after the first
-                                  * take from HOME, bit 1 HOME after it, bit 2 the first track opened by EDIT */
+    uint8_t seq_hint;            /* bits 0..2: sequencer hints (cf_sequi.c SQH_*); bit 3: Bonfire (clear: Bass);
+                                  * bits 6..7: HOME Scene/Chord/Keyboard view. Bits 4..5 remain unused. */
     uint8_t resume;              /* what PLAY on HOME plays after a power-on (0.4.2, the owner: "Как оставил";
                                   * cf_sequi.c sq_home_poll): CF_RESUME_ON | pattern 0..7, or CF_RESUME_ON |
                                   * CF_RESUME_SONG | the block the song's frame is on; 0 none. In what was the record's

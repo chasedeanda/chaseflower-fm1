@@ -149,6 +149,7 @@ static void cf_ui_pump(void);
 #include "../../firmware/src/cf_fb.c"
 #include "../../firmware/src/cf_sound.c"
 #include "../../firmware/src/cf_state.h"
+#include "../../firmware/src/cf_scene.c"
 #include "../../firmware/src/cf_draw.c"
 #include "../../firmware/src/cf_settings.c"
 #include "../../firmware/src/cf_ui.c"

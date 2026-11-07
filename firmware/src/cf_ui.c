@@ -3,7 +3,7 @@
  * The main loop's (ui_input / ui_leds / ui_draw through cf_shim.c). Included after cf_draw.c.
  *
  * Every screen has the same grammar (docs/SPEC.md): MASTER is the volume; SELECT, PRESETS and ALGORITHM keep
- * their roles (bass sound, chord sound, chord algorithm) unless a screen needs pages; KNOB 1-4 are the screen's.
+ * their roles (bass sound, chord sound, scene) unless a screen needs pages; KNOB 1-4 are the screen's.
  * A screen's button opens it; pressed again (or HOME) it goes back to HOME. Pages turn only with an encoder.
  */
 
@@ -38,6 +38,7 @@ static uint8_t sq_live_bass(void);              /* (cf_sequi.c) */
 static uint8_t sq_keys_arp(void);               /* (cf_sequi.c: the keys' ARP, a track's own while it is open) */
 static void cf_send_config(void)                 /* the chord settings -> the audio side */
 {
+    cs.chord.algo = CF_ALG_TOP_LOCK;
     fm1_irq_off();
     cfc_shadow = cs.chord;
     cfp_cfg.glide_always = cs.glide_always;
@@ -131,9 +132,10 @@ static void kint(char *b, int v, const char *unit)
     b[i] = 0;
 }
 /* HOME view cycling contributed by Michael Norris (@norrismw), CoralFlower issue #8.
- * HOME's view (ChoralRoot's views, HOME tapped on HOME steps to the next): the flower; the chord, its name big and
+ * HOME's view (ChoralRoot's views, HOME tapped on HOME steps to the next): the scene; the chord, its name big and
  * the notes it voices under it; a keyboard with the chord's and the bass's notes lit. Kept in cs.seq_hint's top two
- * bits (those hints test bits 0..2 only; every older record has 0 there: the flower) */
+ * bits (those hints test bits 0..2 only; every older record has 0 there: the scene).
+ * HV_FLOWER retains its legacy numeric identity for saved records; it now means the selected scene. */
 enum { HV_FLOWER, HV_CHORD, HV_KEYS, HV_N };
 #define HV_SHIFT 6u
 static uint32_t home_view(void)
@@ -143,10 +145,10 @@ static uint32_t home_view(void)
 }
 static void home_view_next(void)
 {
-    static const char *const NAME[HV_N] = {"View: Flower", "View: Chord", "View: Keyboard"};
+    static const char *const NAME[HV_N] = {"View: Scene", "View: Chord", "View: Keyboard"};
     uint32_t v = (home_view() + 1u) % HV_N;
     cs.seq_hint = (uint8_t)((cs.seq_hint & ((1u << HV_SHIFT) - 1u)) | v << HV_SHIFT);
-    cf_message(NAME[v]);
+    cf_message(v == HV_FLOWER ? CF_SCENE_NAME[cf_scene()] : NAME[v]);
 }
 
 static void kpc(char *b, int pc)
@@ -773,7 +775,7 @@ static void ui_presets(int d)                    /* PRESETS: the chord sound (a 
     ui_snd_heard(CF_PART_CHORD);
     cf_pop(POP_SOUND_CHORD, 1200);
 }
-static void ui_algo(int d)                       /* ALGORITHM: the chord algorithm (FX: moves the effect) */
+static void ui_algo(int d)                       /* ALGORITHM: scene (FX: effect; SEQUENCER: pattern/song) */
 {
     if (cu.scr == SCR_FX) {
         cfx_move(d);
@@ -783,17 +785,11 @@ static void ui_algo(int d)                       /* ALGORITHM: the chord algorit
         sq_algo(d);
         return;
     }
-    {   /* ALGORITHM turns through the Lock variants first (the owner's order): Top Lock, Top, Side Lock, Side. The
-         * stored ids stay CF_ALG_*: only the knob's order is this one. */
-        static const uint8_t ORDER[CF_NALGS] = {CF_ALG_TOP_LOCK, CF_ALG_TOP, CF_ALG_SIDE_LOCK, CF_ALG_SIDE};
-        int at = 0;
-        while (at < CF_NALGS - 1 && ORDER[at] != cs.chord.algo)
-            at++;
-        cs.chord.algo = ORDER[clampi(at + d, 0, CF_NALGS - 1)];
-    }
-    cu.sel_btn = cs.chord.algo >= CF_ALG_SIDE ? 0u : sel_first();
-    cf_send_config();
-    cf_pop(POP_ALGO, 1400);
+    if (!d) return;
+    cf_scene_set((uint32_t)wrapi((int)cf_scene() + d, CF_SCENE_N));
+    if (cu.scr == SCR_HOME)
+        cs.seq_hint &= (uint8_t)~(3u << HV_SHIFT); /* show the scene immediately, keeping hints and scene selection */
+    cf_message(CF_SCENE_NAME[cf_scene()]);         /* no CONFIG event: a held chord is untouched */
 }
 
 /* --------------------------------------------------------------- buttons --- */
@@ -1746,8 +1742,8 @@ static void cf_feed_plant(uint32_t dt)
 {
     const cf_chord_out_t *o = &cf_sn.out;
     uint32_t i, lvl = 0, src, ser;
-    /* the Top algorithms grow a plant, the Side ones a coral coloured by the key */
-    flora_set_species(&flo, cs.chord.algo >= CF_ALG_SIDE ? FL_SP_CORAL : FL_SP_PLANT);
+    /* Scene selection is independent of the fixed Top Lock playing mode. */
+    flora_set_species(&flo, cf_scene() == CF_SCENE_BASS ? FL_SP_CORAL : FL_SP_PLANT);
     flora_set_key(&flo, cs.chord.tonic);
     flo.backdrop = cs.backdrop;
     /* what the flower shows: the keys' chord while they sound, else the sequencer's CHORDS track's while it plays,
