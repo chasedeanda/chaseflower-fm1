@@ -2,11 +2,12 @@
 
 Chase's personal firmware for the **M-VAVE FM-1**, built on [CoralFlower](https://github.com/FicusFicusov/CoralFlower).
 
-**Release 0.6-chase5** adds Auto Harmony and smart chord modifiers to the swimming bass and bonfire visuals,
-bass-jump boot screen, Diagnostics dashboard, ambient/lo-fi sound banks, sequencer and six-channel USB recording.
+**Release 0.6-chase7** adds a 100-idea HOME progression explorer, contextual variations with undo,
+and live FX preset auditioning. Auto Harmony, refreshed drum grooves, Bass/Bonfire visuals, Diagnostics
+and six-channel USB recording remain included.
 
-**[Download the firmware (.fwsc)](https://github.com/chasedeanda/chaseflower-fm1/releases/download/v0.6-chase5/coralflower-0.6-chase5.fwsc)** ·
-[Release notes](docs/releases/0.6-chase5.md) · [All releases](https://github.com/chasedeanda/chaseflower-fm1/releases)
+**[Download the firmware (.fwsc)](https://github.com/chasedeanda/chaseflower-fm1/releases/download/v0.6-chase7/coralflower-0.6-chase7.fwsc)** ·
+[Release notes](docs/releases/0.6-chase7.md) · [All releases](https://github.com/chasedeanda/chaseflower-fm1/releases)
 
 <p align="center"><img src="docs/images/chase-bass.gif" width="480" alt="Chase FM-1 HOME: a swimming bass with body motion and a small school of baitfish"></p>
 
@@ -42,40 +43,38 @@ instrument's intro runs for 2.4 seconds and any input skips it.
 [Scenes and controls](docs/VISUALS.md) · [Sound banks and 6/8](docs/CHASE3.md) ·
 [Diagnostics](docs/DIAGNOSTICS.md) · [USB recording](docs/USB-AUDIO.md)
 
-**Progression explorer (current source):** HOME starts with [100 browsable ideas](docs/PROGRESSION-EXPLORER.md).
+**Progression explorer:** HOME starts with [100 browsable ideas](docs/PROGRESSION-EXPLORER.md).
 Turn SELECT to explore; key, scale and meter follow the idea. K1 changes rhythm, and matching chord cards light
-while you play. ALGORITHM cycles Progressions, Bass, Bonfire and Nothing. These changes are not yet packaged.
+while you play. ALGORITHM cycles Progressions, Bass, Bonfire and Nothing.
 
-**Auto Harmony (current source):** Open **GLO → Harmony** and turn **K1 On** for
+**Auto Harmony:** Open **GLO → Harmony** and turn **K1 On** for
 [major/minor chords and button-selected extensions](docs/AUTO-HARMONY.md). Off leaves normal playing alone.
-This simplification is not yet included in the 0.6-chase5 download.
 
 [Refreshed drum grooves and audio auditions](docs/DRUM-LOOPS.md): 39 two-bar patterns spanning lo-fi, trap, gaze,
-hip-hop, house, garage and breaks, including 12 refreshed additions and a 3/4 Waltz. Available in the development source.
+hip-hop, house, garage and breaks, including 12 refreshed additions and a 3/4 Waltz. Included in this release.
 
-**In development:** [Phase 2 FX presets](docs/FX-PRESETS.md) add 40 ready-to-play factory chains across
-Signature, Space, Lo-fi, Motion and Punch, with recall/bypass controls and 16 optional user slots.
-Hardware validation is pending; they are not in the download above.
+**FX presets:** [Browse 40 factory chains](docs/FX-PRESETS.md) across Signature, Space, Lo-fi, Motion and Punch,
+plus 16 optional user slots. SELECT auditions immediately, K2 clears to dry, and K3 restores the previous chain.
 
-**Variations (development source):** Open **GLO → Variation**, choose a context and amount,
+**Variations:** Open **GLO → Variation**, choose a context and amount,
 turn **K3** to generate, and **K4** to undo. [Controls and scope](docs/PHASE4-PLAN.md).
 
 ## Install this release
 
-1. Download **`coralflower-0.6-chase5.fwsc`** from the [GitHub release](https://github.com/chasedeanda/chaseflower-fm1/releases/tag/v0.6-chase5).
+1. Download **`coralflower-0.6-chase7.fwsc`** from the [GitHub release](https://github.com/chasedeanda/chaseflower-fm1/releases/tag/v0.6-chase7).
    This is the installable file; the separate app `.bin` and GitHub source archives are not installer packages.
 2. Save a current backup of your sounds, settings and patterns. The installer can back up compatible CoralFlower,
    ChoralRoot and Felucca data. Keep the backup somewhere safe.
 3. Open the [upstream installer's custom-build section](https://ficusficusov.github.io/CoralFlower/#own) in Chrome
    or Edge on a computer. Connect the FM-1 directly with a data-capable USB cable.
 4. Expand **Another version, or a build of your own**, click **Choose a .fwsc file**, and select your download.
-   Check that **`coralflower-0.6-chase5.fwsc`** is selected before pressing Install. The installer's default is
+   Check that **`coralflower-0.6-chase7.fwsc`** is selected before pressing Install. The installer's default is
    upstream CoralFlower, so select this custom file first.
 5. Install from that custom-build section and keep the cable connected and page open until the restart.
-6. Confirm the **Chase FM-1** bass-jump startup and **`CoralFlower 0.6-chase5`** in INFO. The INFO family, package
+6. Confirm the **Chase FM-1** bass-jump startup and **`CoralFlower 0.6-chase7`** in INFO. The INFO family, package
    identity `FM-1_930` and USB names remain compatible with the existing installer and recording setup.
 
-The release includes checksums and licence files. See [release notes](docs/releases/0.6-chase5.md) for validation
+The release includes checksums and licence files. See [release notes](docs/releases/0.6-chase7.md) for validation
 and recovery details. Host and firmware-build checks pass; the combined release's hardware appearance and timing
 still need to be checked on the FM-1.
 
@@ -86,6 +85,9 @@ Generate headers with Python 3, Pillow 11.1.0 and fontTools 4.66.1, then run the
 ```sh
 python3 tools/build.py --gen-only
 sh tools/test_fx_presets.sh
+sh tools/test_progressions.sh
+sh tools/test_variations.sh
+sh tools/test_drum_bank.sh
 sh tools/test_auto.sh
 sh tools/test_visuals.sh
 sh tools/test_diagnostics.sh
@@ -96,7 +98,7 @@ sh tools/test_usb.sh
 Build with the JieLi Linux x86-64 toolchain (Docker on Apple Silicon):
 
 ```sh
-./build.sh --release 0.6-chase5
+./build.sh --release 0.6-chase7
 ```
 
 See [Mac build setup](docs/CHASEFLOWER.md#build-on-an-apple-silicon-mac) for the toolchain and Python environment.
