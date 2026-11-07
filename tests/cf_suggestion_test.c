@@ -145,7 +145,7 @@ static void shots(const char *dir)
         FILE *f=fopen(path,"wb"); CHECK(f); if(!f)continue;
         fprintf(f,"P6\n240 240\n255\n");
         for(unsigned j=0;j<FB_W*FB_H;j++) {
-            uint32_t rgb=cf_pal[fb[j]&63]; uint8_t pixel[3]={rgb>>16,rgb>>8,rgb}; fwrite(pixel,3,1,f);
+            uint32_t rgb=cf_pal[fb[j]]; uint8_t pixel[3]={rgb>>16,rgb>>8,rgb}; fwrite(pixel,3,1,f);
         }
         fclose(f); cf_post(CFE_KEY,7,0,0); render_blocks(4);
     }

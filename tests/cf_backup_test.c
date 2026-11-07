@@ -335,7 +335,7 @@ int main(void)
         unsigned writes=emu_flash_writes;cpb_load();
         CHECK(writes==emu_flash_writes && cf_browser_favorite(&cpb,72) && !cpb_dirty,
               "legacy favorites migrate in RAM without writes");
-        CHECK(cf_skin==(version==1?CF_SKIN_TEAL:2) && cf_motion==(version==1),"legacy appearance preserved");
+        CHECK(cf_skin==CF_SKIN_EMBER && cf_motion==(version==1),"legacy Motion preserved; old palettes migrate to Devil");
         for(unsigned i=16;i<CPB_BYTES;i++)CHECK(!cpb.favorites[i],"new favorite IDs initially clear");
         old.check^=1;
         CHECK(t_put(CFB_PREFS,(const uint8_t *)&old,sizeof old,st_crc32(&old,sizeof old))==2,

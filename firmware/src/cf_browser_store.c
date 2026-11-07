@@ -2,6 +2,8 @@
  * Explicit browser/appearance/Click-level edits dirty preferences; PLAY never does.
  * v1/v2 use the 28-byte record. v3 expanded favorites to 255 IDs (44 bytes).
  * v4 packs remembered Click level into the appearance bytes, preserving v3 size.
+ * v5 uses the same bytes for Devil/Ember or Cat/Plum. v1..4 retain favorites,
+ * motion and Click level and start with Devil; migration never writes flash.
  * Old records load without a write; object ID, sectors and cf_set_t stay put.
  */
 #define CPB_MAGIC 0x31425043u /* CPB1 */
@@ -22,14 +24,14 @@ static unsigned cpb_click_level(const cpb_rec_t *r)
 { return (r->reserved[0]>>2) | ((r->reserved[1]&2u)<<5); }
 static int cpb_legacy_valid(const cpb_legacy_rec_t *r)
 {
-    return r->magic==CPB_MAGIC && (r->version==1 || (r->version==2 && r->reserved[0]<CF_SKIN_N && r->reserved[1]<=1)) && r->mode<CPB_MODES &&
+    return r->magic==CPB_MAGIC && (r->version==1 || (r->version==2 && r->reserved[0]<CF_SKIN_LEGACY_N && r->reserved[1]<=1)) && r->mode<CPB_MODES &&
         r->check==cfs_fnv(r,__builtin_offsetof(cpb_legacy_rec_t,check));
 }
 static int cpb_valid(const cpb_rec_t *r)
 {
     return r->magic==CPB_MAGIC && r->mode<CPB_MODES &&
-        ((r->version==3 && r->reserved[0]<CF_SKIN_N && r->reserved[1]<=1) ||
-         (r->version==4 && (r->reserved[0]&3u)<CF_SKIN_N && r->reserved[1]<=3u && cpb_click_level(r)>=1u && cpb_click_level(r)<=100u)) &&
+        ((r->version==3 && r->reserved[0]<CF_SKIN_LEGACY_N && r->reserved[1]<=1) ||
+         ((r->version==4 || r->version==5) && (r->reserved[0]&3u)<(r->version==4?CF_SKIN_LEGACY_N:CF_SKIN_N) && r->reserved[1]<=3u && cpb_click_level(r)>=1u && cpb_click_level(r)<=100u)) &&
         r->check==cfs_fnv(r,__builtin_offsetof(cpb_rec_t,check));
 }
 static int cpb_record_valid(const void *raw, unsigned len)
@@ -46,18 +48,18 @@ static void cpb_load(void)
     if(cpb_record_valid(&r,len)) {
         if(len==sizeof(cpb_rec_t)) {
             memcpy(cpb.favorites,r.current.favorites,sizeof cpb.favorites); cpb.mode=r.current.mode;
-            if(r.current.version==3) { cf_skin=r.current.reserved[0]; cf_motion=r.current.reserved[1]; }
-            else { cf_skin=r.current.reserved[0]&3u; cf_motion=r.current.reserved[1]&1u; cf_click_level=cpb_click_level(&r.current); }
+            if(r.current.version==3) cf_motion=r.current.reserved[1];
+            else { if(r.current.version==5)cf_skin=r.current.reserved[0]&3u; cf_motion=r.current.reserved[1]&1u; cf_click_level=cpb_click_level(&r.current); }
         } else {
             memcpy(cpb.favorites,r.legacy.favorites,sizeof r.legacy.favorites); cpb.mode=r.legacy.mode;
-            if(r.legacy.version==2) { cf_skin=r.legacy.reserved[0]; cf_motion=r.legacy.reserved[1]; }
+            if(r.legacy.version==2) cf_motion=r.legacy.reserved[1];
         }
     }
     cf_browser_order(&cpb,cpb.mode,fm1_ms);
 }
 static int cpb_write(uint32_t how)
 {
-    cpb_rec_t r={0}; r.magic=CPB_MAGIC; r.version=4; r.mode=cpb.mode;
+    cpb_rec_t r={0}; r.magic=CPB_MAGIC; r.version=5; r.mode=cpb.mode;
     r.reserved[0]=(uint8_t)(cf_skin | ((cf_click_level&63u)<<2));
     r.reserved[1]=(uint8_t)(cf_motion | ((cf_click_level>>6)<<1));
     memcpy(r.favorites,cpb.favorites,sizeof r.favorites);

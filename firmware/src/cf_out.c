@@ -765,10 +765,12 @@ typedef struct {
                                   * for HOME (cf_seqp.c sqp.dn ..), the bass sounding */
     uint32_t sq_dmask;
     uint8_t dm_step;
-    uint8_t dm_on, dm_r, dm_next, dm_bar, dm_rin;   /* the drum machine: a rhythm plays, which, the next, its bar;
-                                  * REC in the SEQUENCER waits for its bar line (pattern + 1) */
+    /* Transient drum-moment metadata. Zero until an actual performance owner
+     * publishes it; the renderer never guesses a fill from loudness. */
     uint8_t perf_pending, perf_fill, perf_dropped;
     uint32_t perf_bloom, perf_bloom_ms;
+    uint8_t dm_on, dm_r, dm_next, dm_bar, dm_rin;   /* the drum machine: a rhythm plays, which, the next, its bar;
+                                  * REC in the SEQUENCER waits for its bar line (pattern + 1) */
     uint32_t dm_t, dm_left;      /* .. ticks into its bar; ticks till REC in's pattern takes over */
 } cf_sn_t;
 static cf_sn_t cf_sn;

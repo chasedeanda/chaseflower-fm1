@@ -1,10 +1,10 @@
 # Chord-first FM-1 engineering handoff
 
-Engineering preview: every retained old screen now routes through native Instrument Teal parameter, list, grid, name/confirmation and result families, including advanced FM6/VA, Layer, effects, recordings, system, diagnostics and recovery. HOME/banks, Groove/Loop/Mix/Click and the protected sixteen-slot editor retain their existing musical owners. Finite chord/cursor/knob/bank/workspace/focus/save transitions and a real post-MASTER output-driven halo share the single On/Off setting; Off cancels visual work and settled views skip rendering. The current manual-take/latest-three policy remains intact. Chord Lab adds Now/Last/planned-slot notes and intervals, fixed-context comparisons, offline Next suggestions, explicit one-bar audition and undoable insertion. Songs now adds six saved semantic ideas and existing recording rows, protected quiet-boundary writes, complete musical snapshots, progression rename/duplicate/delete and recording load/delete. SAVE opens Songs; SELECT Save current then SEL creates a new copy. Full arranged recording, recording rename/duplicate, bulk clear and physical verification remain pending. Chord library/audition remains explicitly deferred. See docs/SONGS-LIBRARY.md for native preview controls and limits. CORD now supplies the selected piano-key/ring boot in three saved themes; HOME fixes cross-clock freshness and clipped ellipses, adds accepted-beat header activity and lights live progression matches.
+Engineering preview: native HOME uses the approved Devil/Ember or Cat/Plum mascot, with its palette tied to the character, shared-clock/output-driven motion and a pulse ring. The two bottom strips use one separator, three control dividers and antialiased type; the bank cue is in the header. Five banks include Perform for real next-bar fills, drum drops and downbeat returns. Retained sound/FX/system/recovery pages, shared-clock accompaniment, the protected sixteen-slot editor, Songs and Chord Lab remain available. Motion Off settles effects while musical, record/save and transport states stay truthful. The manual-take/latest-three recording policy is unchanged. Full arranged recording, recording rename/duplicate, bulk clear, the separate chord library and physical-device validation remain pending.
 
 **Status:** complete planned-interface inventory for review; not an implementation or hardware validation claim.
 
-Start with the [implementation plan](IMPLEMENTATION-PLAN.md), [selected Instrument Teal prototype](instrument-teal/prototype.html) and [motion specification](MOTION-SPEC.md).
+Start with the [implementation plan](IMPLEMENTATION-PLAN.md), [historical adaptive study](instrument-teal/prototype.html) and [motion specification](MOTION-SPEC.md).
 
 Design version 0.4, 2026-11-07. 207 screen/state definitions and 39 workflows share canonical JSON with the board and player guide.
 
@@ -20,7 +20,7 @@ Design version 0.4, 2026-11-07. 207 screen/state definitions and 39 workflows sh
 8. Songs is the one user-facing collection for saved progressions and recordings. Factory progression browsing remains on HOME. Editable Songs use semantic chord/degree/duration data; recorded Songs retain captured performance events and timing. Existing recorded Auto takes keep their fixed-note meaning and format.
 9. REC is direct from HOME. It captures the scheduled progression plus deliberate live/groove/key/tempo changes rather than unexpectedly muting the arranged chords. Ending a capture creates a new numbered Song copy; no mandatory Review/Keep step. Pending, Saving and Saved are different states, and flash writes wait for an actually safe quiet boundary without cutting independent HOLD or audible tails.
 10. Songs supports selected-row Load, Rename, Duplicate and Delete, plus counted Clear Recordings/Clear All actions. Bulk clear excludes factory templates, the protected working draft and Pending captures. A Pending capture can be discarded only through its own explicit selected action.
-11. The selected visual reference is fm1_adaptive_motion_prototype.html. Instrument Teal is the factory default: background #061b1e, foreground #f2f8f4, secondary #89a7a5, separator #355054, subtle surface #113034, accent #77dacb, and on-accent text #092d2c. Studio and Editorial are optional palettes of the same typography-led interface. Preserve the large chord, paired degrees, thin separators, four text controls and the supplied prototype's restrained halo/Bloom visual vocabulary; earlier Coral Bloom, Aurora and Studio Rack are historical alternatives.
+11. The selected current HOME appearance is the owner-approved soft mascot reference; the earlier adaptive prototype remains preserved as design history. The approved mascot build uses Devil/Ember by default and Cat/Plum as its only alternative. Character and theme are coupled; a separate theme/accent selector is not present. Preserve the large chord, paired degrees, thin separators, four text controls and the supplied prototype's restrained halo/Bloom visual vocabulary; earlier Coral Bloom, Aurora and Studio Rack are historical alternatives.
 12. Motion has exactly two user choices: On (adaptive) and Off. On responds automatically to output level/volume and semantic active-instrument activity using a smoothed bounded envelope, with musical motion tied to the shared clock. There is no manual Quiet/Expressive/intensity/speed selector. Off cancels every pulse, orbit, morph travel and tween; truthful chord, value, playback and record/save data still update instantly. The supplied loudness/layer sliders are simulation inputs, not new firmware settings or evidence of eight instrument parts. Measure display, input, memory and audio/USB timing on the FM-1.
 13. HOME from another screen returns to Progressions Core. Further HOME taps cycle Core/Sound/Texture/Groove/Perform/Keyboard without changing any parameter; SELECT still browses the complete catalogue, PRESETS still selects chord sound, ALGORITHM keeps its scene/workspace role and OCT± stays musical. The five musical pages show four text control columns; Keyboard instead uses the full display for the key guide and disables all four knobs.
 14. HOME Perform is Fill / Drop drums / Bring back / Tempo. Moments commit at bar boundaries; Fill lasts one bar and returns automatically, Drop leaves chords and bass running, Back restores groove phase with a downbeat bloom. Motion Off keeps static truth. V1 is live-only; Breakdown and separate multi-bar builds are deferred.
@@ -4563,48 +4563,45 @@ Preserve user chord forms for Harmony Off and imported content under an advanced
 
 **Related:** CTRL-ROOT, SYS-HARMONY
 
-### DISPLAY-STYLE — Appearance · Theme
+### DISPLAY-STYLE — Appearance · Character
 
 **Group:** Display · **Delivery:** Play — first milestone · **Template:** params
 
-Use Instrument Teal by default, with optional Studio/Editorial palettes and a custom solid accent in the same layout.
+Choose Devil/Ember or Cat/Plum; the entire palette is tied to the character.
 
-**Entry:** SYS-ROOT → Display
+**Entry:** GLO → Display
 **Exit:** GLO → SYS-ROOT; HOME → Progressions
 
 | Visible field | Reference value/state |
 | --- | --- |
-| Theme | Instrument Teal |
-| Background / primary | #061b1e / #f2f8f4 |
-| Secondary / line | #89a7a5 / #355054 |
-| Subtle / accent / onAccent | #113034 / #77dacb / #092d2c |
+| Character | Devil |
+| Theme | Ember · follows character |
+| Motion | On / Off |
+| Alternative | Cat / Plum |
 
 | Input | Action |
 | --- | --- |
-| SELECT | Choose Theme / Accent / Motion / Legacy scenes |
-| ALGORITHM | No action |
-| K1 | Theme · Instrument Teal |
-| K2 | Accent · #77dacb |
-| K3 | — |
-| K4 | — |
-| HOME | Return to Progressions |
-| GLO | Back one level |
-| SEL | Enter highlighted item |
+| SELECT | Choose another system page |
+| ALGORITHM | No character action |
+| K1 | Character · Devil / Cat |
+| K2 | Home view · Stage |
+| K3 | Boot sound · On / Off |
+| K4 | Motion · On / Off |
+| HOME | Return Progressions Core |
+| GLO | Return HOME |
 
 **State coverage:**
-- The owner-provided fm1_adaptive_motion_prototype.html is the authoritative visual/motion reference. Preserve its original bytes separately from any working adaptation.
-- Instrument Teal is default: bg #061b1e, fg #f2f8f4, muted #89a7a5, line #355054, subtle #113034, accent #77dacb, onAccent #092d2c. Studio and Editorial are optional palettes of the same layout.
-- Retain all nine approved visual studies, including Chord Morph and Generative / Bloom. This does not implement unsupported morph/generative DSP, new engines, macros or every pictured capability.
-- A custom accent is solid. Chord/degree anchors, thin separators, four text controls and a bank indicator remain readable; optional palette changes do not alter music or layout.
-- Coral Bloom, Aurora and Studio Rack are historical explorations and are not selected; the supplied prototype’s own Morph/Bloom studies remain part of the approved reference.
-- Motion has only On / Off. The earlier Quiet/Expressive/Reduced selector is superseded by adaptive output/active-part response; there are no independent Intensity, Speed or Calm motion preferences.
+- The approved soft mascot reference supersedes Instrument/Studio/Editorial for this build. Exactly Devil/Ember and Cat/Plum are selectable.
+- Character selection changes the entire palette, not music, transport, source or sounds. There is no independent theme or accent control.
+- Motion On follows real output/activity and shared musical phase. Off settles every effect; actual values and transport remain truthful.
+- Preference v5 preserves the 44-byte record and migrates v1–v4 favorites, Motion and Click without a load-time write.
 
 **Player instructions:**
-1. Choose Instrument Teal, Studio or Editorial with K1.
-2. Use SELECT for custom solid Accent detail or Motion.
-3. Return HOME; the same chord/degree, banks and musical controls remain.
+1. Open GLO → Display and turn K1 CHARACTER to Devil or Cat.
+2. The palette follows the character throughout HOME, menus and startup.
+3. K4 selects Motion On or Off; return HOME to play.
 
-**Related:** DISPLAY-ACCENT, DISPLAY-MOTION, DISPLAY-SCENES
+**Related:** DISPLAY-MOTION
 
 ### DISPLAY-MOTION — Motion
 
@@ -4612,7 +4609,7 @@ Use Instrument Teal by default, with optional Studio/Editorial palettes and a cu
 
 Choose adaptive On or totally Off, with no additional motion-style, intensity or speed selector.
 
-**Entry:** DISPLAY-STYLE → SELECT Motion
+**Entry:** GLO → Display → K4
 **Exit:** GLO → SYS-ROOT; HOME → Progressions
 
 | Visible field | Reference value/state |
@@ -4624,7 +4621,7 @@ Choose adaptive On or totally Off, with no additional motion-style, intensity or
 
 | Input | Action |
 | --- | --- |
-| SELECT | Choose Theme / Accent / Motion / Legacy scenes |
+| SELECT | Choose another system page |
 | ALGORITHM | No action |
 | K1 | Motion · On / Off |
 | K2 | Notes · On |
@@ -4637,7 +4634,7 @@ Choose adaptive On or totally Off, with no additional motion-style, intensity or
 **State coverage:**
 - Exactly two user options: On / Off. No Quiet, Expressive, Reduced, Calm, Intensity or Speed motion preference.
 - On derives a bounded response from smoothed volume/output level and active instrument-part count. Smooth level/activity changes so short percussion transients do not abruptly change the response.
-- Use the shared clock and resolved playing/ownership. A real output envelope and active-part snapshot require implementation/validation; prototype loudness/layers sliders are simulated inputs, not extra device Motion controls.
+- Use the shared clock and resolved playing/ownership. The firmware uses a real post-MASTER activity snapshot; physical tuning remains pending. Prototype loudness/layers sliders are not device controls.
 - The demonstration’s up-to-eight layer count is not a promise of eight hardware instrument parts, engines, tracks or voices.
 - Retain functional beat/playhead, chord transition, parameter/bank/focus, REC and confirmed Saved feedback across all nine studies, including Morph/Bloom visual motion. Unsupported musical features remain explicitly studies.
 - Off stops every animation and transition, including CSS pulses/halos, fades/interpolation, focus/parameter/bank, Morph/Bloom and Saved responses. Chord/notes/degree/cursor/status update immediately to the correct settled state.
@@ -4645,10 +4642,9 @@ Choose adaptive On or totally Off, with no additional motion-style, intensity or
 - Tune the hidden adaptive curve through engineering and physical validation, not a manual Motion Intensity/Speed dial. Measure and cap cadence, dirty regions, pixel work, scratch memory and foreground latency with demanding sound/drums/USB; no browser FPS/CPU/polyphony promises.
 
 **Player instructions:**
-1. Turn K1 for Motion On or Off.
-2. On: compare quiet/sparse and louder/more-active playing; response adapts automatically.
-3. Off: check that all tween/pulse/CSS motion stops while musical values update instantly.
-4. Turn notes and key lights independently with K2/K3.
+1. Open GLO → Display.
+2. Turn K4 for Motion On or Off.
+3. Return HOME; musical and saved-data state remains live.
 
 **Related:** DISPLAY-STYLE, DISPLAY-ACCENT
 
@@ -4656,9 +4652,9 @@ Choose adaptive On or totally Off, with no additional motion-style, intensity or
 
 **Group:** Display · **Delivery:** Play — first milestone · **Template:** params
 
-Retain the existing scenes out of the primary writing workflow until deliberate retirement.
+Historical exploration; not a route or appearance option in the two-character build.
 
-**Entry:** DISPLAY-STYLE → SELECT Legacy scenes
+**Entry:** Historical design inventory only
 **Exit:** GLO → SYS-ROOT; HOME → Progressions
 
 | Visible field | Reference value/state |
@@ -4681,15 +4677,10 @@ Retain the existing scenes out of the primary writing workflow until deliberate 
 | SEL | Enter highlighted item |
 
 **State coverage:**
-- HOME ALGORITHM cycle remains Progressions → Bass → Bonfire → Nothing
-- Scene-free successor build: show Scenes not included, not broken entries
-- Boot sound is a deliberate optional preference; turning it on must not disrupt playing
-- No LCD backlight toggle: that pin also serves the key matrix
+- Not implemented in this build; character and palette are coupled.
 
 **Player instructions:**
-1. Keep Progressions as HOME.
-2. Use ALGORITHM on HOME for the secondary scenes.
-3. Change optional scene preferences here.
+1. Use GLO → Display → K1 CHARACTER for the implemented appearance choices.
 
 **Related:** DISPLAY-STYLE, SYS-INFO
 
@@ -9413,9 +9404,9 @@ Keep the independent Layer envelope only for imported content in a build that re
 
 **Group:** Display · **Delivery:** Play — first milestone · **Template:** params
 
-Preview one readable custom solid accent in the selected palette.
+Historical exploration; not a route or appearance option in the two-character build.
 
-**Entry:** DISPLAY-STYLE → SELECT Accent → SEL
+**Entry:** Historical design inventory only
 **Exit:** GLO → DISPLAY-STYLE; HOME → Progressions CORE
 
 | Visible field | Reference value/state |
@@ -9438,14 +9429,10 @@ Preview one readable custom solid accent in the selected palette.
 | SEL | Return Appearance; keep the previewed solid accent |
 
 **State coverage:**
-- RGB values are bounded to 0–255; Instrument Teal’s default accent is #77dacb.
-- Restore returns the selected palette accent without changing the theme, music or Motion preference.
-- Validate primary/secondary/focus contrast on the TFT, and persist versioned settings safely outside audio work.
+- Not implemented in this build; character and palette are coupled.
 
 **Player instructions:**
-1. Use K1–K3 for red, green and blue.
-2. Use K4 to restore the selected palette accent if desired.
-3. Return HOME; the layout and music remain unchanged.
+1. Use GLO → Display → K1 CHARACTER for the implemented appearance choices.
 
 **Related:** DISPLAY-STYLE, DISPLAY-MOTION
 
@@ -9810,15 +9797,14 @@ Play full major/minor chords with deliberate modifiers.
 | 2 | SYS-HARMONY | Turn K1 On | Auto active; show a direct support message if quantize/scale is unsupported |
 | 3 | CTRL-MODIFIERS | Choose a slot; assign modifier/inversion/bass | Assignments change deliberately; HOLD remains separate |
 
-### SYS-WF-DISPLAY — Set accent and motion
+### SYS-WF-DISPLAY — Choose a character and motion
 
-Use Instrument Teal or optional Studio/Editorial palettes, with adaptive Motion On or totally Off.
+Use Devil/Ember or Cat/Plum with adaptive Motion On or settled Off.
 
 | Step | Screen | Physical action | Result |
 | --- | --- | --- | --- |
-| 1 | DISPLAY-STYLE | Choose Instrument Teal, Studio or Editorial | The same type-led layout uses the selected flat palette |
-| 2 | DISPLAY-ACCENT | Preview a solid accent or restore its palette default | Chord/degree and focus/status stay readable |
-| 3 | DISPLAY-MOTION | Choose On or Off | On adapts to smoothed output/volume and active parts; Off stops all motion/transitions while values update instantly |
+| 1 | DISPLAY-STYLE | Open GLO → Display and turn K1 CHARACTER | Devil selects Ember; Cat selects Plum. The whole palette follows the character. |
+| 2 | DISPLAY-MOTION | Turn K4 MOTION On or Off | On follows actual activity; Off settles visuals while musical state updates. |
 
 ### SYS-WF-EXTERNAL — Use external MIDI and clock
 

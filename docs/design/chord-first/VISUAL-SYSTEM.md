@@ -1,5 +1,7 @@
 # Native-screen visual system
 
+> **Current mascot build:** the owner approved only Devil/Ember and Cat/Plum, with palette tied to character. This supersedes the older theme/scene proposals below. The implemented two-strip HOME, four-level text and controls are documented in [MASCOTS](../../MASCOTS.md). Physical verification remains pending.
+
 Planned successor design. All sizes below are **native LCD pixels**, not enlarged
 desktop pixels. The screen is 240 × 240. Inspect at actual size before release.
 

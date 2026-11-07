@@ -437,74 +437,65 @@
     {
       "id": "DISPLAY-STYLE",
       "group": "Display",
-      "title": "Appearance · Theme",
+      "title": "Appearance · Character",
       "phase": 1,
       "kind": "params",
-      "purpose": "Use Instrument Teal by default, with optional Studio/Editorial palettes and a custom solid accent in the same layout.",
-      "entry": "SYS-ROOT → Display",
+      "purpose": "Choose Devil/Ember or Cat/Plum; the entire palette is tied to the character.",
+      "entry": "GLO → Display",
       "fields": [
         {
+          "label": "Character",
+          "value": "Devil"
+        },
+        {
           "label": "Theme",
-          "value": "Instrument Teal"
+          "value": "Ember · follows character"
         },
         {
-          "label": "Background / primary",
-          "value": "#061b1e / #f2f8f4"
+          "label": "Motion",
+          "value": "On / Off"
         },
         {
-          "label": "Secondary / line",
-          "value": "#89a7a5 / #355054"
-        },
-        {
-          "label": "Subtle / accent / onAccent",
-          "value": "#113034 / #77dacb / #092d2c"
+          "label": "Alternative",
+          "value": "Cat / Plum"
         }
       ],
       "knobs": [
-        "Theme · Instrument Teal",
-        "Accent · #77dacb",
-        "—",
-        "—"
+        "Character · Devil / Cat",
+        "Home view · Stage",
+        "Boot sound · On / Off",
+        "Motion · On / Off"
       ],
-      "select": "Choose Theme / Accent / Motion / Legacy scenes",
-      "algorithm": "No action",
+      "select": "Choose another system page",
+      "algorithm": "No character action",
       "buttons": {
-        "HOME": "Return to Progressions",
-        "GLO": "Back one level",
-        "SEL": "Enter highlighted item"
+        "HOME": "Return Progressions Core",
+        "GLO": "Return HOME"
       },
       "exit": "GLO → SYS-ROOT; HOME → Progressions",
       "states": [
-        "The owner-provided fm1_adaptive_motion_prototype.html is the authoritative visual/motion reference. Preserve its original bytes separately from any working adaptation.",
-        "Instrument Teal is default: bg #061b1e, fg #f2f8f4, muted #89a7a5, line #355054, subtle #113034, accent #77dacb, onAccent #092d2c. Studio and Editorial are optional palettes of the same layout.",
-        "Retain all nine approved visual studies, including Chord Morph and Generative / Bloom. This does not implement unsupported morph/generative DSP, new engines, macros or every pictured capability.",
-        "A custom accent is solid. Chord/degree anchors, thin separators, four text controls and a bank indicator remain readable; optional palette changes do not alter music or layout.",
-        "Coral Bloom, Aurora and Studio Rack are historical explorations and are not selected; the supplied prototype’s own Morph/Bloom studies remain part of the approved reference.",
-        "Motion has only On / Off. The earlier Quiet/Expressive/Reduced selector is superseded by adaptive output/active-part response; there are no independent Intensity, Speed or Calm motion preferences."
+        "The approved soft mascot reference supersedes Instrument/Studio/Editorial for this build. Exactly Devil/Ember and Cat/Plum are selectable.",
+        "Character selection changes the entire palette, not music, transport, source or sounds. There is no independent theme or accent control.",
+        "Motion On follows real output/activity and shared musical phase. Off settles every effect; actual values and transport remain truthful.",
+        "Preference v5 preserves the 44-byte record and migrates v1–v4 favorites, Motion and Click without a load-time write."
       ],
       "playerSteps": [
-        "Choose Instrument Teal, Studio or Editorial with K1.",
-        "Use SELECT for custom solid Accent detail or Motion.",
-        "Return HOME; the same chord/degree, banks and musical controls remain."
+        "Open GLO → Display and turn K1 CHARACTER to Devil or Cat.",
+        "The palette follows the character throughout HOME, menus and startup.",
+        "K4 selects Motion On or Off; return HOME to play."
       ],
       "related": [
-        "DISPLAY-ACCENT",
-        "DISPLAY-MOTION",
-        "DISPLAY-SCENES"
+        "DISPLAY-MOTION"
       ],
       "items": [
         {
-          "label": "Instrument Teal",
-          "value": "Deep teal · default",
+          "label": "Devil",
+          "value": "Ember · default",
           "selected": true
         },
         {
-          "label": "Studio",
-          "value": "Dark"
-        },
-        {
-          "label": "Editorial",
-          "value": "Warm light"
+          "label": "Cat",
+          "value": "Plum"
         }
       ]
     },
@@ -515,7 +506,7 @@
       "phase": 1,
       "kind": "params",
       "purpose": "Choose adaptive On or totally Off, with no additional motion-style, intensity or speed selector.",
-      "entry": "DISPLAY-STYLE → SELECT Motion",
+      "entry": "GLO → Display → K4",
       "fields": [
         {
           "label": "Motion",
@@ -540,7 +531,7 @@
         "Lights · Scale",
         "—"
       ],
-      "select": "Choose Theme / Accent / Motion / Legacy scenes",
+      "select": "Choose another system page",
       "algorithm": "No action",
       "buttons": {
         "HOME": "Return to Progressions",
@@ -551,7 +542,7 @@
       "states": [
         "Exactly two user options: On / Off. No Quiet, Expressive, Reduced, Calm, Intensity or Speed motion preference.",
         "On derives a bounded response from smoothed volume/output level and active instrument-part count. Smooth level/activity changes so short percussion transients do not abruptly change the response.",
-        "Use the shared clock and resolved playing/ownership. A real output envelope and active-part snapshot require implementation/validation; prototype loudness/layers sliders are simulated inputs, not extra device Motion controls.",
+        "Use the shared clock and resolved playing/ownership. The firmware uses a real post-MASTER activity snapshot; physical tuning remains pending. Prototype loudness/layers sliders are not device controls.",
         "The demonstration’s up-to-eight layer count is not a promise of eight hardware instrument parts, engines, tracks or voices.",
         "Retain functional beat/playhead, chord transition, parameter/bank/focus, REC and confirmed Saved feedback across all nine studies, including Morph/Bloom visual motion. Unsupported musical features remain explicitly studies.",
         "Off stops every animation and transition, including CSS pulses/halos, fades/interpolation, focus/parameter/bank, Morph/Bloom and Saved responses. Chord/notes/degree/cursor/status update immediately to the correct settled state.",
@@ -559,10 +550,9 @@
         "Tune the hidden adaptive curve through engineering and physical validation, not a manual Motion Intensity/Speed dial. Measure and cap cadence, dirty regions, pixel work, scratch memory and foreground latency with demanding sound/drums/USB; no browser FPS/CPU/polyphony promises."
       ],
       "playerSteps": [
-        "Turn K1 for Motion On or Off.",
-        "On: compare quiet/sparse and louder/more-active playing; response adapts automatically.",
-        "Off: check that all tween/pulse/CSS motion stops while musical values update instantly.",
-        "Turn notes and key lights independently with K2/K3."
+        "Open GLO → Display.",
+        "Turn K4 for Motion On or Off.",
+        "Return HOME; musical and saved-data state remains live."
       ],
       "related": [
         "DISPLAY-STYLE",
@@ -575,8 +565,8 @@
       "title": "Secondary scenes",
       "phase": 1,
       "kind": "params",
-      "purpose": "Retain the existing scenes out of the primary writing workflow until deliberate retirement.",
-      "entry": "DISPLAY-STYLE → SELECT Legacy scenes",
+      "purpose": "Historical exploration; not a route or appearance option in the two-character build.",
+      "entry": "Historical design inventory only",
       "fields": [
         {
           "label": "HOME view",
@@ -610,15 +600,10 @@
       },
       "exit": "GLO → SYS-ROOT; HOME → Progressions",
       "states": [
-        "HOME ALGORITHM cycle remains Progressions → Bass → Bonfire → Nothing",
-        "Scene-free successor build: show Scenes not included, not broken entries",
-        "Boot sound is a deliberate optional preference; turning it on must not disrupt playing",
-        "No LCD backlight toggle: that pin also serves the key matrix"
+        "Not implemented in this build; character and palette are coupled."
       ],
       "playerSteps": [
-        "Keep Progressions as HOME.",
-        "Use ALGORITHM on HOME for the secondary scenes.",
-        "Change optional scene preferences here."
+        "Use GLO → Display → K1 CHARACTER for the implemented appearance choices."
       ],
       "related": [
         "DISPLAY-STYLE",
@@ -7261,8 +7246,8 @@
       "title": "Solid Accent",
       "phase": 1,
       "kind": "params",
-      "purpose": "Preview one readable custom solid accent in the selected palette.",
-      "entry": "DISPLAY-STYLE → SELECT Accent → SEL",
+      "purpose": "Historical exploration; not a route or appearance option in the two-character build.",
+      "entry": "Historical design inventory only",
       "fields": [
         {
           "label": "Red",
@@ -7296,14 +7281,10 @@
       },
       "exit": "GLO → DISPLAY-STYLE; HOME → Progressions CORE",
       "states": [
-        "RGB values are bounded to 0–255; Instrument Teal’s default accent is #77dacb.",
-        "Restore returns the selected palette accent without changing the theme, music or Motion preference.",
-        "Validate primary/secondary/focus contrast on the TFT, and persist versioned settings safely outside audio work."
+        "Not implemented in this build; character and palette are coupled."
       ],
       "playerSteps": [
-        "Use K1–K3 for red, green and blue.",
-        "Use K4 to restore the selected palette accent if desired.",
-        "Return HOME; the layout and music remain unchanged."
+        "Use GLO → Display → K1 CHARACTER for the implemented appearance choices."
       ],
       "related": [
         "DISPLAY-STYLE",
@@ -7427,24 +7408,19 @@
     },
     {
       "id": "SYS-WF-DISPLAY",
-      "title": "Set accent and motion",
+      "title": "Choose a character and motion",
       "phase": 1,
-      "goal": "Use Instrument Teal or optional Studio/Editorial palettes, with adaptive Motion On or totally Off.",
+      "goal": "Use Devil/Ember or Cat/Plum with adaptive Motion On or settled Off.",
       "steps": [
         {
-          "screen": "DISPLAY-STYLE",
-          "action": "Choose Instrument Teal, Studio or Editorial",
-          "result": "The same type-led layout uses the selected flat palette"
+          "action": "Open GLO → Display and turn K1 CHARACTER",
+          "result": "Devil selects Ember; Cat selects Plum. The whole palette follows the character.",
+          "screen": "DISPLAY-STYLE"
         },
         {
-          "screen": "DISPLAY-ACCENT",
-          "action": "Preview a solid accent or restore its palette default",
-          "result": "Chord/degree and focus/status stay readable"
-        },
-        {
-          "screen": "DISPLAY-MOTION",
-          "action": "Choose On or Off",
-          "result": "On adapts to smoothed output/volume and active parts; Off stops all motion/transitions while values update instantly"
+          "action": "Turn K4 MOTION On or Off",
+          "result": "On follows actual activity; Off settles visuals while musical state updates.",
+          "screen": "DISPLAY-MOTION"
         }
       ]
     },

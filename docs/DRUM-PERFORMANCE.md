@@ -1,8 +1,9 @@
 # Fills, drops and builds
 
-Implemented in development source on `codex/drum-performance`, based on current
-main `4502c2f` (CORD / chase10). This is a native C firmware feature, with host
-captures and a linked local test package. It is not in the published chase10
+Integrated with the Devil/Cat redesign on `codex/mascot-home`, from the local
+`codex/drum-performance` snapshot based on `4502c2f` (CORD / chase10). This is a
+native C firmware feature, with captures from the combined renderer and a linked
+local test package. It is not in the published chase10
 firmware and has not been flashed or physically verified on an FM-1.
 
 ![Native HOME performance states](images/drum-performance/performance-states.png)
@@ -104,20 +105,20 @@ MIDI drum events, preserved chords/bass/patterns, request replacement, queued gr
 changes, external clock, recorder exclusion, five-bank controls, settled Off,
 clock-origin differences, muted output and hidden/missed bloom cancellation.
 
-The following checks also pass on this source: HOME banks (250 assertions plus
-identical-audio comparison), native HOME (315 assertions), native-page/Motion
+The following checks also pass on this source: HOME banks and identical-audio
+comparison, native HOME, mascot artwork/typography/migration, native-page/Motion
 On/Off physical-output/six-channel USB/MIDI comparisons at both rates, shared
 accompaniment tests and USB-active/idle comparisons, recording/backup/power-cut
 checks, the drum bank (149,906 checks), Auto Harmony and USB's 64 render comparisons.
-The canonical inventory validates **206 screens/states and 38 workflows**.
+The canonical inventory validates **207 screens/states and 39 workflows**.
 
 The installed JieLi toolchain links a local verification package using default
 build options. The resulting memory use is:
 
 | Region | Used | Capacity |
 | --- | ---: | ---: |
-| XIP application | 465,940 B | 573,440 B |
-| Ordinary RAM (.data + .bss) | 87,672 B | 98,304 B |
+| XIP application | 562,024 B | 573,440 B |
+| Ordinary RAM (.data + .bss) | 89,416 B | 98,304 B |
 | POOL | 316,792 B | 344,064 B |
 | RAM-resident code, including core 1 | 3,128 B | 24,576 B |
 | NOINIT | 216 B | 15,664 B |
@@ -126,3 +127,5 @@ These are linked sizes, not physical CPU/display/USB timing measurements. Native
 screens and dry renders establish host behavior; on-device listening, encoder
 feel, display legibility, worst audio-half latency and simultaneous USB capture
 still need hardware review before release.
+
+[Combined build resource evidence](../benchmarks/resources/mascot-home/report.md).

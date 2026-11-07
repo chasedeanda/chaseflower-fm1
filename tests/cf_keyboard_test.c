@@ -75,7 +75,7 @@ static void live_keys(void)
 static void shot(const char *dir,const char *name)
 {
     cf_ui_draw();char path[1024];snprintf(path,sizeof path,"%s/%s.ppm",dir,name);FILE *f=fopen(path,"wb");CHECK(f);if(!f)return;
-    fprintf(f,"P6\n240 240\n255\n");for(unsigned i=0;i<FB_W*FB_H;i++){unsigned rgb=cf_pal[fb[i]&63];uint8_t p[]={rgb>>16,rgb>>8,rgb};fwrite(p,3,1,f);}fclose(f);
+    fprintf(f,"P6\n240 240\n255\n");for(unsigned i=0;i<FB_W*FB_H;i++){unsigned rgb=cf_pal[fb[i]];uint8_t p[]={rgb>>16,rgb>>8,rgb};fwrite(p,3,1,f);}fclose(f);
 }
 static void render(const char *dir)
 {
@@ -87,7 +87,7 @@ static void render(const char *dir)
     cf_learn_focus=7;shot(dir,"keyboard-root");
     cf_learn_focus=8;shot(dir,"keyboard-sus2");
     cf_learn_focus=25;shot(dir,"keyboard-hold");
-    for(unsigned skin=1;skin<CF_SKIN_N;skin++){cf_skin=skin;cf_palette_build();shot(dir,skin==1?"keyboard-studio":"keyboard-editorial");}
+    for(unsigned skin=1;skin<CF_SKIN_N;skin++){cf_skin=skin;cf_palette_build();shot(dir,"keyboard-plum");}
 }
 int main(int argc,char **argv)
 {

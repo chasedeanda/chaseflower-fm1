@@ -1,11 +1,11 @@
 {
   "sourceBase": "0d76e5b3370f6b7e43a41ed09089491e1f4320a0",
   "designRevision": "845325136418dd038c7ef81eaca01ec64ac5e61e",
-  "summary": "Engineering preview: every retained old screen now routes through native Instrument Teal parameter, list, grid, name/confirmation and result families, including advanced FM6/VA, Layer, effects, recordings, system, diagnostics and recovery. HOME/banks, Groove/Loop/Mix/Click and the protected sixteen-slot editor retain their existing musical owners. Finite chord/cursor/knob/bank/workspace/focus/save transitions and a real post-MASTER output-driven halo share the single On/Off setting; Off cancels visual work and settled views skip rendering. The current manual-take/latest-three policy remains intact. Chord Lab adds Now/Last/planned-slot notes and intervals, fixed-context comparisons, offline Next suggestions, explicit one-bar audition and undoable insertion. Songs now adds six saved semantic ideas and existing recording rows, protected quiet-boundary writes, complete musical snapshots, progression rename/duplicate/delete and recording load/delete. SAVE opens Songs; SELECT Save current then SEL creates a new copy. Full arranged recording, recording rename/duplicate, bulk clear and physical verification remain pending. Chord library/audition remains explicitly deferred. See docs/SONGS-LIBRARY.md for native preview controls and limits. CORD now supplies the selected piano-key/ring boot in three saved themes; HOME fixes cross-clock freshness and clipped ellipses, adds accepted-beat header activity and lights live progression matches.",
+  "summary": "Engineering preview: native HOME uses the approved Devil/Ember or Cat/Plum mascot, with its palette tied to the character, shared-clock/output-driven motion and a pulse ring. The two bottom strips use one separator, three control dividers and antialiased type; the bank cue is in the header. Five banks include Perform for real next-bar fills, drum drops and downbeat returns. Retained sound/FX/system/recovery pages, shared-clock accompaniment, the protected sixteen-slot editor, Songs and Chord Lab remain available. Motion Off settles effects while musical, record/save and transport states stay truthful. The manual-take/latest-three recording policy is unchanged. Full arranged recording, recording rename/duplicate, bulk clear, the separate chord library and physical-device validation remain pending.",
   "screens": {
     "HOME_STAGE": {
       "designStatus": "Native preview alongside selected prototype; device review pending",
-      "implementationStatus": "Native HOME with audio-clock-safe complete round pulses, accepted-beat header indicator, sounding chord and live match fills independent of playback underline; physical verification pending",
+      "implementationStatus": "Native HOME with audio-clock-safe complete round pulses, accepted-beat header indicator, sounding chord and live match fills independent of playback underline; physical verification pending; two-strip mascot HOME with precomputed four-level type and shared-clock reactions",
       "deviceVerification": "Pending — host captures and device link only"
     },
     "HOME_PENDING": {
@@ -15,27 +15,27 @@
     },
     "DISPLAY-STYLE": {
       "designStatus": "Native preview alongside selected prototype; device review pending",
-      "implementationStatus": "Implemented for all retained screens: three native themes and one Motion On/Off choice; finite transitions cancel completely with Off; physical tuning pending",
+      "implementationStatus": "Implemented native preview: exactly Devil/Ember and Cat/Plum, one Motion On/Off setting, v5 migration; physical tuning pending",
       "deviceVerification": "Pending — host captures and device link only"
     },
     "DISPLAY-MOTION": {
       "designStatus": "Native preview alongside selected prototype; device review pending",
-      "implementationStatus": "Implemented for all retained screens: three native themes and one Motion On/Off choice; finite transitions cancel completely with Off; physical tuning pending",
+      "implementationStatus": "Implemented native preview: exactly Devil/Ember and Cat/Plum, one Motion On/Off setting, v5 migration; physical tuning pending",
       "deviceVerification": "Pending — host captures and device link only"
     },
     "HOME_SOUND": {
       "designStatus": "Native bank preview follows selected prototype; physical review pending",
-      "implementationStatus": "Implemented preview: real parameters, explicit bank label, immediate ownership and clipped On/Off transition",
+      "implementationStatus": "Implemented preview: real parameters, explicit bank label, immediate ownership and clipped On/Off transition; two-strip mascot HOME with precomputed four-level type and shared-clock reactions",
       "deviceVerification": "Pending — native host captures and device link only"
     },
     "HOME_TEXTURE": {
       "designStatus": "Native bank preview follows selected prototype; physical review pending",
-      "implementationStatus": "Implemented preview: real parameters, explicit bank label, immediate ownership and clipped On/Off transition",
+      "implementationStatus": "Implemented preview: real parameters, explicit bank label, immediate ownership and clipped On/Off transition; two-strip mascot HOME with precomputed four-level type and shared-clock reactions",
       "deviceVerification": "Pending — native host captures and device link only"
     },
     "HOME_GROOVE": {
       "designStatus": "Native bank preview follows selected prototype; physical review pending",
-      "implementationStatus": "Implemented preview: real parameters, explicit bank label, immediate ownership and clipped On/Off transition",
+      "implementationStatus": "Implemented preview: real parameters, explicit bank label, immediate ownership and clipped On/Off transition; two-strip mascot HOME with precomputed four-level type and shared-clock reactions",
       "deviceVerification": "Pending — native host captures and device link only"
     },
     "ACC_GROOVE": {
@@ -836,13 +836,23 @@
     },
     "HOME_PERFORM": {
       "designStatus": "Native preview follows Instrument Teal; device review pending",
-      "implementationStatus": "Implemented in development source: fifth HOME bank; next-bar one-bar fills, drum drops and returns; Motion Off, live-only recorder scope. See docs/DRUM-PERFORMANCE.md.",
+      "implementationStatus": "Implemented in development source: fifth HOME bank; next-bar one-bar fills, drum drops and returns; Motion Off, live-only recorder scope. See docs/DRUM-PERFORMANCE.md.; two-strip mascot HOME with precomputed four-level type and shared-clock reactions",
       "deviceVerification": "Pending — native host captures and linked firmware only"
     },
     "HOME_KEYBOARD": {
       "designStatus": "Native 240x240 captures; physical review pending",
-      "implementationStatus": "Implemented sixth HOME page from main eb51a3a: full physical key map, current root/degree and Manual/Auto/HOLD assignments, press-to-explain normal playing, four inactive knobs. See docs/KEYBOARD-LEARN.md.",
+      "implementationStatus": "Implemented sixth HOME page: full physical key map, current root/degree and Manual/Auto/HOLD assignments, press-to-explain normal playing, four inactive knobs. Retained with Devil/Ember and Cat/Plum. See docs/KEYBOARD-LEARN.md.",
       "deviceVerification": "Pending — native host tests/captures and local JieLi link; no hardware flash"
+    },
+    "DISPLAY-ACCENT": {
+      "designStatus": "Historical exploration, superseded",
+      "implementationStatus": "Not present in the two-character build",
+      "deviceVerification": "Not applicable to this build"
+    },
+    "DISPLAY-SCENES": {
+      "designStatus": "Historical exploration, superseded",
+      "implementationStatus": "Not present in the two-character build",
+      "deviceVerification": "Not applicable to this build"
     }
   },
   "foundations": {

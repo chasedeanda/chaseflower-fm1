@@ -112,6 +112,7 @@ def generate():
         (GEN / old).unlink(missing_ok=True)
     tools = SRC / "tools"
     cmds = [[tools / "gen_native_font.py", GEN / "cf_native_fonts.h"],
+            [tools / "gen_mascots.py", GEN / "cf_mascot_art.h"],
             [tools / "gen_aa_font.py", GEN / "ui_fonts.h", "--preset", "inter-tight"],
             [tools / "gen_pixfont.py", GEN / "cf_fonts.h"],                            # CoralFlower's pixel type
             [tools / "gen_aa_icons.py", GEN / "ui_icons.h"],

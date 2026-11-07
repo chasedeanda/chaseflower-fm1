@@ -2,11 +2,11 @@
 
 > **Planned successor interface.** This is the player documentation for the design board. These controls and later-stage features are not all available in the currently released firmware.
 
-The [implementation plan](design/chord-first/IMPLEMENTATION-PLAN.md) uses the supplied [adaptive prototype](design/chord-first/instrument-teal/prototype.html), with **Instrument Teal** as the default palette and **Motion On (adaptive) / Off**.
+The [implementation plan](design/chord-first/IMPLEMENTATION-PLAN.md) uses the supplied [adaptive prototype](design/chord-first/instrument-teal/prototype.html), with **Devil/Ember** as the current default and **Cat/Plum** as the only alternative and **Motion On (adaptive) / Off**.
 
 ## Start here
 
-> Engineering preview: every retained old screen now routes through native Instrument Teal parameter, list, grid, name/confirmation and result families, including advanced FM6/VA, Layer, effects, recordings, system, diagnostics and recovery. HOME/banks, Groove/Loop/Mix/Click and the protected sixteen-slot editor retain their existing musical owners. Finite chord/cursor/knob/bank/workspace/focus/save transitions and a real post-MASTER output-driven halo share the single On/Off setting; Off cancels visual work and settled views skip rendering. The current manual-take/latest-three policy remains intact. Chord Lab adds Now/Last/planned-slot notes and intervals, fixed-context comparisons, offline Next suggestions, explicit one-bar audition and undoable insertion. Songs now adds six saved semantic ideas and existing recording rows, protected quiet-boundary writes, complete musical snapshots, progression rename/duplicate/delete and recording load/delete. SAVE opens Songs; SELECT Save current then SEL creates a new copy. Full arranged recording, recording rename/duplicate, bulk clear and physical verification remain pending. Chord library/audition remains explicitly deferred. See docs/SONGS-LIBRARY.md for native preview controls and limits. CORD now supplies the selected piano-key/ring boot in three saved themes; HOME fixes cross-clock freshness and clipped ellipses, adds accepted-beat header activity and lights live progression matches.
+> Engineering preview: native HOME uses the approved Devil/Ember or Cat/Plum mascot, with its palette tied to the character, shared-clock/output-driven motion and a pulse ring. The two bottom strips use one separator, three control dividers and antialiased type; the bank cue is in the header. Five banks include Perform for real next-bar fills, drum drops and downbeat returns. Retained sound/FX/system/recovery pages, shared-clock accompaniment, the protected sixteen-slot editor, Songs and Chord Lab remain available. Motion Off settles effects while musical, record/save and transport states stay truthful. The manual-take/latest-three recording policy is unchanged. Full arranged recording, recording rename/duplicate, bulk clear, the separate chord library and physical-device validation remain pending.
 
 1. Open HOME. Turn SELECT to explore the complete progression catalogue; each idea supplies its starting key, mode and time signature.
 2. Press PLAY to hear the selected progression. Press PLAY again to stop.
@@ -18,7 +18,7 @@ The [implementation plan](design/chord-first/IMPLEMENTATION-PLAN.md) uses the su
 
 The large chord is the sound you are hearing. Its degree/quality line might read **vi · minor**. In F major, the planned phrase can show **IV over Bb**, **V over C**, **vi over Dm**, and **I over F**. Uppercase numerals mean major; lowercase means minor. A slot counter such as 03/04 is the transport position, not the scale degree.
 
-The notes line shows actual chord tones. The phrase cue shows planned chords; its cursor continues while you temporarily play over a loop. Pending changes are labelled until they become active. Instrument Teal is the default appearance. Display → Motion has only On and Off: On automatically adapts its response to loudness and active instruments; Off stops all visual animation while musical values, chord identity and playback/record/save status continue to update instantly. The supplied nine-screen adaptive prototype defines the visual direction; several study controls and musical engines are not implemented features.
+The notes line shows actual chord tones. The phrase cue shows planned chords; its cursor continues while you temporarily play over a loop. Pending changes are labelled until they become active. Devil/Ember is the default; Cat selects Plum. The two bottom HOME strips use one horizontal rule and three thin control dividers, with the bank cue in the header. Display → Motion has only On and Off: On automatically adapts its response to loudness and active instruments; Off stops all visual animation while musical values, chord identity and playback/record/save status continue to update instantly. The supplied nine-screen adaptive prototype defines the visual direction; several study controls and musical engines are not implemented features.
 
 ## Delivery order
 
@@ -315,13 +315,12 @@ The notes line shows actual chord tones. The phrase cue shows planned chords; it
 2. **Turn K1 On** — Auto active; show a direct support message if quantize/scale is unsupported (Harmony).
 3. **Choose a slot; assign modifier/inversion/bass** — Assignments change deliberately; HOLD remains separate (Modifier assignments).
 
-### Set accent and motion
+### Choose a character and motion
 
-**Availability:** Play — first milestone. Use Instrument Teal or optional Studio/Editorial palettes, with adaptive Motion On or totally Off.
+**Availability:** Play — first milestone. Use Devil/Ember or Cat/Plum with adaptive Motion On or settled Off.
 
-1. **Choose Instrument Teal, Studio or Editorial** — The same type-led layout uses the selected flat palette (Appearance · Theme).
-2. **Preview a solid accent or restore its palette default** — Chord/degree and focus/status stay readable (Solid Accent).
-3. **Choose On or Off** — On adapts to smoothed output/volume and active parts; Off stops all motion/transitions while values update instantly (Motion).
+1. **Open GLO → Display and turn K1 CHARACTER** — Devil selects Ember; Cat selects Plum. The whole palette follows the character. (Appearance · Character).
+2. **Turn K4 MOTION On or Off** — On follows actual activity; Off settles visuals while musical state updates. (Motion).
 
 ### Use external MIDI and clock
 
@@ -567,10 +566,10 @@ Every entry below is a planned screen or a named state/tab of a shared screen. A
 
 | Screen | Milestone | Open it | What it does |
 | --- | --- | --- | --- |
-| Appearance · Theme | 1 | Settings → Display | Use Instrument Teal by default, with optional Studio/Editorial palettes and a custom solid accent in the same layout. |
-| Motion | 1 | Appearance · Theme → SELECT Motion | Choose adaptive On or totally Off, with no additional motion-style, intensity or speed selector. |
-| Secondary scenes | 1 | Appearance · Theme → SELECT Legacy scenes | Retain the existing scenes out of the primary writing workflow until deliberate retirement. |
-| Solid Accent | 1 | Appearance · Theme → SELECT Accent → SEL | Preview one readable custom solid accent in the selected palette. |
+| Appearance · Character | 1 | GLO → Display | Choose Devil/Ember or Cat/Plum; the entire palette is tied to the character. |
+| Motion | 1 | GLO → Display → K4 | Choose adaptive On or totally Off, with no additional motion-style, intensity or speed selector. |
+| Secondary scenes | 1 | Historical design inventory only | Historical exploration; not a route or appearance option in the two-character build. |
+| Solid Accent | 1 | Historical design inventory only | Historical exploration; not a route or appearance option in the two-character build. |
 
 ### MIDI/USB
 
@@ -710,7 +709,7 @@ Every entry below is a planned screen or a named state/tab of a shared screen. A
 - Songs is the one user-facing collection for saved progressions and recordings. Factory progression browsing remains on HOME. Editable Songs use semantic chord/degree/duration data; recorded Songs retain captured performance events and timing. Existing recorded Auto takes keep their fixed-note meaning and format.
 - REC is direct from HOME. It captures the scheduled progression plus deliberate live/groove/key/tempo changes rather than unexpectedly muting the arranged chords. Ending a capture creates a new numbered Song copy; no mandatory Review/Keep step. Pending, Saving and Saved are different states, and flash writes wait for an actually safe quiet boundary without cutting independent HOLD or audible tails.
 - Songs supports selected-row Load, Rename, Duplicate and Delete, plus counted Clear Recordings/Clear All actions. Bulk clear excludes factory templates, the protected working draft and Pending captures. A Pending capture can be discarded only through its own explicit selected action.
-- The selected visual reference is fm1_adaptive_motion_prototype.html. Instrument Teal is the factory default: background #061b1e, foreground #f2f8f4, secondary #89a7a5, separator #355054, subtle surface #113034, accent #77dacb, and on-accent text #092d2c. Studio and Editorial are optional palettes of the same typography-led interface. Preserve the large chord, paired degrees, thin separators, four text controls and the supplied prototype's restrained halo/Bloom visual vocabulary; earlier Coral Bloom, Aurora and Studio Rack are historical alternatives.
+- The selected current HOME appearance is the owner-approved soft mascot reference; the earlier adaptive prototype remains preserved as design history. The approved mascot build uses Devil/Ember by default and Cat/Plum as its only alternative. Character and theme are coupled; a separate theme/accent selector is not present. Preserve the large chord, paired degrees, thin separators, four text controls and the supplied prototype's restrained halo/Bloom visual vocabulary; earlier Coral Bloom, Aurora and Studio Rack are historical alternatives.
 - Motion has exactly two user choices: On (adaptive) and Off. On responds automatically to output level/volume and semantic active-instrument activity using a smoothed bounded envelope, with musical motion tied to the shared clock. There is no manual Quiet/Expressive/intensity/speed selector. Off cancels every pulse, orbit, morph travel and tween; truthful chord, value, playback and record/save data still update instantly. The supplied loudness/layer sliders are simulation inputs, not new firmware settings or evidence of eight instrument parts. Measure display, input, memory and audio/USB timing on the FM-1.
 - HOME from another screen returns to Progressions Core. Further HOME taps cycle Core/Sound/Texture/Groove/Perform/Keyboard without changing any parameter; SELECT still browses the complete catalogue, PRESETS still selects chord sound, ALGORITHM keeps its scene/workspace role and OCT± stays musical. The five musical pages show four text control columns; Keyboard instead uses the full display for the key guide and disables all four knobs.
 - HOME Perform is Fill / Drop drums / Bring back / Tempo. Moments commit at bar boundaries; Fill lasts one bar and returns automatically, Drop leaves chords and bass running, Back restores groove phase with a downbeat bloom. Motion Off keeps static truth. V1 is live-only; Breakdown and separate multi-bar builds are deferred.
@@ -718,4 +717,4 @@ Every entry below is a planned screen or a named state/tab of a shared screen. A
 
 ## Design and release reference
 
-The [screen/workflow inventory](design/chord-first/design-board.html), [engineering handoff](design/chord-first/ENGINEERING-HANDOFF.md) and [GitHub roadmap](https://github.com/chasedeanda/chaseflower-fm1/issues/1) describe the same planned controls. The inventory's earlier screen sketches document coverage; the selected adaptive prototype defines appearance. Use the release-specific README/manual for behavior already shipped on the device.
+The [screen/workflow inventory](design/chord-first/design-board.html), [engineering handoff](design/chord-first/ENGINEERING-HANDOFF.md) and [GitHub roadmap](https://github.com/chasedeanda/chaseflower-fm1/issues/1) describe the same planned controls. The inventory's earlier screen sketches document coverage; the current mascot build and MASCOTS guide define the selected appearance. Use the release-specific README/manual for behavior already shipped on the device.

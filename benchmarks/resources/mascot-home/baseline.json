@@ -1,0 +1,27 @@
+{
+  "identity": {
+    "revision": "4502c2f",
+    "elf_sha256": "98ba653ab56c7c7bca2a5224587772b6ab7850855fde05068c42be48fd0a3253",
+    "build_log_sha256": "5c8640b8f58ccb5740db8be766396c312b935da4784feb34ef46ba51cd2cb5f2",
+    "limits": [
+      "Paired baseline ELF measured before mascot integration. A complete dependency/macro capture was not collected for this baseline."
+    ]
+  },
+  "regions": {
+    "ordinary_ram": {
+      "bytes": 87640
+    },
+    "pool": {
+      "bytes": 316792
+    },
+    "xip": {
+      "bytes": 468932
+    },
+    "ram_code": {
+      "bytes": 3128
+    },
+    "noinit": {
+      "bytes": 216
+    }
+  }
+}

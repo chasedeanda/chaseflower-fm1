@@ -64,8 +64,8 @@ static void click_and_preferences(void)
     setup(0);cu.scr=SCR_ACC;cu.page[SCR_ACC]=CF_ACC_CLICK;unsigned run=cfm.running,writes=emu_flash_writes;
     ui_knob_turn(1,19);unsigned level=cf_click_level;CHECK(!cs.metro_level && level>=1 && level<=100);
     ui_knob_turn(0,1);blocks(2);CHECK(cs.metro_level==level && cfm.level==level && cfm.running==run && emu_flash_writes==writes);
-    cpb_flush();unsigned size=sizeof(cpb_rec_t);cpb_load();CHECK(cf_click_level==level);cpb_rec_t rec;CHECK(st_load(OBJ_CFPREFS,&rec,size)==size && rec.version==4 && cpb_valid(&rec));
-    rec.version=3;rec.reserved[0]=CF_SKIN_EDITORIAL;rec.reserved[1]=0;rec.check=cfs_fnv(&rec,__builtin_offsetof(cpb_rec_t,check));CHECK(!st_save(OBJ_CFPREFS,&rec,size));cpb_load();CHECK(cf_skin==2 && !cf_motion && cf_click_level==cs.metro_level && !cpb_dirty);
+    cpb_flush();unsigned size=sizeof(cpb_rec_t);cpb_load();CHECK(cf_click_level==level);cpb_rec_t rec;CHECK(st_load(OBJ_CFPREFS,&rec,size)==size && rec.version==5 && cpb_valid(&rec));
+    rec.version=3;rec.reserved[0]=CF_SKIN_EDITORIAL;rec.reserved[1]=0;rec.check=cfs_fnv(&rec,__builtin_offsetof(cpb_rec_t,check));CHECK(!st_save(OBJ_CFPREFS,&rec,size));cpb_load();CHECK(cf_skin==CF_SKIN_EMBER && !cf_motion && cf_click_level==cs.metro_level && !cpb_dirty);
     /* Click sounds with a real drum groove, and Off really mutes its future attacks. */
     setup(0);cpg.rhythm=dm_nth(4,0);cs.metro_level=35;cf_send_metro();blocks(2);ui_button(B_PLAY);blocks(2);
     cfm.click=2;int32_t out[CTL*2]={0};cf_click_mix(out,CTL);unsigned nonzero=0;for(unsigned i=0;i<CTL*2;i++)nonzero|=out[i]!=0;CHECK(nonzero && cpa.plan.rhythm<DM_N);

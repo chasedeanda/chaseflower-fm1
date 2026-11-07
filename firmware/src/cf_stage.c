@@ -10,6 +10,21 @@ static int cfn_width(const cfn_font_t *f, const char *s)
 {
     int w=0; for (;*s;s++) { unsigned c=cfn_code((uint8_t)*s); w+=f->g[c-32].adv; } return w;
 }
+static void cfn_coverage(int x,int y,unsigned coverage,uint8_t ink)
+{
+    if(!coverage || x<fb_cx0 || x>=fb_cx1 || y<fb_cy0 || y>=fb_cy1)return;
+    if(coverage==3){fb[y*FB_W+x]=ink;return;}
+    unsigned role=ink==FL_INK?0:ink==FL_INK2 || ink==FL_INK3 || ink==50 || ink==53?1:
+        ink==48 || ink==49 || ink==52?2:ink==56?3:ink==FL_C(FL_R_ROSE,0)?4:CFN_AA_ROLES;
+    uint8_t bg=fb[y*FB_W+x];if(bg==ink)return;
+    unsigned surface=bg==FL_BG?0:bg==FL_BG1 || bg==FL_BG2?1:bg==48 || bg==49 || bg==52?2:bg==FL_BG3?3:CFN_AA_SURFACES;
+    if(bg>=CFN_AA_BASE && bg<CFN_AA_BASE+CFN_AA_ROLES*CFN_AA_SURFACES*2) {
+        unsigned entry=(bg-CFN_AA_BASE)/2;
+        if(entry%CFN_AA_ROLES==role){surface=entry/CFN_AA_ROLES;unsigned old=(bg-CFN_AA_BASE)%2+1;if(old>coverage)coverage=old;}
+    }
+    if(role<CFN_AA_ROLES && surface<CFN_AA_SURFACES)fb[y*FB_W+x]=(uint8_t)(CFN_AA_BASE+(surface*CFN_AA_ROLES+role)*2+coverage-1);
+    else if(coverage>=2)fb[y*FB_W+x]=ink; /* retain legacy graph colours */
+}
 static void cfn_text(const cfn_font_t *f,int x,int baseline,const char *s,uint8_t ink)
 {
     for(;*s;s++) {
@@ -18,7 +33,8 @@ static void cfn_text(const cfn_font_t *f,int x,int baseline,const char *s,uint8_
         for(unsigned j=0;j<g->h;j++) {
             for(unsigned i=0;i<g->w;i++) {
                 unsigned bit=j*g->w+i;
-                if(f->bits[g->off+bit/8]&(128u>>(bit&7)))fb_pset(x+g->x+(int)i,baseline+g->y+(int)j,ink);
+                unsigned coverage=(f->bits[g->off+bit/4]>>(6-2*(bit&3)))&3u;
+                cfn_coverage(x+g->x+(int)i,baseline+g->y+(int)j,coverage,ink);
             }
             if(g->h>24 && (j&7u)==7u)CF_PUMP(); /* releases/stop input between bounded glyph strips */
         }
@@ -59,6 +75,7 @@ static void cfn_shift_panel(int dx,int y0,int y1)
         if((y&15)==15)CF_PUMP();
     }
 }
+#include "cf_mascot.c"
 #include "cf_keyboard_learn.c"
 typedef struct {
     char chord[24],degree[12],notes[48],idea[40],sound[16],context[48],status[24],pending[48],next_setup[48];
@@ -69,6 +86,7 @@ typedef struct {
     uint8_t moment,build,bloom;
     uint16_t matches;
     int8_t bank_dx,chord_dy;
+    cfm_pose_t mascot;
     cf_learn_model_t learn;
 } cf_stage_model_t;
 static cf_stage_model_t cf_stage_last;
@@ -82,6 +100,7 @@ static void cf_stage_model(cf_stage_model_t *m)
 {
     memset(m,0,sizeof *m);name_update();
     m->bank=cf_home_bank;
+    if(m->bank==CF_HB_LEARN)cf_learn_model(&m->learn);
     m->bank_dx=(int8_t)(cf_tween_offset(cf_home_bank_ms,160,10)*(cf_nav_dir<0?-1:1));
     m->live=cu_name_live;m->hold=cf_sn.out.hold;m->skin=cf_skin;m->motion=cf_motion;m->battery=(uint8_t)cf_batt();
     str_cpy(m->chord,cu_name[0]?cu_name:"--",sizeof m->chord);
@@ -136,7 +155,6 @@ static void cf_stage_model(cf_stage_model_t *m)
         cf_harmony_numeral(cs.chord.scale,cs.chord.tonic,root,m->numeral[i]);
     }
     for(int i=0;i<4;i++){cf_knob_t k;memset(&k,0,sizeof k);ui_knob_info(i,&k);str_cpy(m->label[i],k.name,sizeof m->label[i]);str_cpy(m->value[i],k.val,sizeof m->value[i]);m->disabled[i]=k.dis;}
-    if(m->bank==CF_HB_LEARN)cf_learn_model(&m->learn);
     cf_stage_energy=cfn_motion.energy;cf_stage_tick=cu.now;
     unsigned clock=(cf_sn.running || cf_sn.metro_on) && cf_sn.beats_done && cfn_motion.fresh &&
         !cf_sn.ac_lost && !cf_sn.ac_waiting && !cf_sn.ac_paused;
@@ -164,26 +182,40 @@ static void cf_stage_model(cf_stage_model_t *m)
                 unsigned bt=cf_sn.sq_bt?cf_sn.sq_bt:1;
                 unsigned t=cf_sn.dm_on?cf_sn.dm_t:cf_sn.sq_t;
                 m->build=1+(uint8_t)(t*15u/bt);
-                m->pulse=34+m->build; m->halo_ink=CFN_HALO_0+3;
-            } else if(m->moment==CFPERF_DROP && m->pulse)m->pulse=24;
-            uint32_t age=cu.now-cfn_moment_ms;
-            if(cfn_moment_ms && age<650u) {
-                m->bloom=1+(uint8_t)(age*15u/650u);
-                m->pulse=14+m->bloom*2; m->halo_ink=CFN_HALO_0+3-(m->bloom-1)/4;
             }
+            uint32_t age=cu.now-cfn_moment_ms;
+            if(cfn_moment_ms && age<650u)m->bloom=1+(uint8_t)(age*15u/650u);
         }
     }
+    cfm_model(&m->mascot,cf_stage_chord_ms);
+    m->pulse=m->mascot.ring;m->halo_ink=m->mascot.ring_ink;
     if(m->bank==CF_HB_LEARN) {
         m->bank_dx=m->chord_dy=0;m->halo=m->pulse=m->halo_ink=m->build=m->bloom=0;
+        memset(&m->mascot,0,sizeof m->mascot);
         memset(m->emphasis,0,sizeof m->emphasis);m->cursor_width=0;
+    }
+}
+/* Preserve the complete spelling for unusually long altered/slash names.
+ * Only horizontal glyph coordinates are compressed in the bounded nameplate. */
+static void cfn_squeezed(const cfn_font_t *f,int x,int baseline,const char *s,int width,uint8_t ink)
+{
+    int natural=cfn_width(f,s),advance=0;
+    if(natural<=width){cfn_text(f,x,baseline,s,ink);return;}
+    for(;*s;s++) {
+        unsigned c=cfn_code((uint8_t)*s);const cfn_glyph_t *g=&f->g[c-32];
+        for(unsigned j=0;j<g->h;j++) {
+            for(unsigned i=0;i<g->w;i++){unsigned bit=j*g->w+i;unsigned coverage=(f->bits[g->off+bit/4]>>(6-2*(bit&3)))&3u;cfn_coverage(x+(advance+g->x+(int)i)*width/natural,baseline+g->y+(int)j,coverage,ink);}
+            if((j&7u)==7u)CF_PUMP();
+        }
+        advance+=g->adv;
     }
 }
 static void cf_stage_chord(const char *name,int y,uint8_t ink)
 {
-    if(cu_name_single && str_len(name)>2){cfn_center(&CFN_32,120,y,name,ink);return;}
+    if(cu_name_single && str_len(name)>2){int w=cfn_width(&CFN_32,name);if(w>114)w=114;cfn_squeezed(&CFN_32,175-w/2,y,name,114,ink);return;}
     char root[3]={name[0],0,0};unsigned n=1;if(name[1]=='b'||name[1]=='#'){root[1]=name[1];n=2;}
-    int w=cfn_width(&CFN_64,root)+cfn_width(&CFN_32,name+n),x=120-w/2;
-    if(w>220){cfn_center(&CFN_32,120,y,name,ink);return;}
+    int w=cfn_width(&CFN_64,root)+cfn_width(&CFN_32,name+n),x=175-w/2;
+    if(w>114){int small=cfn_width(&CFN_32,name);if(small>114)small=114;cfn_squeezed(&CFN_32,175-small/2,y,name,114,ink);return;}
     cfn_text(&CFN_64,x,y,root,ink);cfn_text(&CFN_32,x+cfn_width(&CFN_64,root),y-15,name+n,ink);
 }
 static void cf_stage_draw(void)
@@ -210,56 +242,66 @@ static void cf_stage_draw(void)
         fb_hline(10,227,220,FL_BG3);
         cfn_text(&CFN_12,10,239,"Knobs inactive",FL_INK2);
         cfn_text(&CFN_12,151,239,"HOME: Core",FL_INK2);
-        if(m.pending[0]) { /* recording/queued changes remain explicit on every HOME page */
+        if(m.pending[0]) {
             fb_rect(0,67,240,17,FL_BG);cfn_fit(&CFN_12,10,80,m.pending,220,C_ACC(0));
         }
         if(!cu.pop)cf_present();return;
     }
-    if(m.pulse){cfn_circle(120,103,m.pulse,m.halo_ink);cfn_circle(120,103,m.pulse-1,m.halo_ink>CFN_HALO_0?m.halo_ink-1:m.halo_ink);}
-    if(m.bloom && m.pulse>22)cfn_circle(120,103,m.pulse-8,m.halo_ink);
-    if(m.build) { /* fill density rises with bar phase, not wall-clock animation */
-        for(unsigned i=0;i<m.build;i++)fb_rect(76+(int)i*6,151,3,2,C_ACC(0));
-    }
-    int status_x=210-cfn_width(&CFN_12,m.status);
-    cfn_fit(&CFN_12,10,17,m.idea,status_x-22,FL_INK2);
-    cfn_text(&CFN_12,status_x,17,m.status,C_ACC(0));
+    int queued=m.next_setup[0]!=0,cue=m.pending[0]!=0;
+    cfm_pose_t pose=m.mascot;
+    if(cue){pose.sx=pose.sx*3/4;pose.sy=pose.sy*3/4;pose.y+=9*256;}
+    int ring_y=cue?114:105;
+    cfn_circle(57,ring_y,cue?33:44,CFN_HALO_0);
+    if(m.pulse){unsigned r=cue?m.pulse*3u/4u:m.pulse;cfn_circle(57,ring_y,(int)r,m.halo_ink);}
+    cfm_draw(&pose);
+    char window[20],status[48],bank[24];
+    if(m.slot<m.total){kint(window,m.slot+1,"/");kint(window+str_len(window),m.total,0);}
+    else{kint(window,m.first+1,"-");kint(window+str_len(window),m.first+m.count,"/");kint(window+str_len(window),m.total,0);}
+    str_cpy(status,m.status,sizeof status);str_cpy(status+str_len(status)," ",sizeof status-str_len(status));str_cpy(status+str_len(status),window,sizeof status-str_len(status));
+    int status_x=210-cfn_width(&CFN_12,status);
+    cfn_fit(&CFN_16,10,20,m.idea,status_x-22,FL_INK);
+    cfn_text(&CFN_12,status_x,17,status,C_ACC(0));
     if(m.activity==1) {
         static const uint8_t xy[4][2]={{224,8},{228,12},{224,16},{220,12}};
         for(unsigned i=0;i<4;i++){int size=i==m.activity_step?3:1;fb_rect(xy[i][0]-size/2,xy[i][1]-size/2,size,size,i==m.activity_step?C_ACC(0):FL_INK2);}
     } else if(m.activity==2){int size=3+(m.activity_step>2?2:m.activity_step);fb_rect(224-size/2,12-size/2,size,size,C_ACC(0));}
-    fb_hline(10,25,220,FL_BG3);
-    cfn_fit(&CFN_12,10,43,m.context,124,FL_INK2);
-    cfn_fit(&CFN_12,140,43,m.sound,90,FL_INK2);
-    int queued=m.next_setup[0]!=0;
+    cfn_fit(&CFN_12,10,41,m.context,145,FL_INK2);
+    str_cpy(bank,CF_HOME_BANK_NAME[m.bank],sizeof bank);
+    str_cpy(bank+str_len(bank)," ",sizeof bank-str_len(bank));kint(bank+str_len(bank),m.bank+1,"/");kint(bank+str_len(bank),CF_HB_N,0);
+    fb_clip(156,28,234,46);cfn_text(&CFN_12,230-cfn_width(&CFN_12,bank)+m.bank_dx,41,bank,FL_INK2);fb_unclip();
     if(m.pending[0])cfn_fit(&CFN_12,10,queued?55:59,m.pending,220,m.rec?FL_C(FL_R_ROSE,0):C_ACC(0));
-    else cfn_text(&CFN_12,10,59,m.hold?"HOLD":m.live?"NOW":cu_name[0]?"LAST":"READY",FL_INK2);
+    else cfn_text(&CFN_12,118,59,m.hold?"HOLD":m.live?"NOW":cu_name[0]?"LAST":"READY",FL_INK2);
     if(queued)cfn_fit(&CFN_12,10,68,m.next_setup,220,FL_INK2);
     char degree[24];str_cpy(degree,queued?(m.hold?"Hold ":m.live?"Now ":"Last "):"",sizeof degree);
     str_cpy(degree+str_len(degree),m.degree,sizeof degree-str_len(degree));
-    cfn_center(&CFN_16,120,queued?82:76,degree,C_ACC(0));
-    fb_clip(0,83,240,138);cf_stage_chord(m.chord,130+m.chord_dy,m.live?FL_INK:FL_INK2);fb_unclip();
-    cfn_fit(&CFN_12,10,148,m.notes,165,FL_INK2);
-    char window[20];kint(window,m.first+1,"-");kint(window+str_len(window),m.first+m.count,"/");kint(window+str_len(window),m.total,0);
-    cfn_text(&CFN_12,230-cfn_width(&CFN_12,window),148,window,FL_INK2);
-    fb_hline(10,156,220,FL_BG3);
+    cfn_fit(&CFN_16,118,cue?91:77,degree,114,C_ACC(0));
+    fb_clip(116,cue?92:80,238,145);cf_stage_chord(m.chord,cue?141:130,m.live?FL_INK:FL_INK2);fb_unclip();
+    if(!cue)cfn_fit(&CFN_12,118,151,m.notes,114,FL_INK2);
     for(unsigned i=0;i<m.count;i++) {
         int x=30+(int)i*60;
         fb_clip((int)i*60,157,(int)(i+1)*60,195);
         unsigned match=(m.matches>>(m.first+i))&1u;
         if(match)fb_rect((int)i*60+3,159,54,33,C_ACC(0));
-        cfn_center(&CFN_16,x,174,m.numeral[i],match?56:C_ACC(0));
-        cfn_center(&CFN_12,x,190,m.rail[i],match?56:FL_INK);
-        if(m.slot==m.first+i)fb_hline((int)i*60+9,193,42*m.cursor_width/100,C_ACC(0));
+        cfn_center(&CFN_11,x,168,m.numeral[i],match?56:m.slot==m.first+i?C_ACC(0):FL_INK2);
+        const cfn_font_t *rail_face=&CFN_12;
+        int rail_width=cfn_width(rail_face,m.rail[i]);if(rail_width>54)rail_width=54;
+        cfn_squeezed(rail_face,x-rail_width/2,184,m.rail[i],54,match?56:m.slot==m.first+i?C_ACC(0):FL_INK);
+        if(m.slot==m.first+i)fb_rect((int)i*60+12,191,36*m.cursor_width/100,2,C_ACC(0));
     }
     fb_unclip();fb_hline(10,198,220,FL_BG3);
-    char bank[24];str_cpy(bank,CF_HOME_BANK_NAME[m.bank],sizeof bank);
-    str_cpy(bank+str_len(bank)," ",sizeof bank-str_len(bank));kint(bank+str_len(bank),m.bank+1,"/");kint(bank+str_len(bank),CF_HB_N,0);
-    fb_clip(10,199,230,211);cfn_center(&CFN_12,120+m.bank_dx,209,bank,FL_INK2);
+    for(int i=1;i<4;i++)fb_vline(i*60,203,34,FL_BG3);
     for(int i=0;i<4;i++) {
-        int x=i*60;fb_clip(x+3,211,x+57,240);
-        cfn_center(&CFN_12,x+30,223,m.label[i],FL_INK2);
-        cfn_fit(cfn_width(&CFN_16,m.value[i])<=54?&CFN_16:&CFN_12,x+3,237,m.value[i],54,m.disabled[i]?FL_INK2:FL_INK);
-        if(m.emphasis[i])fb_hline(x+30-m.emphasis[i],225,2*m.emphasis[i],C_ACC(0));
+        int x=i*60;fb_clip(x+3,201,x+57,240);
+        char label[12],value[14];str_cpy(label,m.label[i],sizeof label);str_cpy(value,m.value[i],sizeof value);
+        for(unsigned j=1;label[j];j++)if(label[j]>='A' && label[j]<='Z')label[j]+='a'-'A';
+        if(m.bank==CF_HB_CORE && i==2 && cs.chord.scale==CF_SC_MAJOR)str_cpy(value,"Major",sizeof value);
+        /* Tempo already has a label. Keep EXT/WAIT semantics, omit only BPM. */
+        unsigned len=str_len(value);if(len>=4 && !memcmp(value+len-4," BPM",4))value[len-4]=0;
+        cfn_center(&CFN_11,x+30,214,label,FL_INK2);
+        const cfn_font_t *face=cfn_width(&CFN_14,value)<=54?&CFN_14:&CFN_12;
+        int value_width=cfn_width(face,value);
+        cfn_fit(face,value_width>54?x+3:x+30-value_width/2,233,value,54,m.disabled[i]?FL_INK2:i==0?C_ACC(0):FL_INK);
+        if(m.emphasis[i])fb_hline(x+30-m.emphasis[i],239,2*m.emphasis[i],C_ACC(0));
     }
     fb_unclip();if(!cu.pop)cf_present();
 }

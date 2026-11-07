@@ -1,5 +1,7 @@
 # Motion specification: adaptive prototype
 
+> **Current mascot build:** the owner approved only Devil/Ember and Cat/Plum, with palette tied to character. This supersedes the older theme/scene proposals below. The implemented two-strip HOME, four-level text and controls are documented in [MASCOTS](../../MASCOTS.md). Physical verification remains pending.
+
 Planned successor behavior and implementation guidance, before firmware changes.
 The authoritative visual reference is the latest user-supplied
 `fm1_adaptive_motion_prototype.html`, preserved byte-for-byte in the repository.[^reference]

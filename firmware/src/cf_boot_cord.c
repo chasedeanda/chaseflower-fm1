@@ -9,10 +9,9 @@ static struct { uint16_t t;uint8_t skin,motion,valid; } cf_cord_last;
 static void cf_cord_palette(void)
 {
     /* bg / surface / text / muted / warm accent / ring accent, supplied variants. */
-    static const uint32_t rgb[3][6]={
-        {0x06272C,0x083238,0xEFF4F1,0x9EB7B4,0xE4A84C,0x7FE0CE},
-        {0x0F1113,0x13161A,0xF4F3EE,0x94989D,0xE5A34A,0x7CCFBE},
-        {0xF1EEE7,0xF7F4EE,0x16181B,0x676D73,0xD68B2F,0x4E8F85}
+    static const uint32_t rgb[CF_SKIN_N][6]={
+        {0x150F0C,0x241813,0xFFF4E5,0xD0BFB1,0xFFA55B,0xFFA55B},
+        {0x190F19,0x291929,0xFFF2FB,0xD0B8CD,0xF29BCD,0xF29BCD}
     };
     const uint32_t *p=rgb[cf_skin%CF_SKIN_N];
     cf_pal[FL_BG]=p[0];cf_pal[FL_BG1]=p[1];cf_pal[FL_BG2]=cfn_blend(p[0],0,72);

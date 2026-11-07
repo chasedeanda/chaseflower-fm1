@@ -128,6 +128,9 @@ jobs:
       - name: Native HOME, appearance migration and settled Motion Off
         run: sh tools/test_stage.sh
 
+      - name: Mascot artwork bounds, motion and character preference migration
+        run: sh tools/test_mascots.sh
+
       - name: CORD boot themes, complete round shapes and input/Motion skip
         run: sh tools/test_cord_boot.sh
 

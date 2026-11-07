@@ -131,6 +131,10 @@ def make_report(elf, inputs):
         'recording_cancel_and_flash_staging_pool': ('sq_cancel', 'sq_io'),
         'recording_order_and_preferences': ('sq_meta', 'sq_serial', 'sq_order', 'sq_pref'),
         'display_framebuffer_and_dma_shared_with_recovery': ('cv_px', 'fb_dma'),
+        'mascot_art_const_not_runtime_image_buffers': ('CFM_ART', 'CFM_DEVIL_RGB', 'CFM_DEVIL_ROWS', 'CFM_DEVIL_DATA',
+                                                      'CFM_CAT_RGB', 'CFM_CAT_ROWS', 'CFM_CAT_DATA'),
+        'native_font_const_bitmaps_and_glyph_tables': tuple(
+            f'CFN_{size}{suffix}' for size in (11, 12, 14, 16, 32, 64) for suffix in ('', '_G', '_BITS')),
         'engine_part_and_voice_state': ('trk', 'eng_state', 'va_vs', 'va_patch', 'va_mlast', 'va_rate_off', 'va_lfo', 'fm6_patch', 'fm6_eff'),
         'fx_buffers_preserve_audible_tails': ('xd_buf', 'cv_buf', 'cho_buf'),
         'legacy_loop_conversion_staging': ('sq_loop_buf',),
@@ -180,6 +184,7 @@ def render(report):
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument('--build', action='store_true', help='Fresh normal firmware build and target dependency/macro capture')
+    ap.add_argument('--release', help='Pass a version to the normal builder and capture the same versioned compiler flags')
     ap.add_argument('--elf', type=Path, default=ROOT / 'build/coralflower.elf')
     ap.add_argument('--inputs', type=Path, help='Existing capture directory (required without --build)')
     ap.add_argument('--output', type=Path, default=ROOT / 'build/resource-audit/main')
@@ -187,6 +192,8 @@ def main():
     args = ap.parse_args()
     if not args.build and not args.inputs:
         ap.error('Use --build for an identified build, or --inputs for a verified prior capture')
+    if args.release and not args.build:
+        ap.error('--release requires --build')
     output = args.output.resolve(); output.mkdir(parents=True, exist_ok=True)
     if args.build and args.elf.resolve() != ROOT / 'build/coralflower.elf':
         ap.error('--build produces build/coralflower.elf; use --inputs to inspect another captured ELF')
@@ -198,10 +205,13 @@ def main():
         before = {x: sha(ROOT / x) for x in paths}
         log = output / 'build.log'
         with log.open('w') as f:
-            subprocess.run([str(ROOT / 'build.sh')], cwd=ROOT,
+            command=[str(ROOT / 'build.sh')]
+            if args.release:command+=['--release',args.release]
+            subprocess.run(command, cwd=ROOT,
                            env={**os.environ, 'PYTHON': os.sys.executable}, stdout=f, stderr=subprocess.STDOUT, check=True)
         if before != {x: sha(ROOT / x) for x in paths}:
             raise ValueError('Firmware/build source changed during build; capture discarded')
+        if args.release:build.VERSION='CoralFlower '+args.release.lower()
         flags = capture(output)
         deps = shlex.split((output / 'dependencies.d').read_text().replace('\\\n', ' ').split(':', 1)[1])
         identity = {'revision': revision, 'source_status': git('status', '--porcelain'), 'compiler_flags': flags,

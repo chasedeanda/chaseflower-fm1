@@ -1,7 +1,8 @@
 # Keyboard / Learn
 
-Implemented in local source from main `eb51a3a` (including the fifth Perform
-page). This is the **sixth HOME page**, not a released firmware update.
+Implemented as the **sixth HOME page**, retained in the Devil/Ember and Cat/Plum
+mascot build. The captures below use the combined renderer. This is development
+source, not a released firmware update.
 
 ![Native Keyboard page with seventh help](images/keyboard-learn/keyboard-guide.png)
 
@@ -44,14 +45,16 @@ view setting. This sixth page teaches the physical controls and assignments.
   six-page navigation and settled redraw/flash behavior.
 - HOME suite: **270 assertions**, plus byte-identical audio with bank cycling and
   drawing through all six pages.
-- Native HOME: **315 assertions**. Perform: **215,267 assertions**, preserving the
+- Native HOME: **270 assertions**. Perform: **215,267 assertions**, preserving the
   fifth page's Fill/Drop/Back behavior and updated wrap through Keyboard.
 - Native pages/Motion: **1,835 assertions across 877 routes**, plus identical
   physical audio, all six USB channels and MIDI at both capture rates with
   Motion On/Off.
 - Canonical controls validate **207 screen/state definitions and 39 workflows**.
-- Local JieLi package links: XIP **473,732 / 573,440 B**, ordinary data+BSS
-  **88,360 / 98,304 B**, POOL **316,792 / 344,064 B**. No persistence format change.
+- Combined JieLi package links: XIP **562,024 / 573,440 B**, ordinary data+BSS
+  **89,416 / 98,304 B**, POOL **316,792 / 344,064 B**.
+  [Exact build evidence](../benchmarks/resources/mascot-home/report.md).
+  Keyboard adds no persistence format; [mascot preferences use v5](MASCOTS.md).
 
 These are host tests, native 240 × 240 framebuffer captures and a local device
 link. Physical display legibility, playing and timing review on an FM-1 remain
@@ -73,5 +76,5 @@ sh tools/test_keyboard.sh --render build/keyboard-preview
 ```
 
 The render writes native PPMs for idle, sixth, seventh, root, suspended second,
-HOLD, Studio and Editorial states. PNGs in `docs/images/keyboard-learn/` are
+HOLD and Cat/Plum states. PNGs in `docs/images/keyboard-learn/` are
 lossless conversions; the large guide image is a 2× nearest-neighbor enlargement.

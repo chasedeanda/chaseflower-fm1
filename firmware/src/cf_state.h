@@ -99,9 +99,11 @@ typedef struct {
 
 static cf_set_t cs;
 static cf_browser_t cpb;
-/* Appearance v2 uses the preference record's two previously reserved bytes. */
-enum { CF_SKIN_TEAL, CF_SKIN_STUDIO, CF_SKIN_EDITORIAL, CF_SKIN_N };
-static const char *const CF_SKIN_NAME[] = {"Instrument", "Studio", "Editorial"};
+/* Appearance v5 ties the whole palette to the selected mascot. Old appearance
+ * IDs remain named for record migration; they are not additional UI choices. */
+enum { CF_SKIN_EMBER, CF_SKIN_PLUM, CF_SKIN_N };
+enum { CF_SKIN_TEAL=0, CF_SKIN_STUDIO=1, CF_SKIN_EDITORIAL=2, CF_SKIN_LEGACY_N=3 };
+static const char *const CF_SKIN_NAME[] = {"Devil", "Cat"};
 static uint8_t cf_skin, cf_motion = 1;
 enum { CF_HB_CORE, CF_HB_SOUND, CF_HB_TEXTURE, CF_HB_GROOVE, CF_HB_PERFORM, CF_HB_LEARN, CF_HB_N };
 static const char *const CF_HOME_BANK_NAME[] = {"CORE", "SOUND", "TEXTURE", "GROOVE", "PERFORM", "KEYBOARD"};
@@ -219,7 +221,8 @@ static flc_t fl_cv = {fl_px, FLW, FLH};
  * apart, they share the one colour) */
 #define C_ACC(s) ((uint8_t)(48 + (s)))
 #define C_SEC(s) ((uint8_t)(52 + (s)))
-enum { CFN_HALO_0=64, CFN_HALO_1, CFN_HALO_2, CFN_HALO_3, CFN_PAL_N };
+#include "cf_mascot_art.h"
+enum { CFN_HALO_0=64, CFN_HALO_1, CFN_HALO_2, CFN_HALO_3, CFM_PAL_BASE=68, CFN_AA_BASE=128, CFN_AA_ROLES=5, CFN_AA_SURFACES=4, CFN_PAL_N=256 };
 static uint32_t cf_pal[CFN_PAL_N];
 static uint32_t cfn_blend(uint32_t bg,uint32_t fg,unsigned alpha)
 {
@@ -285,9 +288,8 @@ static int cf_tween_offset(uint32_t start, unsigned ms, unsigned distance)
     return (int)(distance*left*left*left/(ms*ms*ms));
 }
 static const uint32_t CF_SKIN_RGB[CF_SKIN_N][7] = {
-    {0x061B1E,0x113034,0x355054,0xF2F8F4,0x89A7A5,0x77DACB,0x092D2C},
-    {0x0E0F10,0x1A1C1C,0x353738,0xF6F5F0,0x919391,0xE8A64D,0x16120C},
-    {0xEEEDE8,0xE1DFD9,0xC8C8C0,0x1A1A19,0x777873,0xB96835,0xFFFFFF}
+    {0x150F0C,0x241813,0x5D4537,0xFFF4E5,0xD0BFB1,0xFFA55B,0x28170D},
+    {0x190F19,0x291929,0x5D3E58,0xFFF2FB,0xD0B8CD,0xF29BCD,0x30152A}
 };
 static void cf_palette_build(void)
 {
@@ -314,5 +316,11 @@ static void cf_palette_build(void)
     cf_pal[52] = skin[5]; cf_pal[53] = skin[4]; cf_pal[54] = skin[2]; cf_pal[55] = skin[1];
     cf_pal[56] = skin[6];
     for(unsigned i=0;i<4;i++)cf_pal[CFN_HALO_0+i]=cfn_blend(skin[0],skin[5],12+12*i);
+    for(unsigned i=0;i<CFM_ART_COLORS;i++)cf_pal[CFM_PAL_BASE+i]=CFM_ART[cf_skin%CF_SKIN_N].rgb[i];
+    static const uint8_t text_ink[]={FL_INK,FL_INK2,48,56,FL_C(FL_R_ROSE,0)};
+    static const uint8_t text_bg[]={FL_BG,FL_BG1,48,FL_BG3};
+    for(unsigned bg=0;bg<CFN_AA_SURFACES;bg++)for(unsigned ink=0;ink<CFN_AA_ROLES;ink++)
+        for(unsigned level=0;level<2;level++)cf_pal[CFN_AA_BASE+(bg*CFN_AA_ROLES+ink)*2+level]=
+            cfn_blend(cf_pal[text_bg[bg]],cf_pal[text_ink[ink]],(level+1)*100/3);
     fb_palette(cf_pal, CFN_PAL_N);
 }

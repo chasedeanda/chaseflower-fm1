@@ -13,10 +13,10 @@ static void appearance(void)
     cf_skin=2;cf_motion=0;cpb_load();CHECK(cf_skin==CF_SKIN_TEAL && cf_motion && cpb.favorites[0]==1);
     cu.scr=SCR_GLO;cu.page[SCR_GLO]=0;cu.now=1000;
     unsigned writes=emu_flash_writes;
-    ui_knob_turn(0,2);ui_knob_turn(3,-1);
-    CHECK(cf_skin==CF_SKIN_EDITORIAL && !cf_motion && cpb_dirty);
+    ui_knob_turn(0,1);ui_knob_turn(3,-1);
+    CHECK(cf_skin==CF_SKIN_PLUM && !cf_motion && cpb_dirty);
     CHECK(writes==emu_flash_writes); /* turning/drawing never writes flash */
-    cpb_flush();CHECK(!cpb_dirty);cpb_load();CHECK(cf_skin==2 && !cf_motion && cpb.favorites[0]==1);
+    cpb_flush();CHECK(!cpb_dirty);cpb_load();CHECK(cf_skin==CF_SKIN_PLUM && !cf_motion && cpb.favorites[0]==1);
     cpb_rec_t current;CHECK(st_load(OBJ_CFPREFS,&current,sizeof current)==sizeof current && cpb_valid(&current));
     current.reserved[1]=0x80;current.check=cfs_fnv(&current,__builtin_offsetof(cpb_rec_t,check));CHECK(!cpb_valid(&current));
     /* A real 28-byte v2 record keeps appearance and old favorites, zeroes new
@@ -26,13 +26,13 @@ static void appearance(void)
     CHECK(sizeof old==28 && cpb_record_valid(&old,sizeof old));
     CHECK(!cpb_record_valid(&old,sizeof old-1));
     CHECK(!st_save(OBJ_CFPREFS,&old,sizeof old));writes=emu_flash_writes;cpb_load();
-    CHECK(emu_flash_writes==writes && !cpb_dirty && cpb.mode==CPB_ALPHA && cf_skin==2 && !cf_motion);
+    CHECK(emu_flash_writes==writes && !cpb_dirty && cpb.mode==CPB_ALPHA && cf_skin==CF_SKIN_EMBER && !cf_motion);
     CHECK(cpb.favorites[0]==1 && cpb.favorites[15]==0x10);
     for(unsigned i=16;i<CPB_BYTES;i++)CHECK(!cpb.favorites[i]);
     cf_browser_star(&cpb,cf_progression_count()-1,1);cpb_changed_ui();cpb_flush();cpb_load();
     CHECK(cf_browser_favorite(&cpb,cf_progression_count()-1) && cpb.favorites[15]==0x10);
-    CHECK(st_load(OBJ_CFPREFS,&current,sizeof current)==44 && current.version==4 && cpb_valid(&current));
-    cf_skin=0;cf_palette_build();CHECK(cf_pal[FL_BG]==0x061B1E && cf_pal[FL_INK]==0xF2F8F4 && cf_pal[48]==0x77DACB);
+    CHECK(st_load(OBJ_CFPREFS,&current,sizeof current)==44 && current.version==5 && cpb_valid(&current));
+    cf_skin=0;cf_palette_build();CHECK(cf_pal[FL_BG]==0x150F0C && cf_pal[FL_INK]==0xFFF4E5 && cf_pal[48]==0xFFA55B);
 }
 static void stage(void)
 {
@@ -150,10 +150,11 @@ static void home_feedback(void)
         for(unsigned phase=0;phase<15;phase++) {
             cf_sn.beat_acc=phase*(FS*60u/16u);cf_stage_draw();unsigned r=cf_stage_last.pulse,ink=cf_stage_last.halo_ink;
             CHECK(r>=42 && r<=52);
-            CHECK(fb[(103-r)*FB_W+120]==ink && fb[(103+r)*FB_W+120]==ink);
-            /* The chord intentionally paints over side pixels; the complete
-             * top/bottom survive outside its former nameplate draw region. */
-            CHECK(120-r>0 && 120+r<FB_W-1 && 103-r>47 && 103+r<156);
+            /* The complete circle is now behind the left mascot, whose
+             * silhouette can naturally occlude it. It stays clear of labels. */
+            fb_unclip();fb_fill(FL_BG);cfn_circle(57,105,r,ink);
+            CHECK(fb[(105-r)*FB_W+57]==ink && fb[(105+r)*FB_W+57]==ink);
+            CHECK(57-r>0 && 57+r<116 && 105-r>47 && 105+r<156);
         }
     }
     cf_skin=0;cf_palette_build();
@@ -188,5 +189,5 @@ int main(int argc,char **argv)
 {
     emu_fw_options(NULL,1,0,1);emu_hal.ready=2;emu_fw_init(0);appearance();stage();source_labels();home_feedback();
     if(argc==2)home_capture(argv[1]);
-    printf("Instrument Teal HOME: %u checks, %u failures\n",checks,failures);return failures!=0;
+    printf("Mascot HOME: %u checks, %u failures\n",checks,failures);return failures!=0;
 }

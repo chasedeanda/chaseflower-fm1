@@ -13,8 +13,8 @@ int main(int argc,char **argv)
 {
     emu_fw_options(0,1,0,1);emu_hal.ready=2;emu_fw_init(0);cf_intro_on=0;cr_safe=0;
     unsigned writes=emu_flash_writes,queued=cf_evq_w;
-    const uint32_t bg[]={0x06272C,0x0F1113,0xF1EEE7};
-    for(unsigned skin=0;skin<3;skin++) {
+    const uint32_t bg[]={0x150F0C,0x190F19};
+    for(unsigned skin=0;skin<CF_SKIN_N;skin++) {
         cf_skin=skin;cf_motion=1;cf_cord_last.valid=0;
         for(unsigned t=0;t<=1320;t+=40) {
             cf_cord_draw(t);CHECK(cf_pal[FL_BG]==bg[skin]);
@@ -39,7 +39,7 @@ int main(int argc,char **argv)
     cf_intro_on=1;cf_intro_t=0;cf_motion=0;CHECK(!cf_intro_draw(1) && !cf_intro_on);
     cr_safe=1;cf_intro_on=1;cf_intro_t=0;CHECK(!cf_intro_draw(40) && !cf_intro_t);cr_safe=0;
     /* First splash must use persisted appearance, before UI initialization. */
-    cf_skin=2;cf_motion=0;cpb_dirty=1;cpb_flush();CHECK(!cpb_dirty);
-    cf_skin=0;cf_motion=1;cf_splash();CHECK(cf_skin==2 && !cf_motion && cf_pal[FL_BG]==bg[2] && !cf_intro_on);
+    cf_skin=CF_SKIN_PLUM;cf_motion=0;cpb_dirty=1;cpb_flush();CHECK(!cpb_dirty);
+    cf_skin=0;cf_motion=1;cf_splash();CHECK(cf_skin==CF_SKIN_PLUM && !cf_motion && cf_pal[FL_BG]==bg[CF_SKIN_PLUM] && !cf_intro_on);
     printf("CORD boot: %u checks, %u failures\n",checks,failures);return failures!=0;
 }

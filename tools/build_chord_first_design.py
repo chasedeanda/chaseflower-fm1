@@ -54,7 +54,7 @@ CONTRACTS = [
     "Songs is the one user-facing collection for saved progressions and recordings. Factory progression browsing remains on HOME. Editable Songs use semantic chord/degree/duration data; recorded Songs retain captured performance events and timing. Existing recorded Auto takes keep their fixed-note meaning and format.",
     "REC is direct from HOME. It captures the scheduled progression plus deliberate live/groove/key/tempo changes rather than unexpectedly muting the arranged chords. Ending a capture creates a new numbered Song copy; no mandatory Review/Keep step. Pending, Saving and Saved are different states, and flash writes wait for an actually safe quiet boundary without cutting independent HOLD or audible tails.",
     "Songs supports selected-row Load, Rename, Duplicate and Delete, plus counted Clear Recordings/Clear All actions. Bulk clear excludes factory templates, the protected working draft and Pending captures. A Pending capture can be discarded only through its own explicit selected action.",
-    "The selected visual reference is fm1_adaptive_motion_prototype.html. Instrument Teal is the factory default: background #061b1e, foreground #f2f8f4, secondary #89a7a5, separator #355054, subtle surface #113034, accent #77dacb, and on-accent text #092d2c. Studio and Editorial are optional palettes of the same typography-led interface. Preserve the large chord, paired degrees, thin separators, four text controls and the supplied prototype's restrained halo/Bloom visual vocabulary; earlier Coral Bloom, Aurora and Studio Rack are historical alternatives.",
+    "The selected current HOME appearance is the owner-approved soft mascot reference; the earlier adaptive prototype remains preserved as design history. The approved mascot build uses Devil/Ember by default and Cat/Plum as its only alternative. Character and theme are coupled; a separate theme/accent selector is not present. Preserve the large chord, paired degrees, thin separators, four text controls and the supplied prototype's restrained halo/Bloom visual vocabulary; earlier Coral Bloom, Aurora and Studio Rack are historical alternatives.",
     "Motion has exactly two user choices: On (adaptive) and Off. On responds automatically to output level/volume and semantic active-instrument activity using a smoothed bounded envelope, with musical motion tied to the shared clock. There is no manual Quiet/Expressive/intensity/speed selector. Off cancels every pulse, orbit, morph travel and tween; truthful chord, value, playback and record/save data still update instantly. The supplied loudness/layer sliders are simulation inputs, not new firmware settings or evidence of eight instrument parts. Measure display, input, memory and audio/USB timing on the FM-1.",
     "HOME from another screen returns to Progressions Core. Further HOME taps cycle Core/Sound/Texture/Groove/Perform/Keyboard without changing any parameter; SELECT still browses the complete catalogue, PRESETS still selects chord sound, ALGORITHM keeps its scene/workspace role and OCT± stays musical. The five musical pages show four text control columns; Keyboard instead uses the full display for the key guide and disables all four knobs.",
     "HOME Perform is Fill / Drop drums / Bring back / Tempo. Moments commit at bar boundaries; Fill lasts one bar and returns automatically, Drop leaves chords and bass running, Back restores groove phase with a downbeat bloom. Motion Off keeps static truth. V1 is live-only; Breakdown and separate multi-bar builds are deferred.",
@@ -114,7 +114,7 @@ def load_inventory() -> dict:
                 raise ValueError(f"Missing action/result: {flow['id']}")
     data.update({
         "title": "Chord-first FM-1 — screen and workflow inventory",
-        "status": "Planned behavior and coverage; selected visual reference is the supplied adaptive prototype with Instrument Teal default. Earlier inventory layout sketches are not the selected screen design or released firmware.",
+        "status": "Planned behavior and coverage; selected visual reference is the supplied adaptive prototype with the current Devil/Ember and Cat/Plum mascot selection. Earlier inventory layout sketches are not the selected screen design or released firmware.",
         "version": "0.4",
         "date": "2026-11-07",
         "phases": [{"id": k, "label": v} for k, v in PHASES.items()],
@@ -122,7 +122,7 @@ def load_inventory() -> dict:
         "quickStart": QUICK_START,
         "contracts": CONTRACTS,
         "issues": {"tracker": 1, "playback": 43, "visuals": 44, "home": 45, "editing": 46, "learning": 47, "suggestions": 48, "themes": 49, "performance": 50, "trimming": 51},
-        "defaultAppearance": {"theme": "Instrument Teal", "motion": "On (adaptive)", "motionChoices": ["On (adaptive)", "Off"], "background": "#061B1E", "foreground": "#F2F8F4", "secondary": "#89A7A5", "separator": "#355054", "subtle": "#113034", "accent": "#77DACB", "onAccent": "#092D2C"},
+        "defaultAppearance": {"character": "Devil", "theme": "Ember", "motion": "On (adaptive)", "motionChoices": ["On (adaptive)", "Off"], "background": "#150F0C", "foreground": "#FFF4E5", "secondary": "#D0BFB1", "separator": "#5D4537", "subtle": "#241813", "accent": "#FFA55B", "onAccent": "#28170D"},
     })
     data["implementation"] = json.loads((DESIGN / "implementation-evidence.json").read_text())
     return data
@@ -140,14 +140,14 @@ def guide(data: dict) -> str:
     lines = [
         "# Playing the chord-first FM-1", "",
         "> **Planned successor interface.** This is the player documentation for the design board. These controls and later-stage features are not all available in the currently released firmware.", "",
-        "The [implementation plan](design/chord-first/IMPLEMENTATION-PLAN.md) uses the supplied [adaptive prototype](design/chord-first/instrument-teal/prototype.html), with **Instrument Teal** as the default palette and **Motion On (adaptive) / Off**.", "",
+        "The [implementation plan](design/chord-first/IMPLEMENTATION-PLAN.md) uses the supplied [adaptive prototype](design/chord-first/instrument-teal/prototype.html), with **Devil/Ember** as the current default and **Cat/Plum** as the only alternative and **Motion On (adaptive) / Off**.", "",
         "## Start here", "",
     ]
     lines += ["> " + data["implementation"]["summary"], ""]
     lines += [f"{i}. {x}" for i, x in enumerate(data["quickStart"], 1)]
     lines += ["", "## Read the main screen", "",
         "The large chord is the sound you are hearing. Its degree/quality line might read **vi · minor**. In F major, the planned phrase can show **IV over Bb**, **V over C**, **vi over Dm**, and **I over F**. Uppercase numerals mean major; lowercase means minor. A slot counter such as 03/04 is the transport position, not the scale degree.", "",
-        "The notes line shows actual chord tones. The phrase cue shows planned chords; its cursor continues while you temporarily play over a loop. Pending changes are labelled until they become active. Instrument Teal is the default appearance. Display → Motion has only On and Off: On automatically adapts its response to loudness and active instruments; Off stops all visual animation while musical values, chord identity and playback/record/save status continue to update instantly. The supplied nine-screen adaptive prototype defines the visual direction; several study controls and musical engines are not implemented features.", "",
+        "The notes line shows actual chord tones. The phrase cue shows planned chords; its cursor continues while you temporarily play over a loop. Pending changes are labelled until they become active. Devil/Ember is the default; Cat selects Plum. The two bottom HOME strips use one horizontal rule and three thin control dividers, with the bank cue in the header. Display → Motion has only On and Off: On automatically adapts its response to loudness and active instruments; Off stops all visual animation while musical values, chord identity and playback/record/save status continue to update instantly. The supplied nine-screen adaptive prototype defines the visual direction; several study controls and musical engines are not implemented features.", "",
         "## Delivery order", "",
     ]
     lines += [f"- **{label}.**" for label in PHASES.values()]
@@ -169,12 +169,12 @@ def guide(data: dict) -> str:
         lines.append("")
     lines += ["## What stays predictable", ""]
     lines += [f"- {x}" for x in CONTRACTS if not x.startswith("No image") and not x.startswith("Advanced FM6")]
-    lines += ["", "## Design and release reference", "", "The [screen/workflow inventory](design/chord-first/design-board.html), [engineering handoff](design/chord-first/ENGINEERING-HANDOFF.md) and [GitHub roadmap](https://github.com/chasedeanda/chaseflower-fm1/issues/1) describe the same planned controls. The inventory's earlier screen sketches document coverage; the selected adaptive prototype defines appearance. Use the release-specific README/manual for behavior already shipped on the device.", ""]
+    lines += ["", "## Design and release reference", "", "The [screen/workflow inventory](design/chord-first/design-board.html), [engineering handoff](design/chord-first/ENGINEERING-HANDOFF.md) and [GitHub roadmap](https://github.com/chasedeanda/chaseflower-fm1/issues/1) describe the same planned controls. The inventory's earlier screen sketches document coverage; the current mascot build and MASCOTS guide define the selected appearance. Use the release-specific README/manual for behavior already shipped on the device.", ""]
     return "\n".join(lines)
 
 
 def engineering(data: dict) -> str:
-    lines = ["# Chord-first FM-1 engineering handoff", "", "**Status:** complete planned-interface inventory for review; not an implementation or hardware validation claim.", "", "Start with the [implementation plan](IMPLEMENTATION-PLAN.md), [selected Instrument Teal prototype](instrument-teal/prototype.html) and [motion specification](MOTION-SPEC.md).", "", f"Design version {data['version']}, {data['date']}. {len(data['screens'])} screen/state definitions and {len(data['workflows'])} workflows share canonical JSON with the board and player guide.", "", "## Product contracts", ""]
+    lines = ["# Chord-first FM-1 engineering handoff", "", "**Status:** complete planned-interface inventory for review; not an implementation or hardware validation claim.", "", "Start with the [implementation plan](IMPLEMENTATION-PLAN.md), [historical adaptive study](instrument-teal/prototype.html) and [motion specification](MOTION-SPEC.md).", "", f"Design version {data['version']}, {data['date']}. {len(data['screens'])} screen/state definitions and {len(data['workflows'])} workflows share canonical JSON with the board and player guide.", "", "## Product contracts", ""]
     lines[2:2] = [data["implementation"]["summary"], ""]
     lines += [f"{i}. {x}" for i, x in enumerate(CONTRACTS, 1)]
     lines += ["", "## Delivery", ""] + [f"- {v}." for v in PHASES.values()]

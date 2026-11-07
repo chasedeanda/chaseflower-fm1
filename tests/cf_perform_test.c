@@ -185,7 +185,7 @@ static void shared(void)
     action(CFPERF_FILL);for(unsigned i=0;i<384;i++)cpa_tick1();
     CHECK(cpa.plan.rhythm==4&&cf_moment.fill&&cf_moment.style==CFPERF_TIGHT);
     cf_snapshot();cu.now=cf_sn.now_ms;cu.scr=SCR_HOME;home_boot_main=1;cf_home_bank=CF_HB_PERFORM;cu.pop=0;cf_intro_on=0;
-    cf_motion=1;cfn_motion.active=1;cfn_motion.energy=128;cf_stage_model_t m;cf_stage_model(&m);CHECK(m.build&&m.pulse>=34&&!strcmp(m.status,"FILL"));
+    cf_motion=1;cfn_motion.active=cfn_motion.fresh=1;cfn_motion.energy=128;cf_stage_model_t m;cf_stage_model(&m);CHECK(m.build&&m.pulse>=34&&!strcmp(m.status,"FILL")&&m.mascot.face==CFM_REACT);
     cf_motion=0;cf_stage_model(&m);CHECK(!m.pulse&&!m.build&&!m.bloom&&!strcmp(m.status,"FILL"));
     cf_ui_draw();unsigned draws=cf_stage_draws,tiles=fb_tiles_sent;
     for(unsigned i=0;i<20;i++){cu.now+=50;cf_ui_draw();}CHECK(draws==cf_stage_draws&&tiles==fb_tiles_sent);
@@ -210,7 +210,7 @@ static void shot(const char *dir,const char *name)
     cf_snapshot();cu.now=123456+cf_sn.now_ms;cu.scr=SCR_HOME;home_boot_main=1;cf_home_bank=CF_HB_PERFORM;cu.pop=POP_NONE;cf_intro_on=0;cf_ui_draw();
     FILE *f=fopen(path,"wb");CHECK(f);if(!f)return;
     fprintf(f,"P6\n240 240\n255\n");
-    for(unsigned i=0;i<FB_W*FB_H;i++){uint32_t c=cf_pal[fb[i]&63];uint8_t rgb[]={c>>16,c>>8,c};fwrite(rgb,3,1,f);}fclose(f);
+    for(unsigned i=0;i<FB_W*FB_H;i++){uint32_t c=cf_pal[fb[i]];uint8_t rgb[]={c>>16,c>>8,c};fwrite(rgb,3,1,f);}fclose(f);
 }
 static void wav_header(FILE *f,unsigned frames)
 {
