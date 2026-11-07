@@ -72,6 +72,15 @@ static void live_ownership(void)
     unsigned writes=emu_flash_writes;CHECK(!cfd_checkpoint() && emu_flash_writes==writes);cpa_stop();CHECK(!cfd_checkpoint() && cfp.n==n);
     cfp_panic();blocks(2);
 }
+static void external_status(void)
+{
+    setup(0);ui_button(B_EDIT);ui_knob_turn(1,1);cs.clock_in=1;cf_send_config();blocks(2);ui_button(B_PLAY);blocks(2);
+    cfd_model_t model;cfd_model(&model);cf_stage_model_t home;cf_stage_model(&home);
+    CHECK(!strcmp(model.status,"EXT WAIT") && model.slot==255 && home.slot==255 && !strstr(model.position,"playing"));
+    cpa_tick(0,1);cf_snapshot();blocks(FS/CTL);cfd_model(&model);CHECK(!strcmp(model.status,"EXT LOST") && strstr(model.position,"paused") && !strstr(model.position,"playing"));
+    cpa_realtime(0xFB);cpa_tick(0,1);cf_snapshot();cfd_model(&model);CHECK(strstr(model.position,"playing") && cpa.on && !cpa.paused);
+    cpa_stop();cs.clock_in=0;cf_send_config();blocks(2);
+}
 static void recording_guard(void)
 {
     setup(0);sq_defaults();sq_unavailable=0;sqk.on=0;sqk.last=255;ui_button(B_EDIT);ui_knob_turn(1,1);cf_song_t saved=cfwd.song;
@@ -96,4 +105,4 @@ static void checkpoint(void)
     ui_button(B_HOME);ui_button(B_EDIT);CHECK(cu.scr!=SCR_PEDIT && cfds.unavailable && emu_flash_writes==writes);
     CHECK(st_sector(OBJ_CFDRAFT,0)==0xEE000 && st_sector(OBJ_CFDRAFT,1)==0xEF000 && ST_LMAX(OBJ_CFDRAFT)>=CF_SONG_WIRE);
 }
-int main(void){emu_fw_options(0,1,0,1);emu_hal.ready=2;emu_fw_init(0);controls();scheduler();duration_catalogue();live_ownership();recording_guard();checkpoint();printf("native editor: %u checks, %u failures\n",checks,failures);return failures!=0;}
+int main(void){emu_fw_options(0,1,0,1);emu_hal.ready=2;emu_fw_init(0);controls();scheduler();duration_catalogue();live_ownership();external_status();recording_guard();checkpoint();printf("native editor: %u checks, %u failures\n",checks,failures);return failures!=0;}

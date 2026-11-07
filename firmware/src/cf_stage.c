@@ -96,7 +96,7 @@ static void cf_stage_model(cf_stage_model_t *m)
         str_cpy(m->status,plaque==DMP_RECIN?"COUNT IN":"REC",sizeof m->status);
     } else m->pending[0]=0;
     if(!m->rec)cf_acc_pending(m->pending,sizeof m->pending,m->next_setup,sizeof m->next_setup);
-    m->total=p->n;m->slot=cf_sn.ac_on?cf_sn.ac_slot:255;
+    m->total=p->n;m->slot=cf_sn.ac_on && !(cf_sn.ac_waiting&&!cf_sn.ac_paused)?cf_sn.ac_slot:255;
     m->first=m->slot<p->n?(m->slot/4)*4:0;m->count=p->n-m->first;if(m->count>4)m->count=4;
     for(unsigned i=0;i<m->count;i++) {
         unsigned at=m->first+i;int root=cf_progression_root(p,at,cs.chord.scale,cs.chord.tonic);

@@ -14,15 +14,16 @@ static void cfd_model(cfd_model_t *m)
     memset(m,0,sizeof *m);m->skin=cf_skin;
     if(!cfwd.have){str_cpy(m->title,"No working draft",sizeof m->title);return;}
     m->n=cfwd.song.n;m->focus=cfdu.focus%cfwd.song.n;m->first=m->focus/4*4;
-    m->slot=cf_sn.ac_on && cf_sn.ac_idea==CF_P_DRAFT?cf_sn.ac_slot:255;
+    m->slot=cf_sn.ac_on && cf_sn.ac_idea==CF_P_DRAFT && !(cf_sn.ac_waiting&&!cf_sn.ac_paused)?cf_sn.ac_slot:255;
     m->confirm=cfdu.confirm;m->conflict=cfdu.conflict;m->choice=cfdu.choice;
     str_cpy(m->title,m->conflict?"Draft exists":m->confirm?"Remove slot?":CFD_TAB[cu.page[SCR_PEDIT]],sizeof m->title);
     str_cpy(m->status,cfds.error?"WRITE ERROR":cfds.pending?"RAM PENDING":cfds.checkpoint==CFD_RECOVERED?"RECOVERED":cfds.checkpoint==CFD_CHECKPOINTED?"CHECKPOINT":"FACTORY COPY",sizeof m->status);
+    if(cf_sn.ac_on && (cf_sn.ac_waiting || cf_sn.ac_paused || cf_sn.ac_lost))str_cpy(m->status,cf_acc_transport(),sizeof m->status);
     char rec[32];unsigned plaque=dm_plaque(rec,sizeof rec);
     if(cf_sn.sq_on)str_cpy(m->status,"REPLAY",sizeof m->status);
     if(plaque==DMP_REC || plaque==DMP_RECIN){m->rec=1;str_cpy(m->status,rec,sizeof m->status);}
     str_cpy(m->name,cfwd.song.name,sizeof m->name);kint(m->position,m->focus+1,"/");kint(m->position+str_len(m->position),m->n," focus");
-    if(m->slot!=255){str_cpy(m->position+str_len(m->position)," / ",sizeof m->position-str_len(m->position));kint(m->position+str_len(m->position),m->slot+1," playing");}
+    if(m->slot!=255){str_cpy(m->position+str_len(m->position)," / ",sizeof m->position-str_len(m->position));kint(m->position+str_len(m->position),m->slot+1,cf_sn.ac_paused?" paused":" playing");}
     cf_spell_t spell;cf_key_spell(cfwd.song.tonic,cfwd.song.scale,&spell);cf_chord_cfg_t cfg=cs.chord;cfg.tonic=cfwd.song.tonic;cfg.scale=cfwd.song.scale;
     cpa_plan_t plan;
     if(cfd_prepare(&plan,cfg,CPA_OFF,CPA_BOTH,0,0)) {
