@@ -1534,5 +1534,35 @@
     "kit_index": 21,
     "source": "ChaseFlower design from CoralFlower drum synthesis",
     "license": "GPL-3.0-only"
+  },
+  {
+    "id": "CF3-F065",
+    "name": "AQ33 DX SAX",
+    "bank": "Existing",
+    "bank_id": 9,
+    "part": "chord/layer",
+    "engine": "FM6",
+    "factory_index": 95,
+    "source": "Aquanode",
+    "source_bank": "Aquanode Presets 4.syx",
+    "source_slot": 26,
+    "original_name": "DX SAX",
+    "revision": "f0e59287c9991038f688c5e7457db77117638124",
+    "license": "CC0-1.0"
+  },
+  {
+    "id": "CF3-F066",
+    "name": "AQ34 FULLFLU",
+    "bank": "Existing",
+    "bank_id": 9,
+    "part": "chord/layer",
+    "engine": "FM6",
+    "factory_index": 96,
+    "source": "Aquanode",
+    "source_bank": "Aquanode Presets 4.syx",
+    "source_slot": 29,
+    "original_name": "DX FULLFLU",
+    "revision": "f0e59287c9991038f688c5e7457db77117638124",
+    "license": "CC0-1.0"
   }
 ]

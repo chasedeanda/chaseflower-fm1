@@ -137,6 +137,8 @@ static void render(const char *dir)
         int32_t peak=0; double energy=0; uint32_t clipped=0; int32_t mix[CTL*2];
         for (uint32_t n=0; n<frames;) {
             uint32_t count=frames-n<CTL ? frames-n : CTL;
+            /* cf_ready is off to isolate the renderer; advance the real player's clock explicitly. */
+            dmp_tick(count,0);
             audio_block(mix,count);
             int16_t pcm[CTL*2];
             for (uint32_t i=0; i<count*2; i++) {
@@ -152,6 +154,7 @@ static void render(const char *dir)
         double db=20*log10(peak/32768.0+1e-12), rms=10*log10(energy/(frames*2.0*32768.0*32768.0)+1e-24);
         printf("loop %02u %-9s %3u BPM %-7s peak %5.1f dBFS clips %u\n",y->id,y->name,y->bpm,SQ_KITS[y->kit].name,db,clipped);
         CHECK(peak>100 && clipped==0 && isfinite(rms));
+        CHECK(dmp.nbar+1u>=y->bars*2u); /* the complete repeated phrase was rendered, not just its first hits */
         if(csv)fprintf(csv,"%u,%s,%u,%u,%u,%u,%s,%.2f,%.2f,%u,%02u-%s.wav\n",y->id,y->name,y->beats,y->bars,y->bpm,y->swing,SQ_KITS[y->kit].name,db,rms,clipped,y->id,y->name);
     }
     if(csv)fclose(csv);

@@ -78,6 +78,25 @@ static void legacy_rows(void)
                 }
             }
             CHECK(at < cf_snd_count(part) && cf_snd_count(part) < CF_LIST_MAX);
+            /* The full original chase3 suffix must also keep its positions, including VA after FM. */
+            for (eord = 0; eord < 2; eord++) {
+                uint32_t e = eord ? ENGI_VA : ENGI_FM6, base = eord ? 37u : 31u;
+                uint32_t end = eord ? 93u : 95u;
+                for (uint32_t f = 0; f < end; f++) {
+                    uint32_t pos = pool_pos_factory(e, f);
+                    pool_ent_t pe = pool_entry(e, pos);
+                    if (f < base && !(pe.kind == PK_FACTORY &&
+                        cf_named(CF_DROP, NELEM(CF_DROP), e, ENGINES[e]->presets[f].name))) continue;
+                    if (cf_ent_part(e, pos) != (int)part) continue;
+                    uint32_t ne, np; cf_snd_at(part, at++, &ne, &np);
+                    CHECK(ne == e && np == pos);
+                }
+            }
+            if (part == CF_PART_CHORD) for (uint32_t f = 95; f < 97; f++) {
+                uint32_t ne, np; cf_snd_at(part, at++, &ne, &np);
+                CHECK(ne == ENGI_FM6 && pool_entry(ne, np).fk == f);
+            }
+            CHECK(at == cf_snd_count(part));
         }
         for (eord = 0; eord < CF_NENG; eord++) {
             uint32_t e = CF_ENGINES[eord];
@@ -125,14 +144,15 @@ static void banks(void)
 
 static void views(void)
 {
-    cs.seq_hint = 7; cu.scr = SCR_HOME;
+    cs.seq_hint = 7; cu.scr = SCR_HOME; home_boot_main=1;cf_home_bank=0;
     for (uint32_t i = 0; i < 9; i++) {
-        CHECK(home_view() == i % HV_N);
+        CHECK(home_view() == HV_FLOWER && cf_home_bank==i%CF_HB_N);
         ui_button(B_HOME); CHECK((cs.seq_hint & 7u) == 7u);
     }
-    cs.seq_hint = 0xC7; CHECK(home_view() == HV_DIAG);
-    cu.scr = SCR_GLO; ui_button(B_HOME); CHECK(cu.scr == SCR_HOME && cs.seq_hint == 0xC7);
-    cs.seq_hint = (HV_KEYS << HV_SHIFT) | 7u;
+    home_boot_main=0;cs.seq_hint = 0xC7; CHECK(home_view() == HV_DIAG);
+    cu.scr = SCR_GLO; ui_button(B_HOME); CHECK(cu.scr == SCR_HOME && home_view()==HV_FLOWER && cf_home_bank==0 && cs.seq_hint==0xC7);
+    /* Explicit legacy view choice remains a valid saved setting. */
+    home_boot_main=0;cs.seq_hint = (HV_KEYS << HV_SHIFT) | 7u;
     CHECK(cf_settings_write(0) == 1); cs.seq_hint = 0;
     CHECK(cf_settings_load() && home_view() == HV_KEYS && (cs.seq_hint & 7u) == 7u);
     CHECK(sizeof(cf_set_t) == 188u);
@@ -154,11 +174,12 @@ static void views(void)
     draw_home_keys(); draw_home_chord();
 }
 
-static void save_roundtrip(void)
+static void save_roundtrip(int extras)
 {
     int32_t out[CTL*2];
-    for(uint32_t eord=0;eord<2;eord++) for(uint32_t asnew=0;asnew<2;asnew++) {
-        uint32_t e=eord?ENGI_VA:ENGI_FM6, fk=eord?CHASE_VA_BASE:CHASE_FM_BASE;
+    for(uint32_t eord=extras ? 2u : 0u;eord<(extras ? 3u : 2u);eord++) for(uint32_t asnew=0;asnew<2;asnew++) {
+        uint32_t e=eord==1 ? ENGI_VA : ENGI_FM6;
+        uint32_t fk=eord==2 ? 96u : eord==1 ? CHASE_VA_BASE : CHASE_FM_BASE;
         cf_pool_load(0,e,pool_pos_factory(e,fk));
         for(uint32_t i=0;i<64;i++)audio_block(out,CTL);
         uint8_t before[ENG_BLOB_MAX],after[ENG_BLOB_MAX];
@@ -168,6 +189,7 @@ static void save_roundtrip(void)
         CHECK(cf_snd_pos(0)==preview);
         uint32_t slot=cf_snd[0].slot;
         CHECK(up_used(slot) && up_rec(slot)->note[12]==CB_TRIM_MARK);
+        if (eord==2) CHECK(up_value(up_rec(slot),P_E7)==127);
         cf_load_init(0,ENGI_FM6);
         cf_pool_load(0,e,pool_pos_slot(e,slot));
         for(uint32_t i=0;i<64;i++)audio_block(out,CTL);
@@ -233,18 +255,20 @@ static void wav_header(FILE *f, uint32_t frames)
     fwrite(&align,2,1,f); fwrite(&bits,2,1,f); fwrite("data",1,4,f); fwrite(&bytes,4,1,f);
 }
 
-static void library_render(const char *dir)
+static void library_render(const char *dir, int extras)
 {
     int32_t out[CTL*2]; uint32_t i, p, k, frames = (FS*4u/CTL)*CTL;
     FILE *csv = NULL; char path[1024];
-    if (dir) { snprintf(path,sizeof path,"%s/levels.csv",dir); csv=fopen(path,"w"); CHECK(csv); }
-    if (csv) fprintf(csv,"id,name,peak_dbfs,rms_dbfs,clip_samples\n");
+    if (dir) { snprintf(path,sizeof path,"%s/levels.csv",dir); csv=fopen(path,extras ? "a" : "w"); CHECK(csv); }
+    if (csv && !extras) fprintf(csv,"id,name,peak_dbfs,rms_dbfs,clip_samples\n");
     cf_fx_t fx=CFX_DEFAULT; fx.on=0; cf_fx_apply(&fx); fx_output_set(0,1);
     cf_ready=0; /* isolate the DSP from previously queued UI/transport events */
     ua_reset(); ua.cap_alt=1; ua.cap_hold=0; usb.up=usb.config=1; usb_cdc_on=usb.suspended=0; ua_rate_set(44100);
-    for (uint32_t engine=0; engine<2; engine++) {
+    for (uint32_t engine=0; engine<(extras ? 1u : 2u); engine++) {
         uint32_t e=engine ? ENGI_VA : ENGI_FM6, base=engine ? CHASE_VA_BASE : CHASE_FM_BASE;
-        for (k=base; k<ENGINES[e]->npresets; k++) {
+        uint32_t first=extras ? CHASE_FM_BASE+CHASE_FM_LEGACY_N : base;
+        uint32_t end=!extras && !engine ? CHASE_FM_BASE+CHASE_FM_LEGACY_N : ENGINES[e]->npresets;
+        for (k=first; k<end; k++) {
             p=engine && CHASE_VA_BASS[k-base] ? 1 : 0;
             clear_notes(); cf_pool_load(p,e,pool_pos_factory(e,k));
             for (i=0;i<64;i++) { audio_block(out,CTL); ua.cr=ua.cw; }
@@ -293,19 +317,20 @@ static void audition_drums(const char *dir)
 {
     int32_t out[CTL*2]; uint32_t r=dm_nth(6,2), i, b;
     cf_fx_t fx=CFX_DEFAULT; fx.on=0; cf_fx_apply(&fx);
-    CHECK(SQ_NKIT==22 && DS_NKIT==14);
+    CHECK(SQ_NKIT==24 && DS_NKIT==16);
     for (uint32_t a=0;a<SQ_NKIT;a++) {
         uint32_t n=0;
         for(b=0;b<SQ_NKIT;b++) n+=SQ_KIT_ORDER[b]==a;
         CHECK(n==1);
     }
     clear_notes(); cf_evq_r=cf_evq_w; cfa.on=0;
-    for(uint32_t kit=14;kit<22;kit++) {
+    for(uint32_t kit=14;kit<SQ_NKIT;kit++) {
         cfm.beats=sq_beats=6; cfm.bpm=90; cfm.level=0; cfm.on=0; cfx_in.active=0;
         clear_notes(); dmp_start(r,kit,0); cfm_restart(); cfm.running=1;
         ua_reset(); ua.cap_alt=1; ua.cap_hold=0; ua_rate_set(48000);
-        char path[1024]; FILE *f=NULL; uint32_t frames=(FS*4u/CTL)*CTL;
-        if(dir && !getenv("CHASE_LEVELS_ONLY")) { snprintf(path,sizeof path,"%s/CF3-D%03u.wav",dir,kit-13); f=fopen(path,"wb"); CHECK(f); if(f)wav_header(f,frames); }
+        char path[1024], id[16]; FILE *f=NULL; uint32_t frames=(FS*4u/CTL)*CTL;
+        snprintf(id,sizeof id,"%s%03u",kit<22 ? "CF3-D" : "MEL-D",kit<22 ? kit-13 : kit-21);
+        if(dir && !getenv("CHASE_LEVELS_ONLY")) { snprintf(path,sizeof path,"%s/%s.wav",dir,id); f=fopen(path,"wb"); CHECK(f); if(f)wav_header(f,frames); }
         int32_t peak=0; uint32_t clips=0, count=0;
         for(b=0;b<frames/CTL;b++) {
             audio_block(out,CTL);
@@ -324,7 +349,7 @@ static void audition_drums(const char *dir)
         if(f)fclose(f);
         CHECK(peak>100 && !clips && count>frames);
         CHECK(ua.rs_blocks>0);
-        printf("kit CF3-D%03u %s peak %.1f dBFS clips %u\n",kit-13,SQ_KITS[kit].name,20*log10(peak/32768.0+1e-12),clips);
+        printf("kit %s %s peak %.1f dBFS clips %u\n",id,SQ_KITS[kit].name,20*log10(peak/32768.0+1e-12),clips);
         dmp_stop();
     }
 }
@@ -365,10 +390,11 @@ static void layered_stress(void)
 int main(int argc, char **argv)
 {
     emu_fw_options(NULL, 1, 0, 1); emu_hal.ready=2; emu_fw_init(0);
-    legacy_rows(); banks(); save_roundtrip(); views(); timing();
+    legacy_rows(); banks(); save_roundtrip(0); views(); timing();
     memset(up_bank,0,sizeof up_bank); up_gen++; cf_lst.ok=0;
     const char *dir=argc>2 && !strcmp(argv[1],"--render") ? argv[2] : NULL;
-    library_render(dir); audition_drums(dir); layered_stress();
+    /* Keep old auditions in their original order: noise/dither state must not depend on new patches. */
+    library_render(dir,0); audition_drums(dir); library_render(dir,1); save_roundtrip(1); layered_stress();
     printf("chase3: %u checks, %u failures\n",checks,failures);
     return failures!=0;
 }

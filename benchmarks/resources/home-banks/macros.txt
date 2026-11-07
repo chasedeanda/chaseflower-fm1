@@ -1,0 +1,1255 @@
+#define BG_P3_POWERON 0x01u
+#define BG_P3_SOFT 0x40u
+#define BG_P3_WDT 0x04u
+#define BG_RST_CORE 0x100u
+#define BG_SAFE_AT 2u
+#define BG_SETTLE_MS 30000u
+#define BG_UBOOT_AT 4u
+#define BOOTGUARD_MAGIC 0x42475233u
+#define CACHE_CON REG32(0x1EEE008u)
+#define CB_BIND_MARK 0xA6u
+#define CB_LAYER_MARK 0xA7u
+#define CB_RETIRED_POOL (FELUCCA_ANALOG ? 0u : ENGI_VA)
+#define CB_TRIM_MARK 0xD3u
+#define CFB_EDIT 56u
+#define CFB_FX 69u
+#define CFB_HARM 68u
+#define CFB_LOOP 31u
+#define CFB_MAX2(a,b) ((a) > (b) ? (a) : (b))
+#define CFB_PREFS 70u
+#define CFB_PSND 59u
+#define CFB_RAW_MAX CFB_MAX2(CFB_MAX2(CFB_MAX2(sizeof(up_bank_t), sizeof(fm6_bank_t)), CFB_MAX2(sizeof(va_store_t), sizeof(fm6u_t))), CFB_MAX2(CFB_MAX2(CFB_MAX2(sizeof(cf_rec_t), sizeof(cfl_data_t)), SQ_CHUNK), CFB_MAX2(CRB_FM6_FEL, CFB_MAX2(CRB_FM6_MEL, CRB_VA_V1))))
+#define CFB_RECPREF 74u
+#define CFB_SEQ 50u
+#define CFB_SET 30u
+#define CFB_TAKE 71u
+#define CFB_TWK 60u
+#define CFE_CAP ((uint32_t)(60u * 44100u / FM6_N))
+#define CFE_NSEC 8
+#define CFG_LEN 211
+#define CFG_LEN_CDC 175
+#define CFH_MAGIC 0x31484843u
+#define CFK_MAGIC 0x314B4643u
+#define CFK_NSLOT 8u
+#define CFK_NST (3u + CFK_NSLOT)
+#define CFK_OBJ(part) ((uint32_t)OBJ_CFEDIT0 + (part))
+#define CFL_DOWN 0x80u
+#define CFL_MAGIC 0x314C4643u
+#define CFL_MAX_EV 500u
+#define CFL_MAX_LAYERS 32u
+#define CFL_PPQN 96u
+#define CFPS_MAGIC 0x31524643u
+#define CFP_GATHER_MS 50u
+#define CFX_FADE_STEP 75
+#define CFX_MUL(a,b,sh) ((int32_t)(((int64_t)(a) * (b)) >> (sh)))
+#define CF_ARP_DEFAULT {0, 1, 4, 70, 50, 0, 40}
+#define CF_ARP_MAX 48u
+#define CF_ARP_NRATES ((uint32_t)sizeof CF_ARP_UNITS)
+#define CF_ARP_STRUMMING(m) ((m) >= CF_ARP_STRUM_UP)
+#define CF_BOOT_N ((uint32_t)(sizeof CF_BOOT / sizeof CF_BOOT[0]))
+#define CF_BROWSER_H
+#define CF_BTN_T0(i) fm1_in.btn_t0[i]
+#define CF_CHORD_H
+#define CF_DRUM_VARY 1
+#define CF_EVQ 128u
+#define CF_FONTS_H
+#define CF_FX_OWN 1
+#define CF_FX_PRESET_H
+#define CF_FX_TYPES_H
+#define CF_GLO_ACCOMP 9u
+#define CF_GLO_BROWSE 10u
+#define CF_GLO_HARMONY 7u
+#define CF_GLO_NPAGES 12u
+#define CF_GLO_RECORDINGS 11u
+#define CF_GLO_VARIATION 8u
+#define CF_HARMONY_H
+#define CF_H_EVENT 0x8000u
+#define CF_H_SLOTS 11
+#define CF_INCH_ALL 1u
+#define CF_INV_AUTO (-1)
+#define CF_KEY_EXT 32
+#define CF_KEY_T0(k) fm1_in.note_t0[k]
+#define CF_LIST_MAX 224u
+#define CF_LOOP_DEFAULT {0, 0, 0, 1}
+#define CF_LOOP_NBARS ((uint32_t)sizeof CF_LOOP_BARS)
+#define CF_LOOP_STORE 1
+#define CF_MAX_NOTES 12
+#define CF_MAX_ROOTS 16
+#define CF_MSG_QOFF "QUANTIZE is Off: turn it on"
+#define CF_NADDS 19
+#define CF_NCLICKS ((uint32_t)NELEM(CF_CLICKS))
+#define CF_NENG ((uint32_t)sizeof CF_ENGINES)
+#define CF_NKEYS 27
+#define CF_NLOWER 16
+#define CF_NTAIL 1u
+#define CF_NTHEMES ((int)(sizeof CF_THEMES / sizeof CF_THEMES[0]))
+#define CF_NUPPER 11
+#define CF_OCT_BASE (-1)
+#define CF_OFF_ADD 0xFFFFu
+#define CF_PART_BASS 1u
+#define CF_PART_CHORD 0u
+#define CF_PART_DRUM 3u
+#define CF_PART_DRUMS 3u
+#define CF_PART_LAYER 2u
+#define CF_PROGRESSION_H
+#define CF_PUMP() cf_ui_pump()
+#define CF_P_MAX 8
+#define CF_P_NONE 255u
+#define CF_RESET_ASK_MS 6000u
+#define CF_RESET_HOLD_MS 3000u
+#define CF_RESUME_ON 0x80u
+#define CF_RESUME_SONG 0x40u
+#define CF_SAVE_NPG 3u
+#define CF_SCENES 0
+#define CF_SCENE_BASS_BIT 0x20u
+#define CF_SCENE_FIRE_BIT 0x08u
+#define CF_SCENE_OFF_BIT 0x10u
+#define CF_SET_MAGIC 0x31534643u
+#define CF_SET_MARK05 0xC5u
+#define CF_SET_OBJ (OBJ_PROJECT0 + 3u)
+#define CF_SET_QUICK_MS 500u
+#define CF_SET_QUIET_MS 1500u
+#define CF_SET_SILENT_MS 1000u
+#define CF_SET_VERSION 2u
+#define CF_SIDE_NBTN 7
+#define CF_THEORY_H
+#define CF_TOP_NBTN 11
+#define CF_TYPE_DEFAULT 0xFFu
+#define CF_UNIT 1
+#define CF_VISUAL_H
+#define CF_VLOAD 1
+#define CF_XQ 64u
+#define CHAIN_ROWS 16u
+#define CHASE_FM_BASE 31u
+#define CHASE_FM_N 64u
+#define CHASE_LIBRARY 1
+#define CHASE_VA_BASE 37u
+#define CHASE_VA_N 56u
+#define CHO_LEN 2048u
+#define CI_N 256u
+#define CLN_CREEP 10
+#define CLN_DLEN (CLN_LA <= 16u ? 16u : CLN_LA <= 32u ? 32u : CLN_LA <= 64u ? 64u : 128u)
+#define CLN_G1 ((int32_t)(CLN_LA_K << 15))
+#define CLN_HIT 1
+#define CLN_HOLD 8820u
+#define CLN_HOLD_HIT 1764u
+#define CLN_K 26000
+#define CLN_K4 (4 * CLN_K)
+#define CLN_KS (268435456 / CLN_R4)
+#define CLN_LA (CLN_LA_B * CLN_LA_K)
+#define CLN_LA_B 32u
+#define CLN_LA_K 1u
+#define CLN_MAKEUP 4096
+#define CLN_R4 (4 * (32767 - CLN_K))
+#define CLN_REHOLD 3
+#define CLN_REL 13
+#define CLN_T 26000
+#define CLN_T4 (4 * CLN_T)
+#define CLN_TRIM 4096
+#define CON_LINE 64u
+#define CO_N 2048u
+#define CPA_CLICK 254u
+#define CPA_OFF 255u
+#define CPB_BYTES (CPB_MAX / 8u)
+#define CPB_MAGIC 0x31425043u
+#define CPB_MAX 128u
+#define CPU_AVG (4096u / HALF_FRAMES)
+#define CRB_DATA (st_buf + 2048u)
+#define CRB_FM6S 10u
+#define CRB_FM6_FEL (16u + 27u * 128u)
+#define CRB_FM6_MEL (4u + FM6_BANK_N * FM6_BANK_PK)
+#define CRB_HDR0 0x7Du
+#define CRB_HDR1 0x46u
+#define CRB_HDR2 0x4Cu
+#define CRB_LEAVE_GRACE 5u
+#define CRB_LEAVE_MAX 500u
+#define CRB_LEAVE_MIN 150u
+#define CRB_N ((uint32_t)sizeof CRB_IDS)
+#define CRB_OUT st_buf
+#define CRB_REBOOT() do { bootguard.pending = 0; usb_detach(); fm1_delay_ms(30); fm1_reboot(); } while (0)
+#define CRB_SEND(p,n) ota_wire_send((p), (n))
+#define CRB_STUB_GO(w) do { bootguard.pending = 0; usb_detach(); fm1_delay_ms(30); fm1_stub_request(w); } while (0)
+#define CRB_STUB_REQ_RESCUE 0x52514552u
+#define CRB_STUB_VER() (fm1_stub_word(1) >> 16 == 0x5342u ? (fm1_stub_word(1) >> 8) & 0xFFu : 0u)
+#define CRB_UBOOT_GO() do { usb_detach(); fm1_delay_ms(30); bootguard_intentional(&bootguard); fm1_enter_uboot(); } while (0)
+#define CRB_UPDATE_SCREEN(t) do { fm1_audio_stop(); lcd_fill(0, 0, 240, 240, T_BG); draw_text_box(0, 110, 240, &AF_M, (t), T_THEME, 1); } while (0)
+#define CRB_UPD_GO_MS 5000u
+#define CRB_UPD_SHOW_MS 2000u
+#define CRB_VA 9u
+#define CRB_VA_V1 (16u + UP_SLOTS * VA_BLOB1)
+#define CRM_WIN 24u
+#define CR_A_STRIPES 1
+#define CR_BACKUP_SERVICE 1
+#define CR_BOOTGUARD_H
+#define CR_C1_IDX(t) (cr_c1_split && (t) == &trk[1])
+#define CR_CHORUS_MONO 0
+#define CR_CORE1_TEST 0
+#define CR_CPU1 1
+#define CR_FX 1
+#define CR_FX_DELAY_DS 1
+#define CR_FX_LITE 0
+#define CR_FX_RAM 0
+#define CR_FX_REVERB_DS 2
+#define CR_MPED 0x80u
+#define CR_PROF(k) do { if (cr_dbg.prof_on) { uint32_t t_ = cr_prof_now(); cr_dbg.cur[k] += cr_prof_less(t_ - cr_dbg.mark); cr_dbg.mark = t_; } } while (0)
+#define CR_PROFX(k) do { if (cr_dbg.prof_on) { uint32_t t_ = cr_prof_now(); cr_dbg.xcur[k] += cr_prof_less(t_ - cr_dbg.xmark); cr_dbg.xmark = t_; cr_dbg.mark += cr_prof_cost; } } while (0)
+#define CR_PROFX_START() do { if (cr_dbg.prof_on) { cr_dbg.xmark = cr_prof_now(); cr_dbg.mark += cr_prof_cost; } } while (0)
+#define CR_PROF_PER_US FM1_TICKS_PER_US
+#define CR_PROF_SKIP() do { if (cr_dbg.prof_on) cr_dbg.mark = cr_prof_now(); } while (0)
+#define CR_PROF_START() do { if (cr_dbg.prof_on) cr_dbg.mark = cr_prof_now(); } while (0)
+#define CR_STAGE(n) (felucca_dbg.stage = (n))
+#define CTL 32
+#define CTL_LOG2 5
+#define CV_DS(n) ((n) * 22050 / 29761)
+#define CV_EXC 3
+#define CV_MAX (240u * CV_ROWS)
+#define CV_PRE 1103
+#define CV_ROWS 120u
+#define CV_TOTAL (CV_PRE + CV_DS(142) + CV_DS(107) + CV_DS(379) + CV_DS(277) + CV_DS(672) + CV_DS(4453) + CV_DS(1800) + CV_DS(3720) + CV_DS(908) + CV_DS(4217) + CV_DS(2656) + CV_DS(3163) + 2 * V_N + 2 * (CV_EXC + 2))
+#define C_ACC(s) ((uint8_t)(48 + (s)))
+#define C_SEC(s) ((uint8_t)(52 + (s)))
+#define DAC_TICKS 544u
+#define DBG_MAGIC 0x44424731u
+#define DLY_XF 512u
+#define DM_MAGIC 0x32444643u
+#define DM_MAGIC1 0x31444643u
+#define DM_N ((uint32_t)(sizeof DM_RHY / sizeof DM_RHY[0]))
+#define DM_NMAX 64u
+#define DRUM_LANE_KNOBS 1
+#define DRUM_NPART 1u
+#define DRUM_PART0 3u
+#define DRW_FOLD 584366000u
+#define DRW_HZ(h) ((int32_t)((h) * 3116457.0))
+#define DRW_NP 9
+#define DRW_XOVER 77915000u
+#define DS(w,n,f,t,r,p,mp,ra,bend,btau,odec,o2,olev,cut,res,ndec,nlev,fm,gap,click,drive,level) {w, n, f, t, r, p, mp, ra, bend, btau, odec, o2, olev, cut, res, ndec, nlev, fm, gap, click, drive, level}
+#define DS_END (1 << 19)
+#define DS_NKIT ((uint32_t)(sizeof DS_KITS / sizeof DS_KITS[0]))
+#define DS_OSC(EXPR) for (i = 0; i < n; i++) { ao += dao; pe = (pe * kp) >> 15; inc = inc0 + s1 * pe; ph += inc; EXPR; o[i] = (((x * (ao >> 5)) >> 15) * go) >> 15; }
+#define DS_ROOM_END (1 << 20)
+#define DS_SIN(ph) ((int32_t)SINE[(ph) >> 22])
+#define DS_SVF(OUT) for (i = 0; i < n; i++) { int32_t in = y[i] + (o[i] & r), v3 = in - z1, v1, v2; v1 = (v->f.a1 * z0 + v->f.a2 * v3) >> 13; v2 = z1 + ((v->f.a2 * z0 + v->f.a3 * v3) >> 13); z0 = clamp(2 * v1 - z0, -150000, 150000); z1 = clamp(2 * v2 - z1, -150000, 150000); y[i] = (OUT) + (o[i] & ~r); }
+#define DV_NOISE(v) ((int32_t)noise32(&(v)->rng) >> 16)
+#define DV_P16(hz_p16) pitch_inc(clamp((hz_p16), 0, 2047))
+#define DV_QUIET (1 << 16)
+#define DV_SEED 0x5EED1234
+#define ELLIPSIS '\x85'
+#define ENGI_CZ (13u + FELUCCA_SLICE + FELUCCA_VA)
+#define ENGI_DIGITAL 1u
+#define ENGI_DRUM 10u
+#define ENGI_FM6 12u
+#define ENGI_PHYS 9u
+#define ENGI_VA (13u + FELUCCA_SLICE)
+#define ENG_BLOB_MAX 160u
+#define ENG_FORMANT ENG_GONE
+#define ENG_GONE ENG_FM4_GONE
+#define ENG_MOD_TRK 0xFFu
+#define ENG_RETIRED ((FELUCCA_FM4 ? 0u : 1u << ENGI_DIGITAL) | (FELUCCA_SAMPLE ? 0u : 1u << 4) | (FELUCCA_GRAIN ? 0u : 1u << 8) | (FELUCCA_DRUM ? 0u : 1u << ENGI_DRUM) | (FELUCCA_ANALOG ? 0u : 1u) | ENG_RETIRED_018)
+#define ENG_RETIRED_018 ((FELUCCA_PHASE ? 0u : 1u << 2) | (FELUCCA_LOFI ? 0u : 1u << 3) | (FELUCCA_VOICE ? 0u : 1u << 5) | (FELUCCA_TRIO ? 0u : 1u << 6) | (FELUCCA_NOISE ? 0u : 1u << 11) | (FELUCCA_PHYS ? 0u : 1u << 9))
+#define ENG_STATE_NPART 3u
+#define EP1_ROOM (16u + 8u)
+#define EP1_TX_IDLE() (mo_w == mo_r && so_w == so_r && !SX_UNSEEN())
+#define FB_H 240
+#define FB_PAL 64
+#define FB_TS 16
+#define FB_TX (FB_W / FB_TS)
+#define FB_TY (FB_H / FB_TS)
+#define FB_W 240
+#define FELUCCA_ANALOG 0
+#define FELUCCA_CDC 1
+#define FELUCCA_CZ 0
+#define FELUCCA_DRUM 1
+#define FELUCCA_FLASH 1
+#define FELUCCA_FM4 0
+#define FELUCCA_GRAIN 0
+#define FELUCCA_ICONS 0
+#define FELUCCA_ID "FM-1_930"
+#define FELUCCA_KEYCAPS 0
+#define FELUCCA_LOFI 0
+#define FELUCCA_NOISE 0
+#define FELUCCA_OTA 1
+#define FELUCCA_OTA_DRYRUN 0
+#define FELUCCA_OTA_RAMONLY 0
+#define FELUCCA_PERFORM 0
+#define FELUCCA_PHASE 0
+#define FELUCCA_PHYS 0
+#define FELUCCA_QUAD 0
+#define FELUCCA_SAMPLE 0
+#define FELUCCA_SEQ 0
+#define FELUCCA_SLICE 0
+#define FELUCCA_SLICER 0
+#define FELUCCA_TRIO 0
+#define FELUCCA_UAC 1
+#define FELUCCA_UART 1
+#define FELUCCA_USB_PID 0x0001
+#define FELUCCA_VA 1
+#define FELUCCA_VERSION "CoralFlower 0.6-chase7"
+#define FELUCCA_VOICE 0
+#define FLH 70
+#define FLORA_CANVAS_H
+#define FLORA_H
+#define FLORA_LUT_H
+#define FLORA_MATH_H
+#define FLORA_PAL_H
+#define FLW 120
+#define FL_C(r,s) ((uint8_t)(FL_RAMP0 + (r) * 4 + (s)))
+#define FL_DATA_HI 0x000E0000u
+#define FL_DATA_LO 0x00097000u
+#define FL_FAR(fn) ((__typeof__(&fn))fl_far((void *)&fn))
+#define FL_GLOB_HI 0x000FF000u
+#define FL_GLOB_LO 0x000FC000u
+#define FL_IN(off,n,lo,hi) ((uint32_t)(off) >= (lo) && (uint32_t)(off) <= (hi) && (uint32_t)(n) <= (hi) - (uint32_t)(off))
+#define FL_MAX_PART 48
+#define FL_MAX_SEG 192
+#define FL_OTA_HI 0x000E5000u
+#define FL_OTA_LO 0x000E0000u
+#define FL_PAL_SIZE (FL_RAMP0 + FL_NRAMPS * 4)
+#define FL_RANGE_OK(off,n) (FL_STORE_OK(off, n) || FL_IN(off, n, FL_OTA_LO, FL_OTA_HI))
+#define FL_REC_HI 0x000EE000u
+#define FL_REC_LO 0x000E6000u
+#define FL_STORE_OK(off,n) (FL_IN(off, n, FL_DATA_LO, FL_DATA_HI) || FL_IN(off, n, FL_GLOB_LO, FL_GLOB_HI) || FL_IN(off, n, FL_REC_LO, FL_REC_HI))
+#define FL_XIP(off) FM1_XIP(off)
+#define FM1_ADC_CON (*(volatile uint32_t *)0x13100u)
+#define FM1_ADC_RES (*(volatile uint32_t *)0x13104u)
+#define FM1_ALNK 0x12E00u
+#define FM1_ALNK_ADR3 (*(volatile uint32_t *)(FM1_ALNK + 0x1Cu))
+#define FM1_ALNK_CON0 (*(volatile uint16_t *)(FM1_ALNK + 0x00u))
+#define FM1_ALNK_CON1 (*(volatile uint16_t *)(FM1_ALNK + 0x04u))
+#define FM1_ALNK_CON2 (*(volatile uint8_t *)(FM1_ALNK + 0x08u))
+#define FM1_ALNK_CON3 (*(volatile uint8_t *)(FM1_ALNK + 0x0Cu))
+#define FM1_ALNK_LEN (*(volatile uint16_t *)(FM1_ALNK + 0x20u))
+#define FM1_AUDIO_ACK_LATE 0
+#define FM1_AUDIO_HALF 0x80u
+#define FM1_BOOT_STATE ((volatile uint8_t *)0x01C7FD80u)
+#define FM1_C0_WR_LIMIT_EN FM1_X2(0x348u)
+#define FM1_C1_CHECK(fn,arg,seq) ((uint32_t)(uintptr_t)(fn) ^ (uint32_t)(arg) ^ (uint32_t)(seq) * 0x9E3779B1u ^ 0xC15A11EDu)
+#define FM1_C1_CLK (*(volatile uint32_t *)0x00010008u)
+#define FM1_C1_CON (*(volatile uint32_t *)0x1EEE004u)
+#define FM1_C1_MARK 0x43314D4Bu
+#define FM1_C1_STACK_WORDS (2816u / 4u)
+#define FM1_C1_SYNC() __asm__ volatile("csync" ::: "memory")
+#define FM1_C1_T4 (*(volatile uint32_t *)0x10804u)
+#define FM1_C1_TEXT __attribute__((section(".c1_text")))
+#define FM1_CLK_CON1 (*(volatile uint32_t *)0x10010u)
+#define FM1_CLK_CON2 (*(volatile uint32_t *)0x10014u)
+#define FM1_CRASH_MAGIC 0x43525348u
+#define FM1_DBG_C0 ((1u << 7) | (1u << 9) | (1u << 12) | (1u << 13) | (7u << 19))
+#define FM1_DBG_C1 ((1u << 6) | (1u << 8) | (1u << 10) | (1u << 11) | (7u << 16))
+#define FM1_DBG_EN (*(volatile uint32_t *)0x1EEE340u)
+#define FM1_DBG_MSG (*(volatile uint32_t *)0x1EEE244u)
+#define FM1_DBG_MSG_CLR (*(volatile uint32_t *)0x1EEE248u)
+#define FM1_DBG_WR_EN (*(volatile uint32_t *)0x1EEE240u)
+#define FM1_DEB_PRESS 2u
+#define FM1_DEB_RELEASE 8u
+#define FM1_EMU_CON (*(volatile uint32_t *)0x1EEF0D0u)
+#define FM1_EMU_MSG (*(volatile uint32_t *)0x1EEF0D4u)
+#define FM1_EMU_SSP_H (*(volatile uint32_t *)0x1EEF0D8u)
+#define FM1_EMU_SSP_L (*(volatile uint32_t *)0x1EEF0DCu)
+#define FM1_EMU_USP_H (*(volatile uint32_t *)0x1EEF0E0u)
+#define FM1_EMU_USP_L (*(volatile uint32_t *)0x1EEF0E4u)
+#define FM1_ETM_CON (*(volatile uint32_t *)0x1EEF1C0u)
+#define FM1_ETM_PC(i) (*(volatile uint32_t *)(0x1EEF1C4u + 4u * (i)))
+#define FM1_GAP_BINS 8u
+#define FM1_HAVE_CPU1 1
+#define FM1_HAVE_STUB 1
+#define FM1_ICFG(n) (*(volatile uint32_t *)(0x1EEF100u + 4u * ((n) >> 3)))
+#define FM1_ILAT_CLR (*(volatile uint32_t *)0x1EEF1A4u)
+#define FM1_ILAT_SET (*(volatile uint32_t *)0x1EEF1A0u)
+#define FM1_INLINE static inline __attribute__((always_inline))
+#define FM1_INPUT_IDLE() ((void)0)
+#define FM1_INPUT_LAT 1
+#define FM1_INPUT_NOW() fm1_ticks()
+#define FM1_IOMAP_CON5 (*(volatile uint32_t *)0x51030u)
+#define FM1_IPND(i) (*(volatile uint32_t *)(0x1EEF180u + 4u * (i)))
+#define FM1_IRQ_TARGET 1
+#define FM1_LCD_CLK (1u << 9)
+#define FM1_LCD_CS (1u << 7)
+#define FM1_LCD_DC (1u << 8)
+#define FM1_LCD_DO (1u << 10)
+#define FM1_LCD_IOMAP_CON1 (*(volatile uint32_t *)0x51020u)
+#define FM1_LCD_PA2 (1u << 2)
+#define FM1_LCD_PA_DIR (*(volatile uint32_t *)0x50008u)
+#define FM1_LCD_PA_OUT (*(volatile uint32_t *)0x50000u)
+#define FM1_LCD_PC_DIR (*(volatile uint32_t *)0x50088u)
+#define FM1_LCD_PC_OUT (*(volatile uint32_t *)0x50080u)
+#define FM1_LCD_SPI_ADR (*(volatile uint32_t *)0x11D0Cu)
+#define FM1_LCD_SPI_BAUD (*(volatile uint32_t *)0x11D04u)
+#define FM1_LCD_SPI_BUF (*(volatile uint32_t *)0x11D08u)
+#define FM1_LCD_SPI_CNT (*(volatile uint32_t *)0x11D10u)
+#define FM1_LCD_SPI_CON (*(volatile uint32_t *)0x11D00u)
+#define FM1_LED_DIM2_NS 9600u
+#define FM1_LED_DIM_DIV 1u
+#define FM1_LED_DIM_NS 3200u
+#define FM1_LED_FAINT_NS 1300u
+#define FM1_LED_TRACE(rowmask) ((void)0)
+#define FM1_LED_US 40u
+#define FM1_NCOL 11u
+#define FM1_NENC 7u
+#define FM1_NKEY 41u
+#define FM1_P33_CON (*(volatile uint32_t *)0x13E08u)
+#define FM1_P33_DAT (*(volatile uint32_t *)0x13E0Cu)
+#define FM1_P3_PR_PWR 0xA0u
+#define FM1_P3_RST_SRC 0x12u
+#define FM1_P3_VLD_KEEP 0x17u
+#define FM1_P3_WDT_CON 0x80u
+#define FM1_PC_LIMIT0_H FM1_X2(0x380u)
+#define FM1_PC_LIMIT0_L FM1_X2(0x384u)
+#define FM1_PC_LIMIT1_H FM1_X2(0x388u)
+#define FM1_PC_LIMIT1_L FM1_X2(0x38Cu)
+#define FM1_PORT(p) (0x50000u + (p) * 0x40u)
+#define FM1_PR(p,r) (*(volatile uint32_t *)(FM1_PORT(p) + (r)))
+#define FM1_PWR_CON (*(volatile uint32_t *)0x10000u)
+#define FM1_REST_FRAMES 900u
+#define FM1_RST_SRC (*(volatile uint32_t *)0x100C0u)
+#define FM1_SETTLE_US 10u
+#define FM1_SR_LATCH_TRACE() ((void)0)
+#define FM1_STUB_RAM ((volatile uint32_t *)0x01C7C000u)
+#define FM1_SYSVDD_LEVEL 14u
+#define FM1_SYSVDD_MAX 14u
+#define FM1_T4_CNT (*(volatile uint32_t *)0x10804u)
+#define FM1_T4_CON (*(volatile uint32_t *)0x10800u)
+#define FM1_T4_PRD (*(volatile uint32_t *)0x10808u)
+#define FM1_T5_CNT (*(volatile uint32_t *)0x10904u)
+#define FM1_T5_CON (*(volatile uint32_t *)0x10900u)
+#define FM1_T5_PRD (*(volatile uint32_t *)0x10908u)
+#define FM1_TICKS_PER_US 24u
+#define FM1_UM_CLK_CON1 (*(volatile uint32_t *)0x10010u)
+#define FM1_UM_IOMAP2 (*(volatile uint32_t *)0x51024u)
+#define FM1_UM_IOMAP3 (*(volatile uint32_t *)0x51028u)
+#define FM1_UM_PH_DIE (*(volatile uint32_t *)0x501CCu)
+#define FM1_UM_PH_DIR (*(volatile uint32_t *)0x501C8u)
+#define FM1_UM_PH_PD (*(volatile uint32_t *)0x501D4u)
+#define FM1_UM_PH_PU (*(volatile uint32_t *)0x501D0u)
+#define FM1_UPDATA_PARM ((volatile uint8_t *)0x01C7FD88u)
+#define FM1_UPDATA_PARM_LEN 112u
+#define FM1_USB_CON0 (*(volatile uint32_t *)0x11800u)
+#define FM1_USB_CON1 (*(volatile uint32_t *)0x11804u)
+#define FM1_USB_EP0_ADR (*(volatile uint32_t *)0x11818u)
+#define FM1_USB_EP4_CNT (*(volatile uint32_t *)0x11834u)
+#define FM1_USB_EP4_RADR (*(volatile uint32_t *)0x1183Cu)
+#define FM1_USB_EP4_TADR (*(volatile uint32_t *)0x11838u)
+#define FM1_USB_EP_CNT(n) (*(volatile uint32_t *)(0x11808u + 4u * (n)))
+#define FM1_USB_EP_RADR(n) (*(volatile uint32_t *)(0x11820u + 8u * ((n) - 1u)))
+#define FM1_USB_EP_TADR(n) (*(volatile uint32_t *)(0x1181Cu + 8u * ((n) - 1u)))
+#define FM1_USB_IO_CON0 (*(volatile uint32_t *)0x51000u)
+#define FM1_UT1_BAUD (*(volatile uint32_t *)0x12108u)
+#define FM1_UT1_CON0 (*(volatile uint32_t *)0x12100u)
+#define FM1_UT1_CON1 (*(volatile uint32_t *)0x12104u)
+#define FM1_UT1_HRXCNT (*(volatile uint32_t *)0x12128u)
+#define FM1_UT1_OTCNT (*(volatile uint32_t *)0x12110u)
+#define FM1_UT1_RXCNT (*(volatile uint32_t *)0x12124u)
+#define FM1_UT1_RXEADR (*(volatile uint32_t *)0x12120u)
+#define FM1_UT1_RXSADR (*(volatile uint32_t *)0x1211Cu)
+#define FM1_VDC14_LEVEL 4u
+#define FM1_VDC14_MAX 4u
+#define FM1_VEC ((volatile uint32_t *)0x01C7FE00u)
+#define FM1_WLA_CON0 (*(volatile uint32_t *)0x11900u)
+#define FM1_WR_LIMIT_H(n) FM1_X2(0x280u + 4u * (n))
+#define FM1_WR_LIMIT_L(n) FM1_X2(0x2C0u + 4u * (n))
+#define FM1_X2(off) (*(volatile uint32_t *)(0x1EEE000u + (off)))
+#define FM1_XIP(off) (0x02000000u + (uint32_t)(off) - 0x4000u)
+#define FM1__DIM2_T ((FM1_LED_DIM2_NS * FM1_TICKS_PER_US + 500u) / 1000u)
+#define FM1__DIM_T ((FM1_LED_DIM_NS * FM1_TICKS_PER_US + 500u) / 1000u)
+#define FM1__FAINT_T ((FM1_LED_FAINT_NS * FM1_TICKS_PER_US + 500u) / 1000u)
+#define FM4_EDIT(l0,l1,l2,l3,l4,l5,l6,f0,f1,n0,n1) { {l0, f0, 0, 7, 0, n0, 0}, {l1, f0, 0, 14, 1, n1, 0}, {l2, f0, 0, 14, 1, n1, 0}, {l3, f0, 0, 14, 1, n1, 0}, {l4, F_PCT, 0, 127, 60, 0, 0}, {l5, f1, 0, 127, 60, 0, 0}, {l6, F_PCT, 0, 127, 0, 0, 0}, {"-", F_INT, 0, 0, 0, 0, 0}}
+#define FM4_FB_LIFT 768
+#define FM4_FB_NOISE 20
+#define FM4_MUTE (-100000)
+#define FM4_NPRESETS 8u
+#define FM6F(t) fm6_fn[(uint32_t)((t) - trk) % NSND]
+#define FM6P(t) fm6_part((uint32_t)((t) - trk))
+#define FM6U_HALF (UP_SLOTS / 2u)
+#define FM6U_MAGIC 0x55364D46u
+#define FM6U_VER 1u
+#define FM6_BANK_MAGIC 0x42364D46u
+#define FM6_BANK_N 32u
+#define FM6_BANK_PK 112u
+#define FM6_BANK_VER 2u
+#define FM6_BLOB 128u
+#define FM6_BLOB_MAGIC 0x46u
+#define FM6_BLOB_VER 1u
+#define FM6_CHASE_SLOT (FM6_NFAC + FM6_BANK_N + FM6_NXROM)
+#define FM6_DBEND 0x300
+#define FM6_DCRV 0x200
+#define FM6_DFN 0x100
+#define FM6_LFO_UNIT 36558
+#define FM6_LG_N 6
+#define FM6_LOOP(Y) do { if (add) for (i = 0; i < n; i++) { g += dg; out[i] += (Y); ph += fq; } else for (i = 0; i < n; i++) { g += dg; out[i] = (Y); ph += fq; } } while (0)
+#define FM6_LOOP_FB(Y) do { if (add) for (i = 0; i < n; i++) { g += dg; m = (y0 + y) >> sh; y0 = y; y = (Y); out[i] += y; ph += fq; } else for (i = 0; i < n; i++) { g += dg; m = (y0 + y) >> sh; y0 = y; y = (Y); out[i] = y; ph += fq; } } while (0)
+#define FM6_N 64
+#define FM6_NFAC (FM6_NFACTORY + FM6_NROM)
+#define FM6_NFACTORY 8
+#define FM6_NPAGES ((uint32_t)NELEM(FM6_PAGES))
+#define FM6_NROM (sizeof FM6_ROM / sizeof FM6_ROM[0])
+#define FM6_NSLOT (FM6_CHASE_SLOT + CHASE_FM_N)
+#define FM6_NXROM (sizeof FM6_XROM / sizeof FM6_XROM[0])
+#define FM6_ON_ALL 0x3Fu
+#define FM6_PACKED 128u
+#define FM6_PEG_UNIT 1143
+#define FM6_PLAIN_NAMES 1
+#define FM6_POLY 8
+#define FM6_RX 4104u
+#define FM6_SILENT 1638400
+#define FM6_SIN_G(x) ((int32_t)(((int64_t)fm6_sin(x) * g) >> 24))
+#define FS 44100
+#define FX(d,c,dl,r) .fx = {(d) + 1, (c) + 1, (dl) + 1, (r) + 1}
+#define FXP_FACTORY_N ((unsigned)(sizeof FXP_FACTORY / sizeof FXP_FACTORY[0]))
+#define FXP_GROUP_SIZE 8u
+#define FXP_MAGIC 0x31505846u
+#define FXP_NAME 21u
+#define FXP_SLOTS 16u
+#define FXP_VERSION 1u
+#define FX_MIX_HOOK cf_fx_chain
+#define FX_UA_STAGE FELUCCA_UAC
+#define GFX_HOOK_BEGIN() ((void)0)
+#define GFX_HOOK_BLIT(x,y,r0) ((void)0)
+#define GFX_HOOK_CELL(x0,y0,x1,y1) ((void)0)
+#define GFX_HOOK_PIXELS(n) ((void)0)
+#define GFX_HOOK_TEXT(x0,y0,x1,y1,s,flags) ((void)0)
+#define HALF_FRAMES 128
+#define HALF_TICKS (HALF_FRAMES * 1000000u / FS * FM1_TICKS_PER_US)
+#define HALF_WORDS (HALF_FRAMES * 2u)
+#define HC_FONTS 2
+#define HEAD_LINE (Y_VIEW + 35)
+#define HEAD_Y (Y_VIEW + 5)
+#define HOLD_DEF 1u
+#define HOLD_TAG 0x484C4400u
+#define HV_SHIFT 6u
+#define H_VIEW 140
+#define INT16_C(v) __int_c(v, __int16_c_suffix)
+#define INT16_MAX INT16_C(32767)
+#define INT16_MIN (-INT16_C(32767)-1)
+#define INT32_C(v) __int_c(v, __int32_c_suffix)
+#define INT32_MAX INT32_C(2147483647)
+#define INT32_MIN (-INT32_C(2147483647)-1)
+#define INT64_C(v) __int_c(v, __int64_c_suffix)
+#define INT64_MAX INT64_C( 9223372036854775807)
+#define INT64_MIN (-INT64_C( 9223372036854775807)-1)
+#define INT8_C(v) __int_c(v, __int8_c_suffix)
+#define INT8_MAX INT8_C(127)
+#define INT8_MIN (-INT8_C(127)-1)
+#define INTMAX_C(v) __INTN_C(__INTMAX_WIDTH__, v)
+#define INTMAX_MAX __INTN_MAX(__INTMAX_WIDTH__)
+#define INTMAX_MIN __INTN_MIN(__INTMAX_WIDTH__)
+#define INTPTR_MAX __INTN_MAX(__INTPTR_WIDTH__)
+#define INTPTR_MIN __INTN_MIN(__INTPTR_WIDTH__)
+#define INT_FAST16_MAX __INT_LEAST16_MAX
+#define INT_FAST16_MIN __INT_LEAST16_MIN
+#define INT_FAST32_MAX __INT_LEAST32_MAX
+#define INT_FAST32_MIN __INT_LEAST32_MIN
+#define INT_FAST64_MAX __INT_LEAST64_MAX
+#define INT_FAST64_MIN __INT_LEAST64_MIN
+#define INT_FAST8_MAX __INT_LEAST8_MAX
+#define INT_FAST8_MIN __INT_LEAST8_MIN
+#define INT_LEAST16_MAX __INT_LEAST16_MAX
+#define INT_LEAST16_MIN __INT_LEAST16_MIN
+#define INT_LEAST32_MAX __INT_LEAST32_MAX
+#define INT_LEAST32_MIN __INT_LEAST32_MIN
+#define INT_LEAST64_MAX __INT_LEAST64_MAX
+#define INT_LEAST64_MIN __INT_LEAST64_MIN
+#define INT_LEAST8_MAX __INT_LEAST8_MAX
+#define INT_LEAST8_MIN __INT_LEAST8_MIN
+#define IOMAP_CON0 REG32(0x5101Cu)
+#define LCD_BAUD 4u
+#define LEDS_TAG 0x4C454400u
+#define LFO_SHARED_RNG 3u
+#define LIM_T 18000
+#define M(a,b,c,d,e,f,g) ((uint16_t)((1u << (a)) | (1u << (b)) | (1u << (c)) | (1u << (d)) | (1u << (e)) | (1u << (f)) | (1u << (g))))
+#define M5(a,b,c,d,e) ((uint16_t)((1u << (a)) | (1u << (b)) | (1u << (c)) | (1u << (d)) | (1u << (e))))
+#define M6(a,b,c,d,e,f) ((uint16_t)(M5(a, b, c, d, e) | (1u << (f))))
+#define M8(a,b,c,d,e,f,g,h) ((uint16_t)(M(a, b, c, d, e, f, g) | (1u << (h))))
+#define MASTER_FULL 4096
+#define MIX_NPART 4u
+#define MIX_PART(t,n) do { uint32_t vl0_ = VL_NOW(); mix_part(t, n); vl_part(t, VL_NOW() - vl0_); } while (0)
+#define MODP(t) mod_tab[(t) - trk]
+#define MOTION_MAX 64u
+#define MQ 64u
+#define MS_BIPOLAR(s) ((s) == MS_LFO || (s) == MS_KEY || (s) == MS_RAND)
+#define MS_VOICE(s) ((s) >= MS_ENV && (s) <= MS_RAND)
+#define NELEM(a) (sizeof(a) / sizeof((a)[0]))
+#define NENGINES (13 + FELUCCA_SLICE + FELUCCA_VA + FELUCCA_CZ + FELUCCA_QUAD)
+#define NENG_SHOWN (NENGINES - !FELUCCA_FM4 - !FELUCCA_SAMPLE - !FELUCCA_GRAIN - !FELUCCA_DRUM - !FELUCCA_ANALOG - !FELUCCA_PHASE - !FELUCCA_LOFI - !FELUCCA_VOICE - !FELUCCA_TRIO - !FELUCCA_NOISE - !FELUCCA_PHYS)
+#define NLANE 8
+#define NMSLOT 4u
+#define NPAGES (sizeof(PAGES) / sizeof(PAGES[0]))
+#define NPALETTES UI_NPALETTES
+#define NPART 4
+#define NPATTERNS (sizeof PATTERNS / sizeof PATTERNS[0])
+#define NPOLY 8
+#define NRAMP 6u
+#define NSND (NTRK + CF_NTAIL)
+#define NSTEP 64
+#define NTRK NPART
+#define NULL ((void*)0)
+#define NVOICE 16
+#define OBJ_FM6STORE0 (OBJ_PROJECT0 + 1)
+#define OBJ_VASTORE OBJ_PROJECT0
+#define OPB 0x100u
+#define OTA_AREA 0x000E0000u
+#define OTA_AREA_LEN 0x5000u
+#define OTA_FRAME_MAX 640u
+#define OTA_LDR_DCRC 0x5881u
+#define OTA_LDR_HCRC 0xEBAAu
+#define OTA_LDR_LEN 0x4DE1u
+#define OTA_RES (OTA_AREA + OTA_AREA_LEN - 0x100u)
+#define OUT_FADE_BLK 16u
+#define OUT_FADE_FLUSH ((CLN_LA + CTL - 1u) / CTL)
+#define OUT_SHIFT 7
+#define PANEL_MAGIC 0x50414E35u
+#define PAT(n) .pat = (n)
+#define PD(l,f,mn,mx,df) {l, f, mn, mx, df, 0, 0}
+#define PE(l,n,df) {l, F_ENUM, 0, (int16_t)(sizeof(n) / sizeof(n[0]) - 1), df, n, 0}
+#define PF_NONE 0xFFu
+#define PORTD_DIR REG32(0x500C8u)
+#define PORTD_OUT REG32(0x500C0u)
+#define PTRDIFF_MAX __INTN_MAX(__PTRDIFF_WIDTH__)
+#define PTRDIFF_MIN __INTN_MIN(__PTRDIFF_WIDTH__)
+#define RAMFN __attribute__((section(".ram_text"), noinline, used))
+#define RAMINL static inline __attribute__((always_inline))
+#define REG32(a) (*(volatile uint32_t *)(a))
+#define RGB(r,g,b) ((uint16_t)((((r) >> 3) << 11) | (((g) >> 2) << 5) | ((b) >> 3)))
+#define RING_PUBLISH() __asm__ volatile("" ::: "memory")
+#define SCOPE_N 512u
+#define SETTINGS_MAGIC 0x53455434u
+#define SETTINGS_MAGIC_OLD 0x53455433u
+#define SFCENC_CON (*(volatile uint8_t *)0x40300u)
+#define SFCENC_UNENC_H REG32(0x40308u)
+#define SFCENC_UNENC_L REG32(0x4030Cu)
+#define SFC_CON REG32(0x40200u)
+#define SF_ACCENT 1u
+#define SF_SLIDE 2u
+#define SHED_FIRST() cf_boot_yield()
+#define SHED_TICKS ((HALF_FRAMES * 1000000u / FS) * 85u / 100u * FM1_TICKS_PER_US)
+#define SIG_ATOMIC_MAX __INTN_MAX(__SIG_ATOMIC_WIDTH__)
+#define SIG_ATOMIC_MIN __INTN_MIN(__SIG_ATOMIC_WIDTH__)
+#define SIZE_MAX __UINTN_MAX(__SIZE_WIDTH__)
+#define SL_LEN 4096u
+#define SL_NPAT 16
+#define SL_RAMP (1 << SL_RAMP_LOG2)
+#define SL_RAMP_LOG2 7
+#define SL_SLOPE (32768 / SL_RAMP)
+#define SMP_NSETS 0
+#define SPI0_BUF REG32(0x11C08u)
+#define SPI0_CON REG32(0x11C00u)
+#define SQG_GND 13
+#define SQG_RH 15
+#define SQG_X0 12
+#define SQG_X1 228
+#define SQG_Y0 (Y_VIEW + 19)
+#define SQR_N 32u
+#define SQS_RH 24
+#define SQS_Y0 (VIEW_Y - 1)
+#define SQT_W 104
+#define SQ_BARS 8u
+#define SQ_CHUNK 3840u
+#define SQ_CLEAR_MS 3000u
+#define SQ_KDEF 2u
+#define SQ_LEGACY_NPAT 8u
+#define SQ_MAGIC 0x36514643u
+#define SQ_MAGIC5 0x35514643u
+#define SQ_MAXST 32u
+#define SQ_MUTE_OWN 0x80u
+#define SQ_NCHUNK 6u
+#define SQ_NEV 96u
+#define SQ_NKIT ((uint32_t)(sizeof SQ_KITS / sizeof SQ_KITS[0]))
+#define SQ_NKS ((int)(sizeof SQ_KS))
+#define SQ_NLANE 11u
+#define SQ_NPAT 3u
+#define SQ_PAT5 2524u
+#define SQ_PIC_HAND 11u
+#define SQ_PPQN 96u
+#define SQ_REC_PREF_MAGIC 0x31505243u
+#define SQ_SONG 32u
+#define SQ_SONGPG SQ_NPAT
+#define SQ_ST(p) sq_steps((p), squ.trk, squ.bar)
+#define SQ_SU(p) (SQ_U / SQ_ST(p))
+#define SQ_TAKE_MAGIC 0x314B5443u
+#define SQ_U ((uint32_t)sq_beats * SQ_UB)
+#define SQ_UB 24u
+#define ST_BLOCKED() (cr_safe)
+#define ST_DMAX 4u
+#define ST_DPAY 20u
+#define ST_DTAG 0xD1u
+#define ST_LMAX(obj) (ST_LSZ(obj) - (uint32_t)sizeof(st_hdr_t))
+#define ST_LOGGED(obj) ((obj) == (uint32_t)(ST_LOG_OBJ) || (obj) == OBJ_CFHARM || (obj) == OBJ_CFXPRESET || (obj) == OBJ_CFPREFS || ((obj) >= OBJ_CFEDIT0 && (obj) <= OBJ_CFTWK7) || ((obj) == OBJ_CFLOOP && st_loop_log))
+#define ST_LOG_MAX (256u - (uint32_t)sizeof(st_hdr_t))
+#define ST_LOG_OBJ (OBJ_PROJECT0 + 3u)
+#define ST_LSZ(obj) ((obj) == OBJ_CFXPRESET ? 1024u : ST_LSZ_SMALL(obj))
+#define ST_LSZ_SMALL(obj) ((obj) == (uint32_t)(ST_LOG_OBJ) || (obj) == OBJ_CFPSND || (obj) == OBJ_CFHARM || (obj) == OBJ_CFPREFS || (obj) == OBJ_CFLOOP ? 256u : 512u)
+#define ST_MAGIC 0x554C4546u
+#define ST_NOERASE 1u
+#define ST_PAYLOAD_MAX (ST_SECTOR - ST_PAYLOAD_OFF)
+#define ST_PAYLOAD_OFF 256u
+#define ST_PROG_SYNC() st_after_render()
+#define ST_ROLL 2u
+#define ST_SECTOR 4096u
+#define ST_WHOLE 4u
+#define SWING_MAX 100
+#define SXQ 64u
+#define SX_TAKEN() (so_gone = so_r)
+#define SX_UNSEEN() (sx_watch && so_gone != so_r)
+#define T4_CNT REG32(0x10804u)
+#define TABLE_RAM __attribute__((section(".data.tables")))
+#define TRK_GLIDE(t) ((t) == &trk[2] ? (t)->p[P_GLIDE] : 0)
+#define TRK_XPN 16u
+#define TSEL (&trk[song.sel])
+#define T_ACCENT ux.accent
+#define T_BG ux.bg
+#define T_DIM ux.dim
+#define T_GRID ux.grid
+#define T_INK ux.ink
+#define T_KEY ux.key
+#define T_LANE ux.lane
+#define T_LINE ux.line
+#define T_MID ux.mid
+#define T_RAISE ux.raise
+#define T_REC ux.rec
+#define T_SEL ux.sel
+#define T_SURF ux.surf
+#define T_TEXT ux.text
+#define T_THEME ux.theme
+#define T_TINT ux.tint
+#define UAC_BLOCKED() (cr_safe)
+#define UAC_FIR_L 160u
+#define UAC_FIR_M 147u
+#define UAC_FIR_N 12u
+#define UAC_FIR_Q 15
+#define UA_CAP_CHANNELS 6u
+#define UA_CAP_RING 512u
+#define UA_CAP_TARGET 256u
+#define UA_DBG_NOW() fm1_ticks()
+#define UA_DBG_US FM1_TICKS_PER_US
+#define UA_DMA_PACKET ((UA_PACKET + 3u) & ~3u)
+#define UA_EP_MAXP 688u
+#define UA_EP_MAXP44 640u
+#define UA_FILL_HI 384u
+#define UA_FILL_LO 128u
+#define UA_FRAMES48 48u
+#define UA_IF_CAP 3u
+#define UA_MAX_FRAMES 45u
+#define UA_NO_IF 0xFFu
+#define UA_NUDGE_EVERY 10u
+#define UA_OFF_48 2u
+#define UA_OFF_IN 1u
+#define UA_PACKET ((UA_FRAMES48 + 1u) * UA_CAP_CHANNELS * 2u)
+#define UA_PART_CAPTURED 2u
+#define UA_PATTERN ((UA_RATE * 16384u) / 1000u)
+#define UA_POOL __attribute__((section(".pool")))
+#define UA_RATE 44100u
+#define UA_RATE48 48000u
+#define UA_REPLUG_QUIET 1500u
+#define UA_RS_BLOCK 32u
+#define UA_RS_HIST (UAC_FIR_N - 1u)
+#define UA_RS_OUT ((UA_RS_BLOCK * UAC_FIR_L + UAC_FIR_M - 1u) / UAC_FIR_M + 1u)
+#define UA_TAP3(j) do { int32_t t = c[(int32_t)(j) * step]; a0 += (int64_t)t * w[(j) * UA_CAP_CHANNELS]; a1 += (int64_t)t * w[(j) * UA_CAP_CHANNELS + 1u]; a2 += (int64_t)t * w[(j) * UA_CAP_CHANNELS + 2u]; } while (0)
+#define UINT16_C(v) __uint_c(v, __int16_c_suffix)
+#define UINT16_MAX UINT16_C(65535)
+#define UINT32_C(v) __uint_c(v, __int32_c_suffix)
+#define UINT32_MAX UINT32_C(4294967295)
+#define UINT64_C(v) __uint_c(v, __int64_c_suffix)
+#define UINT64_MAX UINT64_C(18446744073709551615)
+#define UINT8_C(v) __uint_c(v, __int8_c_suffix)
+#define UINT8_MAX UINT8_C(255)
+#define UINTMAX_C(v) __UINTN_C(__INTMAX_WIDTH__, v)
+#define UINTMAX_MAX __UINTN_MAX(__INTMAX_WIDTH__)
+#define UINTPTR_MAX __UINTN_MAX(__INTPTR_WIDTH__)
+#define UINT_FAST16_MAX __UINT_LEAST16_MAX
+#define UINT_FAST32_MAX __UINT_LEAST32_MAX
+#define UINT_FAST64_MAX __UINT_LEAST64_MAX
+#define UINT_FAST8_MAX __UINT_LEAST8_MAX
+#define UINT_LEAST16_MAX __UINT_LEAST16_MAX
+#define UINT_LEAST32_MAX __UINT_LEAST32_MAX
+#define UINT_LEAST64_MAX __UINT_LEAST64_MAX
+#define UINT_LEAST8_MAX __UINT_LEAST8_MAX
+#define UI_CRASH_BG 0xa000u
+#define UI_CRASH_INK 0xffdfu
+#define UI_DIM_PCT 42
+#define UI_KEY_PCT 78
+#define UI_LINE_PCT 18
+#define UI_MID_PCT 70
+#define UI_MONO_INDEX 0u
+#define UI_NPALETTES 9u
+#define UI_PAL_TAG 64u
+#define UI_QR_DARK 0x0000u
+#define UI_QR_LIGHT 0xffdfu
+#define UI_RAISE_PCT 12
+#define UI_REC_DARK 0xfa49u
+#define UI_REC_LIGHT 0xb8c5u
+#define UI_SEL_PCT 80
+#define UI_TINT_PCT 12
+#define UM_RING 128u
+#define UP_BANK_MAGIC 0x31425055u
+#define UP_PER_BANK 16u
+#define UP_PMAX 72u
+#define UP_SLOTS 32u
+#define UP_USED 0xA5u
+#define UP_VER 4u
+#define UP_VER_GRID 5u
+#define USB_CDC_ON usb_cdc_on
+#define USB_COLD __attribute__((noinline, cold))
+#define USB_NSTR (FELUCCA_UAC ? sizeof USB_STRS / sizeof USB_STRS[0] : 3u)
+#define USB_OUTLINE __attribute__((noinline))
+#define VA_BLOB 110u
+#define VA_BLOB1 104u
+#define VA_ENV(k,f) (VA_ENV0 + (k) * VE_N + (f))
+#define VA_EPG(k) {VA_ENV(k, VE_ATK), VA_ENV(k, VE_DEC), VA_ENV(k, VE_SUS), VA_ENV(k, VE_REL)}
+#define VA_LFO(k,f) (VA_LFO0 + (k) * VL_N + (f))
+#define VA_LPG(k) {VA_LFO(k, VL_RATE), VA_LFO(k, VL_WAVE), VA_LFO(k, VL_DEPTH), VA_LFO(k, VL_FADE)}
+#define VA_MAGIC 0x56u
+#define VA_MOD(k,f) (VA_MOD0 + (k) * VM_N + (f))
+#define VA_MP(k) ((k) * 24 * 258)
+#define VA_MPG(k) {VA_MOD(k, VM_SRC), VA_MOD(k, VM_DST), VA_MOD(k, VM_AMT), VA_X}
+#define VA_NDIV 14u
+#define VA_NP1 99u
+#define VA_NPAGES ((uint32_t)NELEM(VA_PAGES))
+#define VA_NPART 3u
+#define VA_NPRESETS ((uint32_t)NELEM(VA_PRESETS))
+#define VA_NSLOT (VA_NPART + CF_NTAIL)
+#define VA_OPG(k) {VA_OSC(k, VO_WAVE), VA_OSC(k, VO_LEVEL), VA_OSC(k, VO_COARSE), VA_OSC(k, VO_FINE)}
+#define VA_OSC(k,f) ((k) * VO_N + (f))
+#define VA_OSC_LOOP(X) if (keep | ring | rec | sync) { VA_OSC_LOOP_FULL(X) } else { for (i = 0; i < n; i++) { int32_t x_ = (X); acc[i] += (x_ * (l >> 16)) >> 15; l += dl; sh += dsh; ph += inc; inc += dinc; } }
+#define VA_OSC_LOOP_FULL(X) for (i = 0; i < n; i++) { int32_t x_ = (X); uint32_t o_ = ph; if (keep) r3[i] = x_; if (ring) x_ = (x_ * r3[i]) >> 15; acc[i] += (x_ * (l >> 16)) >> 15; l += dl; sh += dsh; ph += inc; inc += dinc; if (rec && ph < o_) { wrap |= 1u << i; sph[i] = ph; } if (sync && ((wrap >> i) & 1u)) ph = (uint32_t)(((uint64_t)sph[i] * ratio) >> 16); }
+#define VA_POLY 8
+#define VA_PULSE_PW(sh) (0x80000000u - (uint32_t)(sh) * 0xE666u)
+#define VA_R16(x) VA_R4(x), VA_R4(x), VA_R4(x), VA_R4(x)
+#define VA_R17(x) VA_R16(x), x
+#define VA_R24(x) VA_R16(x), VA_R4(x), VA_R4(x)
+#define VA_R3(x) x, x, x
+#define VA_R31(x) VA_R24(x), VA_R7(x)
+#define VA_R4(x) x, x, x, x
+#define VA_R7(x) VA_R4(x), VA_R3(x)
+#define VA_STORE_MAGIC 0x31534156u
+#define VA_VER 3u
+#define VA_X 0xFFu
+#define VBUDGET 16
+#define VB_SAME(a,b) (!cr_dualcore_active() || ((a) == 1u) == ((b) == 1u))
+#define VC_AMT {"AMT", F_BIPCT, -64, 63, 0, 0, 0}
+#define VC_ATK {"ATK", F_TIME, 0, 127, 0, 0, 0}
+#define VC_COARSE {"COARSE", F_SEMI, -24, 24, 0, 0, 0}
+#define VC_CUT {"CUT", F_CUTOFF, 0, 127, 100, 0, 0}
+#define VC_DEC {"DEC", F_TIME, 0, 127, 64, 0, 0}
+#define VC_DEPTH {"DEPTH", F_PCT, 0, 127, 127, 0, 0}
+#define VC_DRIVE {"DRIVE", F_PCT, 0, 127, 0, 0, 0}
+#define VC_DST {"DST", F_ENUM, 0, VD_N - 1, 0, N_VA_DST, 0}
+#define VC_FADE {"FADE", F_TIME, 0, 127, 0, 0, 0}
+#define VC_FENV {"FENV", F_BIPCT, -64, 63, 0, 0, 0}
+#define VC_FINE {"FINE", F_INT, -64, 63, 0, 0, "ct"}
+#define VC_FKTRK {"KTRK", F_PCT, 0, 127, 64, 0, 0}
+#define VC_FSPREAD {"SPREAD", F_PCT, 0, 127, 0, 0, 0}
+#define VC_FTYPE {"FTYPE", F_INT, 0, 127, 0, N_VA_FTYPE128, 0}
+#define VC_HOLD {"HOLD", F_TIME, 0, 127, 0, 0, 0}
+#define VC_KTRK {"KTRK", F_ONOFF, 0, 1, 1, 0, 0}
+#define VC_LEVEL {"LEVEL", F_PCT, 0, 127, 0, 0, 0}
+#define VC_LRATE {"RATE", F_LFOHZ, 0, 127, 70, 0, 0}
+#define VC_LSYNC(l) {l, F_ONOFF, 0, 1, 0, 0, 0}
+#define VC_LWAVE {"WAVE", F_ENUM, 0, 4, 0, N_VA_LWAVE, 0}
+#define VC_MODE {"MODE", F_ENUM, 0, VOM_N - 1, VOM_BASIC, N_VA_OMODE, 0}
+#define VC_NONE {0, 0, 0, 0, 0, 0, 0}
+#define VC_REL {"REL", F_TIME, 0, 127, 40, 0, 0}
+#define VC_RES {"RES", F_PCT, 0, 127, 0, 0, 0}
+#define VC_RING {"RING", F_ONOFF, 0, 1, 0, 0, 0}
+#define VC_SHAPE {"SHAPE", F_PCT, 0, 127, 0, 0, 0}
+#define VC_SRC {"SRC", F_ENUM, 0, VS_N - 1, 0, N_VA_SRC, 0}
+#define VC_SUS {"SUS", F_PCT, 0, 127, 127, 0, 0}
+#define VC_SYNC {"SYNC", F_ONOFF, 0, 1, 0, 0, 0}
+#define VC_USPREAD {"USPREAD", F_PCT, 0, 127, 0, 0, 0}
+#define VC_VEL {"VEL", F_PCT, 0, 127, 64, 0, 0}
+#define VC_WAVE {"WAVE", F_ENUM, 0, VW_N - 1, VW_SAW, N_VA_WAVE, 0}
+#define VIEW_H 82
+#define VIEW_Y (Y_VIEW + 54)
+#define VL_COST_DEF 200u
+#define VL_HALF_US (HALF_FRAMES * 1000000u / FS)
+#define VL_MIN 3u
+#define VL_NOW() fm1_ticks()
+#define VL_TARGET (VL_HALF_US * 82u / 100u)
+#define VOICE_FS 24000
+#define VOICE_NEW_NOTE() cf_boot_note()
+#define VSQ 8u
+#define WCHAR_MAX __WCHAR_MAX__
+#define WCHAR_MIN __INTN_MIN(__WCHAR_WIDTH__)
+#define WINT_MAX __INTN_MAX(__WINT_WIDTH__)
+#define WINT_MIN __INTN_MIN(__WINT_WIDTH__)
+#define XC_GL 6
+#define XC_GLIDE(c,t) ((c) + (((t) - (c) + ((t) > (c) ? (1 << XC_GL) - 1 : 0)) >> XC_GL))
+#define XC_POS(ph,d) ((400 << 8) + (((osc_sine(ph) + 32768) * (d)) >> 12))
+#define XC_TURN 0x40000000u
+#define XD_DMIN ((int32_t)((CTL + 4u) << 8))
+#define XD_FS (FS / CR_FX_DELAY_DS)
+#define XD_M (XD_N - 1u)
+#define XD_MAX (XD_N - 128u)
+#define XD_MS_MAX (XD_MAX * 1000u / XD_FS > 1000u ? 1000u : XD_MAX * 1000u / XD_FS)
+#define XD_N 32768u
+#define XD_NB (CTL / CR_FX_DELAY_DS)
+#define XD_SH (CR_FX_DELAY_DS == 1 ? 5 : 4)
+#define XD_WET 6120
+#define XD_WPP 10
+#define XF_AI static inline __attribute__((always_inline))
+#define XF_BLOCKS 4u
+#define XF_CALL(fn) fn
+#define XF_HALF (CR_FX_DELAY_DS == 2 || CR_FX_REVERB_DS == 2)
+#define XF_HOT static __attribute__((noinline))
+#define XF_IN 1u
+#define XF_NDIV 13u
+#define XF_NH (CTL / 2u)
+#define XR_DIFFUSE(OUT) for (j = 0; j < n;) { const int16_t *bp = pb + ((prd + j) & XR_PM) - j; e = j + xf_seg(prd + j, XR_PM, n - j); for (; j < e; j++) { z = bp[j]; u = xf_clamp(x[j] - xf_tz3(z * 5), -32767, 32767); bw[j] = (int16_t)u; u = z + xf_tz3(u * 5); OUT; } }
+#define XR_FS (FS / CR_FX_REVERB_DS)
+#define XR_GUARD 24u
+#define XR_G_INF 32764
+#define XR_M (XR_N - 1u)
+#define XR_N (16384u * XR_X)
+#define XR_NAP (CR_FX_LITE ? 2u : 4u)
+#define XR_NB (CTL / CR_FX_REVERB_DS)
+#define XR_NMOD (CR_FX_LITE ? 2u : 4u)
+#define XR_PM (XR_PN - 1u)
+#define XR_PN (4096u * XR_X)
+#define XR_PRE_MAX (127u * 24u)
+#define XR_SH (CR_FX_REVERB_DS == 1 ? 5 : 4)
+#define XR_WET 4800
+#define XR_X (2u / CR_FX_REVERB_DS)
+#define Y_KEYS 158
+#define Y_KNOBS 203
+#define Y_TOP 0
+#define Y_VIEW 16
+#define _ILP32 1
+#define _INTPTR_T
+#define _PTRDIFF_T
+#define _SIZE_T
+#define _UINTPTR_T
+#define _WCHAR_T
+#define __ATOMIC_ACQUIRE 2
+#define __ATOMIC_ACQ_REL 4
+#define __ATOMIC_CONSUME 1
+#define __ATOMIC_RELAXED 0
+#define __ATOMIC_RELEASE 3
+#define __ATOMIC_SEQ_CST 5
+#define __BIGGEST_ALIGNMENT__ 4
+#define __BYTE_ORDER__ __ORDER_LITTLE_ENDIAN__
+#define __CHAR16_TYPE__ unsigned short
+#define __CHAR32_TYPE__ unsigned int
+#define __CHAR_BIT__ 8
+#define __CLANG_MAX_ALIGN_T_DEFINED
+#define __CLANG_STDINT_H
+#define __CONSTANT_CFSTRINGS__ 1
+#define __DBL_DECIMAL_DIG__ 17
+#define __DBL_DENORM_MIN__ 4.9406564584124654e-324
+#define __DBL_DIG__ 15
+#define __DBL_EPSILON__ 2.2204460492503131e-16
+#define __DBL_HAS_DENORM__ 1
+#define __DBL_HAS_INFINITY__ 1
+#define __DBL_HAS_QUIET_NAN__ 1
+#define __DBL_MANT_DIG__ 53
+#define __DBL_MAX_10_EXP__ 308
+#define __DBL_MAX_EXP__ 1024
+#define __DBL_MAX__ 1.7976931348623157e+308
+#define __DBL_MIN_10_EXP__ (-307)
+#define __DBL_MIN_EXP__ (-1021)
+#define __DBL_MIN__ 2.2250738585072014e-308
+#define __DECIMAL_DIG__ __LDBL_DECIMAL_DIG__
+#define __ELF__ 1
+#define __FINITE_MATH_ONLY__ 0
+#define __FLT_DECIMAL_DIG__ 9
+#define __FLT_DENORM_MIN__ 1.40129846e-45F
+#define __FLT_DIG__ 6
+#define __FLT_EPSILON__ 1.19209290e-7F
+#define __FLT_EVAL_METHOD__ 0
+#define __FLT_HAS_DENORM__ 1
+#define __FLT_HAS_INFINITY__ 1
+#define __FLT_HAS_QUIET_NAN__ 1
+#define __FLT_MANT_DIG__ 24
+#define __FLT_MAX_10_EXP__ 38
+#define __FLT_MAX_EXP__ 128
+#define __FLT_MAX__ 3.40282347e+38F
+#define __FLT_MIN_10_EXP__ (-37)
+#define __FLT_MIN_EXP__ (-125)
+#define __FLT_MIN__ 1.17549435e-38F
+#define __FLT_RADIX__ 2
+#define __GCC_ATOMIC_BOOL_LOCK_FREE 2
+#define __GCC_ATOMIC_CHAR16_T_LOCK_FREE 2
+#define __GCC_ATOMIC_CHAR32_T_LOCK_FREE 2
+#define __GCC_ATOMIC_CHAR_LOCK_FREE 2
+#define __GCC_ATOMIC_INT_LOCK_FREE 2
+#define __GCC_ATOMIC_LLONG_LOCK_FREE 1
+#define __GCC_ATOMIC_LONG_LOCK_FREE 2
+#define __GCC_ATOMIC_POINTER_LOCK_FREE 2
+#define __GCC_ATOMIC_SHORT_LOCK_FREE 2
+#define __GCC_ATOMIC_TEST_AND_SET_TRUEVAL 1
+#define __GCC_ATOMIC_WCHAR_T_LOCK_FREE 2
+#define __GNUC_MINOR__ 2
+#define __GNUC_PATCHLEVEL__ 1
+#define __GNUC_STDC_INLINE__ 1
+#define __GNUC__ 4
+#define __GXX_ABI_VERSION 1002
+#define __ILP32__ 1
+#define __INT16_C_SUFFIX__
+#define __INT16_FMTd__ "hd"
+#define __INT16_FMTi__ "hi"
+#define __INT16_MAX__ 32767
+#define __INT16_TYPE__ short
+#define __INT32_C_SUFFIX__
+#define __INT32_FMTd__ "d"
+#define __INT32_FMTi__ "i"
+#define __INT32_MAX__ 2147483647
+#define __INT32_TYPE__ int
+#define __INT64_C_SUFFIX__ LL
+#define __INT64_FMTd__ "lld"
+#define __INT64_FMTi__ "lli"
+#define __INT64_MAX__ 9223372036854775807LL
+#define __INT64_TYPE__ long long int
+#define __INT8_C_SUFFIX__
+#define __INT8_FMTd__ "hhd"
+#define __INT8_FMTi__ "hhi"
+#define __INT8_MAX__ 127
+#define __INT8_TYPE__ signed char
+#define __INTMAX_C_SUFFIX__ LL
+#define __INTMAX_FMTd__ "lld"
+#define __INTMAX_FMTi__ "lli"
+#define __INTMAX_MAX__ 9223372036854775807LL
+#define __INTMAX_TYPE__ long long int
+#define __INTMAX_WIDTH__ 64
+#define __INTN_C(n,v) __stdint_join3( INT, n, _C(v))
+#define __INTN_MAX(n) __stdint_join3( INT, n, _MAX)
+#define __INTN_MIN(n) __stdint_join3( INT, n, _MIN)
+#define __INTPTR_FMTd__ "ld"
+#define __INTPTR_FMTi__ "li"
+#define __INTPTR_MAX__ 2147483647L
+#define __INTPTR_TYPE__ long int
+#define __INTPTR_WIDTH__ 32
+#define __INT_FAST16_FMTd__ "hd"
+#define __INT_FAST16_FMTi__ "hi"
+#define __INT_FAST16_MAX__ 32767
+#define __INT_FAST16_TYPE__ short
+#define __INT_FAST32_FMTd__ "d"
+#define __INT_FAST32_FMTi__ "i"
+#define __INT_FAST32_MAX__ 2147483647
+#define __INT_FAST32_TYPE__ int
+#define __INT_FAST64_FMTd__ "lld"
+#define __INT_FAST64_FMTi__ "lli"
+#define __INT_FAST64_MAX__ 9223372036854775807LL
+#define __INT_FAST64_TYPE__ long long int
+#define __INT_FAST8_FMTd__ "hhd"
+#define __INT_FAST8_FMTi__ "hhi"
+#define __INT_FAST8_MAX__ 127
+#define __INT_FAST8_TYPE__ signed char
+#define __INT_LEAST16_FMTd__ "hd"
+#define __INT_LEAST16_FMTi__ "hi"
+#define __INT_LEAST16_MAX INT16_MAX
+#define __INT_LEAST16_MAX__ 32767
+#define __INT_LEAST16_MIN INT16_MIN
+#define __INT_LEAST16_TYPE__ short
+#define __INT_LEAST32_FMTd__ "d"
+#define __INT_LEAST32_FMTi__ "i"
+#define __INT_LEAST32_MAX INT32_MAX
+#define __INT_LEAST32_MAX__ 2147483647
+#define __INT_LEAST32_MIN INT32_MIN
+#define __INT_LEAST32_TYPE__ int
+#define __INT_LEAST64_FMTd__ "lld"
+#define __INT_LEAST64_FMTi__ "lli"
+#define __INT_LEAST64_MAX INT64_MAX
+#define __INT_LEAST64_MAX__ 9223372036854775807LL
+#define __INT_LEAST64_MIN INT64_MIN
+#define __INT_LEAST64_TYPE__ long long int
+#define __INT_LEAST8_FMTd__ "hhd"
+#define __INT_LEAST8_FMTi__ "hhi"
+#define __INT_LEAST8_MAX INT8_MAX
+#define __INT_LEAST8_MAX__ 127
+#define __INT_LEAST8_MIN INT8_MIN
+#define __INT_LEAST8_TYPE__ signed char
+#define __INT_MAX__ 2147483647
+#define __LDBL_DECIMAL_DIG__ 17
+#define __LDBL_DENORM_MIN__ 4.9406564584124654e-324L
+#define __LDBL_DIG__ 15
+#define __LDBL_EPSILON__ 2.2204460492503131e-16L
+#define __LDBL_HAS_DENORM__ 1
+#define __LDBL_HAS_INFINITY__ 1
+#define __LDBL_HAS_QUIET_NAN__ 1
+#define __LDBL_MANT_DIG__ 53
+#define __LDBL_MAX_10_EXP__ 308
+#define __LDBL_MAX_EXP__ 1024
+#define __LDBL_MAX__ 1.7976931348623157e+308L
+#define __LDBL_MIN_10_EXP__ (-307)
+#define __LDBL_MIN_EXP__ (-1021)
+#define __LDBL_MIN__ 2.2250738585072014e-308L
+#define __LITTLE_ENDIAN__ 1
+#define __LONG_LONG_MAX__ 9223372036854775807LL
+#define __LONG_MAX__ 2147483647L
+#define __OPTIMIZE_SIZE__ 1
+#define __OPTIMIZE__ 1
+#define __ORDER_BIG_ENDIAN__ 4321
+#define __ORDER_LITTLE_ENDIAN__ 1234
+#define __ORDER_PDP_ENDIAN__ 3412
+#define __PI32V2__ 1
+#define __POINTER_WIDTH__ 32
+#define __PRAGMA_REDEFINE_EXTNAME 1
+#define __PTRDIFF_FMTd__ "ld"
+#define __PTRDIFF_FMTi__ "li"
+#define __PTRDIFF_MAX__ 2147483647L
+#define __PTRDIFF_TYPE__ long int
+#define __PTRDIFF_WIDTH__ 32
+#define __SCHAR_MAX__ 127
+#define __SHRT_MAX__ 32767
+#define __SIG_ATOMIC_MAX__ 2147483647
+#define __SIG_ATOMIC_WIDTH__ 32
+#define __SIZEOF_DOUBLE__ 8
+#define __SIZEOF_FLOAT__ 4
+#define __SIZEOF_INT__ 4
+#define __SIZEOF_LONG_DOUBLE__ 8
+#define __SIZEOF_LONG_LONG__ 8
+#define __SIZEOF_LONG__ 4
+#define __SIZEOF_POINTER__ 4
+#define __SIZEOF_PTRDIFF_T__ 4
+#define __SIZEOF_SHORT__ 2
+#define __SIZEOF_SIZE_T__ 4
+#define __SIZEOF_WCHAR_T__ 4
+#define __SIZEOF_WINT_T__ 4
+#define __SIZE_FMTX__ "lX"
+#define __SIZE_FMTo__ "lo"
+#define __SIZE_FMTu__ "lu"
+#define __SIZE_FMTx__ "lx"
+#define __SIZE_MAX__ 4294967295UL
+#define __SIZE_TYPE__ long unsigned int
+#define __SIZE_WIDTH__ 32
+#define __STDC_HOSTED__ 1
+#define __STDC_UTF_16__ 1
+#define __STDC_UTF_32__ 1
+#define __STDC_VERSION__ 201112L
+#define __STDC__ 1
+#define __STDDEF_H
+#define __UINT16_C_SUFFIX__
+#define __UINT16_FMTX__ "hX"
+#define __UINT16_FMTo__ "ho"
+#define __UINT16_FMTu__ "hu"
+#define __UINT16_FMTx__ "hx"
+#define __UINT16_MAX__ 65535
+#define __UINT16_TYPE__ unsigned short
+#define __UINT32_C_SUFFIX__ U
+#define __UINT32_FMTX__ "X"
+#define __UINT32_FMTo__ "o"
+#define __UINT32_FMTu__ "u"
+#define __UINT32_FMTx__ "x"
+#define __UINT32_MAX__ 4294967295U
+#define __UINT32_TYPE__ unsigned int
+#define __UINT64_C_SUFFIX__ ULL
+#define __UINT64_FMTX__ "llX"
+#define __UINT64_FMTo__ "llo"
+#define __UINT64_FMTu__ "llu"
+#define __UINT64_FMTx__ "llx"
+#define __UINT64_MAX__ 18446744073709551615ULL
+#define __UINT64_TYPE__ long long unsigned int
+#define __UINT8_C_SUFFIX__
+#define __UINT8_FMTX__ "hhX"
+#define __UINT8_FMTo__ "hho"
+#define __UINT8_FMTu__ "hhu"
+#define __UINT8_FMTx__ "hhx"
+#define __UINT8_MAX__ 255
+#define __UINT8_TYPE__ unsigned char
+#define __UINTMAX_C_SUFFIX__ ULL
+#define __UINTMAX_FMTX__ "llX"
+#define __UINTMAX_FMTo__ "llo"
+#define __UINTMAX_FMTu__ "llu"
+#define __UINTMAX_FMTx__ "llx"
+#define __UINTMAX_MAX__ 18446744073709551615ULL
+#define __UINTMAX_TYPE__ long long unsigned int
+#define __UINTMAX_WIDTH__ 64
+#define __UINTN_C(n,v) __stdint_join3(UINT, n, _C(v))
+#define __UINTN_MAX(n) __stdint_join3(UINT, n, _MAX)
+#define __UINTPTR_FMTX__ "lX"
+#define __UINTPTR_FMTo__ "lo"
+#define __UINTPTR_FMTu__ "lu"
+#define __UINTPTR_FMTx__ "lx"
+#define __UINTPTR_MAX__ 4294967295UL
+#define __UINTPTR_TYPE__ long unsigned int
+#define __UINTPTR_WIDTH__ 32
+#define __UINT_FAST16_FMTX__ "hX"
+#define __UINT_FAST16_FMTo__ "ho"
+#define __UINT_FAST16_FMTu__ "hu"
+#define __UINT_FAST16_FMTx__ "hx"
+#define __UINT_FAST16_MAX__ 65535
+#define __UINT_FAST16_TYPE__ unsigned short
+#define __UINT_FAST32_FMTX__ "X"
+#define __UINT_FAST32_FMTo__ "o"
+#define __UINT_FAST32_FMTu__ "u"
+#define __UINT_FAST32_FMTx__ "x"
+#define __UINT_FAST32_MAX__ 4294967295U
+#define __UINT_FAST32_TYPE__ unsigned int
+#define __UINT_FAST64_FMTX__ "llX"
+#define __UINT_FAST64_FMTo__ "llo"
+#define __UINT_FAST64_FMTu__ "llu"
+#define __UINT_FAST64_FMTx__ "llx"
+#define __UINT_FAST64_MAX__ 18446744073709551615ULL
+#define __UINT_FAST64_TYPE__ long long unsigned int
+#define __UINT_FAST8_FMTX__ "hhX"
+#define __UINT_FAST8_FMTo__ "hho"
+#define __UINT_FAST8_FMTu__ "hhu"
+#define __UINT_FAST8_FMTx__ "hhx"
+#define __UINT_FAST8_MAX__ 255
+#define __UINT_FAST8_TYPE__ unsigned char
+#define __UINT_LEAST16_FMTX__ "hX"
+#define __UINT_LEAST16_FMTo__ "ho"
+#define __UINT_LEAST16_FMTu__ "hu"
+#define __UINT_LEAST16_FMTx__ "hx"
+#define __UINT_LEAST16_MAX UINT16_MAX
+#define __UINT_LEAST16_MAX__ 65535
+#define __UINT_LEAST16_TYPE__ unsigned short
+#define __UINT_LEAST32_FMTX__ "X"
+#define __UINT_LEAST32_FMTo__ "o"
+#define __UINT_LEAST32_FMTu__ "u"
+#define __UINT_LEAST32_FMTx__ "x"
+#define __UINT_LEAST32_MAX UINT32_MAX
+#define __UINT_LEAST32_MAX__ 4294967295U
+#define __UINT_LEAST32_TYPE__ unsigned int
+#define __UINT_LEAST64_FMTX__ "llX"
+#define __UINT_LEAST64_FMTo__ "llo"
+#define __UINT_LEAST64_FMTu__ "llu"
+#define __UINT_LEAST64_FMTx__ "llx"
+#define __UINT_LEAST64_MAX UINT64_MAX
+#define __UINT_LEAST64_MAX__ 18446744073709551615ULL
+#define __UINT_LEAST64_TYPE__ long long unsigned int
+#define __UINT_LEAST8_FMTX__ "hhX"
+#define __UINT_LEAST8_FMTo__ "hho"
+#define __UINT_LEAST8_FMTu__ "hhu"
+#define __UINT_LEAST8_FMTx__ "hhx"
+#define __UINT_LEAST8_MAX UINT8_MAX
+#define __UINT_LEAST8_MAX__ 255
+#define __UINT_LEAST8_TYPE__ unsigned char
+#define __USER_LABEL_PREFIX__
+#define __VERSION__ "4.2.1 Compatible Clang 4.0.1 () ()"
+#define __WCHAR_MAX__ 2147483647
+#define __WCHAR_TYPE__ int
+#define __WCHAR_WIDTH__ 32
+#define __WINT_TYPE__ int
+#define __WINT_WIDTH__ 32
+#define __clang__ 1
+#define __clang_major__ 4
+#define __clang_minor__ 0
+#define __clang_patchlevel__ 1
+#define __clang_version__ "4.0.1 () ()"
+#define __int16_c_suffix __INT16_C_SUFFIX__
+#define __int32_c_suffix __INT32_C_SUFFIX__
+#define __int64_c_suffix __INT64_C_SUFFIX__
+#define __int8_c_suffix __INT8_C_SUFFIX__
+#define __int8_t_defined
+#define __int_c(v,suffix) __int_c_join(v, suffix)
+#define __int_c_join(a,b) a ## b
+#define __int_least16_t int16_t
+#define __int_least32_t int32_t
+#define __int_least64_t int64_t
+#define __int_least8_t int8_t
+#define __intn_t(n) __stdint_join3( int, n, _t)
+#define __intptr_t_defined
+#define __llvm__ 1
+#define __stdint_join3(a,b,c) a ## b ## c
+#define __uint32_t_defined
+#define __uint_c(v,suffix) __int_c_join(v##U, suffix)
+#define __uint_least16_t uint16_t
+#define __uint_least32_t uint32_t
+#define __uint_least64_t uint64_t
+#define __uint_least8_t uint8_t
+#define __uintn_t(n) __stdint_join3(uint, n, _t)
+#define cfa (*cfa_at)
+#define chain_defaults(c) ((void)0)
+#define fb ((uint8_t *)cv_px)
+#define fcos_ui(a) fl_fcos(a)
+#define fm6_buf fm6_rx
+#define fsin_ui(a) fl_fsin(a)
+#define hv_note_name(n,b) hv_note_name_raw((n), (b), 0)
+#define offsetof(t,d) __builtin_offsetof(t, d)

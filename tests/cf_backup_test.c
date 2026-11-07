@@ -243,6 +243,8 @@ int main(void)
     for(unsigned k=0;k<SQ_NCHUNK;k++)
         CHECK(!st_save(OBJ_CFSEQ0+k,(const uint8_t *)&archive+k*SQ_CHUNK,sq_chunk_len(k)),"legacy archive seeded");
     sq_st.pat[2].hit[0][1] = 0x1111u;
+    sq_st.pat[2].kit = 22;                         /* appended M Retro, with M FM on one lane */
+    sq_st.pat[2].dkit[1] = 23;
     sq_st.pat[2].dlev[3] = 37;
     sq_dirty = 1;
     CHECK(t_list() == 0, "LIST");
@@ -310,7 +312,8 @@ int main(void)
     }
     memset(&sq_st, 0, sizeof sq_st);                 /* the restart: the sequencer read in from flash */
     sq_load();
-    CHECK(sq_st.song.n == 0 && sq_st.pat[2].hit[0][1] == 0x1111u && sq_st.pat[2].dlev[3] == 37,
+    CHECK(sq_st.song.n == 0 && sq_st.pat[2].hit[0][1] == 0x1111u && sq_st.pat[2].dlev[3] == 37 &&
+          sq_st.pat[2].kit == 22 && sq_st.pat[2].dkit[1] == 23,
           "active recording restores independently; legacy arrangement stays archived");
     CHECK(sq_legacy_read(__builtin_offsetof(sq_legacy_store_t,pat)+7*sizeof(sq_pat_t),&archive.pat[7],sizeof(sq_pat_t)) &&
           archive.pat[7].dlev[3]==42,"archived H remains recoverable without occupying a live slot");

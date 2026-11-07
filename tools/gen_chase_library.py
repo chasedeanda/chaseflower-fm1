@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: GPL-3.0-only
 """Reproducible ChaseFlower audition library. No network access or device writes.
 
-32 original FM voices, 32 unchanged CC0 Aquanode voices, 56 original VA patches,
+32 original FM voices, 34 unchanged CC0 Aquanode voices, 56 original VA patches,
 and eight drum kits derived from the existing GPL drum designs. The catalog gives
 each sound a stable ID; genre placement is provisional until Chase auditions it.
 Run normally to regenerate, or --check to verify the committed outputs.
@@ -205,9 +205,30 @@ for bank, b in enumerate(BANKS):
                             source='ChaseFlower original VA design', license='GPL-3.0-only'))
 
 
-meta = '#pragma once\n#define CHASE_FM_BASE 31u\n#define CHASE_VA_BASE 37u\n#define CHASE_FM_N 64u\n#define CHASE_VA_N 56u\n'
+# Two small additions use the last existing FM slots; the original 128 catalog records stay in order.
+extras = []
+extra_trims = []
+extra_bank = ROOT / 'assets/sounds/candidates/aquanode/Aquanode Presets 4.syx'
+extra_data = extra_bank.read_bytes()
+assert hashlib.sha256(extra_data).hexdigest() == 'dbd63b38ca1dbfc2a05e4f1278821d14e8128f4906fce0c39d50aa7899a5ce2a'
+for slot, original, name, trim in [(26, 'DX SAX', 'AQ33 DX SAX', 0), (29, 'DX FULLFLU', 'AQ34 FULLFLU', 12)]:
+    pk = list(extra_data[6+(slot-1)*128:6+slot*128])
+    assert bytes(pk[118:128]).decode().strip() == original
+    assert all(pk[:118] != old[:118] for old in fm)
+    i = len(fm)
+    fm.append(pk)
+    fm_rows.append('    FM6_PR(%s, FM6_CHASE_SLOT + %d, 0, FX(0, 0, 0, 0)),' % (json.dumps(name), i))
+    fm_banks.append(9)  # Existing; leave the eight style banks' 12 chord / 3 bass choices intact.
+    extra_trims.append(trim)
+    extras.append(dict(id=f'CF3-F{i+1:03}', name=name, bank='Existing', bank_id=9, part='chord/layer',
+                       engine='FM6', factory_index=31+i, source='Aquanode', source_bank=extra_bank.name,
+                       source_slot=slot, original_name=original, revision='f0e59287c9991038f688c5e7457db77117638124',
+                       license='CC0-1.0'))
+
+meta = '#pragma once\n#define CHASE_FM_BASE 31u\n#define CHASE_VA_BASE 37u\n#define CHASE_FM_LEGACY_N 64u\n#define CHASE_FM_N 66u\n#define CHASE_VA_N 56u\n'
 levels = json.loads((ROOT/'assets/sounds/chase3-levels.json').read_text())['sounds']
-meta += 'static const int8_t CHASE_FM_TRIM[] = {'+', '.join(str(levels['CF3-F%03d' % (i+1)]['half_db_trim']) for i in range(64))+'};\n'
+fm_trims = [levels['CF3-F%03d' % (i+1)]['half_db_trim'] for i in range(64)] + extra_trims
+meta += 'static const int8_t CHASE_FM_TRIM[] = {'+', '.join(map(str, fm_trims))+'};\n'
 meta += 'static const int8_t CHASE_VA_TRIM[] = {'+', '.join(str(levels['CF3-V%03d' % (i+1)]['half_db_trim']) for i in range(56))+'};\n'
 meta += 'static const uint8_t CHASE_FM_BANK[] = {'+', '.join(map(str, fm_banks))+'};\n'
 meta += 'static const uint8_t CHASE_VA_BANK[] = {'+', '.join(map(str, va_banks))+'};\n'
@@ -217,7 +238,7 @@ emit('firmware/src/chase_meta.h', meta)
 emit('firmware/src/chase_fm_data.h', 'static const uint8_t CHASE_FM_PATCHES[CHASE_FM_N][128] = {\n'+
      '\n'.join('    {'+', '.join(map(str, p))+'},' for p in fm)+'\n};\n')
 emit('firmware/src/chase_fm_rows.h', '\n'.join(fm_rows)+'\n')
-emit('firmware/src/chase_fm_names.h', ', '.join(json.dumps('C'+str(i+1)) for i in range(64))+',\n')
+emit('firmware/src/chase_fm_names.h', ', '.join(json.dumps('C'+str(i+1)) for i in range(len(fm)))+',\n')
 emit('firmware/src/chase_va_defs.h', '\n'.join(va_defs)+'\n')
 emit('firmware/src/chase_va_rows.h', '\n'.join(va_rows)+'\n')
 emit('firmware/src/chase_va_ptrs.h', ', '.join(va_ptrs)+',\n')
@@ -262,10 +283,11 @@ for bank, name in enumerate(kit_names):
                         source='ChaseFlower design from CoralFlower drum synthesis', license='GPL-3.0-only'))
 emit('firmware/src/chase_drum_rows.h','\n'.join(kit_rows)+'\n')
 
-assert len(catalog)==128
-assert len({(r['engine'],r['name']) for r in catalog})==128
+catalog.extend(extras)
+assert len(catalog)==130
+assert len({(r['engine'],r['name']) for r in catalog})==130
 path=ROOT/'assets/sounds/chase3-catalog.json'
 body=json.dumps(catalog,indent=2)+'\n'
 if CHECK: assert path.read_text()==body, 'stale catalog'
 else: path.write_text(body)
-print('ChaseFlower library: 96 chord/layer, 24 bass, 8 kits; 32 original FM + 32 Aquanode + 56 VA.')
+print('ChaseFlower library: 98 chord/layer, 24 bass, 8 kits; 32 original FM + 34 Aquanode + 56 VA.')

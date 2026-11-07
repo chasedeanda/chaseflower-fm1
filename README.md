@@ -58,6 +58,10 @@ while you play. ALGORITHM cycles Progressions, Bass, Bonfire and Nothing.
 [Refreshed drum grooves and audio auditions](docs/DRUM-LOOPS.md): 39 two-bar patterns spanning lo-fi, trap, gaze,
 hip-hop, house, garage and breaks, including 12 refreshed additions and a 3/4 Waltz. Included in this release.
 
+[Four small sound additions](docs/MELODEE-DRUMS.md) are available in development source: **AQ33 DX SAX** and
+**AQ34 FULLFLU** chord sounds, plus **M Retro** and **M FM** drum kits. They reuse the existing engines,
+bringing the library to 190 named melodic presets and 24 kits.
+
 **FX presets:** [Browse 40 factory chains](docs/FX-PRESETS.md) across Signature, Space, Lo-fi, Motion and Punch,
 plus 16 optional user slots. SELECT auditions immediately, K2 clears to dry, and K3 restores the previous chain.
 

@@ -99,6 +99,10 @@ static cf_browser_t cpb;
 enum { CF_SKIN_TEAL, CF_SKIN_STUDIO, CF_SKIN_EDITORIAL, CF_SKIN_N };
 static const char *const CF_SKIN_NAME[] = {"Instrument", "Studio", "Editorial"};
 static uint8_t cf_skin, cf_motion = 1;
+enum { CF_HB_CORE, CF_HB_SOUND, CF_HB_TEXTURE, CF_HB_GROOVE, CF_HB_N };
+static const char *const CF_HOME_BANK_NAME[] = {"CORE", "SOUND", "TEXTURE", "GROOVE"};
+static uint8_t cf_home_bank;
+static uint32_t cf_home_bank_ms;
 static uint32_t cf_art_ms(void);
 
 static cf_harmony_t ch;                         /* separate versioned record; cf_set_t stays 188 bytes */

@@ -23,7 +23,7 @@
       "sharedTemplate": "chord",
       "musicalMilestone": 1,
       "designStatus": "Native preview alongside selected prototype; device review pending",
-      "implementationStatus": "Partial implementation: native CORE HOME; bank/navigation migration pending",
+      "implementationStatus": "Implemented preview: native HOME and four live banks; physical verification and remaining page migration pending",
       "deviceVerification": "Pending — host captures and device link only"
     },
     {
@@ -782,9 +782,9 @@
       "group": "Home",
       "sharedTemplate": "chord",
       "musicalMilestone": 1,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native bank preview follows selected prototype; physical review pending",
+      "implementationStatus": "Implemented preview: real parameters, explicit bank label, immediate ownership and clipped On/Off transition",
+      "deviceVerification": "Pending — native host captures and device link only"
     },
     {
       "id": "HOME_TEXTURE",
@@ -792,9 +792,9 @@
       "group": "Home",
       "sharedTemplate": "chord",
       "musicalMilestone": 1,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native bank preview follows selected prototype; physical review pending",
+      "implementationStatus": "Implemented preview: real parameters, explicit bank label, immediate ownership and clipped On/Off transition",
+      "deviceVerification": "Pending — native host captures and device link only"
     },
     {
       "id": "HOME_GROOVE",
@@ -802,9 +802,9 @@
       "group": "Home",
       "sharedTemplate": "chord",
       "musicalMilestone": 1,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native bank preview follows selected prototype; physical review pending",
+      "implementationStatus": "Implemented preview: real parameters, explicit bank label, immediate ownership and clipped On/Off transition",
+      "deviceVerification": "Pending — native host captures and device link only"
     },
     {
       "id": "SYS-ROOT",
@@ -893,7 +893,7 @@
       "sharedTemplate": "params",
       "musicalMilestone": 1,
       "designStatus": "Native preview alongside selected prototype; device review pending",
-      "implementationStatus": "Partial implementation: persisted On/Off, HOME activity envelope and settled legacy art; cadence/tails/hardware tuning pending",
+      "implementationStatus": "Partial implementation: persisted On/Off, bounded HOME activity, clipped bank-label transition and settled legacy art; cadence/tails/hardware tuning pending",
       "deviceVerification": "Pending — host captures and device link only"
     },
     {
