@@ -34,7 +34,7 @@
 #define CRB_HDR0 0x7Du
 #define CRB_HDR1 0x46u
 #define CRB_HDR2 0x4Cu
-enum { CRB_INFO = 1, CRB_LIST = 65, CRB_GET, CRB_PUT, CRB_RESTART = 72, CRB_USB = 79 };
+enum { CRB_INFO = 1, CRB_LIST = 65, CRB_GET, CRB_PUT, CRB_RESTART = 72, CRB_USB = 79, CRB_PERF = 80 };
 #define CRB_VA 9u
 #define CRB_FM6S 10u                                 /* 10, 11: the FM6 patch store's halves */
 #define CFB_SET 30u                                  /* CoralFlower's settings record */
@@ -489,6 +489,18 @@ static int crb_handle(const uint8_t *f, uint32_t n)
         cfb_usb();
         break;
 #endif
+    case CRB_PERF: {
+        uint32_t v[D_N], i;
+        _Static_assert(8u+5u*(D_N+2u*CRP_N)<=400u,"performance reply fits");
+        if(na) return 0;
+        if(!cfd.booted) cf_diag_reset(fm1_ms);
+        cf_diag_sample(v,fm1_ms);
+        crb_b(1); crb_b(D_N+2u*CRP_N);
+        for(i=0;i<D_N;i++)crb_u32(v[i]);
+        for(i=0;i<CRP_N;i++)crb_u32(cr_dbg.avg_us[i]);
+        for(i=0;i<CRP_N;i++)crb_u32(cr_dbg.max_us[i]);
+        break;
+    }
     case CRB_INFO: {                                 /* Felucca's INFO layout, no editor: 0 engines, 0 tracks */
         const char *v = FELUCCA_VERSION;             /* ("CoralFlower X.Y": the installers tell CoralFlower by it) */
         uint32_t i;
