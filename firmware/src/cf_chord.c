@@ -208,8 +208,6 @@ void cf_chord_reset(cf_chord_t *c)
 
 static uint16_t cfc_effective(const cf_chord_t *c)
 {
-    if (c->harmony.mode == CF_H_AUTO && c->harmony.momentary)
-        return c->held;
     if (!cfc_is_lock(c->cfg.algo))
         return c->held;
     return c->held ? c->gesture : c->locked;
@@ -336,7 +334,7 @@ static int cfc_resolve(cf_chord_t *c)
             /* Lights describe the selected next chord in Wait; conflict marks
              * those choices rather than pretending they are sounding already. */
             f.type = (uint8_t)cf_mask_type(mask);
-            f.add = 0; f.inv = c->harmony.smooth ? CF_INV_AUTO : 0;
+            f.add = 0; f.inv = 0;
             f.bass = 0;
             for (i = nh - 1; i >= 0; i--) if ((applied >> order[i]) & 1u) {
                 int slot = order[i];
@@ -423,10 +421,10 @@ void cf_chord_config(cf_chord_t *c, const cf_chord_cfg_t *cfg)
 
 void cf_chord_harmony(cf_chord_t *c, const cf_harmony_t *h)
 {
-    int transition = c->harmony.mode != h->mode || c->harmony.momentary != h->momentary;
+    int old_mode = c->harmony.mode;
     c->harmony = *h;
     cf_harmony_sanitize(&c->harmony);
-    if (transition) {
+    if (old_mode != c->harmony.mode) {
         c->held = c->gesture = c->locked = c->play = 0;
         c->toggle = c->bare = c->prev_n = 0;
     }
@@ -437,7 +435,7 @@ static void cfc_button(cf_chord_t *c, int btn, int down)
 {
     uint16_t bit = (uint16_t)(1u << btn);
     if (down) {
-        if (cfc_is_lock(c->cfg.algo) && !(c->harmony.mode == CF_H_AUTO && c->harmony.momentary)) {
+        if (cfc_is_lock(c->cfg.algo)) {
             if (!c->held) {                   /* a new press: it replaces the latch */
                 c->toggle = (uint8_t)(c->locked == bit);
                 c->gesture = bit;
@@ -450,7 +448,7 @@ static void cfc_button(cf_chord_t *c, int btn, int down)
         c->stamp[btn] = ++c->clock;
     } else {
         c->held &= (uint16_t)~bit;
-        if (cfc_is_lock(c->cfg.algo) && !(c->harmony.mode == CF_H_AUTO && c->harmony.momentary) && !c->held) {
+        if (cfc_is_lock(c->cfg.algo) && !c->held) {
             c->locked = c->toggle ? 0 : c->gesture;
             c->gesture = 0;
             c->toggle = 0;

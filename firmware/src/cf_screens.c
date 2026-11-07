@@ -28,8 +28,10 @@ static void name_set(uint32_t root, uint32_t mask, int bass_pc, int single, uint
     }
     cf_chord_name((int)root, mask, bass_pc != (int)root ? bass_pc : -1, &cu_spell, cu_name);
     cu_name_sub[0] = 0;
-    if (cs.chord.quantize != CF_Q_OFF)
-        cf_numeral(cs.chord.scale, cs.chord.tonic, (int)root, cu_name_sub);
+    if (cs.chord.quantize != CF_Q_OFF) {
+        if (ch.mode == CF_H_AUTO) cf_harmony_numeral(cs.chord.scale, cs.chord.tonic, (int)root, cu_name_sub);
+        else cf_numeral(cs.chord.scale, cs.chord.tonic, (int)root, cu_name_sub);
+    }
 }
 /* the chord shown: the keys' while they sound, else the sequencer's CHORDS track's while it plays (0.5, the owner:
  * "то, что играется в секвенсоре я бы хотел, чтобы на главной отображалось на цветочке"); it stays after both let go */

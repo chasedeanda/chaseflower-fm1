@@ -49,13 +49,9 @@ int main(void)
             cfg.algo = CF_ALG_TOP_LOCK; cfg.scale = (uint8_t)scale[sc]; cfg.tonic = (uint8_t)tonic;
             for (int style = CF_H_BASIC; style <= CF_H_CUSTOM; style++) {
                 h.style = (uint8_t)style; h.custom = CF_MOD_13;
-                int tones = style == CF_H_BASIC ? 3 : style == CF_H_RICH ? 4 : style == CF_H_CUSTOM ? 6 : 5;
-                unsigned expected = 0;
-                for (int j = 0; j < tones; j++) {
-                    int offset = j == 5 ? 12 : j*2;
-                    int idx = degree + offset;
-                    expected |= 1u << (semitone[sc][idx%7] + 12*(idx/7) - semitone[sc][degree]);
-                }
+                int idx = degree + 2;
+                int third = semitone[sc][idx%7] + 12*(idx/7) - semitone[sc][degree];
+                unsigned expected = 1u | (1u << (third < 4 ? 3 : 4)) | (1u << 7);
                 CHECK(cf_progression_mask(scale[sc], tonic, degree, &h) == expected);
                 for (int quant = CF_Q_BASIC; quant <= CF_Q_FULL; quant++) for (int oct = -3; oct <= 3; oct++) {
                     cfg.quantize = (uint8_t)quant; cfg.octave = (int8_t)oct;
