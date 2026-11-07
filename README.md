@@ -61,7 +61,8 @@ turn **K3** to generate, and **K4** to undo. [Controls and scope](docs/PHASE4-PL
 
 **Development source:** The chord-first build opens directly to Progressions and omits Bass/Bonfire scenes
 and the fish startup animation. [Scene removal and measured resources](docs/SCENE-FREE.md).
-[What pattern and undo memory pays for](docs/PATTERN-MEMORY.md). The published download above remains the released build.
+[Three recent recordings, newest first](docs/RECORDINGS.md) replace the eight-slot recorder and recorder Undo.
+[Measured recording RAM savings](docs/PATTERN-MEMORY.md). The published download above remains the released build.
 
 ## Install this release
 

@@ -20,7 +20,7 @@ enum {
     SCR_N
 };
 static const char *const SCR_NAME[SCR_N] = {"HOME", "CHORD", "ENVELOPE", "BASS", "SOUND", "GLOBAL", "EFFECTS",
-                                             "ARPEGGIO", "METRONOME", "SAVE", "SEQUENCER",
+                                             "ARPEGGIO", "METRONOME", "SAVE", "RECORDINGS",
                                              "PATTERN", "RHYTHM MACHINE"};
 
 /* themes: the one interface colour (GLO > Display > COLOR), a palette ramp, after the M-VAVE synths' panel

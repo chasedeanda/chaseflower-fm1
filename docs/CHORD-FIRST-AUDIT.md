@@ -180,6 +180,11 @@ core state, input response and display work. Host timing is not device timing.
    claiming timing or polyphony gains.
 4. Size the semantic draft/legacy-take model and decide LAYER/grid/store migration.
    [PATTERN-MEMORY.md](PATTERN-MEMORY.md) explains the existing recorder and undo
-   allocation and the clarified three-recording/no-recorder-undo target. Preserve
+   allocation and the implemented three-recording/no-recorder-undo replacement. Preserve
    legacy data recoverability while sizing a replacement. Leave deep editors in
    Advanced and preserve audible FX meanwhile.
+
+The [three-recording implementation](RECORDINGS.md) now replaces the live store
+and recorder history. Its [device measurements](PATTERN-MEMORY.md) reclaim 17,728
+ordinary-RAM bytes while keeping the legacy archive recoverable. Broader draft/UI
+work and physical runtime measurements remain open.

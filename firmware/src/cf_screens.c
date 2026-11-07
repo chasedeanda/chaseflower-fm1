@@ -651,10 +651,10 @@ static void draw_generic(void)
         draw_head(PG_GLO[p]);
         draw_pager((int)p, CF_GLO_NPAGES, 1, 0);
         if (p == CF_GLO_RECORDINGS) {
-            fb_text_c(&CF_FONT_UI,120,Y_VIEW+38,"KEEP THE LATEST THREE",C_ACC(0),1);
-            fb_text_c(&CF_FONT_UI,120,Y_VIEW+60,"Newest recording is always 1",FL_INK,1);
-            fb_text_c(&CF_FONT_MICRO,120,Y_VIEW+83,sq_pref.protect?"FULL: CLEAR A RECORDING FIRST":"A FINISHED TAKE REPLACES THE OLDEST",FL_INK2,1);
-            fb_text_c(&CF_FONT_MICRO,120,Y_VIEW+102,"CANCEL KEEPS YOUR PREVIOUS TAKES",FL_INK2,1);
+            fb_text_c(&CF_FONT_UI,120,Y_VIEW+55,"KEEP THE LATEST THREE",C_ACC(0),1);
+            fb_text_c(&CF_FONT_UI,120,Y_VIEW+77,"Newest recording is always 1",FL_INK,1);
+            fb_text_c(&CF_FONT_MICRO,120,Y_VIEW+101,sq_pref.protect?"FULL: CLEAR A RECORDING FIRST":"A FINISHED TAKE REPLACES THE OLDEST",FL_INK2,1);
+            fb_text_c(&CF_FONT_MICRO,120,Y_VIEW+121,"CANCEL KEEPS YOUR PREVIOUS TAKES",FL_INK2,1);
         }
         else if (p == CF_GLO_VARIATION) {
             cvr_draw();

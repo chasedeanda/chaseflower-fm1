@@ -39,7 +39,7 @@ static int dm_plaque_top(void)
  * the carousel showed one place at a time) */
 static void dm_draw_carousel(void)
 {
-    static const char *const NM[2] = {"Sequencer", "Rhythm machine"};
+    static const char *const NM[2] = {"Recordings", "Rhythm machine"};
     int k;
     draw_chip_text_c(Y_VIEW + 54, "[SELECT] pick  [SEQ] open", FL_INK2);
     for (k = 0; k < 2; k++) {

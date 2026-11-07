@@ -11,7 +11,10 @@ to the main Progressions view; its FX-order and sequencer roles remain intact.
 Display keeps theme color and startup sound, and omits the inactive backdrop
 control. Old scene/backdrop bytes remain untouched in the 188-byte settings and
 backups, so the compatibility build can still read them. No sound, pattern,
-recording, undo, transport, MIDI or USB format changes are introduced.
+recording, undo, transport, MIDI or USB format changes were introduced by the
+scene-only cut. The subsequent [three-recording change](RECORDINGS.md) replaces
+the recorder store and Undo policy separately; the table below is the historical
+scene-only comparison.
 
 ## Measured device-link results
 
@@ -75,4 +78,5 @@ boot-exit/skip, persistence and audio regressions. The normal feature suites,
 backup, storage power-cut tests, sanitizers and real device builds pass.
 
 [Pattern and undo memory explained](PATTERN-MEMORY.md) describes the separate
-25,488-byte ordinary-RAM allocation. Those capabilities are retained here.
+original 25,488-byte ordinary-RAM allocation and its subsequent replacement.
+The current recorder uses three recent takes without recorder Undo/Redo.

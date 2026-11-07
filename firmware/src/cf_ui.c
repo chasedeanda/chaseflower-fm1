@@ -420,7 +420,7 @@ static void ui_knob_info(int k, cf_knob_t *o)
     case SCR_GLO:
         switch (cu.page[SCR_GLO]) {
         case CF_GLO_RECORDINGS:
-            if (!k) { kfmt(o->name,12,"AUTO REPLACE"); kfmt(o->val,14,sq_pref.protect?"Off":"On"); }
+            if (!k) { kfmt(o->name,12,"AUTO DEL"); kfmt(o->val,14,sq_pref.protect?"Off":"On"); }
             break;
         case CF_GLO_BROWSE: cpb_knob_info(k,o); break;
         case CF_GLO_ACCOMP:
