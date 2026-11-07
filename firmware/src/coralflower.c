@@ -168,8 +168,7 @@ static void mix_block(int32_t *out, uint32_t n)
 #include "storage.c"
 #endif
 #include "cr_bank.c"             /* upreset.c (32 user sounds, fm6_bank.c), the pools per engine */
-#include "flora/flora_canvas.c"
-#include "flora/flora.c"
+#include "cf_visual.h"
 #define CF_PUMP() cf_ui_pump()
 static void cf_ui_pump(void);
 #include "cf_fb.c"

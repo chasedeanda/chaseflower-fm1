@@ -125,7 +125,7 @@ static void draw_drum(void)
     uint32_t beats = y->beats;                   /* (its own TIME SIG) */
     int wait = cf_sn.dm_on && cf_sn.dm_next == r && cf_sn.dm_r != r, lit = cu.now - cv_turn_ms < 220u && cv_turn_ms;
     char t[40], a[8];
-    cf_scene_render(&flo, &fl_cv);
+    cf_scene_frame();
     draw_plant(Y_VIEW);
     fb_veil(0, Y_VIEW, FB_W, H_VIEW, FL_BG);    /* (the plant faint: the picture leads) */
     /* the head as every section's (rc6, the designer's R1, the owner's pick): the rhythm's name white at the left, the

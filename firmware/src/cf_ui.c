@@ -149,8 +149,10 @@ static void kint(char *b, int v, const char *unit)
  * HV_FLOWER retains its legacy numeric identity for saved records; it now means the selected scene. */
 enum { HV_FLOWER, HV_CHORD, HV_KEYS, HV_DIAG, HV_N };
 #define HV_SHIFT 6u
+static uint8_t home_boot_main; /* session-only: scene-free boot starts at Progressions */
 static uint32_t home_view(void)
 {
+    if (home_boot_main) return HV_FLOWER;
     uint32_t v = (uint32_t)cs.seq_hint >> HV_SHIFT & 3u;
     return v < HV_N ? v : HV_FLOWER;
 }
@@ -158,6 +160,7 @@ static void home_view_next(void)
 {
     static const char *const NAME[HV_N] = {"View: Scene", "View: Chord", "View: Keyboard", "View: Diagnostics"};
     uint32_t v = (home_view() + 1u) % HV_N;
+    home_boot_main = 0;
     cs.seq_hint = (uint8_t)((cs.seq_hint & ((1u << HV_SHIFT) - 1u)) | v << HV_SHIFT);
     cf_message(v == HV_FLOWER ? CF_SCENE_NAME[cf_scene()] : NAME[v]);
 }
@@ -432,11 +435,13 @@ static void ui_knob_info(int k, cf_knob_t *o)
             break;
         case 0: /* Display */
             if (k == 0) { kfmt(o->name, 12, "COLOR"); kfmt(o->val, 14, CF_THEMES[cs.accent % CF_NTHEMES].name); }
+#if CF_SCENES
             if (k == 1) {
                 static const char *const BD[FL_NBD] = {"Scene", "Ripples", "None"};
                 kfmt(o->name, 12, "BACKDROP");
                 kfmt(o->val, 14, BD[cs.backdrop % FL_NBD]);
             }
+#endif
             if (k == 2) { kfmt(o->name, 12, "BOOT SND"); kfmt(o->val, 14, cs.boot_sound ? "On" : "Off"); }
             break;
         case 1: /* MIDI: out on or off, the clock in (the channels: the next page, four of them since the sequencer's
@@ -682,8 +687,10 @@ static void ui_knob_turn(int k, int d)
         case 0:
             if (k == 0)
                 cs.accent = (uint8_t)wrapi(cs.accent + d, CF_NTHEMES);
+#if CF_SCENES
             if (k == 1)
                 cs.backdrop = (uint8_t)wrapi(cs.backdrop + d, FL_NBD);
+#endif
             if (k == 2) {
                 cs.boot_sound = (uint8_t)(d > 0);
                 if (cs.boot_sound)
@@ -902,9 +909,11 @@ static void ui_algo(int d)                       /* ALGORITHM: scene (FX: effect
         return;
     }
     if (!d) return;
+#if CF_SCENES
     int pos = cf_scene() == CF_SCENE_PROGRESSIONS ? 0 : (int)cf_scene() + 1;
     pos = wrapi(pos + d % CF_SCENE_N, CF_SCENE_N);
     cf_scene_set(pos ? (uint32_t)(pos - 1) : CF_SCENE_PROGRESSIONS);
+#endif
     if (cu.scr == SCR_HOME)
         cs.seq_hint &= (uint8_t)~(3u << HV_SHIFT); /* show the scene immediately, keeping hints and scene selection */
     cf_message(CF_SCENE_NAME[cf_scene()]);         /* no CONFIG event: a held chord is untouched */
@@ -1862,6 +1871,7 @@ static void cf_glide_migrate(void)
 }
 
 /* ------------------------------------------------------------ the plant --- */
+#if CF_SCENES
 static uint32_t cu_last_serial;
 static uint8_t cu_last_onset, cu_last_arp, cu_last_src;
 /* a sequencer chord's flower quality from its pitch classes over the root (the keys' come from their type) */
@@ -1953,6 +1963,10 @@ static void cf_feed_plant(uint32_t dt)
     flora_tick(&flo, dt);
 }
 
+#else
+static void cf_feed_plant(uint32_t dt) { (void)dt; }
+#endif
+
 /* the sound editor's part (fm6_store.c: a DX7 voice received goes there), -1 when it is not open */
 static int cf_editing_part(void) { return cu.scr == SCR_EDIT ? (int)cu.edit_part : -1; }
 static void cf_edited(uint32_t part)
@@ -1971,6 +1985,7 @@ static void cf_ui_init(void)
     if (!cfs_loaded)                             /* (cf_splash read the settings record: they stay) */
         cs_defaults(&cs);
     cvr_init();
+    home_boot_main = !CF_SCENES;
     cu.scr = SCR_HOME;
     cu.sel_btn = sel_first();
     cf_led_init();
@@ -2021,8 +2036,12 @@ static void cf_ui_init(void)
     cf_click_sound = cs.click;
     cf_send_config();
     cf_send_metro();
+#if CF_SCENES
     if (!flo.nseg)
         flora_init(&flo, 0xC0A1F10Eu, FLW / 2, FLH + 1);   /* (the stem comes up from the bottom edge) */
+#else
+    if (cs.boot_sound && !cr_safe) cf_boot_go = 1; /* optional sound, no visual intro */
+#endif
     cu.idle_ms = 0x7FFFFFFF;                     /* (the intro runs until the first touch) */
     fb_full = 1;                                 /* (main.c cleared the panel after the splash) */
     cu.last_ms = fm1_ms;

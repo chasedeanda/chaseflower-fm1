@@ -1,0 +1,8 @@
+wait 20
+shot scene-free-start
+turn ALGORITHM 1
+wait 2200
+shot scene-free-home
+btn GLO
+wait 2200
+shot scene-free-display

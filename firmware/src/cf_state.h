@@ -182,9 +182,11 @@ static cf_ui_t cu;
 /* the plant */
 #define FLW 120
 #define FLH 70
+#if CF_SCENES
 static uint8_t fl_px[FLW * FLH] __attribute__((section(".pool")));
 static flora_t flo __attribute__((section(".pool")));
 static flc_t fl_cv = {fl_px, FLW, FLH};
+#endif
 
 /* ---------------------------------------------------------- colours --- */
 /* palette entries 48..55: the interface colour's ramp, twice (C_ACC and C_SEC: the drawing still tells the two roles

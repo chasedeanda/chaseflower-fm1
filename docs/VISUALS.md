@@ -1,5 +1,8 @@
 # Chase FM-1 scenes and boot
 
+This documents the optional exploration build (`CF_SCENES=1`). The development
+default is now scene-free; see [scene-free behavior and measurements](SCENE-FREE.md).
+
 This feature replaces the flower/coral pictures with the approved bonfire and swimming bass, and adds the approved **Chase FM-1** bass-jump boot screen. It is prepared for merging independently of the other features. No release version, release package, published site or device flash is part of this merge request; the combined release build comes after the features reach main.
 
 ## Controls and saved settings

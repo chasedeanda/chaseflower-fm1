@@ -59,6 +59,10 @@ plus 16 optional user slots. SELECT auditions immediately, K2 clears to dry, and
 **Variations:** Open **GLO → Variation**, choose a context and amount,
 turn **K3** to generate, and **K4** to undo. [Controls and scope](docs/PHASE4-PLAN.md).
 
+**Development source:** The chord-first build opens directly to Progressions and omits Bass/Bonfire scenes
+and the fish startup animation. [Scene removal and measured resources](docs/SCENE-FREE.md).
+[What pattern and undo memory pays for](docs/PATTERN-MEMORY.md). The published download above remains the released build.
+
 ## Install this release
 
 1. Download **`coralflower-0.6-chase7.fwsc`** from the [GitHub release](https://github.com/chasedeanda/chaseflower-fm1/releases/tag/v0.6-chase7).

@@ -394,8 +394,12 @@ void emu_fw_dump(void)
         printf("\n");
         emu_model_over85 = emu_model_over100 = emu_model_max = 0;
     }
+#if CF_SCENES
     printf("  plant: %s, segments %u, tiles sent %u\n", flo.species ? "coral" : "plant", (unsigned)flo.nseg,
            (unsigned)fb_tiles_sent);
+#else
+    printf("  Progressions, tiles sent %u\n", (unsigned)fb_tiles_sent);
+#endif
     printf("  chord: root %u, notes", (unsigned)cf_sn.out.root_note);
     for (i = 0; i < cf_sn.n; i++)
         printf(" %u", (unsigned)cf_sn.note[i]);
