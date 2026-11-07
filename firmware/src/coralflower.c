@@ -175,6 +175,7 @@ static void cf_ui_pump(void);
 #include "cf_state.h"
 #include "cf_draw.c"
 #include "cf_settings.c"           /* the settings in flash */
+#include "cf_diag.c"
 #include "cf_ui.c"
 #include "cf_screens.c"
 #include "cf_splash.c"

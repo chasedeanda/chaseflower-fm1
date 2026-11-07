@@ -134,7 +134,7 @@ static void kint(char *b, int v, const char *unit)
  * HOME's view (ChoralRoot's views, HOME tapped on HOME steps to the next): the flower; the chord, its name big and
  * the notes it voices under it; a keyboard with the chord's and the bass's notes lit. Kept in cs.seq_hint's top two
  * bits (those hints test bits 0..2 only; every older record has 0 there: the flower) */
-enum { HV_FLOWER, HV_CHORD, HV_KEYS, HV_N };
+enum { HV_FLOWER, HV_CHORD, HV_KEYS, HV_DIAG, HV_N };
 #define HV_SHIFT 6u
 static uint32_t home_view(void)
 {
@@ -143,7 +143,7 @@ static uint32_t home_view(void)
 }
 static void home_view_next(void)
 {
-    static const char *const NAME[HV_N] = {"View: Flower", "View: Chord", "View: Keyboard"};
+    static const char *const NAME[HV_N] = {"View: Flower", "View: Chord", "View: Keyboard", "View: Diagnostics"};
     uint32_t v = (home_view() + 1u) % HV_N;
     cs.seq_hint = (uint8_t)((cs.seq_hint & ((1u << HV_SHIFT) - 1u)) | v << HV_SHIFT);
     cf_message(NAME[v]);
@@ -343,6 +343,12 @@ static void ui_knob_info(int k, cf_knob_t *o)
     case SCR_SQED: sq_knob_info(k, o); break;
     case SCR_GLO:
         switch (cu.page[SCR_GLO]) {
+        case 6:
+            if(k==0) {kfmt(o->name,12,"PAGE");kfmt(o->val,14,CF_DIAG_PAGES[cfd.page]);}
+            if(k==1) {kfmt(o->name,12,"DISPLAY");kfmt(o->val,14,cfd.hold?"Hold":"Live");}
+            if(k==2) {kfmt(o->name,12,"SESSION");kfmt(o->val,14,"Turn: reset");}
+            if(k==3) {kfmt(o->name,12,"REFRESH");kint(o->val,CF_DIAG_HZ[cfd.rate]," Hz");}
+            break;
         case 5: /* Library: filter only; the loaded sound and its edits stay put. */
             if (k < 3u) {
                 static const char *const PART[3] = {"CHORDS", "BASS", "LAYER"};
@@ -568,6 +574,12 @@ static void ui_knob_turn(int k, int d)
     case SCR_SQED: sq_knob_turn(k, d); break;
     case SCR_GLO:
         switch (cu.page[SCR_GLO]) {
+        case 6:
+            if(k==0) cfd.page=(uint8_t)clampi(cfd.page+d,0,DP_N-1);
+            if(k==1) { if(d>0 && !cfd.hold) cf_diag_sample(cfd.v,cu.now); cfd.hold=(uint8_t)(d>0); }
+            if(k==2) { cf_diag_reset(cu.now); cf_diag_sample(cfd.v,cu.now); }
+            if(k==3) cfd.rate=(uint8_t)clampi(cfd.rate+(d>0?1:-1),0,2);
+            break;
         case 5:
             if (k < 3u) cf_bank[k] = (uint8_t)clampi(cf_bank[k] + d, 0, 10);
             else cf_bank[0] = cf_bank[1] = cf_bank[2] = 0;
@@ -666,7 +678,7 @@ static void ui_say(const char *a, const char *b)
 static uint32_t screen_pages(uint32_t scr)
 {
     if (scr == SCR_GLO)
-        return 6u;                               /* Display, MIDI, Channels, Play, Reset, Library */
+        return 7u;                               /* + Diagnostics */
     if (scr == SCR_ENV)
         return 3u;                               /* chord + bass, chord, bass */
     if (scr == SCR_ARP)
@@ -1890,6 +1902,7 @@ static void cf_ui_frame(void)                    /* ui_leds: the snapshot, the p
     cu.now = now;
     cu.idle_ms += dt;
     cu.frames++;
+    cf_diag_poll(now);
     cf_snapshot();
     cf_feed_plant(dt);
     cf_leds();

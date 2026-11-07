@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "purpose": "Repeatable hardware observations for feature comparisons; host simulation is not device timing.",
+  "workloads": [
+    {"id": "idle", "seconds": 30},
+    {"id": "fm-six-note-chord", "seconds": 60},
+    {"id": "va-six-note-pad-long-release", "seconds": 60},
+    {"id": "chords-bass-layer-drums", "seconds": 120},
+    {"id": "all-fx-clean-output", "seconds": 120},
+    {"id": "all-fx-usb-44100", "seconds": 120},
+    {"id": "all-fx-usb-48000", "seconds": 120}
+  ],
+  "comparison_requirements": [
+    "Record firmware version and explicit source revision label.",
+    "Use the same patch IDs, exact edits, notes, velocities, releases, effects and musical timing.",
+    "Reset the diagnostic session on the device before each run; do not reset during capture.",
+    "Keep workload duration, scene, diagnostic visibility and host polling frequency the same.",
+    "Record raw JSON; inspect peak deadline pressure, shed/late/stale estimates, USB loss and linked memory costs."
+  ],
+  "automated_host_requirements": [
+    "Protocol and measurement-fixture tests pass.",
+    "Existing backup/library/USB regressions pass and audio output stays unchanged.",
+    "The actual device linker regions fit; no runtime memory total is inferred from host process sizes."
+  ],
+  "timing_regression_thresholds": null,
+  "threshold_policy": "Calibrate on the FM-1 before defining numeric hardware gates. Track changes before assuming improvement."
+}
