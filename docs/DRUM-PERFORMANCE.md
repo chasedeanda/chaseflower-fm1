@@ -11,9 +11,10 @@ firmware and has not been flashed or physically verified on an FM-1.
 ## Use it from HOME
 
 Choose a compatible rhythm in **Core**, press **PLAY**, and tap **HOME** until
-**PERFORM 5/5** appears. HOME cycles **Core → Sound → Texture → Groove → Perform**;
-from another workspace it returns to Core. The large actual chord, notes, planned
-phrase, live matching and true cursor stay visible in every bank.
+**PERFORM 5/6** appears. HOME cycles **Core → Sound → Texture → Groove → Perform → Keyboard**;
+from another workspace it returns to Core. The five musical banks keep the large actual chord, notes, planned phrase, live
+matching and true cursor. Keyboard / Learn is the sixth HOME page and gives that
+space to the key guide, with all four knobs inactive.
 
 | Knob | Action | When it is heard |
 | --- | --- | --- |
@@ -109,7 +110,7 @@ comparison, native HOME, mascot artwork/typography/migration, native-page/Motion
 On/Off physical-output/six-channel USB/MIDI comparisons at both rates, shared
 accompaniment tests and USB-active/idle comparisons, recording/backup/power-cut
 checks, the drum bank (149,906 checks), Auto Harmony and USB's 64 render comparisons.
-The canonical inventory validates **206 screens/states and 38 workflows**.
+The canonical inventory validates **207 screens/states and 39 workflows**.
 
 The installed JieLi toolchain links a local verification package using default
 build options. The resulting memory use is:

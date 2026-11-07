@@ -61,7 +61,7 @@ the labels show exactly what each one will change.
 
 | Control | Starting point / main use |
 | --- | --- |
-| **HOME** | Return to Progressions/Core; on HOME, cycle **Core → Sound → Texture → Groove → Perform** in development source |
+| **HOME** | Return to Progressions/Core; on HOME, cycle **Core → Sound → Texture → Groove → Perform → Keyboard** |
 | **SELECT** | On HOME, browse ideas from any bank; elsewhere, choose the item, slot or page |
 | **PRESETS** | On HOME, change the chord sound |
 | **ALGORITHM** | Change tabs in Accompaniment, the phrase editor or Chord Lab; in FX, move the selected effect in the chain |
@@ -75,7 +75,7 @@ the labels show exactly what each one will change.
 | **GLO** | System pages: Display, MIDI, Harmony, Variation, Browse, Recordings policy and Legacy tools |
 | **MASTER / OCT− / OCT+** | Output volume / playing register |
 
-### The HOME banks
+### The six HOME pages
 
 | Bank | K1 | K2 | K3 | K4 |
 | --- | --- | --- | --- | --- |
@@ -84,6 +84,7 @@ the labels show exactly what each one will change.
 | **Texture** | Reverb mix | Delay mix | Chorus mix | Glide |
 | **Groove** | Drum kit | Drum level | Swing | Click level / Off |
 | **Perform** (development) | One-bar fill | Drop drums | Bring back | Tempo |
+| **Keyboard / Learn** | Inactive | Inactive | Inactive | Inactive |
 
 Switching banks leaves the music playing. SELECT still browses ideas in every bank.
 Perform gestures start on the next bar; fills return automatically. The published chase10 has the first four banks.
@@ -91,9 +92,24 @@ For separate chord/bass/drum levels and linked bass On/Off, use **SEQ → Mix**.
 For drums alone, use **SEQ → Loop → K1 Drums only**. **K4 Repeat Off** plays the full phrase once.
 For a metronome alongside any groove, use **SEQ → Click**: K1 On/Off, K2 level, K3 sound, K4 tempo.
 
+## Know what the keys do (current source)
+
+Tap **HOME** until **KEYBOARD 6/6** appears, just after Perform. All **27 keys**
+appear in their physical positions: upper chord choices and HOLD, lower root
+notes with scale degrees. Labels follow your actual key, scale, octave and
+Manual/Harmony assignments.
+
+**Play a key** to hear it normally and see its full name and an explanation.
+For example, Sus2 replaces the third with a second; Add9 keeps the third and adds
+a ninth. The current chord and actual notes remain visible. **All four knobs do
+nothing on this page**; the space belongs to the guide. HOME returns to Core.
+
+[Native previews and controls](docs/KEYBOARD-LEARN.md). This source feature is not
+in the chase10 download; physical FM-1 review is pending.
+
 ## Fills, drops and builds (current source)
 
-Tap **HOME** until **PERFORM 5/5** appears. While a groove is playing, turn a knob
+Tap **HOME** until **PERFORM 5/6** appears. While a groove is playing, turn a knob
 in either direction to trigger one action; multiple detents in a turn still queue one moment.
 
 - **K1 Fill:** queue one bar, with the current groove/kit/swing. Lo-fi uses loose

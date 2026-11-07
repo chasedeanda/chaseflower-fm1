@@ -39,7 +39,7 @@ The notes line shows actual chord tones. The phrase cue shows planned chords; it
 | K2 | Key | Edit the parameter labelled K2 on the current screen. |
 | K3 | Scale / mode | Edit the parameter labelled K3 on the current screen. |
 | K4 | Tempo | Edit the parameter labelled K4 on the current screen. Glide lives in detail. |
-| HOME | Cycle Core / Sound / Texture / Groove / Perform | From another screen return to Progressions Core; while on Progressions, cycle the five live control banks. |
+| HOME | Cycle Core / Sound / Texture / Groove / Perform / Keyboard | From another screen return to Progressions Core; while on Progressions, cycle the six HOME pages. |
 | SEL | Inspect the sounding chord | Enter the highlighted item; follow explicit on-screen audition labels. |
 | SEQ | Accompaniment | Groove, loop, arrangement and click details. |
 | EDIT | Edit the selected progression slot | Keep the numbered edit focus separate from the sounding chord. |
@@ -268,7 +268,7 @@ The notes line shows actual chord tones. The phrase cue shows planned chords; it
 3. **Manage → Undo restores one musical gesture.** — Saved-row deletion is not disguised as musical undo. (Undo / Redo).
 4. **After restart Recover the last valid stopped checkpoint.** — Opens stopped; a never-written Pending recording is not falsely claimed recoverable. (Recover Draft Checkpoint?).
 
-### Use the five live control banks
+### Use the six HOME pages
 
 **Availability:** Play — first milestone. Reach existing controls without sacrificing CORE, full catalogue browsing or musical keys.
 
@@ -277,7 +277,8 @@ The notes line shows actual chord tones. The phrase cue shows planned chords; it
 3. **Tap HOME again** — TEXTURE: Reverb mix / Delay mix / Chorus mix / Glide (Progressions · TEXTURE).
 4. **Tap HOME again** — GROOVE: Kit / Drum level / Swing / Click (Progressions · GROOVE).
 5. **Tap HOME again** — PERFORM: Fill / Drop / Back / Tempo. Turning K1–K3 triggers a bar-queued moment; bank selection alone changes no music. (Progressions · PERFORM).
-6. **Tap HOME again** — CORE returns. SELECT still browses all songs; PRESETS stays chord sound; OCT keys remain musical. (Progressions · CORE).
+6. **Tap HOME after Perform** — KEYBOARD 6/6 uses the full screen for current key assignments and explanations. All four knobs are inactive. (Keyboard / Learn).
+7. **Tap HOME again** — CORE returns. SELECT still browses all songs; PRESETS stays chord sound; OCT keys remain musical. (Progressions · CORE).
 
 ### Browse, audition and replace a chord
 
@@ -296,6 +297,15 @@ The notes line shows actual chord tones. The phrase cue shows planned chords; it
 2. **Turn K1 once** — FILL NEXT becomes a one-bar Fill at the next bar; the groove returns automatically with a bloom. (Progressions · PERFORM).
 3. **Turn K2, keep playing, then turn K3 when ready** — Drums leave next bar; chords and bass continue. BACK NEXT restores drums on the next downbeat. (Progressions · PERFORM).
 4. **Set Motion Off in Display** — The same musical actions work; labels update with no fill animation or bloom. (Progressions · PERFORM).
+
+### Learn the physical keys while playing
+
+**Availability:** Play — first milestone. Understand notes, chord choices and HOLD without leaving HOME or interrupting normal playing.
+
+1. **Tap HOME until Keyboard 6/6** — All 27 physical keys are labelled; root notes and degrees follow the active key, scale and octave. (Keyboard / Learn).
+2. **Press an upper chord key, then a lower root key** — Normal live playing continues; the last key has its full name and plain-language explanation. (Keyboard / Learn).
+3. **Turn any of K1–K4** — Nothing changes. The knob area belongs to the key guide on this page. (Keyboard / Learn).
+4. **Tap HOME once more** — Core returns with its normal four musical knobs. Notes, groove and transport retain their owners. (Progressions · CORE).
 
 ### Enable simple Harmony
 
@@ -396,10 +406,11 @@ Every entry below is a planned screen or a named state/tab of a shared screen. A
 | --- | --- | --- | --- |
 | Progressions · CORE | 1 | Boot, HOME from any musical workspace, or return from a completed action. | Browse and hear the complete catalogue with a large chord hero, paired degree/name cue and four text control columns. |
 | Progressions · Next Song Queued | 1 | Turn SELECT to another song during accompaniment. | Keep the current sound truthful while a browsed song waits for the next bar. |
-| Progressions · SOUND | 1 | On Progressions tap HOME until SOUND 2/5 appears, or open this bank from Live Control Banks. | Keep the chord visible while the four physical knobs expose audited SOUND controls. |
-| Progressions · TEXTURE | 1 | On Progressions tap HOME until TEXTURE 3/5 appears, or open this bank from Live Control Banks. | Keep the chord visible while the four physical knobs expose audited TEXTURE controls. |
-| Progressions · GROOVE | 1 | On Progressions tap HOME until GROOVE 4/5 appears, or open this bank from Live Control Banks. | Keep the chord visible while the four physical knobs expose audited GROOVE controls. |
-| Progressions · PERFORM | 1 | On Progressions tap HOME until PERFORM 5/5 appears. | Trigger one-bar fills, drum drops and downbeat returns while the sounding chord and phrase stay visible. |
+| Progressions · SOUND | 1 | On Progressions tap HOME until SOUND 2/6 appears, or open this bank from Live Control Banks. | Keep the chord visible while the four physical knobs expose audited SOUND controls. |
+| Progressions · TEXTURE | 1 | On Progressions tap HOME until TEXTURE 3/6 appears, or open this bank from Live Control Banks. | Keep the chord visible while the four physical knobs expose audited TEXTURE controls. |
+| Progressions · GROOVE | 1 | On Progressions tap HOME until GROOVE 4/6 appears, or open this bank from Live Control Banks. | Keep the chord visible while the four physical knobs expose audited GROOVE controls. |
+| Progressions · PERFORM | 1 | On Progressions tap HOME until PERFORM 5/6 appears. | Trigger one-bar fills, drum drops and downbeat returns while the sounding chord and phrase stay visible. |
+| Keyboard / Learn | 1 | On HOME tap through Core, Sound, Texture, Groove and Perform to KEYBOARD 6/6. | See all 27 physical keys with their current notes, degrees, chord choices and HOLD; play normally and read a plain-language explanation. The four knobs are inactive. |
 
 ### Accompaniment
 
@@ -549,7 +560,7 @@ Every entry below is a planned screen or a named state/tab of a shared screen. A
 | Quantize and glide | 1 | Play behavior → SELECT next page | Move Glide off HOME while keeping key/scale setup understandable. |
 | Modifier assignments | 1 | Controls → Modifiers | Assign an upper modifier slot without competing with Chord Lab's SEL destination. |
 | Manual chord forms | 2 | Controls → Manual forms | Preserve user chord forms for Harmony Off and imported content under an advanced route. |
-| Live Control Banks | 1 | Settings → Controls → Live control banks | Explain/select five real control banks without sacrificing CORE, catalogue browsing or musical keys. |
+| Live Control Banks | 1 | Settings → Controls → Live control banks | Explain five musical control banks plus the sixth Keyboard / Learn HOME page, where all four knobs are inactive. |
 
 ### Display
 
@@ -700,8 +711,9 @@ Every entry below is a planned screen or a named state/tab of a shared screen. A
 - Songs supports selected-row Load, Rename, Duplicate and Delete, plus counted Clear Recordings/Clear All actions. Bulk clear excludes factory templates, the protected working draft and Pending captures. A Pending capture can be discarded only through its own explicit selected action.
 - The selected current HOME appearance is the owner-approved soft mascot reference; the earlier adaptive prototype remains preserved as design history. The approved mascot build uses Devil/Ember by default and Cat/Plum as its only alternative. Character and theme are coupled; a separate theme/accent selector is not present. Preserve the large chord, paired degrees, thin separators, four text controls and the supplied prototype's restrained halo/Bloom visual vocabulary; earlier Coral Bloom, Aurora and Studio Rack are historical alternatives.
 - Motion has exactly two user choices: On (adaptive) and Off. On responds automatically to output level/volume and semantic active-instrument activity using a smoothed bounded envelope, with musical motion tied to the shared clock. There is no manual Quiet/Expressive/intensity/speed selector. Off cancels every pulse, orbit, morph travel and tween; truthful chord, value, playback and record/save data still update instantly. The supplied loudness/layer sliders are simulation inputs, not new firmware settings or evidence of eight instrument parts. Measure display, input, memory and audio/USB timing on the FM-1.
-- HOME from another screen returns to Progressions Core. Further HOME taps cycle Core/Sound/Texture/Groove/Perform without changing any parameter; SELECT still browses the complete catalogue, PRESETS still selects chord sound, ALGORITHM keeps its scene/workspace role and OCT± stays musical. Four text columns and a subtle bank indicator make each current mapping visible.
+- HOME from another screen returns to Progressions Core. Further HOME taps cycle Core/Sound/Texture/Groove/Perform/Keyboard without changing any parameter; SELECT still browses the complete catalogue, PRESETS still selects chord sound, ALGORITHM keeps its scene/workspace role and OCT± stays musical. The five musical pages show four text control columns; Keyboard instead uses the full display for the key guide and disables all four knobs.
 - HOME Perform is Fill / Drop drums / Bring back / Tempo. Moments commit at bar boundaries; Fill lasts one bar and returns automatically, Drop leaves chords and bass running, Back restores groove phase with a downbeat bloom. Motion Off keeps static truth. V1 is live-only; Breakdown and separate multi-bar builds are deferred.
+- HOME Keyboard / Learn is page 6/6 after Perform. It shows the current physical key assignments, root notes/degrees, normal live/latched states and the last pressed key’s full name and explanation. K1–K4 are inactive; the full screen belongs to the guide. HOME wraps to Core. Key/scale/OCT and Manual/Auto/reassigned modifiers update from their existing owners.
 
 ## Design and release reference
 

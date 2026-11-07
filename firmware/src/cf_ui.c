@@ -1539,6 +1539,8 @@ static void ui_note_key_aged(int key, int down, int age_ms)   /* age_ms: -1 the 
     int idx;
     if (sq_key(key, down))                       /* (DRUMS: the keys pick the drum and set the steps) */
         return;
+    if (down && key >= 0 && key < CF_NKEYS && home_stage() && cf_home_bank == CF_HB_LEARN)
+        cf_learn_focus = (uint8_t)key; /* observe the normal play path; never consume the key */
     if (cu.scr == SCR_EDIT && cf_key_is_upper(key)) {   /* EDIT: OP1..OP6 PIT GLO pick, MONO / POLY: bass / chords */
         int u = 0, k;
         for (k = 0; k < key; k++)

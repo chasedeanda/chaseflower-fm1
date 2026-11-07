@@ -47,8 +47,9 @@ retained in their bounded nameplate. Actual TFT readability still needs review.
 
 ## Fills, drops and returns
 
-HOME now cycles **Core → Sound → Texture → Groove → Perform**. Choose a rhythm,
-press PLAY, and open **Perform 5/5**:
+HOME now cycles **Core → Sound → Texture → Groove → Perform → Keyboard**.
+Keyboard retains its full physical key guide and four inactive knobs.
+Choose a rhythm, press PLAY, and open **Perform 5/6**:
 
 | Control | Action |
 | --- | --- |

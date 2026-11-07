@@ -6,7 +6,7 @@ Engineering preview: native HOME uses the approved Devil/Ember or Cat/Plum masco
 
 Start with the [implementation plan](IMPLEMENTATION-PLAN.md), [historical adaptive study](instrument-teal/prototype.html) and [motion specification](MOTION-SPEC.md).
 
-Design version 0.4, 2026-11-07. 206 screen/state definitions and 38 workflows share canonical JSON with the board and player guide.
+Design version 0.4, 2026-11-07. 207 screen/state definitions and 39 workflows share canonical JSON with the board and player guide.
 
 ## Product contracts
 
@@ -22,10 +22,11 @@ Design version 0.4, 2026-11-07. 206 screen/state definitions and 38 workflows sh
 10. Songs supports selected-row Load, Rename, Duplicate and Delete, plus counted Clear Recordings/Clear All actions. Bulk clear excludes factory templates, the protected working draft and Pending captures. A Pending capture can be discarded only through its own explicit selected action.
 11. The selected current HOME appearance is the owner-approved soft mascot reference; the earlier adaptive prototype remains preserved as design history. The approved mascot build uses Devil/Ember by default and Cat/Plum as its only alternative. Character and theme are coupled; a separate theme/accent selector is not present. Preserve the large chord, paired degrees, thin separators, four text controls and the supplied prototype's restrained halo/Bloom visual vocabulary; earlier Coral Bloom, Aurora and Studio Rack are historical alternatives.
 12. Motion has exactly two user choices: On (adaptive) and Off. On responds automatically to output level/volume and semantic active-instrument activity using a smoothed bounded envelope, with musical motion tied to the shared clock. There is no manual Quiet/Expressive/intensity/speed selector. Off cancels every pulse, orbit, morph travel and tween; truthful chord, value, playback and record/save data still update instantly. The supplied loudness/layer sliders are simulation inputs, not new firmware settings or evidence of eight instrument parts. Measure display, input, memory and audio/USB timing on the FM-1.
-13. HOME from another screen returns to Progressions Core. Further HOME taps cycle Core/Sound/Texture/Groove/Perform without changing any parameter; SELECT still browses the complete catalogue, PRESETS still selects chord sound, ALGORITHM keeps its scene/workspace role and OCT± stays musical. Four text columns and a subtle bank indicator make each current mapping visible.
+13. HOME from another screen returns to Progressions Core. Further HOME taps cycle Core/Sound/Texture/Groove/Perform/Keyboard without changing any parameter; SELECT still browses the complete catalogue, PRESETS still selects chord sound, ALGORITHM keeps its scene/workspace role and OCT± stays musical. The five musical pages show four text control columns; Keyboard instead uses the full display for the key guide and disables all four knobs.
 14. HOME Perform is Fill / Drop drums / Bring back / Tempo. Moments commit at bar boundaries; Fill lasts one bar and returns automatically, Drop leaves chords and bass running, Back restores groove phase with a downbeat bloom. Motion Off keeps static truth. V1 is live-only; Breakdown and separate multi-bar builds are deferred.
-15. No image, label or example value in this board is a physical-device measurement. Fonts, partial redraws, storage limits and audio/USB timing need linked-build and FM-1 verification before release.
-16. Advanced FM6/VA pages enumerate retained capabilities and repeatable control templates. Keep a usable Advanced Sound route while cosmetic migration proceeds; rewriting every advanced page is not a gate for the first audible progression-playback milestone.
+15. HOME Keyboard / Learn is page 6/6 after Perform. It shows the current physical key assignments, root notes/degrees, normal live/latched states and the last pressed key’s full name and explanation. K1–K4 are inactive; the full screen belongs to the guide. HOME wraps to Core. Key/scale/OCT and Manual/Auto/reassigned modifiers update from their existing owners.
+16. No image, label or example value in this board is a physical-device measurement. Fonts, partial redraws, storage limits and audio/USB timing need linked-build and FM-1 verification before release.
+17. Advanced FM6/VA pages enumerate retained capabilities and repeatable control templates. Keep a usable Advanced Sound route while cosmetic migration proceeds; rewriting every advanced page is not a gate for the first audible progression-playback milestone.
 
 ## Delivery
 
@@ -62,7 +63,7 @@ Browse and hear the complete catalogue with a large chord hero, paired degree/na
 | Metre | 4/4 |
 | Tempo | 108 BPM |
 | Phrase | IV / Bbmaj7 → V / C7 → vi / Dm7 → I / Fmaj7 |
-| Bank | CORE 1/5 |
+| Bank | CORE 1/6 |
 
 | Input | Action |
 | --- | --- |
@@ -72,7 +73,7 @@ Browse and hear the complete catalogue with a large chord hero, paired degree/na
 | K2 | Key: F |
 | K3 | Scale: Major |
 | K4 | Tempo: 108 quarter-note BPM |
-| HOME | While already on Progressions, cycle CORE → SOUND → TEXTURE → GROOVE → PERFORM. From any other screen or secondary scene, return Progressions CORE. |
+| HOME | While already on Progressions, cycle CORE → SOUND → TEXTURE → GROOVE → PERFORM → KEYBOARD. From any other screen or secondary scene, return Progressions CORE. |
 | PLAY | Start this selected progression at slot 1 with its groove; stop if transport is running. |
 | REC | From Progressions: stopped → one-bar count-in; running → arm next bar. During capture → finish at next bar. Every capture creates a new Song copy. |
 | EDIT | Open the explicitly focused progression slot; otherwise a unique live match, otherwise slot 1. |
@@ -117,7 +118,7 @@ Browse and hear the complete catalogue with a large chord hero, paired degree/na
 2. In CORE use K1 Rhythm, K2 Key, K3 Scale and K4 Tempo.
 3. Press PLAY; tap HOME while on Progressions to cycle the visible live banks.
 
-**Related:** HOME_PENDING, ACC_GROOVE, EDIT_HARMONY, LAB_NOTES, IDEA_LIBRARY, HOME_SOUND, HOME_TEXTURE, HOME_GROOVE, CTRL-BANKS, HOME_PERFORM
+**Related:** HOME_PENDING, ACC_GROOVE, EDIT_HARMONY, LAB_NOTES, IDEA_LIBRARY, HOME_SOUND, HOME_TEXTURE, HOME_GROOVE, CTRL-BANKS, HOME_PERFORM, HOME_KEYBOARD
 
 ### HOME_PENDING — Progressions · Next Song Queued
 
@@ -141,7 +142,7 @@ Keep the current sound truthful while a browsed song waits for the next bar.
 | Key / scale | F Major |
 | Metre | 4/4 |
 | Position | 3 / 4 |
-| Bank | CORE 1/5 |
+| Bank | CORE 1/6 |
 
 | Input | Action |
 | --- | --- |
@@ -1642,7 +1643,7 @@ Record the performance heard on Progressions while HOME stays visible.
 | Recording | Armed · next bar |
 | Starts | Next downbeat |
 | Source | Current audible progression/manual/groove |
-| Bank | CORE 1/5 |
+| Bank | CORE 1/6 |
 
 | Input | Action |
 | --- | --- |
@@ -1698,7 +1699,7 @@ Record the performance heard on Progressions while HOME stays visible.
 | Recording | Count-in · 1 bar |
 | Count | 3 → 2 → 1 |
 | Source | Selected progression + groove |
-| Bank | CORE 1/5 |
+| Bank | CORE 1/6 |
 
 | Input | Action |
 | --- | --- |
@@ -1755,7 +1756,7 @@ Record the performance heard on Progressions while HOME stays visible.
 | Capture | What you hear · notes + performance events |
 | Limit | 128 bars / 1024 musical events design bound |
 | Source | Progression + live overrides + groove |
-| Bank | CORE 1/5 |
+| Bank | CORE 1/6 |
 
 | Input | Action |
 | --- | --- |
@@ -1814,7 +1815,7 @@ Record the performance heard on Progressions while HOME stays visible.
 | Recording | Recording ended at capacity |
 | Result | Captured content retained |
 | Next | New Song copy · Pending/Saving |
-| Bank | CORE 1/5 |
+| Bank | CORE 1/6 |
 
 | Input | Action |
 | --- | --- |
@@ -3168,7 +3169,7 @@ Record the performance heard on Progressions while HOME stays visible.
 | Recording | No musical content captured |
 | Result | No Song row created |
 | Current | Source saved Song unchanged |
-| Bank | CORE 1/5 |
+| Bank | CORE 1/6 |
 
 | Input | Action |
 | --- | --- |
@@ -3684,7 +3685,7 @@ Record the performance heard on Progressions while HOME stays visible.
 | Recording | Finishing · next bar |
 | Current | What you hear is still captured |
 | Next | Stop accompaniment and save a new Song copy |
-| Bank | CORE 1/5 |
+| Bank | CORE 1/6 |
 
 | Input | Action |
 | --- | --- |
@@ -3921,7 +3922,7 @@ Keep the edited fx preset and prior valid record intact without displaying Song-
 
 Keep the chord visible while the four physical knobs expose audited SOUND controls.
 
-**Entry:** On Progressions tap HOME until SOUND 2/5 appears, or open this bank from CTRL-BANKS.
+**Entry:** On Progressions tap HOME until SOUND 2/6 appears, or open this bank from CTRL-BANKS.
 **Exit:** Any destination button opens its workspace without stopping playback.
 
 | Visible field | Reference value/state |
@@ -3939,7 +3940,7 @@ Keep the chord visible while the four physical knobs expose audited SOUND contro
 | Metre | 4/4 |
 | Tempo | 108 BPM |
 | Phrase | IV / Bbmaj7 → V / C7 → vi / Dm7 → I / Fmaj7 |
-| Bank | SOUND 2/5 |
+| Bank | SOUND 2/6 |
 | Chord sound | Dusty EP |
 | Bass sound | Round Bass |
 | Chord level | 78% |
@@ -3953,7 +3954,7 @@ Keep the chord visible while the four physical knobs expose audited SOUND contro
 | K2 | Bass sound: Round Bass |
 | K3 | Chord level: 78% |
 | K4 | Bass level: 55% |
-| HOME | While already on Progressions, cycle CORE → SOUND → TEXTURE → GROOVE → PERFORM. From any other screen or secondary scene, return Progressions CORE. |
+| HOME | While already on Progressions, cycle CORE → SOUND → TEXTURE → GROOVE → PERFORM → KEYBOARD. From any other screen or secondary scene, return Progressions CORE. |
 | PLAY | Start this selected progression at slot 1 with its groove; stop if transport is running. |
 | REC | From Progressions: stopped → one-bar count-in; running → arm next bar. During capture → finish at next bar. Every capture creates a new Song copy. |
 | EDIT | Open the explicitly focused progression slot; otherwise a unique live match, otherwise slot 1. |
@@ -3998,7 +3999,7 @@ Keep the chord visible while the four physical knobs expose audited SOUND contro
 2. Read the bank/count and values before turning a knob.
 3. Keep playing; tap HOME again to continue the cycle.
 
-**Related:** HOME_STAGE, CTRL-BANKS, HOME_PERFORM
+**Related:** HOME_STAGE, CTRL-BANKS, HOME_PERFORM, HOME_KEYBOARD
 
 ### HOME_TEXTURE — Progressions · TEXTURE
 
@@ -4006,7 +4007,7 @@ Keep the chord visible while the four physical knobs expose audited SOUND contro
 
 Keep the chord visible while the four physical knobs expose audited TEXTURE controls.
 
-**Entry:** On Progressions tap HOME until TEXTURE 3/5 appears, or open this bank from CTRL-BANKS.
+**Entry:** On Progressions tap HOME until TEXTURE 3/6 appears, or open this bank from CTRL-BANKS.
 **Exit:** Any destination button opens its workspace without stopping playback.
 
 | Visible field | Reference value/state |
@@ -4024,7 +4025,7 @@ Keep the chord visible while the four physical knobs expose audited TEXTURE cont
 | Metre | 4/4 |
 | Tempo | 108 BPM |
 | Phrase | IV / Bbmaj7 → V / C7 → vi / Dm7 → I / Fmaj7 |
-| Bank | TEXTURE 3/5 |
+| Bank | TEXTURE 3/6 |
 | Reverb mix | 24% |
 | Delay mix | 18% |
 | Chorus mix | 18% |
@@ -4038,7 +4039,7 @@ Keep the chord visible while the four physical knobs expose audited TEXTURE cont
 | K2 | Delay mix: 18% |
 | K3 | Chorus mix: 18% |
 | K4 | Glide: 120 ms |
-| HOME | While already on Progressions, cycle CORE → SOUND → TEXTURE → GROOVE → PERFORM. From any other screen or secondary scene, return Progressions CORE. |
+| HOME | While already on Progressions, cycle CORE → SOUND → TEXTURE → GROOVE → PERFORM → KEYBOARD. From any other screen or secondary scene, return Progressions CORE. |
 | PLAY | Start this selected progression at slot 1 with its groove; stop if transport is running. |
 | REC | From Progressions: stopped → one-bar count-in; running → arm next bar. During capture → finish at next bar. Every capture creates a new Song copy. |
 | EDIT | Open the explicitly focused progression slot; otherwise a unique live match, otherwise slot 1. |
@@ -4083,7 +4084,7 @@ Keep the chord visible while the four physical knobs expose audited TEXTURE cont
 2. Read the bank/count and values before turning a knob.
 3. Keep playing; tap HOME again to continue the cycle.
 
-**Related:** HOME_STAGE, CTRL-BANKS, HOME_PERFORM
+**Related:** HOME_STAGE, CTRL-BANKS, HOME_PERFORM, HOME_KEYBOARD
 
 ### HOME_GROOVE — Progressions · GROOVE
 
@@ -4091,7 +4092,7 @@ Keep the chord visible while the four physical knobs expose audited TEXTURE cont
 
 Keep the chord visible while the four physical knobs expose audited GROOVE controls.
 
-**Entry:** On Progressions tap HOME until GROOVE 4/5 appears, or open this bank from CTRL-BANKS.
+**Entry:** On Progressions tap HOME until GROOVE 4/6 appears, or open this bank from CTRL-BANKS.
 **Exit:** Any destination button opens its workspace without stopping playback.
 
 | Visible field | Reference value/state |
@@ -4109,7 +4110,7 @@ Keep the chord visible while the four physical knobs expose audited GROOVE contr
 | Metre | 4/4 |
 | Tempo | 108 BPM |
 | Phrase | IV / Bbmaj7 → V / C7 → vi / Dm7 → I / Fmaj7 |
-| Bank | GROOVE 4/5 |
+| Bank | GROOVE 4/6 |
 | Kit | Dust |
 | Drum level | 68% |
 | Swing | 38% |
@@ -4123,7 +4124,7 @@ Keep the chord visible while the four physical knobs expose audited GROOVE contr
 | K2 | Drum level: 68% |
 | K3 | Swing: 38% |
 | K4 | Click: Off |
-| HOME | While already on Progressions, cycle CORE → SOUND → TEXTURE → GROOVE → PERFORM. From any other screen or secondary scene, return Progressions CORE. |
+| HOME | While already on Progressions, cycle CORE → SOUND → TEXTURE → GROOVE → PERFORM → KEYBOARD. From any other screen or secondary scene, return Progressions CORE. |
 | PLAY | Start this selected progression at slot 1 with its groove; stop if transport is running. |
 | REC | From Progressions: stopped → one-bar count-in; running → arm next bar. During capture → finish at next bar. Every capture creates a new Song copy. |
 | EDIT | Open the explicitly focused progression slot; otherwise a unique live match, otherwise slot 1. |
@@ -4168,7 +4169,7 @@ Keep the chord visible while the four physical knobs expose audited GROOVE contr
 2. Read the bank/count and values before turning a knob.
 3. Keep playing; tap HOME again to continue the cycle.
 
-**Related:** HOME_STAGE, CTRL-BANKS, HOME_PERFORM
+**Related:** HOME_STAGE, CTRL-BANKS, HOME_PERFORM, HOME_KEYBOARD
 
 ### HOME_PERFORM — Progressions · PERFORM
 
@@ -4176,12 +4177,12 @@ Keep the chord visible while the four physical knobs expose audited GROOVE contr
 
 Trigger one-bar fills, drum drops and downbeat returns while the sounding chord and phrase stay visible.
 
-**Entry:** On Progressions tap HOME until PERFORM 5/5 appears.
+**Entry:** On Progressions tap HOME until PERFORM 5/6 appears.
 **Exit:** Any destination button opens its workspace without stopping playback.
 
 | Visible field | Reference value/state |
 | --- | --- |
-| Bank | PERFORM 5/5 |
+| Bank | PERFORM 5/6 |
 | Header | FILL NEXT / DROP NEXT / BACK NEXT → FILL / DRUMS OFF / PLAY |
 | Now / degree / phrase | Actual harmony and transport cursor stay visible. |
 
@@ -4193,7 +4194,7 @@ Trigger one-bar fills, drum drops and downbeat returns while the sounding chord 
 | K2 | Turn either way: Drop drums next bar; keep chords/bass and phase. |
 | K3 | Turn either way: Bring back on the next downbeat. |
 | K4 | Tempo; external MIDI clock retains ownership. |
-| HOME | While already on Progressions, cycle CORE → SOUND → TEXTURE → GROOVE → PERFORM. From any other screen or secondary scene, return Progressions CORE. |
+| HOME | While already on Progressions, cycle CORE → SOUND → TEXTURE → GROOVE → PERFORM → KEYBOARD. From any other screen or secondary scene, return Progressions CORE. |
 | PLAY | Start this selected progression at slot 1 with its groove; stop if transport is running. |
 | REC | From Progressions: stopped → one-bar count-in; running → arm next bar. During capture → finish at next bar. Every capture creates a new Song copy. |
 | EDIT | Open the explicitly focused progression slot; otherwise a unique live match, otherwise slot 1. |
@@ -4219,10 +4220,70 @@ Trigger one-bar fills, drum drops and downbeat returns while the sounding chord 
 
 **Player instructions:**
 1. Choose a groove and press PLAY.
-2. Tap HOME until PERFORM 5/5. Turn K1 for Fill, K2 for Drop, K3 for Back.
+2. Tap HOME until PERFORM 5/6. Turn K1 for Fill, K2 for Drop, K3 for Back.
 3. Read NEXT until the downbeat commits the action; keep playing roots/modifiers.
 
-**Related:** HOME_STAGE, HOME_GROOVE, ACC_GROOVE
+**Related:** HOME_STAGE, HOME_GROOVE, ACC_GROOVE, HOME_KEYBOARD
+
+### HOME_KEYBOARD — Keyboard / Learn
+
+**Group:** Home · **Delivery:** Play — first milestone · **Template:** text
+
+See all 27 physical keys with their current notes, degrees, chord choices and HOLD; play normally and read a plain-language explanation. The four knobs are inactive.
+
+**Entry:** On HOME tap through Core, Sound, Texture, Groove and Perform to KEYBOARD 6/6.
+**Exit:** Any destination button opens its workspace without stopping playback.
+
+| Visible field | Reference value/state |
+| --- | --- |
+| HOME page | KEYBOARD 6/6 |
+| Layout | 11 staggered upper chord keys / 16 lower root keys |
+| Current sound | Now or Last chord and actual note names |
+| Key guide | Current key/scale/OCT root labels and actual Manual/Auto modifier assignments |
+| Focused key | Full assignment name and two explanation lines |
+| Knobs | Inactive; no four-control footer |
+
+| Input | Action |
+| --- | --- |
+| SELECT | Browse one complete wrapping factory song list; use the pending selection as the next turn's origin. No tag/key/scale filtering or Apply step. |
+| ALGORITHM | Keep the existing secondary-scene role; bank switching uses HOME, not ALGORITHM. Other workspaces keep their named-tab role. |
+| K1 | Inactive |
+| K2 | Inactive |
+| K3 | Inactive |
+| K4 | Inactive |
+| HOME | While already on Progressions, cycle CORE → SOUND → TEXTURE → GROOVE → PERFORM → KEYBOARD. From any other screen or secondary scene, return Progressions CORE. |
+| PLAY | Start this selected progression at slot 1 with its groove; stop if transport is running. |
+| REC | From Progressions: stopped → one-bar count-in; running → arm next bar. During capture → finish at next bar. Every capture creates a new Song copy. |
+| EDIT | Open the explicitly focused progression slot; otherwise a unique live match, otherwise slot 1. |
+| SEL | Open LAB_NOTES on Now or the last sounding chord. |
+| SAVE | Open Songs library; this alone neither saves nor changes the loaded Song. |
+| SEQ | Open Accompaniment on Groove. |
+| ARP | Open Motion on Arpeggio. |
+| ENV | Open Envelope. |
+| LFO | Open Bass on Sound. |
+| FX | Open Effects on the last effect. |
+| GLO | Open System; Sound → Presets and Sound → Advanced remain reachable there. |
+
+**State coverage:**
+- Implemented native source preview from main eb51a3a; physical FM-1 review pending.
+- Upper/lower positions match the physical 27-key layout. Root labels come from cf_key_root_note and key-aware spelling; numbers below roots are scale degrees.
+- Upper labels follow the current manual forms or Harmony On modifier slots, including reassignment, conflicts and the actual HOLD key. No hardcoded preset diagram.
+- Press a key to play it normally and retain focus for the full assignment name and explanation after release. Reading this view never auditions, consumes a key or changes ownership.
+- Existing held/latched states use fills; the last inspected key also has an underline/outline. HOLD, releases, live precedence and progression/groove clocks remain unchanged.
+- K1/K2/K3/K4 are all inactive in both directions, including during playback or recording. The entire lower screen is available for the keyboard and explanations.
+- SELECT, PRESETS, MASTER, OCT and global destination/transport buttons keep their existing behavior. HOME from Keyboard wraps to Core; HOME from another workspace returns Core.
+- Now/Last notes come from actual output, separate from physical input keys. This is a physical control guide, not a five-octave output piano. The legacy output-keyboard view remains available in Display.
+- Unsupported Harmony scale/quantize choices explicitly say unavailable. Seventh help follows quality: major chord maj7 / minor chord m7; suspended choices replace the third while added tones retain it.
+- Motion Off settles without repeat redraws; note, key, assignment and status changes still update. Theme palettes share identical controls.
+- Recording and queued setup status remain visible above the keyboard; this view does not change recording behavior or persistence formats.
+
+**Player instructions:**
+1. Tap HOME until KEYBOARD 6/6 appears.
+2. Read the upper chord choices and lower root-note/degree labels.
+3. Play a key; read its full name and explanation while hearing the real result.
+4. Keep playing normally. All four knobs do nothing here. Tap HOME to return to Core.
+
+**Related:** HOME_STAGE, HOME_PERFORM, CTRL-MODIFIERS, CTRL-FORMS, LAB_NOTES
 
 ### SYS-ROOT — Settings
 
@@ -9379,14 +9440,14 @@ Historical exploration; not a route or appearance option in the two-character bu
 
 **Group:** Controls · **Delivery:** Play — first milestone · **Template:** picker
 
-Explain/select five real control banks without sacrificing CORE, catalogue browsing or musical keys.
+Explain five musical control banks plus the sixth Keyboard / Learn HOME page, where all four knobs are inactive.
 
 **Entry:** SYS-ROOT → Controls → Live control banks
 **Exit:** SEL → chosen HOME bank; GLO → CTRL-ROOT; HOME → Progressions CORE
 
 | Visible field | Reference value/state |
 | --- | --- |
-| Current bank | CORE 1/5 |
+| Current bank | CORE 1/6 |
 | Gesture | Tap HOME on Progressions |
 | From elsewhere | HOME returns CORE |
 | Validation | Physical gesture test required |
@@ -9405,17 +9466,18 @@ Explain/select five real control banks without sacrificing CORE, catalogue brows
 
 **State coverage:**
 - Recommended mapping reuses the existing HOME-view gesture; verify physical scanning and timing before release.
-- On Progressions HOME cycles CORE → SOUND → TEXTURE → GROOVE. From other screens or secondary scenes HOME returns Progressions CORE.
+- On Progressions HOME cycles CORE → SOUND → TEXTURE → GROOVE → PERFORM → KEYBOARD. From other screens or secondary scenes HOME returns Progressions CORE.
 - No hold chord or encoder press. PRESETS remains global chord sound; ALGORITHM keeps scene/tab roles; OCT−/OCT+ stay musical.
 - A bank switch alone changes no sound, value, ownership, capture or transport cursor. Only knob turns edit the labelled parameter.
-- SOUND/TEXTURE/GROOVE use audited existing controls; Human/Fill and unsupported prototype macros are not operational parameters.
+- SOUND/TEXTURE/GROOVE use audited existing controls; Human and unsupported prototype macros are not operational parameters.
+- Keyboard is page 6/6. All four knobs are inactive; live note keys retain their normal play path and show assignment explanations.
 
 **Player instructions:**
-1. On Progressions tap HOME until the bank name/count shows the desired four controls.
+1. On Progressions tap HOME until the desired bank or Keyboard page appears.
 2. Read the bank and values before turning a knob.
 3. From elsewhere HOME returns CORE, or choose a bank here with SELECT then SEL.
 
-**Related:** HOME_STAGE, HOME_SOUND, HOME_TEXTURE, HOME_GROOVE, CTRL-ROOT
+**Related:** HOME_STAGE, HOME_SOUND, HOME_TEXTURE, HOME_GROOVE, CTRL-ROOT, HOME_PERFORM, HOME_KEYBOARD
 
 ## Workflow contracts
 
@@ -9678,7 +9740,7 @@ Keep protected musical edits outside library clear scope.
 | 3 | IDEA_UNDO | Manage → Undo restores one musical gesture. | Saved-row deletion is not disguised as musical undo. |
 | 4 | IDEA_RECOVERY | After restart Recover the last valid stopped checkpoint. | Opens stopped; a never-written Pending recording is not falsely claimed recoverable. |
 
-### WF-LIVE-BANKS — Use the five live control banks
+### WF-LIVE-BANKS — Use the six HOME pages
 
 Reach existing controls without sacrificing CORE, full catalogue browsing or musical keys.
 
@@ -9689,7 +9751,8 @@ Reach existing controls without sacrificing CORE, full catalogue browsing or mus
 | 3 | HOME_TEXTURE | Tap HOME again | TEXTURE: Reverb mix / Delay mix / Chorus mix / Glide |
 | 4 | HOME_GROOVE | Tap HOME again | GROOVE: Kit / Drum level / Swing / Click |
 | 5 | HOME_PERFORM | Tap HOME again | PERFORM: Fill / Drop / Back / Tempo. Turning K1–K3 triggers a bar-queued moment; bank selection alone changes no music. |
-| 6 | HOME_STAGE | Tap HOME again | CORE returns. SELECT still browses all songs; PRESETS stays chord sound; OCT keys remain musical. |
+| 6 | HOME_KEYBOARD | Tap HOME after Perform | KEYBOARD 6/6 uses the full screen for current key assignments and explanations. All four knobs are inactive. |
+| 7 | HOME_STAGE | Tap HOME again | CORE returns. SELECT still browses all songs; PRESETS stays chord sound; OCT keys remain musical. |
 
 ### WF_CHORD_LIBRARY — Browse, audition and replace a chord
 
@@ -9712,6 +9775,17 @@ Add live dramatic moments from HOME; Breakdown is deferred.
 | 2 | HOME_PERFORM | Turn K1 once | FILL NEXT becomes a one-bar Fill at the next bar; the groove returns automatically with a bloom. |
 | 3 | HOME_PERFORM | Turn K2, keep playing, then turn K3 when ready | Drums leave next bar; chords and bass continue. BACK NEXT restores drums on the next downbeat. |
 | 4 | HOME_PERFORM | Set Motion Off in Display | The same musical actions work; labels update with no fill animation or bloom. |
+
+### WF-KEYBOARD-LEARN — Learn the physical keys while playing
+
+Understand notes, chord choices and HOLD without leaving HOME or interrupting normal playing.
+
+| Step | Screen | Physical action | Result |
+| --- | --- | --- | --- |
+| 1 | HOME_KEYBOARD | Tap HOME until Keyboard 6/6 | All 27 physical keys are labelled; root notes and degrees follow the active key, scale and octave. |
+| 2 | HOME_KEYBOARD | Press an upper chord key, then a lower root key | Normal live playing continues; the last key has its full name and plain-language explanation. |
+| 3 | HOME_KEYBOARD | Turn any of K1–K4 | Nothing changes. The knob area belongs to the key guide on this page. |
+| 4 | HOME_STAGE | Tap HOME once more | Core returns with its normal four musical knobs. Notes, groove and transport retain their owners. |
 
 ### SYS-WF-HARMONY — Enable simple Harmony
 

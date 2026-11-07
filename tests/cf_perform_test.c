@@ -140,6 +140,7 @@ static void melody_and_controls(void)
     cf_snapshot();cf_knob_t k={0};ui_knob_info(2,&k);CHECK(!strcmp(k.name,"BACK")&&!strcmp(k.val,"Queued"));
     ui_knob_turn(3,1);CHECK(cs.bpm==bpm+1);cs.clock_in=1;ui_knob_turn(3,10);CHECK(cs.bpm==bpm+1);cs.clock_in=0;
     /* Navigation never consumes note keys; scene encoder leaves the transient view. */
+    ui_button(B_HOME);CHECK(home_stage()&&cf_home_bank==CF_HB_LEARN);
     ui_button(B_HOME);CHECK(home_stage()&&cf_home_bank==CF_HB_CORE);
     clean();cf_snapshot();cf_home_bank=CF_HB_PERFORM;ui_knob_turn(0,1);CHECK(cf_evq_w==cf_evq_r);
     cf_home_bank=CF_HB_CORE;

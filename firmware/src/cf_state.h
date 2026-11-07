@@ -105,9 +105,10 @@ enum { CF_SKIN_EMBER, CF_SKIN_PLUM, CF_SKIN_N };
 enum { CF_SKIN_TEAL=0, CF_SKIN_STUDIO=1, CF_SKIN_EDITORIAL=2, CF_SKIN_LEGACY_N=3 };
 static const char *const CF_SKIN_NAME[] = {"Devil", "Cat"};
 static uint8_t cf_skin, cf_motion = 1;
-enum { CF_HB_CORE, CF_HB_SOUND, CF_HB_TEXTURE, CF_HB_GROOVE, CF_HB_PERFORM, CF_HB_N };
-static const char *const CF_HOME_BANK_NAME[] = {"CORE", "SOUND", "TEXTURE", "GROOVE", "PERFORM"};
+enum { CF_HB_CORE, CF_HB_SOUND, CF_HB_TEXTURE, CF_HB_GROOVE, CF_HB_PERFORM, CF_HB_LEARN, CF_HB_N };
+static const char *const CF_HOME_BANK_NAME[] = {"CORE", "SOUND", "TEXTURE", "GROOVE", "PERFORM", "KEYBOARD"};
 static uint8_t cf_home_bank;
+static uint8_t cf_learn_focus = 255; /* last physical/FM-1-mapped key played on Keyboard; session only */
 static uint32_t cf_home_bank_ms, cf_motion_epoch;
 static int8_t cf_nav_dir = 1;
 static uint8_t cf_click_level = 35;

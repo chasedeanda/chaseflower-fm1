@@ -7297,12 +7297,12 @@
       "title": "Live Control Banks",
       "phase": 1,
       "kind": "picker",
-      "purpose": "Explain/select five real control banks without sacrificing CORE, catalogue browsing or musical keys.",
+      "purpose": "Explain five musical control banks plus the sixth Keyboard / Learn HOME page, where all four knobs are inactive.",
       "entry": "SYS-ROOT → Controls → Live control banks",
       "fields": [
         {
           "label": "Current bank",
-          "value": "CORE 1/5"
+          "value": "CORE 1/6"
         },
         {
           "label": "Gesture",
@@ -7343,7 +7343,11 @@
         },
         {
           "label": "PERFORM",
-          "value": "Fill / Drop / Back / Tempo"
+          "value": "Fill / Drop drums / Back / Tempo"
+        },
+        {
+          "label": "KEYBOARD",
+          "value": "Full physical key guide / knobs inactive"
         }
       ],
       "select": "Choose a bank inside this detail page. SELECT on HOME always remains the complete catalogue.",
@@ -7356,13 +7360,14 @@
       "exit": "SEL → chosen HOME bank; GLO → CTRL-ROOT; HOME → Progressions CORE",
       "states": [
         "Recommended mapping reuses the existing HOME-view gesture; verify physical scanning and timing before release.",
-        "On Progressions HOME cycles CORE → SOUND → TEXTURE → GROOVE. From other screens or secondary scenes HOME returns Progressions CORE.",
+        "On Progressions HOME cycles CORE → SOUND → TEXTURE → GROOVE → PERFORM → KEYBOARD. From other screens or secondary scenes HOME returns Progressions CORE.",
         "No hold chord or encoder press. PRESETS remains global chord sound; ALGORITHM keeps scene/tab roles; OCT−/OCT+ stay musical.",
         "A bank switch alone changes no sound, value, ownership, capture or transport cursor. Only knob turns edit the labelled parameter.",
-        "SOUND/TEXTURE/GROOVE use audited existing controls; Human/Fill and unsupported prototype macros are not operational parameters."
+        "SOUND/TEXTURE/GROOVE use audited existing controls; Human and unsupported prototype macros are not operational parameters.",
+        "Keyboard is page 6/6. All four knobs are inactive; live note keys retain their normal play path and show assignment explanations."
       ],
       "playerSteps": [
-        "On Progressions tap HOME until the bank name/count shows the desired four controls.",
+        "On Progressions tap HOME until the desired bank or Keyboard page appears.",
         "Read the bank and values before turning a knob.",
         "From elsewhere HOME returns CORE, or choose a bank here with SELECT then SEL."
       ],
@@ -7371,7 +7376,9 @@
         "HOME_SOUND",
         "HOME_TEXTURE",
         "HOME_GROOVE",
-        "CTRL-ROOT"
+        "CTRL-ROOT",
+        "HOME_PERFORM",
+        "HOME_KEYBOARD"
       ]
     }
   ],
