@@ -175,6 +175,7 @@ static void draw_piano(int x, int y, int lo, int octs, int wk, int h, uint8_t (*
 /* ------------------------------------------------- GLOBAL > Display --- */
 /* COLOR: every theme a swatch, this one raised and framed; BACKDROP: the three behind the plant, small, this one
  * framed. Each knob's choices in a row, the one taken marked */
+#if CF_SCENES
 static void cv_backdrop_thumb(int x, int y, int w, int h, uint32_t bd, int on)
 {
     int coral = flo.species == FL_SP_CORAL, i;
@@ -211,9 +212,12 @@ static void cv_backdrop_thumb(int x, int y, int w, int h, uint32_t bd, int on)
         fb_frame(x - 1, y - 1, w + 2, h + 2, FL_BG2);
     }
 }
+#endif
 static void view_display(int x0)
 {
+#if CF_SCENES
     static const char *const BD[FL_NBD] = {"Scene", "Ripples", "None"};
+#endif
     int i, n = CF_NTHEMES, sw = 14, gap = 6, tw = n * sw + (n - 1) * gap, x = x0 + (216 - tw) / 2, y = VIEW_Y + 4;
     for (i = 0; i < n; i++) {
         int on = i == cs.accent % CF_NTHEMES, xx = x + i * (sw + gap);
@@ -227,12 +231,17 @@ static void view_display(int x0)
             fb_rect(xx, y + 2, sw, sw - 4, c);
         }
     }
+#if CF_SCENES
     y += sw + 18;
     for (i = 0; i < FL_NBD; i++) {
         int w = 52, xx = x0 + 108 - (3 * w + 2 * 16) / 2 + i * (w + 16), on = (uint32_t)i == cs.backdrop % FL_NBD;
         cv_backdrop_thumb(xx, y, w, 28, (uint32_t)i, on);
         fb_text_c(&CF_FONT_UI, xx + w / 2, y + 32, BD[i], on ? FL_INK : FL_INK3, 1);
     }
+#else
+    fb_text_c(&CF_FONT_UI, x0 + 108, y + 34, CF_THEMES[cs.accent % CF_NTHEMES].name, C_ACC(0), 1);
+    fb_text_c(&CF_FONT_UI, x0 + 108, y + 54, cs.boot_sound ? "Startup sound On" : "Startup sound Off", FL_INK2, 1);
+#endif
 }
 
 /* ----------------------------------------------------- GLOBAL > MIDI --- */

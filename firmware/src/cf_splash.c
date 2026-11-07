@@ -3,9 +3,11 @@
  * SAFE MODE keeps its notice; any key, button or encoder skips the animation.
  * The compatible CoralFlower INFO/USB/package identities remain unchanged.
  */
+#if CF_SCENES
 #include "cf_boot.c"
 
 static void cf_splash_frame(uint32_t t) { cf_boot_draw(t); }
+#endif
 
 /* Draw the first frame with IRQs off; continue the animation in the live UI loop. */
 static void cf_splash(void)
@@ -25,15 +27,20 @@ static void cf_splash(void)
         cf_present();
         return;
     }
+#if CF_SCENES
     flora_init(&flo, 0x5EED1u, FLW / 2, FLH + 1);
     flora_set_key(&flo, cs.chord.tonic);
     flo.backdrop = cs.backdrop;
     flora_set_species(&flo, cf_scene() == CF_SCENE_BASS ? FL_SP_CORAL : FL_SP_PLANT);
     cf_splash_frame(0);                          /* fish starts completely off screen */
+#else
+    fb_fill(FL_BG); /* next live frame opens the musical HOME immediately */
+#endif
     cf_present();
 }
 
 /* A frame advances by at most 40 ms; any user input skips straight to HOME. */
+#if CF_SCENES
 static uint8_t cf_intro_on = 1;
 static uint32_t cf_intro_t;
 static int cf_intro_draw(uint32_t dt)
@@ -55,3 +62,8 @@ static int cf_intro_draw(uint32_t dt)
     cf_present();
     return 1;
 }
+
+#else
+static uint8_t cf_intro_on; /* retained for host HAL hooks; no intro code or buffer */
+static int cf_intro_draw(uint32_t dt) { (void)dt; return 0; }
+#endif

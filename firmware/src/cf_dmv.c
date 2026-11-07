@@ -39,7 +39,7 @@ static int dm_plaque_top(void)
  * the carousel showed one place at a time) */
 static void dm_draw_carousel(void)
 {
-    static const char *const NM[2] = {"Sequencer", "Rhythm machine"};
+    static const char *const NM[2] = {"Recordings", "Rhythm machine"};
     int k;
     draw_chip_text_c(Y_VIEW + 54, "[SELECT] pick  [SEQ] open", FL_INK2);
     for (k = 0; k < 2; k++) {
@@ -125,7 +125,7 @@ static void draw_drum(void)
     uint32_t beats = y->beats;                   /* (its own TIME SIG) */
     int wait = cf_sn.dm_on && cf_sn.dm_next == r && cf_sn.dm_r != r, lit = cu.now - cv_turn_ms < 220u && cv_turn_ms;
     char t[40], a[8];
-    cf_scene_render(&flo, &fl_cv);
+    cf_scene_frame();
     draw_plant(Y_VIEW);
     fb_veil(0, Y_VIEW, FB_W, H_VIEW, FL_BG);    /* (the plant faint: the picture leads) */
     /* the head as every section's (rc6, the designer's R1, the owner's pick): the rhythm's name white at the left, the

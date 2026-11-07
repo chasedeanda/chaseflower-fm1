@@ -546,6 +546,7 @@ static void sqp_bars(void)                       /* a bar begins: the bar each t
         sqp.sb[k] = (uint8_t)sq_trk_bar(p, k, sqp.nbar);
 }
 static void sqp_rec_stop(void);
+static void sqp_take_tempo(unsigned pat);
 static void sqp_next_bar(void)
 {
     const sq_pat_t *p = &sq_st.pat[sqp.pat % SQ_NPAT];
@@ -574,6 +575,7 @@ static void sqp_next_bar(void)
             sqp.song = 0;
             sqp.pat = sqp.next;
         }
+        sqp_take_tempo(sqp.pat);
         sqp.next = 0xFF;
 #ifdef CF_TRACE
         fprintf(stderr, "%6u seq comes in: %s%c\n", (unsigned)cf_now_ms, sqp.song ? "the song, " : "", 'A' + sqp.pat);
@@ -770,6 +772,13 @@ static void sqp_stop(void)
 /* PLAY: pattern pat round, or (pat SQ_NPAT) the song from place slot; cin: after a bar of count-in. sqp_setup: all
  * but the beat (a rhythm's take, cf_drum.c dmp_take_over, keeps the beat where it is) */
 static void dmp_stop(void);
+static void sqp_take_tempo(unsigned pat)
+{
+    if (pat >= SQ_NPAT || !(sq_meta_known & (1u << pat)) || sq_meta[pat].beats < 2 || sq_meta[pat].beats > 7 ||
+        sq_meta[pat].bpm < 30 || sq_meta[pat].bpm > 300) return;
+    sq_beats = cfm.beats = sq_meta[pat].beats;
+    if (!cfp_cfg.clock_in) cfm.bpm = sq_meta[pat].bpm;
+}
 static void sqp_setup(uint32_t pat, uint32_t slot)
 {
     cpa_stop();
@@ -779,6 +788,7 @@ static void sqp_setup(uint32_t pat, uint32_t slot)
     sqp.song = pat >= SQ_NPAT;
     sqp.slot = (uint8_t)(sqp.song && sq_st.song.n ? slot % sq_st.song.n : 0u);
     sqp.pat = (uint8_t)(sqp.song ? sq_st.song.pat[sqp.slot] % SQ_NPAT : pat);
+    sqp_take_tempo(sqp.pat);
     for (i = 0; sqp.song && i < sq_st.song.n && sq_empty(&sq_st.pat[sqp.pat]); i++) {   /* (an empty one passed over,
                                                   * as the song goes on: it played a silent bar first) */
         sqp.slot = (uint8_t)((sqp.slot + 1u) % sq_st.song.n);

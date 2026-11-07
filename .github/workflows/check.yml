@@ -44,6 +44,9 @@ jobs:
       - name: Generated headers (tools/build.py --gen-only)
         run: python3 tools/build.py --gen-only
 
+      - name: Device resource audit parser and build-flag consistency
+        run: python3 tests/resource_audit_test.py
+
       - name: The unit compiles (an ARM target, every include present)
         run: |
           clang -target armv7m-none-eabi -Os -fno-builtin -w -Ifirmware/hal -Ifirmware/src -Ibuild/gen \
@@ -98,10 +101,19 @@ jobs:
       - name: Progression accompaniment transport, queues, ownership and clocks
         run: sh tools/test_accomp.sh
 
+      - name: Three recordings, legacy archives, save power cuts and flash boundaries
+        run: sh tools/test_recordings.sh
+
+      - name: Full installer, update and backup regression suite
+        run: node web/test_installer.mjs
+
       - name: Diagnostics snapshots, HOME controls and performance report protocol (host HAL)
         run: sh tools/test_diagnostics.sh
 
-      - name: Scenes, Top Lock, bass boot and uninterrupted physical/USB audio (host HAL)
+      - name: Scene-free boot, legacy saves and cross-profile physical/USB/MIDI audio
+        run: sh tools/test_scene_free.sh
+
+      - name: Optional legacy scenes, Top Lock and bass boot (host HAL)
         run: sh tools/test_visuals.sh
 
       - name: The tracked tree is as it was

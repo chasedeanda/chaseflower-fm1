@@ -145,8 +145,7 @@ static void mix_block(int32_t *out, uint32_t n)        /* the audio ISR's block:
 #include "../../firmware/src/panel.c"
 #include "../../firmware/src/storage.c"
 #include "../../firmware/src/cr_bank.c"               /* upreset.c (the flash file), the pools per engine */
-#include "../../firmware/src/flora/flora_canvas.c"
-#include "../../firmware/src/flora/flora.c"
+#include "../../firmware/src/cf_visual.h"
 #define CF_PUMP() cf_ui_pump()
 static void cf_ui_pump(void);
 #include "../../firmware/src/cf_fb.c"

@@ -4,7 +4,7 @@
 set -eu
 cd "$(dirname "$0")/.."
 mkdir -p build/host build/visuals-tests
-cc -std=gnu11 -O2 -w -Itools/emu/web/compat -Ibuild/gen -Ifirmware/src -Itests \
+cc -std=gnu11 -O2 -w -DCF_SCENES=1 -Itools/emu/web/compat -Ibuild/gen -Ifirmware/src -Itests \
    -o build/host/cf_visuals_test tests/cf_visuals_test.c -lm
 build/host/cf_visuals_test > build/visuals-tests/state-draw.log
 tail -1 build/visuals-tests/state-draw.log

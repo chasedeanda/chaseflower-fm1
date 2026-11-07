@@ -1,5 +1,5 @@
 #include "flora.h"
-#include "flora_lut.h"
+#include "flora_math.h"
 #include "flora_pal.h"
 
 enum { FL_K_STEM = 0, FL_K_LEAF, FL_K_PETAL, FL_K_BUD, FL_K_BERRY, FL_K_THORN, FL_K_POLYP };
@@ -14,29 +14,6 @@ enum { P_MOTE = 0, P_BUBBLE, P_PETAL, P_BIG_BUBBLE };        /* particles */
 #define IS_CORAL(s) (((s)->key & KEY_CORAL) != 0)
 
 /* ---- integer helpers ---------------------------------------------------------------------------------------- */
-
-static int32_t fl_fsin(int32_t a)
-{
-    a &= 1023;
-    if (a < 256)
-        return fl_qsin[a];
-    if (a < 512)
-        return fl_qsin[512 - a];
-    if (a < 768)
-        return -fl_qsin[a - 512];
-    return -fl_qsin[1024 - a];
-}
-static int32_t fl_fcos(int32_t a) { return fl_fsin(a + 256); }
-
-static uint32_t fl_hash32(uint32_t x)
-{
-    x ^= x >> 16;
-    x *= 0x7feb352du;
-    x ^= x >> 15;
-    x *= 0x846ca68bu;
-    x ^= x >> 16;
-    return x;
-}
 
 /* stable pseudo-random value for a part: the same key always gets the same jitter */
 static int32_t fl_jit(uint32_t key, uint32_t salt, int32_t lo, int32_t hi)

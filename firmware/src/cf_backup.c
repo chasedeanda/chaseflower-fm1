@@ -46,11 +46,14 @@ enum { CRB_INFO = 1, CRB_LIST = 65, CRB_GET, CRB_PUT, CRB_RESTART = 72, CRB_USB 
 #define CFB_HARM 68u                                 /* versioned Auto harmony preferences */
 #define CFB_PREFS 70u                                /* browser order and favorites */
 #define CFB_FX 69u                                   /* versioned user FX preset bank */
+#define CFB_RECPREF 74u
+#define CFB_TAKE 71u                                 /* independent recordings A..C; 50..55 remain archived */
 static const uint8_t CRB_IDS[] = {6, 7, 8, CRB_VA, CRB_FM6S, CRB_FM6S + 1u, CFB_SET, CFB_LOOP,
                                   CFB_SEQ, CFB_SEQ + 1u, CFB_SEQ + 2u, CFB_SEQ + 3u, CFB_SEQ + 4u, CFB_SEQ + 5u,
                                   CFB_EDIT, CFB_EDIT + 1u, CFB_EDIT + 2u, CFB_PSND,
                                   CFB_TWK, CFB_TWK + 1u, CFB_TWK + 2u, CFB_TWK + 3u, CFB_TWK + 4u, CFB_TWK + 5u,
-                                  CFB_TWK + 6u, CFB_TWK + 7u, CFB_HARM, CFB_FX, CFB_PREFS};
+                                  CFB_TWK + 6u, CFB_TWK + 7u, CFB_HARM, CFB_FX, CFB_PREFS,
+                                  CFB_TAKE, CFB_TAKE + 1u, CFB_TAKE + 2u, CFB_RECPREF};
 _Static_assert(SQ_NCHUNK == 6u, "backup: one id per sequencer object");
 #define CRB_N ((uint32_t)sizeof CRB_IDS)
 /* an FM6 bank of earlier firmware, as fm6_bank.c fm6_bank_import takes it at boot: Felucca 1.0's (27 records, version
@@ -153,6 +156,8 @@ static int crb_index(uint32_t id)
 }
 static uint32_t crb_obj(uint32_t id)                 /* storage.c's object of an id */
 {
+    if (id == CFB_RECPREF) return OBJ_CFRECPREF;
+    if (id >= CFB_TAKE && id < CFB_TAKE + SQ_NPAT) return OBJ_CFTAKE0 + id - CFB_TAKE;
     if (id == CFB_SET)
         return CF_SET_OBJ;
     if (id == CFB_PREFS) return OBJ_CFPREFS;
@@ -201,13 +206,14 @@ static int crb_fm6_old(const uint8_t *raw, uint32_t len)
 }
 /* busy: never since 0.4 (it was the looper playing or recording: a flash erase cut it). The sequencer plays from RAM;
  * a restore ends in a restart anyway */
-static int crb_busy(void) { return 0; }
+static int crb_busy(void) { return sq_drafting; }
 
 /* ------------------------------------------------------------------ LIST / GET --- */
 static void crb_list(void)
 {
     uint32_t i, crc[CRB_N];
     st_hdr_t h;
+    if (sqk.on || (cf_sn.sq_on && cf_sn.sq_rec != 0xFFu)) { crb.listed=0;crb_b(1);crb_b(3);crb_b(0);return; }
     if (!cr_safe && !cfs_restore_lock && cpb_dirty && cpb_write(ST_NOERASE)) {
         crb.listed = 0; crb_b(1); crb_b(4); crb_b(0); return;
     }
@@ -217,7 +223,7 @@ static void crb_list(void)
     }
     if (!cr_safe && !cfs_restore_lock && cfs_fnv(&cs, sizeof cs) != cfs_saved)
         cf_settings_write(0);                        /* a change not yet saved goes in first .. */
-    if (!cr_safe && !cfs_restore_lock && sq_dirty)
+    if (!cr_safe && !cfs_restore_lock && (sq_dirty || sq_pref_dirty))
         sq_save_write();                             /* .. the sequencer's too (playing or not: a backup is taken now) */
     if (!cr_safe && !cfs_restore_lock) {
         cfh_flush();
@@ -275,6 +281,8 @@ static void crb_get(const uint8_t *a, uint32_t n)
 /* ------------------------------------------------------------------ PUT --- */
 static int crb_size_ok(uint32_t id, uint32_t len)   /* a begin's size for this id (0: the object erased) */
 {
+    if (id == CFB_RECPREF) return !len || len == sizeof(sq_rec_pref_t);
+    if (id >= CFB_TAKE && id < CFB_TAKE + SQ_NPAT) return !len || len == sizeof(sq_take_rec_t);
     if (id == CFB_PREFS) return !len || len == sizeof(cpb_rec_t);
     if (id == CFB_FX) return !len || len == sizeof(fxp_bank_t);
     if (id == CFB_HARM) return !len || len == sizeof(cfh_rec_t);
@@ -360,9 +368,20 @@ static uint32_t crb_commit(void)
         dm_restore_lock = 1;                         /* (the drum machine keeps nothing over it till the restart) */
         return 0;                                    /* (the restart loads it, stopped, as at power-on) */
     }
+    if (id == CFB_RECPREF) {
+        if (len && !sq_pref_valid((const sq_rec_pref_t *)raw)) return 2;
+        if (st_save(OBJ_CFRECPREF,raw,len)) return 4;
+        sq_pref_dirty=0;cfs_restore_lock=1;return 0;
+    }
+    if (id >= CFB_TAKE && id < CFB_TAKE + SQ_NPAT) {
+        if (len && !sq_take_valid((const sq_take_rec_t *)raw, id - CFB_TAKE)) return 2;
+        if (st_save(crb_obj(id), raw, len)) return 4;
+        sq_dirty = 0; cfs_restore_lock = 1;
+        cf_message("Recordings restored: restart"); return 0;
+    }
     if (id >= CFB_TWK) {                             /* a tweaked pattern sound: read in at the restart */
         const cfk_rec_t *r = (const cfk_rec_t *)raw;
-        if (len && !(cfk_valid(r, r->part) && r->part < 3u && (!r->edited || (r->pat1 && r->pat1 <= SQ_NPAT))))
+        if (len && !(cfk_valid(r, r->part) && r->part < 3u && (!r->edited || (r->pat1 && r->pat1 <= SQ_LEGACY_NPAT))))
             return 2;
         if (st_save(crb_obj(id), raw, len))
             return 4;
@@ -393,11 +412,17 @@ static uint32_t crb_commit(void)
                                                       * whole is checked at the restart (sq_load: its FNV) */
         uint32_t head[2];                            /* magic, size (read as bytes: the store outgrows cfb_raw) */
         memcpy(head, raw, sizeof head);
-        if (len && id == CFB_SEQ && (head[0] != SQ_MAGIC || head[1] != sizeof sq_st ||
+        if (len && id == CFB_SEQ && (head[0] != SQ_MAGIC || head[1] != sizeof(sq_legacy_store_t) ||
                                      raw[__builtin_offsetof(sq_store_t, song.n)] > SQ_SONG))
             return 2;
         if (st_save(crb_obj(id), raw, len))
             return 4;
+        if (id == CFB_SEQ) {
+            /* Restoring an old backup explicitly replaces the active A..C takes.
+             * New-format take IDs come last in a modern backup and override this. */
+            for (unsigned i = 0; i < SQ_NPAT; i++)
+                if (st_save(OBJ_CFTAKE0 + i, 0, 0)) return 4;
+        }
         sq_dirty = 0;                                /* (the patterns in RAM are not saved over it before the restart) */
         cfs_restore_lock = 1;
         cf_message("Patterns restored: restart");

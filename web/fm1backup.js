@@ -30,7 +30,9 @@ export const CF_TWK_IDS = [60, 61, 62, 63, 64, 65, 66, 67];   // the tweaked pat
 export const CF_HARM_ID = 68;
 export const CF_FX_ID = 69;
 export const CF_PREFS_ID = 70;
-export const CF_BACKUP_IDS = [6, 7, 8, 9, 10, 11, 30, 31, ...CF_SEQ_IDS, ...CF_EDIT_IDS, CF_PSND_ID, ...CF_TWK_IDS, CF_HARM_ID, CF_FX_ID, CF_PREFS_ID];
+export const CF_TAKE_IDS = [71, 72, 73];
+export const CF_REC_PREF_ID = 74;
+export const CF_BACKUP_IDS = [6, 7, 8, 9, 10, 11, 30, 31, ...CF_SEQ_IDS, ...CF_EDIT_IDS, CF_PSND_ID, ...CF_TWK_IDS, CF_HARM_ID, CF_FX_ID, CF_PREFS_ID, ...CF_TAKE_IDS, CF_REC_PREF_ID];
 const KNOWN = new Set([...BACKUP_IDS, ...CR_BACKUP_IDS, ...CF_BACKUP_IDS]);
 export const BACKUP_CMD = { INFO: 1, LIST: 65, GET: 66, PUT: 67, RESTART: 72 };
 const BACKUP_CHUNK = 256;
@@ -50,6 +52,8 @@ export function objectName(id) {
   if (isSample(id)) return `sample slot ${id - 31}`;
   if (id >= 40 && id <= 49) return `loop slot ${id - 39}`;
   if (id === 30) return "CoralFlower settings";
+  if (id === CF_REC_PREF_ID) return "ChaseFlower recording preferences";
+  if (CF_TAKE_IDS.includes(id)) return "ChaseFlower recording " + "ABC"[id - 71];
   if (id === CF_PREFS_ID) return "ChaseFlower progression favorites";
   if (id === CF_FX_ID) return "ChaseFlower FX presets";
   if (id === CF_HARM_ID) return "ChaseFlower Auto harmony";
@@ -202,8 +206,8 @@ export async function restoreBackup(request, file, onProgress = () => {}, opts =
     }
   };
   const put = async (args) => { const a = await ask([BACKUP_CMD.PUT, args]); bkCheck(a[2]); return a; };
-  // Restore the live music last, the settings before it. Objects commit one by one; a disconnect can leave a partial restore.
-  const order = [...plan.filter((o) => o.id > 1), ...plan.filter((o) => o.id === 1), ...plan.filter((o) => o.id === 0)];
+  // Restore legacy objects before independent takes, regardless of file order; live music stays last. Objects commit one by one; a disconnect can leave a partial restore.
+  const order = [...plan.filter((o) => o.id > 1 && !CF_TAKE_IDS.includes(o.id)), ...plan.filter((o) => CF_TAKE_IDS.includes(o.id)), ...plan.filter((o) => o.id === 1), ...plan.filter((o) => o.id === 0)];
   for (const o of order) {
     if (isSample(o.id)) {
       const slot = o.id - 32;

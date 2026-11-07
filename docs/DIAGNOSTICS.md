@@ -1,5 +1,9 @@
 # ChaseFlower diagnostics
 
+The scene-free development build retains these controls and exports. Record the
+build profile (`CF_SCENES=0` or `1`) when comparing workloads. Only the optional
+exploration build draws an animated scene beneath the dashboard.
+
 HOME cycles Flower/Scene → Chord → Keyboard → Diagnostics. From the first view, three taps reach Diagnostics;
 the next tap returns to the first view. Returning HOME from another screen keeps the selected view.
 The existing 188-byte settings and backup formats are unchanged.

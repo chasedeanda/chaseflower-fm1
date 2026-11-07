@@ -10,6 +10,7 @@ enum { CF_SCENE_BASS, CF_SCENE_FIRE, CF_SCENE_OFF, CF_SCENE_PROGRESSIONS, CF_SCE
 #define CF_SCENE_BASS_BIT 0x20u
 static const char *const CF_SCENE_NAME[CF_SCENE_N] = {"Bass", "Bonfire", "Nothing", "Progressions"};
 
+#if CF_SCENES
 static uint32_t cf_scene(void)
 {
     if (cs.seq_hint & CF_SCENE_OFF_BIT) return CF_SCENE_OFF;
@@ -254,4 +255,19 @@ static void cf_scene_render(flora_t *f, flc_t *c)
     fl_backdrop(f, c);
     if (cf_scene() == CF_SCENE_BASS) scene_bass(f, c, pulse, beat);
     else scene_fire(f, c, pulse, beat);
+}
+
+#else
+/* Keep legacy scene bits untouched in old settings/backups. They no longer
+ * select a screen in the chord-first build. */
+static uint32_t cf_scene(void) { return CF_SCENE_PROGRESSIONS; }
+static int cf_scene_animated(void) { return 0; }
+static void cf_scene_set(uint32_t scene) { (void)scene; }
+#endif
+
+static void cf_scene_frame(void)
+{
+#if CF_SCENES
+    cf_scene_render(&flo, &fl_cv);
+#endif
 }

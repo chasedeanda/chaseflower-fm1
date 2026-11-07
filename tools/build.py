@@ -255,9 +255,10 @@ def build_stub():
 
 # ---- app
 
-def build_app(stub):
+def app_flags():
+    """Canonical device preprocessor/compiler flags, also used by resource audits."""
     flags = [*CFLAGS, "-Ifirmware/hal", "-Ifirmware/src", "-Ibuild/gen"]
-    for flag in ("FELUCCA_FLASH", "FELUCCA_OTA", "FELUCCA_OTA_DRYRUN", "FELUCCA_OTA_RAMONLY", "FELUCCA_CDC",
+    for flag in ("CF_SCENES", "FELUCCA_FLASH", "FELUCCA_OTA", "FELUCCA_OTA_DRYRUN", "FELUCCA_OTA_RAMONLY", "FELUCCA_CDC",
                  "FELUCCA_UART", "FELUCCA_UAC", "FELUCCA_ICONS", "FELUCCA_KEYCAPS", "FELUCCA_SLICE",
                  "FELUCCA_SLICER", "FELUCCA_FM4", "FELUCCA_SAMPLE", "FELUCCA_GRAIN", "FELUCCA_DRUM", "FELUCCA_SEQ",
                  "FELUCCA_CZ", "FELUCCA_QUAD", "FELUCCA_ANALOG", "FELUCCA_PHASE", "FELUCCA_LOFI", "FELUCCA_VOICE",
@@ -280,6 +281,11 @@ def build_app(stub):
     flags.append(f'-DFELUCCA_ID="{PRODUCT}"')
     if VERSION:
         flags.append(f'-DFELUCCA_VERSION="{VERSION}"')
+    return flags
+
+
+def build_app(stub):
+    flags = app_flags()
     # the unit goes to LLVM IR without the optimizer, the main-loop functions (UI, screens, stores) are
     # marked minsize (tools/size_fns.py), then the IR is compiled at -Os. FELUCCA_SIZE=0: -Os everywhere
     size = os.environ.get("FELUCCA_SIZE") != "0"

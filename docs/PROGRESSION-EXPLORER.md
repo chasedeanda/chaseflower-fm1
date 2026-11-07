@@ -4,9 +4,10 @@ Development source; not included in the existing 0.6-chase5 package.
 
 ## Controls
 
-Progressions is the default main HOME option. **ALGORITHM** cycles
-**Progressions → Bass → Bonfire → Nothing**, in either direction. Bass and
-Bonfire remain available; Progressions and Nothing skip animation work.
+The development build opens directly to Progressions and excludes decorative
+scenes and the fish intro. ALGORITHM returns to the main Progressions view.
+The optional exploration build (`CF_SCENES=1`) retains the cycle
+**Progressions → Bass → Bonfire → Nothing**. See [scene-free details](SCENE-FREE.md).
 HOME still cycles the main, Chord, Keyboard and Diagnostics views.
 
 - **SELECT** browses all **127 ideas**, wrapping at both ends. Tags and the current

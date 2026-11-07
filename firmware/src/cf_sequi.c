@@ -69,7 +69,7 @@ static struct {
     uint8_t from;                /* .. the screen REC was pressed on: a take that leaves nothing goes back there */
 } sqk = {.last = 0xFF};
 static void sq_home_end(int drop);
-static void sq_home_undo(void);
+static void sq_home_cancel(void);
 static int dm_home_play(void);                   /* (the drum machine: cf_dmui.c) */
 static int dm_home_rec(void);
 static void dm_fill(sq_pat_t *p, uint32_t r, uint32_t b0);
@@ -93,197 +93,31 @@ static void sq_hint_once(uint32_t bit);
 #define SQ_NCHUNK 6u
 static uint8_t sq_dirty;
 static uint32_t sq_changed_ms, sq_retry_ms;
-static uint32_t sq_saved[SQ_NCHUNK];             /* each object's FNV as it was last written or read */
+static uint32_t sq_saved[SQ_NPAT];             /* each object's FNV as it was last written or read */
 typedef char sq_fits_flash[sizeof(sq_store_t) <= SQ_CHUNK * SQ_NCHUNK ? 1 : -1];
 
-/* undo (REC held, as the looper's): the pattern and the song as they were before the last action, swapped back in;
- * held again, swapped out again (redo). An action: the edits that follow one another within 0.7 s (a knob turned on,
- * a chord written and its length set), or a whole take (REC). pre is the state at the start of each frame's input
- * while no action is under way; the first edit of an action keeps it as the undo */
-static struct {
-    uint8_t busy, has, pat, prepat, redo, pend;  /* pend: an action under way, its undo kept only if it changed
-                                                  * something (a SEL on an empty step, a knob at its end took the
-                                                  * last undo away: a review, 2026-10-19) */
-    uint32_t last;
-    sq_pat_t pre, undo;
-    sq_song_t spre, sundo;
-} sqh;
-static uint8_t squ_rec_on(void) { return cf_sn.sq_rec != 0xFFu || squ.ropen; }   /* (a take under way) */
-static void sq_commit(void)                      /* an action ended: the state before it is the undo, if it changed */
-{
-    if (!sqh.pend)
-        return;
-    sqh.pend = 0;
-    if (!memcmp(&sq_st.pat[sqh.prepat], &sqh.pre, sizeof sqh.pre) && !memcmp(&sq_st.song, &sqh.spre, sizeof sqh.spre))
-        return;
-    sqh.undo = sqh.pre;
-    sqh.sundo = sqh.spre;
-    sqh.pat = sqh.prepat;
-    sqh.has = 1;
-    sqh.redo = 0;
-}
-static void sq_undo_poll(void)                   /* every frame, before the input */
-{
-    if (sqh.busy && !squ_rec_on() && !squ.sel_down && !squ.edit_down && cu.now - sqh.last > 700u)
-        sqh.busy = 0;
-    if (!sqh.busy) {
-        sq_commit();
-        sqh.prepat = (uint8_t)(squ.pat < SQ_NPAT ? squ.pat : 0u);
-        sqh.pre = sq_st.pat[sqh.prepat];
-        sqh.spre = sq_st.song;
-    }
-}
+/* Recorder history is deliberately absent. Changes only mark the live slot dirty. */
+static uint8_t squ_rec_on(void) { return cf_sn.sq_rec != 0xFFu || squ.ropen; }
 static void sq_touch(void)
 {
-    if (!sqh.busy) {                             /* a new action: what was before it becomes the undo when it ends,
-                                                  * if it changed something (sq_commit) */
-        sqh.pend = 1;
-        sqh.busy = 1;
+    if (squ.pat < SQ_NPAT && !(sq_meta_known & (1u << squ.pat))) {
+        sq_meta[squ.pat] = (sq_take_meta_t){cs.bpm, cs.beats, 0}; sq_meta_known |= 1u << squ.pat;
     }
-    sqh.last = cu.now;
-    sq_dirty = 1;
-    sq_changed_ms = cu.now;
+    sq_dirty = 1; sq_changed_ms = cu.now;
 }
-/* a pattern given its first bars (opened for the first time): not an action to undo; it is where the next one
- * starts from */
 static void sq_fresh_kept(sq_pat_t *p)
 {
-    sq_commit();
     sq_fresh(p, cs.beats);
-    sqh.busy = 0;
-    sqh.prepat = (uint8_t)(p - sq_st.pat);
-    sqh.pre = *p;
-    sqh.spre = sq_st.song;
-    sq_dirty = 1;
-    sq_changed_ms = cu.now;
+    sq_meta[p - sq_st.pat] = (sq_take_meta_t){cs.bpm, cs.beats, 0};
+    sq_meta_known |= 1u << (p - sq_st.pat);
+    sq_touch();
 }
-/* an action on another pattern than the one shown (SAVE > Pattern: a copy, a clearing): its state before */
-static void sq_touch_pat(uint32_t pat)
-{
-    sq_commit();
-    sqh.pend = 0;
-    sqh.undo = sq_st.pat[pat % SQ_NPAT];
-    sqh.sundo = sq_st.song;
-    sqh.pat = (uint8_t)(pat % SQ_NPAT);
-    sqh.has = 1;
-    sqh.redo = 0;
-    sqh.busy = 1;
-    sqh.last = cu.now;
-    sq_dirty = 1;
-    sq_changed_ms = cu.now;
-}
-static void sq_undo(void)                        /* REC held */
-{
-    sq_pat_t t;
-    sq_song_t g;
-    sq_commit();                                 /* (the action under way first: it is what goes back) */
-    if (!sqh.has) {
-        cf_message("Nothing to undo");
-        return;
-    }
-    t = sq_st.pat[sqh.pat];
-    sq_st.pat[sqh.pat] = sqh.undo;
-    sqh.undo = t;
-    g = sq_st.song;
-    sq_st.song = sqh.sundo;
-    sqh.sundo = g;
-    sqh.redo ^= 1u;
-    sqh.busy = 0;
-    sq_dirty = 1;
-    sq_changed_ms = cu.now;
-    if (squ.slot >= sq_st.song.n)
-        squ.slot = (uint8_t)(sq_st.song.n ? sq_st.song.n - 1u : 0u);
-    cf_message(sqh.redo ? "Undone (hold REC: redo)" : "Redone");
-}
-static uint32_t sq_chunk_len(uint32_t k)
-{
-    uint32_t sz = sizeof sq_st, o = k * SQ_CHUNK;
-    return o >= sz ? 0u : sz - o < SQ_CHUNK ? sz - o : SQ_CHUNK;
-}
-static void sq_defaults(void)
-{
-    uint32_t i;
-    uint8_t *b = (uint8_t *)&sq_st;
-    for (i = 0; i < sizeof sq_st; i++)
-        b[i] = 0;
-    sq_st.song.n = 0;                            /* (an empty song: the page says how to add to it) */
-    sq_st.song.mute = SQ_MUTE_OWN;               /* (each pattern its own mutes, none yet) */
-}
-/* a CFQ5 store read in (0.3-rc5 .. rc8: no drum levels, each pattern 12 bytes shorter): the patterns moved to their
- * places, the last first, every drum at 100 %, written again at the next save. 1: it was one */
-static int sq_from_v5(uint32_t len)
-{
-    uint8_t *b = (uint8_t *)sq_st.pat;
-    uint32_t i, l, j, osz = __builtin_offsetof(sq_store_t, pat) + SQ_NPAT * SQ_PAT5;
-    if (len != osz || sq_st.magic != SQ_MAGIC5 || sq_st.size != osz ||
-        sq_st.check != cfs_fnv(&sq_st.song, osz - __builtin_offsetof(sq_store_t, song)) || sq_st.song.n > SQ_SONG)
-        return 0;
-    for (i = SQ_NPAT; i-- > 0;) {
-        for (j = SQ_PAT5; j-- > 0;)              /* (the bytes moved up, from the top: no memmove on the device) */
-            b[i * sizeof(sq_pat_t) + j] = b[i * SQ_PAT5 + j];
-        for (j = SQ_PAT5; j < sizeof(sq_pat_t); j++)
-            b[i * sizeof(sq_pat_t) + j] = 0;
-        for (l = 0; l < SQ_NLANE; l++)
-            sq_st.pat[i].dlev[l] = 100;
-    }
-    sq_st.magic = SQ_MAGIC;
-    sq_st.size = sizeof sq_st;
-    sq_dirty = 1;
-    return 1;
-}
-static void sq_load(void)                        /* power-on */
-{
-    uint32_t k, got = 0, len = 0;
-    int ok = 1;
-    for (k = 0; k < SQ_NCHUNK && sq_chunk_len(k); k++) {
-        int n = st_load(OBJ_CFSEQ0 + k, (uint8_t *)&sq_st + k * SQ_CHUNK, sq_chunk_len(k));
-        ok &= n == (int)sq_chunk_len(k);
-        got |= (uint32_t)(n == (int)sq_chunk_len(k)) << k;
-        if (n > 0 && len == k * SQ_CHUNK)        /* (read in a row from the start: an older, shorter store too) */
-            len += (uint32_t)n;
-    }
-    if (!ok && sq_from_v5(len))                  /* (the patterns kept; every object written again) */
-        got = 0;
-    else if (!ok || sq_st.magic != SQ_MAGIC || sq_st.size != sizeof sq_st ||
-        sq_st.check != cfs_fnv(&sq_st.song, sizeof sq_st - __builtin_offsetof(sq_store_t, song)) ||
-        sq_st.song.n > SQ_SONG)
-        sq_defaults();
-    for (k = 0; k < SQ_NCHUNK; k++) {            /* (an object not in flash yet: written at the first save, whatever) */
-        sq_saved[k] = sq_chunk_len(k) ? cfs_fnv((uint8_t *)&sq_st + k * SQ_CHUNK, sq_chunk_len(k)) : 0u;
-        if (!ok || !((got >> k) & 1u))
-            sq_saved[k] = ~sq_saved[k];
-    }
-    if (!(sq_st.song.mute & SQ_MUTE_OWN)) {      /* (the mutes of before, every pattern's: each pattern takes them, and
-                                                  * the objects that changed are written at the next save) */
-        for (k = 0; k < SQ_NPAT; k++)
-            sq_st.pat[k].mute = (uint8_t)(sq_st.song.mute & ((1u << SQ_NTRK) - 1u));
-        sq_st.song.mute = SQ_MUTE_OWN;
-        sq_dirty = 1;
-    }
-}
-static void sq_save_write(void)                  /* the objects that changed, now (cf_backup.c's LIST too) */
-{
-    uint32_t k, now = cu.now;
-    int err = 0;
-    sq_st.magic = SQ_MAGIC;
-    sq_st.size = sizeof sq_st;
-    sq_st.check = cfs_fnv(&sq_st.song, sizeof sq_st - __builtin_offsetof(sq_store_t, song));
-    for (k = 0; k < SQ_NCHUNK && sq_chunk_len(k); k++) {
-        uint32_t h = cfs_fnv((uint8_t *)&sq_st + k * SQ_CHUNK, sq_chunk_len(k));
-        if (h == sq_saved[k])
-            continue;
-        if (st_save(OBJ_CFSEQ0 + k, (uint8_t *)&sq_st + k * SQ_CHUNK, sq_chunk_len(k)))
-            err = 1;
-        else
-            sq_saved[k] = h;
-    }
-    sq_dirty = (uint8_t)err;
-    sq_retry_ms = err ? now + 1000u : 0u;        /* (a flash error: once more a second later) */
-}
+static void sq_touch_pat(uint32_t pat) { (void)pat; sq_touch(); }
+#include "cf_record_store.c"
 static void sq_save_poll(void)                   /* every frame */
 {
     uint32_t now = cu.now;
-    if (!sq_dirty || cr_safe || cfs_restore_lock || !cu.booted || now - sq_changed_ms < CF_SET_QUIET_MS || cf_sn.sq_on ||
+    if ((!sq_dirty && !sq_pref_dirty) || cr_safe || cfs_restore_lock || !cu.booted || now - sq_changed_ms < CF_SET_QUIET_MS || cf_sn.sq_on || cf_sn.ac_on || cf_sn.dm_on || cf_sn.running ||
         now - cfs_sound_ms < CF_SET_SILENT_MS || (sq_retry_ms && (int32_t)(now - sq_retry_ms) < 0))
         return;
     sq_save_write();
@@ -315,7 +149,6 @@ static uint8_t sq_keys_arp(void)
         return cu.arp_on;
     return (uint8_t)((squ.trk == SQ_CHORDS || squ.trk == SQ_LAYER) && (sq_st.pat[squ.pat].arp >> squ.trk) & 1u);
 }
-static void sq_undo_poll(void);
 static void sq_touch(void);
 static void sq_arp_toggle(void)
 {
@@ -323,8 +156,6 @@ static void sq_arp_toggle(void)
     char m[24];
     if (squ.trk != SQ_CHORDS && squ.trk != SQ_LAYER)
         return;
-    sqh.busy = 0;                                /* (an action of its own) */
-    sq_undo_poll();
     sq_touch();
     p->arp ^= (uint8_t)(1u << squ.trk);
     str_cpy(m, (p->arp >> squ.trk) & 1u ? "ARP on: " : "ARP off: ", sizeof m);
@@ -690,6 +521,8 @@ static void sq_copy_pattern(uint32_t from, uint32_t to)
     }
     sq_touch_pat(to);
     sq_st.pat[to] = sq_st.pat[from];
+    sq_meta[to] = sq_meta[from];
+    sq_meta_known = (sq_meta_known & ~(1u << to)) | (((sq_meta_known >> from) & 1u) << to);
     {                                            /* (its own sounds with it, tweaked or not: 0.5) */
         uint32_t t;
         for (t = 0; t < 3u; t++) {
@@ -751,8 +584,6 @@ static void sq_carry_turn(int d)                  /* SELECT in a track: the fram
             }
             return;
         }
-        sqh.busy = 0;                            /* (an action of its own: the undo puts it back) */
-        sq_undo_poll();
         squ.mv = 1;
         squ.mvi = (uint8_t)i;
         squ.bar = p->ev[i].bar;                  /* (the frame on the chord's line, not its start: the frame goes to
@@ -821,8 +652,6 @@ static void sq_oct_poll(void)                    /* every frame: OCT+ let go in 
     if (cu.scr != SCR_SQED || squ.ofrom == squ.bar || !sq_trk_plays(sq_cur(), squ.trk, squ.ofrom) ||
         !sq_trk_plays(sq_cur(), squ.trk, squ.bar))   /* (both of the track's own bars: K3 or K4 turned meanwhile) */
         return;
-    sqh.busy = 0;                                /* (an action of its own) */
-    sq_undo_poll();
     sq_touch();
     sq_copy_track_bar(sq_cur(), squ.trk, squ.ofrom, squ.bar);
     sq_clamp();                                  /* (the bar's steps came with it: the frame on one of them) */
@@ -850,7 +679,7 @@ static void sq_sel_poll(void)                    /* every frame: SEL let go in a
         if (!squ.cpy && squ.pat < SQ_NPAT && cu.now - squ.sel_down >= SQ_CLEAR_MS && sq_track_has(sq_cur(), squ.trk)) {
             squ.cpy = 1;
             sq_erase_track(squ.trk);
-            cf_message("Cleared. Hold REC: undo");
+            cf_message("Track cleared");
         }
         return;
     }
@@ -889,8 +718,6 @@ static void sq_song_add(uint32_t pat)
     sq_song_t *g = &sq_st.song;
     uint32_t at = g->n, i;
     char m[24];
-    sqh.busy = 0;                                /* (each key its own undo step: three quick ones were undone at once) */
-    sq_undo_poll();
     if (sq_empty(&sq_st.pat[pat])) {
         str_cpy(m, "Pattern ", sizeof m);
         m[8] = (char)('A' + pat);
@@ -916,8 +743,6 @@ static void sq_song_remove(void)
     uint32_t i;
     if (!g->n)
         return;
-    sqh.busy = 0;                                /* (each tap its own undo step, as a key A..H) */
-    sq_undo_poll();
     for (i = squ.slot; i + 1u < g->n; i++)
         g->pat[i] = g->pat[i + 1u];
     g->n--;
@@ -1021,9 +846,6 @@ static void sq_rec_tap(void)
     }
     if (sq_empty(p))
         sq_fresh_kept(p);
-    sqh.busy = 0;                                /* (a take is an action of its own, all of it one undo: its grid
-                                                  * too) */
-    sq_undo_poll();
     sq_touch();
     if (squ.trk != SQ_DRUMS) {
         sq_take_grid(p, squ.trk);
@@ -1138,6 +960,39 @@ static void sq_rec_poll(void)
     }
 }
 
+static void sq_activate(unsigned pat)
+{
+    if (pat >= SQ_NPAT || !(sq_meta_known & (1u << pat))) return;
+    cs.bpm = sq_meta[pat].bpm; cs.beats = sq_meta[pat].beats;
+    cf_send_metro(); cf_send_config();
+}
+static uint8_t sq_seen_take = 0xFFu;
+static void sq_tempo_poll(void)
+{
+    if (!cf_sn.sq_on) { sq_seen_take = 0xFFu; return; }
+    if (sq_seen_take != cf_sn.sq_pat) { sq_seen_take = cf_sn.sq_pat; sq_activate(sq_seen_take); }
+}
+static uint32_t sq_clear_down;
+static uint8_t sq_clear_slot;
+static void sq_clear_take(unsigned pat)
+{
+    if (pat >= SQ_NPAT || sqk.on || cf_sn.sq_on || cf_sn.sq_rec != 0xFFu) {
+        cf_message("Stop playback to clear"); return;
+    }
+    memset(&sq_st.pat[pat], 0, sizeof sq_st.pat[pat]);
+    memset(cfps.r[pat], 0, sizeof cfps.r[pat]);
+    sq_unavailable &= (uint8_t)~(1u << pat);
+    sq_serial[pat]=0;sq_reorder();
+    sq_saved[pat] = ~sq_take_image(pat)->check;
+    if (sqk.last == pat) sqk.last = 0xFF;
+    sq_touch(); cf_message("Recording cleared");
+}
+static void sq_clear_poll(void)
+{
+    if (!sq_clear_down) return;
+    if (cu.scr != SCR_SQ || squ.pat != sq_clear_slot || !((fm1_in.buttons >> panel.btn[B_SAVE]) & 1u)) { sq_clear_down = 0; return; }
+    if (cu.now - sq_clear_down >= 3000u) { sq_clear_down = 0; sq_clear_take(sq_clear_slot); }
+}
 /* PLAY on these screens: stop, or play what is shown (a track open: its pattern) */
 static void sq_play(void)
 {
@@ -1159,18 +1014,15 @@ static void sq_play(void)
     if (song && !sq_st.song.n)                   /* an empty song: the beat alone (PLAY works on nothing too: the
                                                   * owner, 2026-10-19) */
         cf_post(CFE_TRANSPORT, 0, 0, 1);
-    else                                         /* (an empty pattern plays too: its click, a take into it) */
+    else {
+        sq_activate(squ.pat);
         cf_post(CFE_SEQ, 1, song ? SQ_NPAT : squ.pat, squ.slot);
+    }
 }
 
 /* ------------------------------------------------------------ REC on HOME --- */
-/* 0.4 has no looper (the owner, 2026-10-19: "сразу 0.4 без лупера"). REC tapped away from the SEQUENCER records into a
- * new pattern, the first one with nothing written ("в новый лучше"), its CHORDS track, after a bar counted in ("С
- * отсчёта такта"); REC again ends it in whole bars, at 8 it ends by itself, and the pattern plays on round ("До второго
- * REC, максимум 8 тактов"). PLAY there plays the pattern last recorded or opened ("Играет последний паттерн"), with
- * none the beat alone as before; REC held undoes. All 8 used: a message, nothing recorded ("Сообщение, запись не
- * идёт"). The first take ever opens a panel that says it is the SEQUENCER's and how to open it; later ones a line
- * ("Панель один раз, потом строка") */
+/* REC makes a fresh A..C take after count-in. REC again ends it in whole bars,
+ * up to eight; holding REC cancels only that new take. Saved takes have no undo. */
 static int sq_has(uint32_t pat)                  /* the pattern holds steps (opened and left empty: not) */
 {
     const sq_pat_t *p = &sq_st.pat[pat % SQ_NPAT];
@@ -1180,8 +1032,15 @@ static int sq_home_free(void)                    /* the first pattern with nothi
 {
     uint32_t i;
     for (i = 0; i < SQ_NPAT; i++)
-        if (!sq_has(i))
+        if (!sq_has(i) && !(sq_unavailable & (1u << i)))
             return (int)i;
+    return -1;
+}
+static int sq_home_target(void)
+{
+    int free=sq_home_free();
+    if (free>=0 || sq_pref.protect) return free;
+    for(unsigned i=SQ_NPAT;i-- >0;)if(!(sq_unavailable & (1u<<sq_order[i])))return sq_order[i];
     return -1;
 }
 static void sq_home_end(int drop)                /* the take ends (drop: it goes, the pattern as it was) */
@@ -1199,9 +1058,9 @@ static void sq_home_end(int drop)                /* the take ends (drop: it goes
         n += p->ev[i].trk == SQ_CHORDS;
     if (drop || !sqk.rolled || (!n && !sqk.rhy)) {   /* (ended in its count-in, or nothing played: no pattern; under a
                                                   * rhythm the rhythm is in it: kept) */
-        sq_st.pat[sqk.pat % SQ_NPAT] = sqh.pre;  /* (the state before the take: sq_home_rec's undo) */
-        sqh.pend = 0;
-        sqh.busy = 0;
+        sq_cancel_take(sqk.pat); /* cancellation restores the previous oldest take */
+        squ.ropen = 0; squ.rr = sqp_rw;
+        sq_touch();
         cf_post(CFE_SEQ, 0, 0, 0);
         if (cu.scr == SCR_SQED && sqk.from < SCR_N && sqk.from != SCR_SQED)
             ui_open(sqk.from);                   /* (no pattern: back where REC was pressed, not left in an empty track
@@ -1223,16 +1082,17 @@ static void sq_home_end(int drop)                /* the take ends (drop: it goes
     }
     p->tb[SQ_CHORDS] = (uint8_t)bars;
     p->bars = (uint8_t)bars;
+    sq_finish_take(sqk.pat);
+    sq_meta[sqk.pat].bpm = cs.clock_in && cf_sn.ext_bpm >= 30u && cf_sn.ext_bpm <= 300u ? cf_sn.ext_bpm : cs.bpm;
     sq_touch();
     sqk.last = sqk.pat;
     dm_chosen(0);                                /* (a take: its pattern is what PLAY on HOME plays, a rhythm's too) */
     sqk.song = 0;                                /* (a take: its pattern is what PLAY on HOME plays) */
-    str_cpy(m, "Recorded as Pattern ", sizeof m);   /* (not "Saved": flash takes it once playback stops and things
-                                                  * rest, sq_save_poll) */
-    m[20] = (char)('A' + sqk.pat % SQ_NPAT);
-    m[21] = 0;
+    str_cpy(m, "Recording ", sizeof m);
+    m[10] = '1';
+    str_cpy(m + 11, " kept", sizeof m - 11u);
     if (!(cs.seq_hint & SQH_TAKE)) {             /* the first one ever: where it is, longer to read */
-        str_cpy(m + 21, "\nin the SEQUENCER", sizeof m - 21u);
+        str_cpy(m + str_len(m), "\n[SEQ] to recordings", sizeof m - str_len(m));
         cf_message(m);
         cu.pop_until = cu.now + 2000u;           /* (2 s, two lines; the hints 1.5 s: "подсказки слишком долго
                                                   * висят сейчас, нужно в два-три раза быстрее", the owner, 2026-10-20) */
@@ -1248,7 +1108,7 @@ static void sq_hint_once(uint32_t bit)
     if (cs.seq_hint & bit)
         return;
     cs.seq_hint |= (uint8_t)bit;
-    cf_message(bit == SQH_HOME ? "[SEQ] [SEQ] the SEQUENCER" : "[SAVE] back");
+    cf_message(bit == SQH_HOME ? "[SEQ] [SEQ] recordings" : "[SAVE] back");
     cu.pop_until = cu.now + 1500u;
     sqh_scr = cu.scr;
 }
@@ -1267,6 +1127,9 @@ static void sq_home_rec(void)                    /* REC tapped */
         cf_post(CFE_DRUM, 5, 0, 0);
         return;
     }
+    if (cpa_running() || (cu.scr == SCR_HOME && cf_scene() == CF_SCENE_PROGRESSIONS)) {
+        cpa_ui_record(); return;
+    }
     if (dm_home_rec())                           /* (under a rhythm: cf_dmui.c) */
         return;
     sq_home_rec_r(DM_N, 0);
@@ -1279,17 +1142,18 @@ static void sq_home_rec_r(uint32_t r, int counted)
 {
     sq_pat_t *p;
     int f, under = r < DM_N, live = under && !counted && cf_sn.dm_on && cf_sn.dm_r == r;
-    f = sq_home_free();
+    f = sq_home_target();
     if (f < 0) {
-        cf_message("All 8 patterns are used:\nclear one in the SEQUENCER");
+        cf_message("All 3 recordings are used:\nclear one in RECORDINGS");
         return;
     }
+    sq_begin_take((unsigned)f);
     squ.pat = (uint8_t)f;
     squ.trk = SQ_CHORDS;
-    sqh.busy = 0;
-    sq_undo_poll();                              /* (the undo: the pattern as it was) */
     p = &sq_st.pat[f];
     sq_fresh(p, cs.beats);
+    sq_meta[f] = (sq_take_meta_t){cs.bpm, cs.beats, 0};
+    sq_meta_known |= 1u << f;
     p->tb[SQ_CHORDS] = SQ_BARS;                  /* (8 bars while it records: its end cuts them to the take's) */
     sq_take_grid(p, SQ_CHORDS);                  /* (16 steps a bar, the take's grid) */
     p->tonic = cs.chord.tonic;
@@ -1345,34 +1209,16 @@ static void sq_home_play(void)                   /* PLAY tapped */
                                                   * as PLAY on its page: "С блока, где стояла рамка", the owner,
                                                   * 2026-10-20) */
         cf_post(CFE_SEQ, 1, SQ_NPAT, squ.slot < sq_st.song.n ? squ.slot : 0u);
-    else if (pat < SQ_NPAT && sq_has(pat))
+    else if (pat < SQ_NPAT && sq_has(pat)) {
+        sq_activate(pat);
         cf_post(CFE_SEQ, 1, (uint8_t)pat, 0);
+    }
     else
         cf_post(CFE_TRANSPORT, 0, 0, 1);         /* (no pattern yet: the beat alone, as before) */
 }
-static void sq_home_undo(void)                   /* REC held */
+static void sq_home_cancel(void) /* REC held cancels only the current new take */
 {
-    uint32_t pat;
-    if (sqk.on) {
-        sq_home_end(1);
-        cf_message("Take dropped");
-        return;
-    }
-    pat = sqh.pat;
-    sq_undo();
-    if (cf_sn.sq_on && cf_sn.sq_pat == pat && !sq_has(pat))   /* (the pattern playing is gone: it stops) */
-        cf_post(CFE_SEQ, 0, 0, 0);
-    if (!sq_has(pat) && squ.pat == pat) {        /* (a take undone: the SEQUENCER shows the pattern before it, not an
-                                                  * empty one; the last with steps) */
-        uint32_t i;
-        if (sqk.last == pat)
-            sqk.last = 0xFF;
-        for (i = SQ_NPAT; i-- > 0 && sqk.last == 0xFFu;)
-            if (sq_has(i))
-                sqk.last = (uint8_t)i;
-        if (sqk.last < SQ_NPAT)
-            squ.pat = sqk.last;
-    }
+    if (sqk.on) { sq_home_end(1); cf_message("Recording cancelled"); }
 }
 /* a loop kept by the looper (0.3.1 and before), or one an older backup put back (cf_backup.c id 31): a pattern's
  * CHORDS track at power-on (the owner, 2026-10-19: "Перенести в паттерн"). Its keys are pressed again through a chord
@@ -1424,7 +1270,7 @@ static void sq_from_loop(void)
     if (n < (int)__builtin_offsetof(cfl_data_t, ev) || d->magic != CFL_MAGIC || !d->len || d->nev > CFL_MAX_EV ||
         n < (int)(__builtin_offsetof(cfl_data_t, ev) + d->nev * sizeof(cfl_ev_t)) || !bar)
         return;
-    f = sq_home_free();
+    f = sq_home_target();
     if (f < 0) {
         cf_message("Your loop needs a free pattern:\nclear one in the SEQUENCER");
         return;
@@ -1473,6 +1319,7 @@ static void sq_from_loop(void)
     bars = bars < 1u ? 1u : bars > SQ_BARS ? SQ_BARS : bars;
     p->tb[SQ_CHORDS] = (uint8_t)bars;
     p->bars = (uint8_t)bars;
+    sq_finish_take(sqk.pat);
     if (!p->nev)                                 /* (no chord in it: no pattern) */
         p->bars = 0;
     sq_dirty = 1;
@@ -2049,13 +1896,13 @@ static void sq_algo(int d)
             squ.ocpy = 1;
             squ.ofrom = squ.pat;
         }
-        squ.pat = (uint8_t)clampi(squ.pat + d, 0, SQ_NPAT - 1);
+        squ.pat = (uint8_t)sq_view_slot(clampi((int)sq_number(squ.pat)-1+d, 0, SQ_NPAT-1));
         cv_turned(d);
         return;
     }
     if (squ.sel_down && !squ.cpy)                /* (another pattern while SEL is held: no track cleared, as SELECT) */
         squ.sel_down = 0;
-    squ.pat = (uint8_t)clampi(squ.pat + d, 0, SQ_SONGPG);
+    squ.pat = (uint8_t)sq_view_slot(clampi((int)sq_number(squ.pat)-1+d, 0, SQ_NPAT-1));
     cv_turned(d);
     cf_send_config();                            /* (the keys: the row's sound, the song's page the chords') */
     if (!cf_sn.sq_on || cf_sn.sq_rec != 0xFFu)

@@ -72,7 +72,11 @@ static void draw_topbar(const char *left, const char *mid)
  * sounding root) */
 static uint8_t cf_panel(int what)
 {
+#if CF_SCENES
     return (uint8_t)((flo.species == FL_SP_CORAL ? FL_S0 : FL_L0) + what);
+#else
+    return (uint8_t)(FL_L0 + what);
+#endif
 }
 
 /* ------------------------------------------------------------------ keys --- */
@@ -268,7 +272,9 @@ static void draw_plant(int y0)
         fb_rect(0, y0, FB_W, FLH * 2, FL_BG);
         return;
     }
+#if CF_SCENES
     fb_blit2x(0, y0, fl_px, FLW, FLH);
+#endif
 }
 
 /* the chord's name, big, over the plant (sharp and flat as signs) */

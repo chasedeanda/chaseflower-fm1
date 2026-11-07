@@ -52,6 +52,9 @@ enum { OBJ_SETTINGS, OBJ_PROJECT0, OBJ_UPRESET0 = OBJ_PROJECT0 + 4, OBJ_FM6BANK 
        OBJ_CFHARM,                            /* Auto harmony: unused CF session pair 0xB4000 / 0xB5000 */
        OBJ_CFXPRESET,                         /* FX bank: unused CF QUAD pair 0xB2000 / 0xB3000 */
        OBJ_CFPREFS,                           /* favorites: unused CZ pair 0xB0000 / 0xB1000 */
+       OBJ_CFTAKE0,                           /* three independent recording pairs 0xE6000..0xEBFFF */
+       OBJ_CFTAKE2 = OBJ_CFTAKE0 + 2,
+       OBJ_CFRECPREF,                         /* recorder policy at 0xEC000 / 0xED000 */
 #endif
        OBJ_COUNT
 #endif
@@ -108,6 +111,9 @@ static uint32_t st_sector(uint32_t obj, uint32_t copy)  /* flash offset of copy 
 #if defined(CF_LOOP_STORE) && !FELUCCA_CZ
     if (obj == OBJ_CFLOOP)
         return 0xB6000u + copy * ST_SECTOR;
+    if (obj == OBJ_CFRECPREF) return 0xEC000u + copy * ST_SECTOR;
+    if (obj >= OBJ_CFTAKE0 && obj <= OBJ_CFTAKE2)
+        return 0xE6000u + (obj - OBJ_CFTAKE0) * 2u * ST_SECTOR + copy * ST_SECTOR;
     if (obj == OBJ_CFPREFS)
         return 0xB0000u + copy * ST_SECTOR;
     if (obj == OBJ_CFXPRESET)

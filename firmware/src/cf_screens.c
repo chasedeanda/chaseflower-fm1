@@ -212,7 +212,7 @@ static void draw_fx(void)
     uint32_t sel = cu.fx_pos % CFX_N, e = cs.fx.order[sel] % CFX_N, i;
     int x0 = 8, y0 = Y_VIEW + 58, tw = 34, gap = 4, run = 6 * tw + 5 * gap;
     char sub[24];
-    cf_scene_render(&flo, &fl_cv);
+    cf_scene_frame();
     draw_plant(Y_VIEW);
     fb_veil(0, Y_VIEW, FB_W, H_VIEW, FL_BG);   /* (the plant faint: the picture leads) */
     str_cpy(sub, e == CFX_FILTER ? CFX_FTYPE[cs.fx.v[e][0] % 3u] : e == CFX_REVERB ? CFX_RTYPE[cs.fx.v[e][0] % 3u] : "",
@@ -472,7 +472,7 @@ static void draw_home(void)
     char key[16], k2[8];
     uint32_t view = home_view();
     if (view == HV_FLOWER && cf_scene() == CF_SCENE_PROGRESSIONS) { view_progressions(12); return; }
-    cf_scene_render(&flo, &fl_cv);
+    cf_scene_frame();
     draw_plant(Y_VIEW);
     if(view==HV_DIAG) {draw_home_diag();return;}
     name_update();
@@ -532,7 +532,7 @@ static void draw_sel(void)
 {
     const cf_form_t *f = sel_form();
     char lab[8], b[24];
-    cf_scene_render(&flo, &fl_cv);
+    cf_scene_frame();
     draw_plant(Y_VIEW);
     fb_veil(0, Y_VIEW, FB_W, H_VIEW, FL_BG);   /* (the plant faint: the picture leads) */
     if (cf_is_off(&cs.chord, cu.sel_btn)) {
@@ -564,7 +564,7 @@ static void draw_env(void)
     int r = cf_env_get(env_part(), 3), x0 = 16, yb = Y_VIEW + H_VIEW - 14, yt = Y_VIEW + 50;
     int xa = x0 + 8 + a * 44 / 99, xd = xa + 8 + d * 44 / 99, xs = xd + 40, xr = xs + 8 + r * 50 / 99;
     int ys = yb - (yb - yt) * sl / 99;
-    cf_scene_render(&flo, &fl_cv);
+    cf_scene_frame();
     draw_plant(Y_VIEW);
     fb_veil(0, Y_VIEW, FB_W, H_VIEW, FL_BG);   /* (the plant faint: the picture leads) */
     draw_head(TGT[cu.env_tgt % 4u]);
@@ -588,7 +588,7 @@ static void draw_edit(void)
 {
     uint32_t part = cu.edit_part, np = cfe_npages(part, cu.edit_sec);
     char t[24];
-    cf_scene_render(&flo, &fl_cv);
+    cf_scene_frame();
     draw_plant(Y_VIEW);
     fb_veil(0, Y_VIEW, FB_W, H_VIEW, FL_BG);   /* (the plant faint: the picture leads) */
     /* the title: the section (FM: "OP 1", its page's name by the pager), or the VA's page ("OSC 1", its second page
@@ -638,8 +638,8 @@ static void draw_edit(void)
 
 static void draw_generic(void)
 {
-    static const char *const PG_GLO[CF_GLO_NPAGES] = {"Display", "MIDI", "Channels", "Play", "Reset", "Library", "Diagnostics", "Harmony", "Variation", "Accompany", "Browse"};
-    cf_scene_render(&flo, &fl_cv);
+    static const char *const PG_GLO[CF_GLO_NPAGES] = {"Display", "MIDI", "Channels", "Play", "Reset", "Library", "Diagnostics", "Harmony", "Variation", "Accompany", "Browse", "Recordings"};
+    cf_scene_frame();
     draw_plant(Y_VIEW);
     fb_veil(0, Y_VIEW, FB_W, H_VIEW, FL_BG);   /* (the plant faint: the picture leads) */
     switch (cu.scr) {
@@ -650,7 +650,13 @@ static void draw_generic(void)
         uint32_t p = cu.page[SCR_GLO] % CF_GLO_NPAGES;
         draw_head(PG_GLO[p]);
         draw_pager((int)p, CF_GLO_NPAGES, 1, 0);
-        if (p == CF_GLO_VARIATION) {
+        if (p == CF_GLO_RECORDINGS) {
+            fb_text_c(&CF_FONT_UI,120,Y_VIEW+55,"KEEP THE LATEST THREE",C_ACC(0),1);
+            fb_text_c(&CF_FONT_UI,120,Y_VIEW+77,"Newest recording is always 1",FL_INK,1);
+            fb_text_c(&CF_FONT_MICRO,120,Y_VIEW+101,sq_pref.protect?"FULL: CLEAR A RECORDING FIRST":"A FINISHED TAKE REPLACES THE OLDEST",FL_INK2,1);
+            fb_text_c(&CF_FONT_MICRO,120,Y_VIEW+121,"CANCEL KEEPS YOUR PREVIOUS TAKES",FL_INK2,1);
+        }
+        else if (p == CF_GLO_VARIATION) {
             cvr_draw();
         }
         else if (p == CF_GLO_BROWSE) {
