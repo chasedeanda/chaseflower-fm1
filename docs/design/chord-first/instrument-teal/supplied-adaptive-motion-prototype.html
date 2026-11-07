@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FM-1 / Adaptive Motion Prototype</title>
+<style>
+:root { color-scheme: dark; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+* {box-sizing:border-box}
+body { background:#171819; color:#eeeeea; margin:0; padding:32px 22px 60px; font-size:14px;}
+.wrap{max-width:1100px;margin:auto}
+.head{display:flex;align-items:start;justify-content:space-between;gap:18px;flex-wrap:wrap;margin-bottom:24px}
+.kicker{font-size:11px;font-weight:600;letter-spacing:.15em;color:#a5a6a2;text-transform:uppercase}
+h1{font-size:32px;font-weight:650;letter-spacing:-.05em;margin:8px 0}
+.sub{font-size:13px;color:#a6a7a3;max-width:590px;line-height:1.6;margin:0}
+.tools{display:flex;flex-wrap:wrap;gap:9px;align-items:center;margin:24px 0 28px;padding:15px;border:1px solid #373938;border-radius:12px;background:#202221}
+button,select {font:inherit;border-radius:8px;border:1px solid #424443;background:#2a2c2b;color:#f4f4ef;padding:10px 13px;cursor:pointer}
+button:hover,select:hover{border-color:#7d807b}
+button.primary{background:#eeeae2;color:#111;border-color:#eeeae2;font-weight:650;min-width:106px}
+button:focus-visible,select:focus-visible{outline:2px solid #e5a34a;outline-offset:2px}
+.control-label{font-size:11px;color:#a2a49f;letter-spacing:.04em;margin-right:-4px}
+.spacer{flex:1}
+.tempo{color:#aaa;font-size:12px;white-space:nowrap}
+.grid{display:grid;grid-template-columns:repeat(3, minmax(240px,1fr));gap:22px 20px;justify-items:center;}
+.specimen{width:100%;max-width:300px}
+.spec-title{display:flex;justify-content:space-between;margin:0 0 9px;padding:0 3px;align-items:center;font-size:12px;color:#e6e7e2}
+.spec-title small{color:#999b98;font-size:10px}
+.device{background:#292b2b;border:1px solid #404241;padding:9px;border-radius:13px;box-shadow:0 4px 12px rgba(0,0,0,.09)}
+.screen{width:240px;height:240px;overflow:hidden;position:relative;border-radius:3px;background:var(--bg);color:var(--fg); --bg:#0e0f10; --fg:#f6f5f0; --muted:#919391;--line:#353738;--subtle:#1a1c1c;--accent:#e8a64d;--onAccent:#16120c;--beat:555.555ms; margin:auto; transition:background .16s, color .16s}
+body[data-theme="editorial"] .screen{--bg:#eeede8;--fg:#1a1a19;--muted:#777873;--line:#c8c8c0;--subtle:#e1dfd9;--accent:#b96835;--onAccent:#fff}
+body[data-theme="instrument"] .screen{--bg:#061b1e;--fg:#f2f8f4;--muted:#89a7a5;--line:#355054;--subtle:#113034;--accent:#77dacb;--onAccent:#092d2c}
+.screen .top{height:47px;padding:11px 12px 0;display:flex;justify-content:space-between;align-items:start;gap:8px}
+.top-left{display:flex;gap:7px;align-items:start}
+.indicator{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--accent);margin-top:3px;flex:none}
+/* Beat indicator is triggered from the shared transport clock in JS. */
+.top-title{font-size:11px;line-height:12px;font-weight:620;letter-spacing:-.01em}
+.top-sub{color:var(--muted);font-size:9px;margin-top:4px}
+.top-right{text-align:right;color:var(--muted);font-size:9px;line-height:13px;white-space:nowrap}
+.screen-label{font-size:9px;letter-spacing:.11em;font-weight:670;text-transform:uppercase;color:var(--muted)}
+.main-stage{position:relative;text-align:center;height:109px;display:flex;align-items:center;justify-content:center;flex-direction:column;}
+.chord{position:relative;font-size:72px;font-weight:700;line-height:1;letter-spacing:-.07em;z-index:1}
+.degree{font-size:10px;font-weight:650;color:var(--accent);z-index:1;margin-bottom:2px}
+.notes{font-size:10px;letter-spacing:.09em;color:var(--muted);margin-top:5px;z-index:1}
+.pulse-halo{position:absolute;left:50%;top:51%;width:100px;height:100px;transform:translate(-50%,-50%) scale(.90);border:1.5px solid var(--accent);opacity:0;border-radius:50%;pointer-events:none}
+/* Adaptive beat animation is JS-triggered on transport ticks. No free-running pulse. */
+body[data-motion="off"] .screen,body[data-motion="off"] .screen * {animation:none!important;transition:none!important}
+body[data-motion="off"] .pulse-halo {opacity:0!important;display:none}
+body[data-motion="off"] .indicator {opacity:.3!important}
+body[data-motion="off"] .morph-fill{width:56%!important}
+@keyframes nudge{0%{transform:translateY(5px);opacity:.45}100%{transform:translateY(0);opacity:1}}
+body:not(.playing) .indicator{opacity:.24}
+body:not(.playing) .pulse-halo{display:none}
+.progression{height:36px;margin:0 10px;display:grid;grid-template-columns:repeat(4,1fr);gap:0;border-bottom:1px solid var(--line)}
+.prog-chord{position:relative;text-align:center;font-size:10px;padding-top:5px;color:var(--muted)}
+.prog-chord.active{color:var(--fg);font-weight:660}
+.prog-chord.active:after{position:absolute;content:'';height:2px;background:var(--accent);bottom:-1px;left:9px;right:9px}
+.prog-degree{font-size:8px;color:var(--muted);margin-top:2px}
+.params{height:37px;margin:0 8px;display:grid;grid-template-columns:repeat(4,1fr);padding-top:7px}
+.param{text-align:center;border-right:1px solid var(--line);white-space:nowrap;overflow:hidden;padding:0 1px}.param:last-child{border:0}
+.p-key{font-size:9px;color:var(--muted)}.p-value{font-size:10px;color:var(--fg);font-weight:590;margin-top:4px}
+.page-dots{position:absolute;bottom:4px;left:0;right:0;display:flex;justify-content:center;gap:4px}
+.dot{width:3px;height:3px;background:var(--muted);border-radius:50%;opacity:.4}.dot.selected{background:var(--accent);opacity:1;width:10px;border-radius:3px}
+.panel{padding:11px 12px 0}
+.sec-title{display:flex;justify-content:space-between;align-items:center;font-weight:660;font-size:15px;letter-spacing:-.025em}
+.sec-title .right{font-size:9px;color:var(--muted);font-weight:450;letter-spacing:0}
+.underline{height:1px;background:var(--line);margin-top:10px}
+.library-list{margin-top:6px;display:flex;flex-direction:column;gap:0}
+.library-row{display:flex;align-items:center;justify-content:space-between;padding:5px 7px;border-bottom:1px solid var(--line);font-size:11px}
+.library-row.active{background:var(--accent);color:var(--onAccent);border:0;border-radius:3px;font-weight:650}
+.library-row .degree-num{font-size:9px;opacity:.75}
+.mini-footer{position:absolute;bottom:12px;left:12px;right:12px;color:var(--muted);font-size:9px;display:flex;justify-content:space-between}
+.chord-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:13px}
+.chord-slot{border:1px solid var(--line);background:var(--subtle);height:66px;border-radius:4px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:3px;font-weight:570;font-size:11px;position:relative}
+.chord-slot.active{background:var(--accent);color:var(--onAccent);border-color:var(--accent)}
+.slot-degree{font-size:9px;opacity:.75}
+.timeline{display:flex;gap:3px;margin-top:13px}
+.timeline .tick{height:23px;flex:1;background:var(--subtle);border:1px solid var(--line);border-radius:2px;transition:background .08s}
+.timeline .tick.hit{background:var(--accent);border-color:var(--accent)}
+.live-pulse{border-top:1px solid var(--line);margin:14px 0 0}
+.knob-page{display:flex;justify-content:space-between;align-items:center;font-size:9px;color:var(--muted);margin-top:7px}
+.live-knobs{display:grid;grid-template-columns:repeat(2,1fr);gap:14px 10px;margin-top:17px}
+.live-value{color:var(--accent);font-weight:660;font-size:23px;letter-spacing:-.045em}
+.live-name{color:var(--muted);font-size:10px;margin-top:1px}
+.live-knob{border-left:2px solid var(--line);padding-left:9px}
+.live-knob:first-child,.live-knob:nth-child(3){border-color:var(--accent)}
+.drum-labels{width:37px;display:flex;flex-direction:column;gap:8px;margin-top:17px;font-size:10px;color:var(--muted)}
+.drum-body{display:flex;gap:6px}
+.drum-grid{display:grid;grid-template-columns:repeat(16,1fr);gap:2px;flex:1;margin-top:15px}
+.step{height:12px;background:var(--subtle);border:1px solid var(--line);border-radius:1px}
+.step.on{background:var(--accent);border-color:var(--accent)}
+.step.head{outline:1px solid var(--fg);outline-offset:1px}
+.drum-meter{margin:14px 0 0;border-top:1px solid var(--line);padding-top:9px;display:grid;grid-template-columns:repeat(4,1fr);gap:0}
+.drum-meter>div{text-align:center;border-right:1px solid var(--line);font-size:9px;color:var(--muted)}
+.drum-meter>div:last-child{border:0}
+.drum-meter b{display:block;color:var(--fg);font-size:11px;margin-top:4px}
+.suggestion{padding:6px 7px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;font-size:12px}
+.suggestion .hint{font-size:9px;color:var(--muted)}
+.suggestion.active{color:var(--accent)}
+.morph-names{display:flex;justify-content:space-between;align-items:center;margin-top:24px;font-size:29px;font-weight:650;letter-spacing:-.06em}
+.morph-names .arrow{font-size:15px;color:var(--muted);font-weight:400}
+.morph-track{margin-top:15px;height:3px;background:var(--line);position:relative}
+.morph-fill{height:100%;width:56%;background:var(--accent);position:relative;transition:width .1s}
+.morph-fill:after{content:'';position:absolute;width:10px;height:10px;right:-5px;top:-4px;background:var(--accent);border-radius:50%}
+body.playing[data-motion="on"] .morph-fill{animation:morphTrack var(--morph-duration, 7s) ease-in-out infinite alternate}
+@keyframes morphTrack{from{width:22%}to{width:84%}}
+.evolve{position:relative;width:110px;height:110px;margin:7px auto 10px;display:grid;place-items:center}
+.evolve .orbit{position:absolute;inset:10px;border:1px solid var(--line);border-radius:50%}
+.evolve .orbit.second{inset:21px;border-color:var(--accent);opacity:.62}
+.evolve .seed{width:9px;height:9px;background:var(--accent);border-radius:50%;position:absolute;left:calc(50% - 4.5px);top:-2px;transform-origin:4.5px 57px}
+body.playing[data-motion="on"] .evolve .seed{animation:orbit var(--orbit-speed, 12s) linear infinite}
+body.playing[data-motion="on"] .evolve .second{animation:breath 2.22s ease-in-out infinite}
+@keyframes orbit{to{transform:rotate(360deg)}}
+@keyframes breath{50%{opacity:.15;transform:scale(.96)}}
+.evolve strong{font-size:24px;letter-spacing:-.05em}
+.evolve-meta{text-align:center;font-size:10px;color:var(--muted)}
+.setting{padding:7px 0;display:flex;justify-content:space-between;border-bottom:1px solid var(--line);font-size:10px}
+.setting span:last-child{color:var(--accent);font-weight:580}
+
+.motion-switch {min-width:105px;font-weight:650;display:inline-flex;align-items:center;justify-content:center;gap:8px}
+.motion-switch:before{content:"";width:7px;height:7px;border-radius:50%;background:#e8a64d}
+.motion-switch[aria-pressed="false"]:before{background:#656763}
+.preview-tools {display:flex;align-items:center;gap:17px 25px;flex-wrap:wrap;margin:-14px 0 28px;padding:13px 16px;border:1px solid #333635;border-radius:12px;background:#1b1d1c}
+.preview-intro {min-width:165px}
+.preview-title {font-size:12px;font-weight:660;color:#ededeb;letter-spacing:-.01em}
+.preview-caption {font-size:10px;color:#919491;line-height:1.5;margin-top:3px}
+.preview-slider {width:174px;display:grid;grid-template-columns:1fr auto;column-gap:9px;row-gap:6px;align-items:center}
+.preview-slider label {font-size:11px;color:#b7b9b5}
+.preview-slider output {font-size:11px;color:#efeee8;font-variant-numeric:tabular-nums;min-width:38px;text-align:right}
+.preview-slider input {grid-column:1/-1;width:100%;margin:0;accent-color:#e8a64d;cursor:pointer}
+.energy-readout {margin-left:auto;min-width:140px}
+.energy-label {font-size:10px;color:#959994;margin-bottom:6px}
+.energy-label strong{font-size:11px;color:#eeeae4;margin-left:4px;font-weight:600}
+.energy-meter{display:grid;grid-template-columns:repeat(10,1fr);gap:3px;height:11px}
+.energy-meter span{background:#404340;border-radius:1px}
+.energy-meter span.active{background:#e8a64d}
+.settings-motion-button{font-size:10px;padding:0;border:none;background:none;color:var(--accent);font-weight:600;border-radius:0;min-width:50px;text-align:right}
+.settings-motion-button:hover{border:none;text-decoration:underline}
+@media(max-width:600px){.preview-slider{width:calc(50% - 12px);min-width:140px}.energy-readout{margin-left:0;width:100%}}
+
+.info{margin:30px 0 0;padding:20px 0 0;border-top:1px solid #353737;color:#aaa;font-size:12px;line-height:1.65}
+.info strong{color:#eee}
+@media(max-width:885px){.grid{grid-template-columns:repeat(2,minmax(240px,1fr))}}
+@media(max-width:560px){body{padding:24px 12px}.grid{grid-template-columns:1fr}.tools{gap:7px}.spacer{display:none}h1{font-size:26px}.specimen{max-width:280px}}
+@media (prefers-reduced-motion:reduce){.screen *{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body class="playing" data-theme="studio" data-motion="on">
+<div class="wrap">
+<div class="head"><div><div class="kicker">Custom firmware / Motion study 02</div><h1>FM-1. Adaptive by design.</h1><p class="sub">Nine 240 × 240 screens. One musical clock. Motion is simply On or Off; when On, it responds automatically to loudness and the number of playing layers.</p></div><div class="kicker">108 BPM · 4/4 · 16 steps</div></div>
+<div class="tools">
+ <button class="primary" id="play" aria-pressed="true">Ⅱ &nbsp; Pause</button>
+ <span class="control-label">Theme</span><select id="theme" aria-label="Color theme"><option value="studio">Studio · dark</option><option value="editorial">Editorial · light</option><option value="instrument">Instrument · teal</option></select>
+ <span class="control-label">Motion</span><button class="motion-switch" id="motion" aria-label="Toggle adaptive motion" aria-pressed="true">On · Adaptive</button>
+ <span class="control-label">Knob page</span><select id="bank" aria-label="Live control bank"><option value="0">1 · Core</option><option value="1">2 · Sound</option><option value="2">3 · Texture</option><option value="3">4 · Groove</option></select>
+ <span class="spacer"></span><span class="tempo" id="clock">Beat 1 / 4</span>
+</div>
+<div class="preview-tools" aria-label="Adaptive motion demo inputs">
+ <div class="preview-intro"><div class="preview-title">Live dynamics simulator</div><div class="preview-caption">Test the animation response.<br>These are not firmware settings.</div></div>
+ <div class="preview-slider"><label for="volume">Output loudness</label><output for="volume" id="volume-output">35%</output><input type="range" id="volume" min="0" max="100" value="35" aria-label="Simulated output loudness"></div>
+ <div class="preview-slider"><label for="layers">Playing layers</label><output for="layers" id="layers-output">2 / 8</output><input type="range" id="layers" min="0" max="8" value="2" step="1" aria-label="Number of playing instrument layers"></div>
+ <div class="energy-readout"><div class="energy-label">Adaptive intensity <strong id="energy-output">–</strong></div><div class="energy-meter" id="energy-meter" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div></div>
+</div>
+<div class="grid" id="screens"></div>
+<p class="info"><strong>Motion On:</strong> beat-locked pulses scale with the simulated audio loudness and active layers. More energy means a wider beat accent and livelier generative movement. <strong>Motion Off:</strong> no pulses, orbiting, morph travel, or playhead animation—only essential static playback/chord information updates. The two sliders simulate engine signals; this HTML does not capture or play audio. In firmware, use the real output envelope and active-voice count from the audio engine. Press <strong>Space</strong> to play/pause.</p>
+</div>
+<script>
+const progression=[['B♭maj7','IV'],['Cmaj7','V'],['Dm7','vi7'],['Fmaj7','I']];
+const banks=[
+ [['Rhythm','Lo-fi'],['Key','F'],['Scale','Major'],['Tempo','108']],
+ [['Voice','Open'],['Color','+9th'],['Motion','35%'],['Space','70%']],
+ [['Grain','42%'],['Shimmer','60%'],['Drift','25%'],['Freeze','Off']],
+ [['Swing','12%'],['Bass','Deep'],['Density','55%'],['Variation','30%']]
+];
+const panels=[['01','Play / Stage'],['02','Chord library'],['03','Progression editor'],['04','Live control banks'],['05','Groove / Drums'],['06','Harmony suggestions'],['07','Chord morph'],['08','Generative / Bloom'],['09','Appearance / Settings']];
+let playing=true,elapsed=0,last=null,prevBeat=-1,prevStep=-1,prevChord=-1,bank=0;
+let motionOn=true, volume=35, layers=2, energy=0;
+const OS_REDUCED=window.matchMedia('(prefers-reduced-motion: reduce)');
+const clamp=(x,min,max)=>Math.max(min,Math.min(max,x));
+function getAdaptiveEnergy(){
+  // A presentation-only model. Firmware should replace this with measured output
+  // envelope and a real count of active instrument voices, with attack/release smoothing.
+  const loudness=Math.pow(volume/100,0.8), layerDensity=layers/8;
+  return clamp(0.08 + 0.92*(0.58*loudness + 0.42*layerDensity),0.08,1);
+}
+function updateAdaptiveUI(){
+  energy=getAdaptiveEnergy();
+  document.getElementById('volume-output').textContent=`${volume}%`;
+  document.getElementById('layers-output').textContent=`${layers} / 8`;
+  document.getElementById('energy-output').textContent=motionOn?`${Math.round(energy*100)}%`:'Off';
+  document.getElementById('setting-intensity').textContent=motionOn?`Auto · ${Math.round(energy*100)}%`:'Off';
+  document.getElementById('energy-meter').querySelectorAll('span').forEach((bar,i)=>bar.classList.toggle('active',motionOn&&i<Math.round(energy*10)));
+  document.documentElement.style.setProperty('--orbit-speed',`${(18-energy*11).toFixed(1)}s`);
+  document.documentElement.style.setProperty('--morph-duration',`${(10-energy*6.5).toFixed(1)}s`);
+}
+function triggerBeat(beat){
+  if(!motionOn || !playing || OS_REDUCED.matches)return;
+  const first=beat===0, boost=first?1.18:1;
+  const maxScale=1.10 + energy*0.63 + (first?0.14:0);
+  const startOpacity=Math.min(.75,(.12+energy*.47)*boost);
+  const duration=260+energy*240;
+  const opts={duration,easing:'cubic-bezier(.12,.58,.24,1)',fill:'none'};
+  document.querySelectorAll('.pulse-halo').forEach(el=>{
+    el.getAnimations().forEach(a=>a.cancel());
+    el.animate([
+      {opacity:startOpacity,transform:'translate(-50%,-50%) scale(.84)'},
+      {opacity:0,transform:`translate(-50%,-50%) scale(${maxScale.toFixed(3)})`}
+    ],opts);
+  });
+  document.querySelectorAll('.indicator').forEach(el=>{
+    el.getAnimations().forEach(a=>a.cancel());
+    el.animate([
+      {opacity:1,transform:`scale(${(1.02+energy*.6+(first?.18:0)).toFixed(2)})`},
+      {opacity:.48,transform:'scale(1)'}
+    ],{duration:Math.min(duration,460),easing:'ease-out'});
+  });
+  const chord=document.getElementById('stageChord');
+  chord.getAnimations().forEach(a=>a.cancel());
+  chord.animate([{transform:`scale(${(1.005+energy*.025+(first?.012:0)).toFixed(3)})`},{transform:'scale(1)'}],{duration:260+energy*130,easing:'ease-out'});
+  document.querySelectorAll('.chord-slot.active,.suggestion.active,.library-row.active').forEach(el=>{
+    el.getAnimations().forEach(a=>a.cancel());
+    el.animate([{opacity:clamp(.72+energy*.22,.7,.95)},{opacity:1}],{duration:duration,easing:'ease-out'});
+  });
+}
+function clearBeatAnimations(){
+  document.querySelectorAll('.screen *').forEach(el=>el.getAnimations().forEach(a=>a.cancel()));
+  document.querySelectorAll('.step.head,.timeline .tick.hit').forEach(el=>el.classList.remove('head','hit'));
+}
+function updateMotion(){
+  document.body.dataset.motion=motionOn?'on':'off';
+  document.getElementById('motion').textContent=motionOn?'On · Adaptive':'Off';
+  document.getElementById('motion').setAttribute('aria-pressed',String(motionOn));
+  document.getElementById('settings-motion').textContent=motionOn?'On · Adaptive':'Off';
+  document.querySelector('.pulse-label').textContent=motionOn?'Beat synced':'Off';
+  if(!motionOn)clearBeatAnimations();
+  else {prevBeat=-1;prevStep=-1;}
+  updateAdaptiveUI();
+}
+
+const screenHeader=()=>`<div class="top"><div class="top-left"><span class="indicator"></span><div><div class="top-title">Still Into You</div><div class="top-sub">F Major · 4/4</div></div></div><div class="top-right"><span class="barlabel">3 / 4 · Bar 3</span><br>108 BPM</div></div>`;
+function slots(){return `<div class="progression">${progression.map((c,i)=>`<div class="prog-chord ${i===2?'active':''}" data-p="${i}">${c[0]}<div class="prog-degree">${c[1]}</div></div>`).join('')}</div>`}
+function knobs(){return `<div class="params">${banks[0].map(([k,v])=>`<div class="param"><div class="p-key">${k}</div><div class="p-value">${v}</div></div>`).join('')}</div><div class="page-dots"><span class="dot selected"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>`}
+function screenContent(i){switch(i){
+case 0:return `${screenHeader()}<div class="main-stage"><div class="pulse-halo"></div><div class="degree" id="stageDegree">vi7</div><div class="chord" id="stageChord">Dm7</div><div class="notes" id="stageNotes">D · F · A · C</div></div>${slots()}${knobs()}`;
+case 1:return `${screenHeader()}<div class="panel"><div class="sec-title">Chords <span class="right">F major · diatonic</span></div><div class="underline"></div><div class="library-list">${[['Fmaj7','I'],['Gm7','ii'],['Am7','iii'],['B♭maj7','IV'],['Cmaj7','V'],['Dm7','vi']].map((x,j)=>`<div class="library-row ${j===5?'active':''}"><span>${x[0]}</span><span class="degree-num">${x[1]}</span></div>`).join('')}</div></div><div class="mini-footer"><span>Turn to explore</span><span>Press to audition</span></div>`;
+case 2:return `${screenHeader()}<div class="panel"><div class="sec-title">Progression <span class="right">4 chords · 4 bars</span></div><div class="underline"></div><div class="chord-strip">${progression.map((c,i)=>`<div class="chord-slot ${i===2?'active':''}" data-slot="${i}">${c[0]}<div class="slot-degree">${c[1]}</div></div>`).join('')}</div><div class="timeline">${Array.from({length:16},(_,i)=>`<div class="tick" data-tick="${i}"></div>`).join('')}</div><div class="live-pulse"></div><div class="knob-page"><span>Length</span><span>Voicing</span><span>Replace</span><span>Save</span></div></div><div class="mini-footer"><span>1 bar per chord</span><span>◀ 3 / 4 ▶</span></div>`;
+case 3:return `${screenHeader()}<div class="panel"><div class="sec-title">Live controls <span class="right" id="banklabel">Core · 1/4</span></div><div class="underline"></div><div class="live-knobs" id="live-knobs"></div></div><div class="mini-footer"><span>◀ Select bank ▶</span><span>4 physical knobs</span></div>`;
+case 4:return `${screenHeader()}<div class="panel"><div class="sec-title">Drum groove <span class="right">16 steps</span></div><div class="underline"></div><div class="drum-body"><div class="drum-labels"><span>Kick</span><span>Snare</span><span>Hat</span><span>Perc</span></div><div class="drum-grid">${[0,1,2,3].flatMap(r=>Array.from({length:16},(_,c)=>`<span class="step ${((r===0&&[0,7,8,14].includes(c))||(r===1&&[4,12].includes(c))||(r===2&&c%2===0)||(r===3&&[6,14].includes(c)))?'on':''}" data-step="${c}"></span>`)).join('')}</div></div><div class="drum-meter"><div>Pattern<b>A</b></div><div>Length<b>1 bar</b></div><div>Swing<b>12%</b></div><div>Prob<b>28%</b></div></div></div><div class="mini-footer"><span>Kick / Snare / Hat / Perc</span><span id="stepcount">Step 1/16</span></div>`;
+case 5:return `${screenHeader()}<div class="panel"><div class="sec-title">Next chord <span class="right">Harmonic explorer</span></div><div class="underline"></div><div class="suggestion active"><div><b>Fmaj7</b><div class="hint">Resolve · home</div></div><span>→ I</span></div><div class="suggestion"><div><b>B♭maj7</b><div class="hint">Lift · open</div></div><span>→ IV</span></div><div class="suggestion"><div><b>Gm9</b><div class="hint">Float · wistful</div></div><span>→ ii</span></div><div class="suggestion"><div><b>A7alt</b><div class="hint">Tension · surprise</div></div><span>→ V/vi</span></div></div><div class="mini-footer"><span>Audition</span><span>Insert →</span></div>`;
+case 6:return `${screenHeader()}<div class="panel"><div class="sec-title">Chord morph <span class="right">Live · smooth</span></div><div class="underline"></div><div class="morph-names"><span>Dm7</span><span class="arrow">→</span><span>Fmaj7</span></div><div class="morph-track"><div class="morph-fill"></div></div><div class="live-pulse"></div><div class="knob-page"><span>Speed</span><span>Voicing</span><span>Spread</span><span>Color</span></div></div><div class="mini-footer"><span>Voice leading</span><span>Hold to capture</span></div>`;
+case 7:return `${screenHeader()}<div class="panel"><div class="sec-title">Bloom <span class="right">Generative · on</span></div><div class="underline"></div><div class="evolve"><div class="orbit"></div><div class="orbit second"></div><div class="seed"></div><strong>Dm7</strong></div><div class="evolve-meta">Harmony evolving in F major</div><div class="live-pulse"></div><div class="knob-page"><span>Density 42</span><span>Drift 25</span><span>Space 70</span></div></div>`;
+case 8:return `${screenHeader()}<div class="panel"><div class="sec-title">Appearance <span class="right">System</span></div><div class="underline"></div><div class="setting"><span>Theme</span><span class="theme-label">Studio dark</span></div><div class="setting"><span>Beat pulse</span><span class="pulse-label">Beat synced</span></div><div class="setting"><span>Motion</span><button type="button" class="settings-motion-button" id="settings-motion" aria-label="Toggle motion">On · Adaptive</button></div><div class="setting"><span>Intensity</span><span id="setting-intensity">Auto · 0%</span></div><div class="setting"><span>Responds to</span><span>Level + layers</span></div></div><div class="mini-footer"><span>240 × 240</span><span>Preview / v0.1</span></div>`;
+}}
+const root=document.getElementById('screens');root.innerHTML=panels.map(([n,label],i)=>`<div class="specimen"><div class="spec-title"><span>${n} &nbsp; ${label}</span><small>240 × 240</small></div><div class="device"><section class="screen" data-screen="${i}">${screenContent(i)}</section></div></div>`).join('');
+function setBank(){const el=document.getElementById('live-knobs'),bankLabel=document.getElementById('banklabel'); const names=['Core','Sound','Texture','Groove'];bankLabel.textContent=`${names[bank]} · ${bank+1}/4`;el.innerHTML=banks[bank].map(([k,v])=>`<div class="live-knob"><div class="live-value">${v}</div><div class="live-name">${k}</div></div>`).join(''); const stageParams=document.querySelector('[data-screen="0"] .params');stageParams.innerHTML=banks[bank].map(([k,v])=>`<div class="param"><div class="p-key">${k}</div><div class="p-value">${v}</div></div>`).join('');document.querySelectorAll('[data-screen="0"] .page-dots .dot').forEach((d,i)=>d.classList.toggle('selected',i===bank))}
+setBank();
+document.getElementById('play').addEventListener('click',()=>{playing=!playing;document.body.classList.toggle('playing',playing);const b=document.getElementById('play');b.innerHTML=playing?'Ⅱ &nbsp; Pause':'▶ &nbsp; Play';b.setAttribute('aria-pressed',String(playing));if(!playing)clearBeatAnimations();else{prevBeat=-1;prevStep=-1;}});
+document.getElementById('theme').addEventListener('change',e=>{document.body.dataset.theme=e.target.value;document.querySelector('.theme-label').textContent={studio:'Studio dark',editorial:'Editorial light',instrument:'Instrument teal'}[e.target.value]});
+document.getElementById('motion').addEventListener('click',()=>{motionOn=!motionOn;updateMotion()});
+document.getElementById('settings-motion').addEventListener('click',()=>document.getElementById('motion').click());
+document.getElementById('volume').addEventListener('input',e=>{volume=Number(e.target.value);updateAdaptiveUI()});
+document.getElementById('layers').addEventListener('input',e=>{layers=Number(e.target.value);updateAdaptiveUI()});
+updateAdaptiveUI();
+document.getElementById('bank').addEventListener('change',e=>{bank=Number(e.target.value);setBank()});
+document.addEventListener('keydown',e=>{if(e.code==='Space'&&!['SELECT','BUTTON'].includes(document.activeElement.tagName)){e.preventDefault();document.getElementById('play').click()}});
+const beatDuration=60000/108,stepDuration=beatDuration/4;
+function renderClock(){const beatCount=Math.floor(elapsed/beatDuration),step=Math.floor(elapsed/stepDuration)%16,beat=beatCount%4,chordIndex=(2+Math.floor(beatCount/4))%4;
+ if(beatCount!==prevBeat){document.getElementById('clock').textContent=`Beat ${beat+1} / 4 · Bar ${Math.floor(beatCount/4)+3}`;document.querySelectorAll('.barlabel').forEach(x=>x.textContent=`${chordIndex+1} / 4 · Bar ${Math.floor(beatCount/4)+3}`);triggerBeat(beat);prevBeat=beatCount}
+ if(step!==prevStep){document.querySelectorAll('[data-step]').forEach(el=>el.classList.toggle('head',motionOn && Number(el.dataset.step)===step));document.querySelectorAll('[data-tick]').forEach(el=>el.classList.toggle('hit',motionOn && Number(el.dataset.tick)===step));document.getElementById('stepcount').textContent=`Step ${step+1}/16`;prevStep=step}
+ if(chordIndex!==prevChord){const chord=progression[chordIndex];document.getElementById('stageChord').textContent=chord[0];document.getElementById('stageDegree').textContent=chord[1];document.getElementById('stageNotes').textContent={0:'B♭ · D · F · A',1:'C · E · G · B',2:'D · F · A · C',3:'F · A · C · E'}[chordIndex];document.querySelectorAll('[data-p]').forEach(el=>el.classList.toggle('active',Number(el.dataset.p)===chordIndex));document.querySelectorAll('[data-slot]').forEach(el=>el.classList.toggle('active',Number(el.dataset.slot)===chordIndex));prevChord=chordIndex}
+}
+function raf(now){if(last===null)last=now;const delta=Math.min(now-last,100);last=now;if(playing)elapsed+=delta;renderClock();requestAnimationFrame(raf)}
+requestAnimationFrame(raf);
+</script>
+</body>
+</html>
