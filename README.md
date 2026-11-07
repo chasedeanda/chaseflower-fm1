@@ -80,6 +80,12 @@ supports the full phrase with Repeat On/Off; Click can sound alongside a groove.
 [Native captures and implementation checks](docs/design/chord-first/native-accompaniment/README.md)
 are host evidence; physical verification remains pending.
 
+**EDIT** from the development Progressions/Accompaniment workspace now opens a
+protected sixteen-slot semantic draft: chord, timing, voicing, bass, phrase and
+undo controls share the existing player. Quiet checkpoints recover after reboot
+and support backups; numbered Songs and chord-library/audition are still pending.
+[Native editor controls, captures and evidence](docs/design/chord-first/native-editor/README.md).
+
 ## Install this release
 
 1. Download **`coralflower-0.6-chase7.fwsc`** from the [GitHub release](https://github.com/chasedeanda/chaseflower-fm1/releases/tag/v0.6-chase7).

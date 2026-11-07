@@ -23,7 +23,7 @@
       "sharedTemplate": "chord",
       "musicalMilestone": 1,
       "designStatus": "Native preview alongside selected prototype; device review pending",
-      "implementationStatus": "Implemented preview: native HOME and four live banks; physical verification and remaining page migration pending",
+      "implementationStatus": "Implemented native preview: four banks, labelled Draft source and active immutable plan rail; physical verification pending",
       "deviceVerification": "Pending — host captures and device link only"
     },
     {
@@ -33,7 +33,7 @@
       "sharedTemplate": "chord",
       "musicalMilestone": 1,
       "designStatus": "Native preview alongside selected prototype; device review pending",
-      "implementationStatus": "Implemented native preview: queued idea plus key/mode/metre/rhythm; active edits show mode/repeat/kit/swing separately from applied setup",
+      "implementationStatus": "Implemented native preview: detailed pending setup distinguishes next-chord edits and bar-bound groove changes from applied state",
       "deviceVerification": "Pending — host captures and device link only"
     },
     {
@@ -112,9 +112,9 @@
       "group": "Progression Editor",
       "sharedTemplate": "chord",
       "musicalMilestone": 2,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native preview follows selected family; physical review pending",
+      "implementationStatus": "Partial native preview: numbered degree/quality/color/bar controls, exact source clone and shared-clock edits; one-slot audition/library pending",
+      "deviceVerification": "Pending — native host captures and linked device build only"
     },
     {
       "id": "CHORD_LIBRARY",
@@ -132,9 +132,9 @@
       "group": "Progression Editor",
       "sharedTemplate": "params",
       "musicalMilestone": 2,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native preview follows selected family; physical review pending",
+      "implementationStatus": "Implemented native preview: bar/quarter units, 0.25–32 quarters, gate and identical-note tie scheduling; physical verification pending",
+      "deviceVerification": "Pending — native host captures and linked device build only"
     },
     {
       "id": "EDIT_VOICING",
@@ -142,9 +142,9 @@
       "group": "Progression Editor",
       "sharedTemplate": "params",
       "musicalMilestone": 2,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native preview follows selected family; physical review pending",
+      "implementationStatus": "Implemented native preview: bounded inversion/Smooth and register with planned notes; one-slot audition pending",
+      "deviceVerification": "Pending — native host captures and linked device build only"
     },
     {
       "id": "EDIT_BASS",
@@ -152,9 +152,9 @@
       "group": "Progression Editor",
       "sharedTemplate": "params",
       "musicalMilestone": 2,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native preview follows selected family; physical review pending",
+      "implementationStatus": "Implemented native preview: chord-tone bass, register and per-slot Follow/Off; one-slot audition pending",
+      "deviceVerification": "Pending — native host captures and linked device build only"
     },
     {
       "id": "EDIT_PHRASE",
@@ -162,9 +162,9 @@
       "group": "Progression Editor",
       "sharedTemplate": "timeline",
       "musicalMilestone": 2,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native preview follows selected family; physical review pending",
+      "implementationStatus": "Partial native preview: sixteen slots, insert/duplicate/remove/undo and queued metre; section A only, B/arrangement pending",
+      "deviceVerification": "Pending — native host captures and linked device build only"
     },
     {
       "id": "EDIT_REMOVE_CONFIRM",
@@ -172,9 +172,9 @@
       "group": "Progression Editor",
       "sharedTemplate": "confirm",
       "musicalMilestone": 2,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native preview follows selected family; physical review pending",
+      "implementationStatus": "Implemented native preview: explicit numbered slot, Cancel default, last-slot protection and undo",
+      "deviceVerification": "Pending — native host captures and linked device build only"
     },
     {
       "id": "IDEA_MENU",
@@ -272,9 +272,9 @@
       "group": "Songs",
       "sharedTemplate": "status",
       "musicalMilestone": 2,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native preview follows selected family; physical review pending",
+      "implementationStatus": "Partial native preview: EDIT conflict Return selects protected draft; Songs entry pending",
+      "deviceVerification": "Pending — native host captures and linked device build only"
     },
     {
       "id": "IDEA_DRAFT_CONFLICT",
@@ -282,9 +282,9 @@
       "group": "Songs",
       "sharedTemplate": "confirm",
       "musicalMilestone": 2,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native preview follows selected family; physical review pending",
+      "implementationStatus": "Partial native preview: default Return or explicit Discard/edit new; Save-then-edit-new awaits Songs",
+      "deviceVerification": "Pending — native host captures and linked device build only"
     },
     {
       "id": "IDEA_UNDO",
@@ -292,9 +292,9 @@
       "group": "Songs",
       "sharedTemplate": "picker",
       "musicalMilestone": 2,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native preview follows selected family; physical review pending",
+      "implementationStatus": "Implemented native phrase one-step undo; independent variation undo retained; library/next insertion pending",
+      "deviceVerification": "Pending — native host captures and linked device build only"
     },
     {
       "id": "IDEA_RECOVERY",

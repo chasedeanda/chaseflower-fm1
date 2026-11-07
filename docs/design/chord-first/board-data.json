@@ -14659,18 +14659,18 @@
     "onAccent": "#092D2C"
   },
   "implementation": {
-    "sourceBase": "3a1a88957519ec3796ee72b427074c518bc4c500",
+    "sourceBase": "8aa00071222dbc1ee35bb0011e63ac0b2ce794d8",
     "designRevision": "845325136418dd038c7ef81eaca01ec64ac5e61e",
-    "summary": "Engineering preview: native Instrument Teal HOME and Core/Sound/Texture/Groove banks now lead into shared-clock Groove/Loop/Mix/Click through SEQ. Loop has whole-phrase play once/repeat, explicit focus and an independent true cursor; Mix and Click edit real parameters. Two bounded pending lines distinguish queued idea/setup from applied state. External PLAY waits for pulses, clock loss releases scheduled ownership while preserving live HOLD and pending setup, and explicit Start/Continue resumes. Finite bank/page/chord transitions cancel with Motion Off. GLO > Legacy tools retains Recordings, Metronome and Drum grid. Existing manual takes and three-recording rotation remain in force. Full semantic Songs/editor, remaining page migration, motion hardware tuning and device verification are still pending. Milestone C now has a tested sixteen-slot semantic model, protected one-step draft/undo and checked v1 codec; native editor, scheduling integration and durable checkpoint remain pending.",
+    "summary": "Engineering preview: native Instrument Teal HOME/banks and Groove/Loop/Mix/Click now lead into EDIT for a protected sixteen-slot semantic draft. Numbered chord/timing/voicing/bass/phrase controls, explicit remove confirmation and one-step undo feed the same accompaniment clock; quarter slots, gates/ties and bar-bound groove edits preserve phase. Active and pending plans, real cursor and planned focus stay distinct. Safe stopped-only checkpoints report RAM Pending, verified Checkpoint or Recovered, with checked backup object 75. Factory originals, live Harmony/HOLD and the current manual-take/latest-three policy remain protected. Numbered Songs, chord-library/audition, arranged recording, learning/suggestions, remaining page/motion migration and physical verification are pending.",
     "screens": {
       "HOME_STAGE": {
         "designStatus": "Native preview alongside selected prototype; device review pending",
-        "implementationStatus": "Implemented preview: native HOME and four live banks; physical verification and remaining page migration pending",
+        "implementationStatus": "Implemented native preview: four banks, labelled Draft source and active immutable plan rail; physical verification pending",
         "deviceVerification": "Pending — host captures and device link only"
       },
       "HOME_PENDING": {
         "designStatus": "Native preview alongside selected prototype; device review pending",
-        "implementationStatus": "Implemented native preview: queued idea plus key/mode/metre/rhythm; active edits show mode/repeat/kit/swing separately from applied setup",
+        "implementationStatus": "Implemented native preview: detailed pending setup distinguishes next-chord edits and bar-bound groove changes from applied state",
         "deviceVerification": "Pending — host captures and device link only"
       },
       "DISPLAY-STYLE": {
@@ -14722,12 +14722,57 @@
         "designStatus": "Native preview follows selected prototype; physical review pending",
         "implementationStatus": "Implemented native preview: independent On/Off and remembered level, real sound and shared tempo/clock",
         "deviceVerification": "Pending — native host captures and device link only"
+      },
+      "EDIT_HARMONY": {
+        "designStatus": "Native preview follows selected family; physical review pending",
+        "implementationStatus": "Partial native preview: numbered degree/quality/color/bar controls, exact source clone and shared-clock edits; one-slot audition/library pending",
+        "deviceVerification": "Pending — native host captures and linked device build only"
+      },
+      "EDIT_TIMING": {
+        "designStatus": "Native preview follows selected family; physical review pending",
+        "implementationStatus": "Implemented native preview: bar/quarter units, 0.25–32 quarters, gate and identical-note tie scheduling; physical verification pending",
+        "deviceVerification": "Pending — native host captures and linked device build only"
+      },
+      "EDIT_VOICING": {
+        "designStatus": "Native preview follows selected family; physical review pending",
+        "implementationStatus": "Implemented native preview: bounded inversion/Smooth and register with planned notes; one-slot audition pending",
+        "deviceVerification": "Pending — native host captures and linked device build only"
+      },
+      "EDIT_BASS": {
+        "designStatus": "Native preview follows selected family; physical review pending",
+        "implementationStatus": "Implemented native preview: chord-tone bass, register and per-slot Follow/Off; one-slot audition pending",
+        "deviceVerification": "Pending — native host captures and linked device build only"
+      },
+      "EDIT_PHRASE": {
+        "designStatus": "Native preview follows selected family; physical review pending",
+        "implementationStatus": "Partial native preview: sixteen slots, insert/duplicate/remove/undo and queued metre; section A only, B/arrangement pending",
+        "deviceVerification": "Pending — native host captures and linked device build only"
+      },
+      "EDIT_REMOVE_CONFIRM": {
+        "designStatus": "Native preview follows selected family; physical review pending",
+        "implementationStatus": "Implemented native preview: explicit numbered slot, Cancel default, last-slot protection and undo",
+        "deviceVerification": "Pending — native host captures and linked device build only"
+      },
+      "IDEA_DRAFT_RETURN": {
+        "designStatus": "Native preview follows selected family; physical review pending",
+        "implementationStatus": "Partial native preview: EDIT conflict Return selects protected draft; Songs entry pending",
+        "deviceVerification": "Pending — native host captures and linked device build only"
+      },
+      "IDEA_DRAFT_CONFLICT": {
+        "designStatus": "Native preview follows selected family; physical review pending",
+        "implementationStatus": "Partial native preview: default Return or explicit Discard/edit new; Save-then-edit-new awaits Songs",
+        "deviceVerification": "Pending — native host captures and linked device build only"
+      },
+      "IDEA_UNDO": {
+        "designStatus": "Native preview follows selected family; physical review pending",
+        "implementationStatus": "Implemented native phrase one-step undo; independent variation undo retained; library/next insertion pending",
+        "deviceVerification": "Pending — native host captures and linked device build only"
       }
     },
     "foundations": {
       "semanticDraft": {
-        "implementationStatus": "Implemented pure model and codec; native editor/transport/persistence integration pending",
-        "evidence": "SEMANTIC-DRAFT-CORE.md",
+        "implementationStatus": "Implemented model, native edit/PLAY and protected checkpoint integration; Songs/library/audition pending",
+        "evidence": "native-editor/README.md",
         "hostChecks": 62449,
         "deviceVerification": "Pending"
       }
