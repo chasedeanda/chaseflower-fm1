@@ -3,9 +3,12 @@
 Chase's personal firmware for the **M-VAVE FM-1**, built on [CoralFlower](https://github.com/FicusFicusov/CoralFlower).
 Explore chord progressions, build a groove, play over it, edit your own phrase and learn what makes the chords work.
 
-**This guide describes current `main`: the native Instrument Teal UI and Chord Lab.**
-The older [0.6-chase7 download](https://github.com/chasedeanda/chaseflower-fm1/releases/tag/v0.6-chase7)
-predates these changes. To try this interface, [build current main](#build-current-main) and install that `.fwsc`.
+**Release 0.6-chase8: native Instrument Teal UI, Songs and Chord Lab.**
+
+**[Download the firmware (.fwsc)](https://github.com/chasedeanda/chaseflower-fm1/releases/download/v0.6-chase8/coralflower-0.6-chase8.fwsc)** ·
+[Release notes](docs/releases/0.6-chase8.md) · [Build current main](#build-current-main)
+
+This guide covers the new interface. The older 0.6-chase7 download has different controls and scene animations.
 
 <p align="center">
   <img src="docs/design/chord-first/native-home-banks/core.png" width="240" alt="Native HOME with a sounding chord, planned progression and four labelled controls">
@@ -43,8 +46,9 @@ type/modifier, lower keys play roots. REC switches off the automatic progression
 Press REC again to finish in whole bars, or let it finish at eight bars. Hold REC to cancel the new take.
 Stop playback and let the instrument go quiet briefly so the completed recording can save.
 
-Your newest take is **Recording 1**. Open **GLO**, turn SELECT to **Legacy tools**, choose **Recordings**
-with K1, then press **SEL**. PLAY replays it. You have made a groove, picked its sounds and captured your own playing.
+Your newest take is **Recording 1**. Press **HOME**, then **SAVE** for **Songs**.
+SELECT highlights its **R** recording row; **SEL** opens it and **PLAY** replays it.
+You have made a groove, picked its sounds and captured your own playing.
 
 ## Get around the new interface
 
@@ -61,6 +65,7 @@ the labels show exactly what each one will change.
 | **SEQ** | Open **Groove / Loop / Mix / Click**; press again to return HOME |
 | **EDIT** | From HOME/Accompaniment, open a protected working copy of the phrase |
 | **SEL** | From HOME, open **Chord Lab**; on action/confirmation pages, perform the displayed action |
+| **SAVE** | From HOME/Accompaniment/editor/Lab, open **Songs**; sound and FX pages retain their own save controls |
 | **ENV / LFO / ARP** | Envelope / linked bass / arpeggiator |
 | **FX** | Open individual effects; press FX again for complete-chain presets |
 | **GLO** | System pages: Display, MIDI, Harmony, Variation, Browse, Recordings policy and Legacy tools |
@@ -93,13 +98,30 @@ For a metronome alongside any groove, use **SEQ → Click**: K1 On/Off, K2 level
    Choose **Undo** and press SEL to undo the last phrase change. Remove asks for confirmation.
 
 The factory original stays intact. The working draft supports **up to sixteen slots**.
-**SAVE** in the editor or on a **Draft:** HOME requests a recovery checkpoint.
-If it says **RAM PENDING**, stop playback, release keys/HOLD and let the tails fade; wait for **CHECKPOINT**
-before powering off. After reboot, the protected copy is available as **RECOVERED**.
+The working draft checkpoints automatically after playback stops, keys/HOLD are released and tails fade.
+If it says **RAM PENDING**, wait for **CHECKPOINT** before powering off.
+After reboot, the protected copy is available as **RECOVERED**.
 If you try editing another source while a dirty draft exists, **Return to draft** is the default choice.
 
-This is one recoverable working draft. Named/numbered Songs management and arranged performance recording are still pending.
+To keep separate ideas, use **Songs** below. Arranged performance recording remains pending;
+REC currently captures your manual playing over the groove.
 [Detailed editor controls](docs/design/chord-first/native-editor/README.md).
+
+### Save an idea with its sounds and groove
+
+1. Press **SAVE** from HOME, Accompaniment, the editor or Chord Lab to open **Songs**.
+2. SELECT **+ Save current idea**, then press **SEL**. This creates a new copy in one of **six idea slots**.
+3. Stop playback, release keys/HOLD and let the tails fade. **Pending** means the copy is still in RAM;
+   wait for **Saved** before powering off.
+4. To recall, highlight a **P** progression row and press **SEL** while stopped and quiet, then PLAY from HOME.
+   Save a dirty working draft first if recall asks you to.
+5. For **Load / Duplicate / Rename / Delete**, highlight the idea and press **EDIT**. K1 chooses an action;
+   SEL executes. Rename uses K1 for character position, K2 for the character, and SEL to save.
+   Delete names the target and starts on Cancel.
+
+A saved idea includes the phrase, key/scale/metre, tempo, groove/kit/swing, chord and bass patches/edits,
+levels, Harmony, arp and FX. Every **Save current idea** creates a separate copy; it does not update an old row.
+Existing takes appear as **R** rows and retain their fixed recorded pitches. [Songs and save details](docs/SONGS-LIBRARY.md).
 
 ### Get a spacious or lo-fi sound quickly
 
@@ -109,7 +131,7 @@ K4 clockwise returns to individual effects: SELECT chooses an effect, K1 enables
 and ALGORITHM changes its position in the chain.
 
 Press **ENV** for attack/decay/sustain/release; turn SELECT to choose the sound target.
-For deep FM6/VA editing, use **ENV → EDIT**. To save a synth sound, tap SAVE from a factory-idea HOME,
+For deep FM6/VA editing, use **ENV → EDIT**. To save just a synth sound, press **SAVE from ENV or the sound editor**,
 choose **New**, edit its name/target, then **hold SAVE for one second**. SAVE in FX instead manages an FX user slot.
 [FX preset controls](docs/FX-PRESETS.md) · [Sound banks](docs/CHASE3.md).
 
@@ -148,12 +170,12 @@ The separate chord-library picker remains deferred.
 - **Your latest three takes:** newest is always 1. By default a completed fourth take replaces the oldest;
   an empty/cancelled take preserves the previous recordings. In **GLO → Recordings**, set **AUTO DEL Off**
   to keep a full set until you clear one yourself.
-- **Replay or edit:** **GLO → Legacy tools → K1 Recordings → SEL**. ALGORITHM chooses the take,
+- **Replay or edit:** open its **R** row in **Songs** with SEL, or use **GLO → Legacy tools → K1 Recordings → SEL**. ALGORITHM chooses the take,
   SELECT chooses a track, EDIT opens its grid, and SAVE returns to the list. GLO shows help there.
 - **Clear one take:** stop playback, select it in Recordings and **hold SAVE for three seconds**.
   Release early to cancel. Clearing has no Undo; hold REC cancels only a new take in progress.
-- **Favourite an idea:** hold SAVE on a factory idea on HOME. Use **GLO → Browse** to choose favourites/order.
-  SAVE is context-sensitive: sound saving, FX saving and a draft checkpoint are different operations.
+- **Favourite a catalogue idea:** use **GLO → Browse** and press SAVE on the selected entry.
+  SAVE on HOME now opens Songs; sound-only and FX saving remain on their respective pages.
 - **Read the queue:** **Next bar / Next chord / Next:** is a pending change. The current chord/cursor still describes
   what is sounding. A focus box or a matching chord name does not start playback or audition.
 - **External clock:** **EXT WAIT** means the FM-1 is waiting for incoming MIDI clock. For standalone use,
@@ -199,13 +221,14 @@ GitHub Actions runs the complete regression suite. [Local emulator](tools/emu/RE
 1. Save a current backup of your sounds, settings and recordings.
 2. Open the [upstream installer's custom-build section](https://ficusficusov.github.io/CoralFlower/#own)
    in Chrome or Edge on a computer, and connect the FM-1 with a data-capable USB cable.
-3. Expand **Another version, or a build of your own**, choose your **`build/coralflower.fwsc`**, and install
+3. Expand **Another version, or a build of your own**, choose the downloaded **`coralflower-0.6-chase8.fwsc`**
+   or your own **`build/coralflower.fwsc`**, and install
    from that section. Check the selected file first: the installer's default download is upstream CoralFlower.
 4. Keep the cable connected and the page open until restart. The current build opens directly to native **HOME / CORE**.
 
 The separate app `.bin` and GitHub source archives are not installer packages.
-The compatible `CoralFlower` INFO prefix, `FM-1_930` package identity and USB names remain in use;
-an old version label alone does not identify the new interface. The published
+This release reports **CoralFlower 0.6-chase8**. The compatible `CoralFlower` INFO prefix, `FM-1_930` package identity
+and USB names remain in use; an unversioned development build can retain an older version label. The published
 [0.6-chase7 package](https://github.com/chasedeanda/chaseflower-fm1/releases/download/v0.6-chase7/coralflower-0.6-chase7.fwsc)
 has its own [release notes](docs/releases/0.6-chase7.md) and older controls/scene animations.
 The [upstream browser demo](https://ficusficusov.github.io/CoralFlower/play/) also runs upstream firmware.
@@ -213,6 +236,7 @@ The [upstream browser demo](https://ficusficusov.github.io/CoralFlower/play/) al
 ## More detail
 
 [Chord Lab](docs/CHORD-LAB.md) · [Native screens](docs/design/chord-first/native-pages/README.md) ·
+[Songs library](docs/SONGS-LIBRARY.md) ·
 [Accompaniment](docs/design/chord-first/native-accompaniment/README.md) ·
 [Phrase editor](docs/design/chord-first/native-editor/README.md) · [Diagnostics](docs/DIAGNOSTICS.md) ·
 [Design / implementation plan](docs/design/chord-first/AGENT-START.md) ·

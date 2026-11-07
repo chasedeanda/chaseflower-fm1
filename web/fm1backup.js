@@ -33,7 +33,8 @@ export const CF_PREFS_ID = 70;
 export const CF_TAKE_IDS = [71, 72, 73];
 export const CF_REC_PREF_ID = 74;
 export const CF_DRAFT_ID = 75;
-export const CF_BACKUP_IDS = [6, 7, 8, 9, 10, 11, 30, 31, ...CF_SEQ_IDS, ...CF_EDIT_IDS, CF_PSND_ID, ...CF_TWK_IDS, CF_HARM_ID, CF_FX_ID, CF_PREFS_ID, ...CF_TAKE_IDS, CF_REC_PREF_ID, CF_DRAFT_ID];
+export const CF_SONG_IDS = [81, 82, 83, 84, 85, 86];
+export const CF_BACKUP_IDS = [6, 7, 8, 9, 10, 11, 30, 31, ...CF_SEQ_IDS, ...CF_EDIT_IDS, CF_PSND_ID, ...CF_TWK_IDS, CF_HARM_ID, CF_FX_ID, CF_PREFS_ID, ...CF_TAKE_IDS, CF_REC_PREF_ID, CF_DRAFT_ID, ...CF_SONG_IDS];
 const KNOWN = new Set([...BACKUP_IDS, ...CR_BACKUP_IDS, ...CF_BACKUP_IDS]);
 export const BACKUP_CMD = { INFO: 1, LIST: 65, GET: 66, PUT: 67, RESTART: 72 };
 const BACKUP_CHUNK = 256;
@@ -53,6 +54,7 @@ export function objectName(id) {
   if (isSample(id)) return `sample slot ${id - 31}`;
   if (id >= 40 && id <= 49) return `loop slot ${id - 39}`;
   if (id === 30) return "CoralFlower settings";
+  if (CF_SONG_IDS.includes(id)) return `ChaseFlower saved Song ${id - 80}`;
   if (id === CF_DRAFT_ID) return "ChaseFlower working draft";
   if (id === CF_REC_PREF_ID) return "ChaseFlower recording preferences";
   if (CF_TAKE_IDS.includes(id)) return "ChaseFlower recording " + "ABC"[id - 71];

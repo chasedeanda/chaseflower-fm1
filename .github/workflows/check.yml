@@ -101,6 +101,9 @@ jobs:
       - name: Progression suggestions, controls and uninterrupted audio (host HAL)
         run: sh tools/test_progressions.sh
 
+      - name: Songs library, complete recall and safe persistence
+        run: sh tools/test_library.sh
+
       - name: Native semantic editor, shared-clock boundaries and checkpoint power cuts
         run: sh tools/test_editor.sh
 
