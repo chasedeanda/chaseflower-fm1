@@ -777,7 +777,7 @@ static void draw_seq(void)
     if (cu.scr == SCR_SQED) {
         draw_sq_track();
     } else {
-        flora_render(&flo, &fl_cv);
+        cf_scene_render(&flo, &fl_cv);
         draw_plant(Y_VIEW);
         fb_veil(0, Y_VIEW, FB_W, H_VIEW, FL_BG);   /* (the plant faint: the picture leads) */
         if (squ.pat == SQ_SONGPG)

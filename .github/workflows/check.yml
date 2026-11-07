@@ -82,6 +82,9 @@ jobs:
 
       - name: Diagnostics snapshots, HOME controls and performance report protocol (host HAL)
         run: sh tools/test_diagnostics.sh
+        
+      - name: Scenes, Top Lock, bass boot and uninterrupted physical/USB audio (host HAL)
+        run: sh tools/test_visuals.sh
 
       - name: The tracked tree is as it was
         run: |

@@ -62,7 +62,7 @@ static void cfs_sanitize(cf_set_t *s)
     cf_set_t d;
     uint32_t i;
     cs_defaults(&d);
-    if (s->chord.algo >= CF_NALGS) s->chord.algo = d.chord.algo;
+    s->chord.algo = CF_ALG_TOP_LOCK;             /* ChaseFlower always plays Top Lock, including old backups. */
     if (s->chord.quantize > CF_Q_FULL) s->chord.quantize = d.chord.quantize;
     if (s->chord.tonic > 11u) s->chord.tonic = d.chord.tonic;
     if (s->chord.scale >= CF_NSCALES) s->chord.scale = d.chord.scale;
