@@ -148,6 +148,15 @@ def make_report(elf, inputs):
                        'Runtime, core activation and audio margins still require device diagnostics.']}
 
 
+def report_json(report):
+    # Keep the full symbol inventory reviewable: one symbol per line instead of
+    # seven lines per record. Other metadata remains conventionally indented.
+    metadata = {k: v for k, v in report.items() if k != 'linked_symbols'}
+    prefix = json.dumps(metadata, indent=2, sort_keys=True)[:-2]
+    symbols = ',\n'.join('    ' + json.dumps(x, sort_keys=True) for x in report['linked_symbols'])
+    return prefix + ',\n  "linked_symbols": [\n' + symbols + '\n  ]\n}\n'
+
+
 def render(report):
     lines = ['# Device resource audit', '', f"Source: `{report['identity']['revision']}`.",
              f"ELF SHA256: `{report['identity']['elf_sha256']}`.", '',
@@ -215,7 +224,7 @@ def main():
         report['comparison'] = {'baseline_identity': baseline['identity'],
                                 'delta_bytes': {name: r['bytes'] - baseline['regions'][name]['bytes']
                                                 for name, r in report['regions'].items()}}
-    (output / 'report.json').write_text(json.dumps(report, indent=2, sort_keys=True) + '\n')
+    (output / 'report.json').write_text(report_json(report))
     (output / 'report.md').write_text(render(report))
     print(render(report).split('Allocation groups')[0].strip())
     print(f'Reports: {output}')

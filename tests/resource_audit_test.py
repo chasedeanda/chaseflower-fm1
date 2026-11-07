@@ -57,6 +57,7 @@ class Resources(unittest.TestCase):
         self.assertEqual(report['allocation_groups']['scene_allocations_gross_not_net_savings']['bytes_by_section'], {'.pool': 8})
         self.assertEqual(report['compilation_dependencies'], ['firmware/a file.c'])
         self.assertIn('| ordinary_ram | 12 | 1,024 | 1,012 |', audit.render(report))
+        self.assertEqual(json.loads(audit.report_json(report)), report)
 
     def test_refuse_wrong_elf_or_changed_dependency(self):
         self.elf.write_bytes(self.elf.read_bytes() + b'changed')
