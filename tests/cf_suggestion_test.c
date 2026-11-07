@@ -117,7 +117,7 @@ static void render_audio(int browse, unsigned rate, const char *path)
              * independent variable. Meter/key changes are intentional. */
             ui_select(1);
             queue=cf_evq_w; held=cfc;
-            if(browse) { cf_snapshot(); cf_ui_draw(); }
+            if(browse) { cf_snapshot(); cf_leds(); cf_ui_draw(); }
             CHECK(queue==cf_evq_w && !memcmp(&held,&cfc,sizeof held));
         }
         uint32_t w=ua.cw; audio_block(mix,CTL);
