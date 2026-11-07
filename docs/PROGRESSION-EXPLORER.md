@@ -209,13 +209,13 @@ Locrian and other altered modes also retain normal major/minor fifths as request
 | 124 | 129 | Cover Me Up | Morgan Wallen: chorus ending | D Ionian (Major) | 6/8 | ii–IV–vi–I–IV–I |
 | 125 | 130 | One Thing At A Time | Morgan Wallen: verse phrase | G Ionian (Major) | 4/4 | IV–V–I–ii7 |
 | 126 | 131 | Everything I Love | Morgan Wallen: pre-chorus | Ab Ionian (Major) | 4/4 | vi–IV–I |
-| 127 | 132 | '98 Braves | Morgan Wallen: opening verse | D Ionian (Major) | 4/4 | I–V/3–vi–IV–I |
+| 127 | 132 | I Can't Love You... | Ella Langley, Morgan Wallen: opening chorus | Bb Aeolian (Minor) | 4/4 | VImaj7–VII–i |
 | 128 | 133 | Thought You Should | Morgan Wallen: chorus loop | F# Ionian (Major) | 4/4 | I–V/3–ii7 |
 | 129 | 134 | Cowgirls | Morgan Wallen, ERNEST: chorus loop | F Aeolian (Minor) | 4/4 | i–VI–III–VII |
 | 130 | 135 | What I Want | Morgan Wallen, Tate McRae: chorus loop | B Dorian | 4/4 | i–VII–IV |
 
-V/3 denotes the major chord over its third: A/C♯ in '98 Braves and C♯/E♯
-in Thought You Should Know. The latter full title is shortened on the device.
+V/3 denotes the major chord over its third: C♯/E♯ in Thought You Should Know.
+That title and I Can't Love You Anymore are shortened on the device.
 
 ## Compatibility and verification
 

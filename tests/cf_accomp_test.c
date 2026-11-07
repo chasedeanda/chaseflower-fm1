@@ -82,7 +82,7 @@ static void source_harmony(void)
         {129,6,{4,7,11,2,7,2},{MIN,MAJ,MIN,MAJ,MAJ,MAJ}},
         {130,4,{0,2,7,9},{MAJ,MAJ,MAJ,MIN7}},
         {131,3,{5,1,8},{MIN,MAJ,MAJ}},
-        {132,5,{2,9,11,7,2},{MAJ,MAJ,MIN,MAJ,MAJ},{0,4,0,0,0}},
+        {132,3,{6,8,10},{MAJ7,MAJ,MIN}},
         {133,3,{6,1,8},{MAJ,MAJ,MIN7},{0,4,0}},
         {134,4,{5,1,8,3},{MIN,MAJ,MAJ,MAJ}},
         {135,3,{11,9,4},{MIN,MAJ,MAJ}},

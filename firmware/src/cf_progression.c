@@ -132,7 +132,7 @@ static const cf_progression_t CF_PROGRESSIONS[] = {
     {"Cover Me Up", "Wallen: chorus", 129, PT(FAMILIAR), CF_SC_MAJOR, 2, 6, 6, {1,3,5,0,3,0}},
     {"One Thing At A Time", "Wallen: verse", 130, PT(FAMILIAR), CF_SC_MAJOR, 7, 4, 4, {3,4,0,1}},
     {"Everything I Love", "Wallen: prechorus", 131, PT(FAMILIAR), CF_SC_MAJOR, 8, 4, 3, {5,3,0}},
-    {"'98 Braves", "Wallen: verse", 132, PT(FAMILIAR), CF_SC_MAJOR, 2, 4, 5, {0,4,5,3,0}},
+    {"I Can't Love You...", "Ella/Wallen: chorus", 132, PT(FAMILIAR), CF_SC_MINOR, 10, 4, 3, {5,6,0}},
     {"Thought You Should", "Wallen: chorus", 133, PT(FAMILIAR), CF_SC_MAJOR, 6, 4, 3, {0,4,1}},
     {"Cowgirls", "Wallen: chorus", 134, PT(FAMILIAR), CF_SC_MINOR, 5, 4, 4, {0,5,2,6}},
     {"What I Want", "Wallen/Tate: chorus", 135, PT(FAMILIAR), CF_SC_DORIAN, 11, 4, 3, {0,6,3}},
@@ -173,8 +173,8 @@ static const struct { uint16_t id; cf_source_chord_t chord[CF_P_MAX]; } CF_SOURC
     {130, {{0x91u,3,0,-1}, {0x91u,4,0,-1}, {0x91u,0,0,-1}, {0x489u,1,0,-1}}},
     /* Everything I Love: Fm Db Ab (Em C G shapes, capo 1) */
     {131, {{0x89u,5,0,-1}, {0x91u,3,0,-1}, {0x91u,0,0,-1}}},
-    /* '98 Braves: D A/C# Bm G D */
-    {132, {{0x91u,0,0,-1}, {0x91u,4,0,4}, {0x89u,5,0,-1}, {0x91u,3,0,-1}, {0x91u,0,0,-1}}},
+    /* I Can't Love You Anymore (Ella Langley & Wallen): Gbmaj7 Ab Bbm */
+    {132, {{0x891u,5,0,-1}, {0x91u,6,0,-1}, {0x89u,0,0,-1}}},
     /* Thought You Should Know: F# C#/E# G#m7 (G D/F# Am7, down a semitone) */
     {133, {{0x91u,0,0,-1}, {0x91u,4,0,4}, {0x489u,1,0,-1}}},
     /* Cowgirls: Fm Db Ab Eb */
