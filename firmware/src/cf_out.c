@@ -385,6 +385,7 @@ static void cfm_restart(void)
 #include "cf_seqp.c"                             /* (.. playing them) */
 #include "cf_drum.c"                             /* (the drum machine's rhythms and their player, 0.6) */
 #include "cf_accomp.c"
+#include "cf_lab_audio.c"
 
 /* the metronome's sounds: a decaying resonator (the accent on the downbeat a different pitch), some with noise.
  * a1 = 2 r cos w and a2 = r^2 (Q14), s = sin w (x 10000) sets the start; len: samples to -60 dB; noise: % */
@@ -538,6 +539,8 @@ static volatile uint8_t cf_ready;
 
 static void cf_apply(const cf_ev_in_t *e)
 {
+    if(e->op==CFE_PANIC || e->op==CFE_ACCOMP || e->op==CFE_SEQ || e->op==CFE_DRUM || e->op==CFE_TRANSPORT)cla_cancel(0);
+    if(e->op==CFE_CONFIG)cla_cancel(1);
     switch (e->op) {
     case CFE_KEY:
         if (e->v) {
@@ -668,6 +671,7 @@ static void cf_audio_block(uint32_t n)
         cf_evq_r++;
     }
     cf_midi_in();
+    cla_process(n);
     cf_ms_rem += n * 1000u;
     while (cf_ms_rem >= FS) {
         cf_ms_rem -= FS;
@@ -692,6 +696,8 @@ static void cf_audio_block(uint32_t n)
 
 /* ---------------------------------------------------- what the UI reads --- */
 typedef struct {
+    cf_lab_chord_t audition;
+    uint8_t audition_on,audition_blocked;
     uint32_t ac_revision,ac_mask[CF_P_MAX];
     uint8_t ac_n,ac_root[CF_P_MAX],ac_degree[CF_P_MAX];
     int8_t ac_bass_pc[CF_P_MAX];
@@ -733,6 +739,7 @@ static void cf_snapshot(void)
 {
     uint32_t i;
     fm1_irq_off();
+    cf_sn.audition=cla.chord;cf_sn.audition_on=cla.on;cf_sn.audition_blocked=cla.blocked;
     cf_sn.ac_revision = cpa.revision;cf_sn.ac_n=cpa.plan.n;
     for(unsigned i=0;i<CF_P_MAX;i++) {
         cf_sn.ac_mask[i]=cpa.plan.slot[i].mask;cf_sn.ac_root[i]=cpa.plan.slot[i].root;

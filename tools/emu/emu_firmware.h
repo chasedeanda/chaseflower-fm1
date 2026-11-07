@@ -118,6 +118,7 @@ static void cf_fx_chain(int32_t *l, int32_t *r, uint32_t n);
 #include "../../firmware/src/cf_chord.c"
 #include "../../firmware/src/cf_progression.c"
 #include "../../firmware/src/cf_song.c"
+#include "../../firmware/src/cf_lab.c"
 #include "../../firmware/src/cf_browser.c"
 #include "../../firmware/src/cf_play.c"
 #include "../../firmware/src/cf_out.c"

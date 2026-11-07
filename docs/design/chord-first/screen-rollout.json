@@ -372,9 +372,9 @@
       "group": "Chord Lab",
       "sharedTemplate": "chord",
       "musicalMilestone": 3,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native preview follows selected Instrument Teal primitives; physical review pending",
+      "implementationStatus": "Implemented native preview: Now/Last and explicit planned slots, actual quality/degree, voiced MIDI register and starred outside-scale notes; silent browsing",
+      "deviceVerification": "Pending — host-rendered captures and device link only"
     },
     {
       "id": "LAB_INTERVALS",
@@ -382,9 +382,9 @@
       "group": "Chord Lab",
       "sharedTemplate": "params",
       "musicalMilestone": 3,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native preview follows selected Instrument Teal primitives; physical review pending",
+      "implementationStatus": "Implemented native preview: K2 voiced-note focus, chord-relative compound intervals and factual scale membership",
+      "deviceVerification": "Pending — host-rendered captures and device link only"
     },
     {
       "id": "LAB_COMPARE",
@@ -392,9 +392,9 @@
       "group": "Chord Lab",
       "sharedTemplate": "picker",
       "musicalMilestone": 3,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native preview follows selected Instrument Teal primitives; physical review pending",
+      "implementationStatus": "Implemented native preview: fixed target/context Triad/Color and meaningful Root/Smooth; SEL-only audition; no extension disables Triad/Color",
+      "deviceVerification": "Pending — host-rendered captures and device link only"
     },
     {
       "id": "LAB_COMPARE_PLAYING",
@@ -402,9 +402,9 @@
       "group": "Chord Lab",
       "sharedTemplate": "chord",
       "musicalMilestone": 3,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native preview follows selected Instrument Teal primitives; physical review pending",
+      "implementationStatus": "Implemented native preview: one-bar bounded owner, explicit A/B switching, current gated accompaniment restoration, live HOLD/recording/replay guards and clock-loss/stop cancellation",
+      "deviceVerification": "Pending — host-rendered captures and device link only"
     },
     {
       "id": "NEXT_SHORTLIST",
@@ -412,9 +412,9 @@
       "group": "Next Chord",
       "sharedTemplate": "picker",
       "musicalMilestone": 4,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native preview follows selected Instrument Teal primitives; physical review pending",
+      "implementationStatus": "Implemented native preview: three silent deterministic local-catalogue suggestions, live history/draft path, explicit insertion focus and honest theory fallback; non-seven-note scales unsupported",
+      "deviceVerification": "Pending — host-rendered captures and device link only"
     },
     {
       "id": "NEXT_AUDITION",
@@ -422,9 +422,9 @@
       "group": "Next Chord",
       "sharedTemplate": "chord",
       "musicalMilestone": 4,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native preview follows selected Instrument Teal primitives; physical review pending",
+      "implementationStatus": "Implemented native preview: bounded one-bar candidate audition with explicit switching and no committed-history/draft/global-modifier mutation",
+      "deviceVerification": "Pending — host-rendered captures and device link only"
     },
     {
       "id": "NEXT_INSERTED",
@@ -432,9 +432,9 @@
       "group": "Next Chord",
       "sharedTemplate": "status",
       "musicalMilestone": 4,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native preview follows selected Instrument Teal primitives; physical review pending",
+      "implementationStatus": "Partial implementation: EDIT replaces the visibly selected slot using native one-step undo and opens Edit Chord; inline acknowledgement, full Songs integration pending",
+      "deviceVerification": "Pending — host-rendered captures and device link only"
     },
     {
       "id": "MOTION_ARP",
@@ -652,9 +652,9 @@
       "group": "Next Chord",
       "sharedTemplate": "status",
       "musicalMilestone": 4,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native preview follows selected Instrument Teal primitives; physical review pending",
+      "implementationStatus": "Implemented native preview: unsupported scale has no candidates or audition/insertion; Notes/Intervals remain available",
+      "deviceVerification": "Pending — host-rendered captures and device link only"
     },
     {
       "id": "SONGS_CLEAR_RECORDINGS_CONFIRM",

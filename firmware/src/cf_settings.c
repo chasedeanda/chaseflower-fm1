@@ -216,6 +216,7 @@ static int cf_settings_write(uint32_t how)
  * (a reverb's or a delay's tail: the owner heard holes in it where a save stopped the audio) */
 static int cfs_sounding(void)
 {
+    if(cla.on || cla_mail.request)return 1;
     uint32_t p, i;
     if (cf_sn.metro_on || cf_sn.running || cfx_quiet < FS / CTL)
         return 1;

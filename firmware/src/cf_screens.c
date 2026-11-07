@@ -89,6 +89,7 @@ static void draw_top_sound(uint32_t part, int xmax)   /* xmax: where the chips o
 #include "cf_stage.c"
 #include "cf_acc_screen.c"
 #include "cf_draft_screen.c"
+#include "cf_lab_screen.c"
 #include "cf_seqv.c"                            /* (the SEQUENCER screens' pictures) */
 #include "cf_dmv.c"                             /* (the drum machine's, 0.6) */
 static void draw_title(const char *t, const char *note);
@@ -841,6 +842,8 @@ static void cf_ui_draw(void)
     char top[24];
     fb_unclip();
     if (cf_intro_draw(cu.frame_dt)) { cf_stage_valid=cf_acc_valid=0; return; }
+    if(!cu.upd_left && cu.scr==SCR_LAB){cfl_draw();return;}
+    cfl_valid=0;
     if(!cu.upd_left && cu.scr==SCR_PEDIT){cfd_draw();return;}
     cfd_valid=0;
     if(!cu.upd_left && (cu.scr==SCR_ACC || (cu.scr==SCR_GLO && cu.page[SCR_GLO]==CF_GLO_LEGACY))) {cf_acc_draw();return;}
