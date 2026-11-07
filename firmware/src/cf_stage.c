@@ -3,14 +3,17 @@
  * One complete bounded model is compared before any raster/hash/transfer work.
  */
 #include "cf_native_fonts.h"
+/* Shared knob labels encode accidentals as pixel-font glyph bytes. */
+static unsigned cfn_code(unsigned c)
+{ return c==0x80?'#':c==0x81?'b':c<32 || c>126?'?':c; }
 static int cfn_width(const cfn_font_t *f, const char *s)
 {
-    int w=0; for (;*s;s++) { unsigned c=(uint8_t)*s; if(c<32 || c>126)c='?'; w+=f->g[c-32].adv; } return w;
+    int w=0; for (;*s;s++) { unsigned c=cfn_code((uint8_t)*s); w+=f->g[c-32].adv; } return w;
 }
 static void cfn_text(const cfn_font_t *f,int x,int baseline,const char *s,uint8_t ink)
 {
     for(;*s;s++) {
-        unsigned c=(uint8_t)*s;if(c<32 || c>126)c='?';
+        unsigned c=cfn_code((uint8_t)*s);
         const cfn_glyph_t *g=&f->g[c-32];
         for(unsigned j=0;j<g->h;j++) {
             for(unsigned i=0;i<g->w;i++) {

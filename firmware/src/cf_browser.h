@@ -2,8 +2,8 @@
 #ifndef CF_BROWSER_H
 #define CF_BROWSER_H
 #include "cf_progression.h"
-#define CPB_MAX 128u
-#define CPB_BYTES (CPB_MAX / 8u)
+#define CPB_MAX 255u
+#define CPB_BYTES ((CPB_MAX + 7u) / 8u)
 enum { CPB_CATALOG, CPB_ALPHA, CPB_SHUFFLE, CPB_FAVORITES, CPB_MODES };
 typedef struct {
     uint8_t order[CPB_MAX], favorites[CPB_BYTES], n, mode;

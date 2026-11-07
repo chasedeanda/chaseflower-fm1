@@ -3,6 +3,7 @@
  * compact permutation, independent of playing/queued setup and musical data.
  */
 #include "cf_browser.h"
+_Static_assert(CPB_MAX<=CF_P_NONE, "browser count and indices fit a byte");
 static int cpb_compare(unsigned a, unsigned b)
 {
     const char *x=cf_progression_get(a)->name, *y=cf_progression_get(b)->name;

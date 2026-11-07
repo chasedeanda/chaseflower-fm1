@@ -135,7 +135,7 @@ static void shots(const char *dir)
 {
     cf_intro_on=0; cu.pop=POP_NONE; cu.scr=SCR_HOME; cf_scene_set(CF_SCENE_PROGRESSIONS);
     ch.mode=CF_H_AUTO; cs.retrig=CF_RT_MOVE;
-    static const unsigned picks[]={0,9,19,40,44,49,52,54,55,78,100,102,109,110,111,112,113,114,115,116,118,119,121};
+    static const unsigned picks[]={0,9,19,40,44,49,52,54,55,78,100,102,109,110,111,112,113,114,115,116,118,119,121,122,123,124,125,126,127,128,129};
     for(unsigned i=0;i<sizeof picks/sizeof *picks;i++) {
         cpg.idea=CF_P_NONE; cf_progression_current(); ui_select((int)picks[i]);
         if(!picks[i]) { cs.chord.tonic=4; cs.chord.scale=CF_SC_MAJOR; cs.beats=4; cf_send_config(); }

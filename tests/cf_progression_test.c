@@ -68,7 +68,7 @@ int main(void)
     unsigned tags = 0;
     cf_harmony_t h;
     cf_harmony_defaults(&h);
-    CHECK(cf_progression_count() == 122);
+    CHECK(cf_progression_count() == 130);
     song_seed_fixtures();
     CHECK(!cf_progression_get(CF_P_NONE) && !cf_progression_get(UINT_MAX));
     for (unsigned i = 0; i < cf_progression_count(); i++) {
