@@ -98,6 +98,9 @@ jobs:
       - name: FX presets, safe storage and performance controls (host HAL)
         run: sh tools/test_fx_presets.sh
 
+      - name: FX macros, combined readout and audio isolation
+        run: sh tools/test_fx.sh
+
       - name: Auto harmony, controls, persistence, MIDI and recording (host HAL)
         run: sh tools/test_auto.sh
 

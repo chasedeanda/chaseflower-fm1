@@ -75,8 +75,8 @@ static void controls(void)
     uint8_t hints = cs.seq_hint;
     cu.scr = SCR_FX; cu.fx_pos = 0;
     uint8_t first = cs.fx.order[0], second = cs.fx.order[1];
-    ui_algo(1);
-    CHECK(cu.fx_pos == 1 && cs.fx.order[0] == second && cs.fx.order[1] == first && cs.seq_hint == hints);
+    fxpu.mode=FXP_BROWSE;ui_algo(1);
+    CHECK(fxpu.mode==FXP_EDIT && cu.fx_pos == 0 && cs.fx.order[0] == first && cs.fx.order[1] == second && cs.seq_hint == hints);
     cu.scr = SCR_SQ; squ.pat = 0; squ.oct_down = 0; cf_sn.sq_on = 0;
     ui_algo(1);
     CHECK(squ.pat == 1 && cs.seq_hint == hints && cs.chord.algo == CF_ALG_TOP_LOCK);

@@ -60,14 +60,14 @@ the labels show exactly what each one will change.
 | **HOME** | Return to Progressions/Core; on HOME, cycle **Core → Sound → Texture → Groove → Perform → Keyboard** |
 | **SELECT** | On HOME, browse ideas from any bank; elsewhere, choose the item, slot or page |
 | **PRESETS** | On HOME, change the chord sound |
-| **ALGORITHM** | Change tabs in Accompaniment, the phrase editor or Chord Lab; in FX, move the selected effect in the chain |
+| **ALGORITHM** | Change tabs in Accompaniment, the phrase editor or Chord Lab; in FX, switch Macros / Individual |
 | **PLAY** | On HOME/Accompaniment, start or stop the selected phrase; in Recordings, replay the selected take |
 | **SEQ** | Open **Groove / Loop / Mix / Click**; press again to return HOME |
 | **EDIT** | From HOME/Accompaniment, open a protected working copy of the phrase |
 | **SEL** | From HOME, open **Chord Lab**; on action/confirmation pages, perform the displayed action |
 | **SAVE** | From HOME/Accompaniment/editor/Lab, open **Songs**; sound and FX pages retain their own save controls |
 | **ENV / LFO / ARP** | Envelope / linked bass / arpeggiator |
-| **FX** | Open individual effects; press FX again for complete-chain presets |
+| **FX** | Open the combined Macros readout; ALGORITHM opens Individual editing |
 | **GLO** | System pages: Display, MIDI, Harmony, Variation, Browse, Recordings policy and Legacy tools |
 | **MASTER / OCT− / OCT+** | Output volume / playing register |
 
@@ -158,10 +158,12 @@ Existing takes appear as **R** rows and retain their fixed recorded pitches. [So
 
 ### Get a spacious or lo-fi sound quickly
 
-Press **FX**, then **FX again**. Turn SELECT to hear complete chains such as **Glass Cathedral**, **Dream Pop**
-or **Dusty Cassette**. In this browser, **K2 clockwise clears to dry** and **K3 clockwise swaps back to the previous chain**.
-K4 clockwise returns to individual effects: SELECT chooses an effect, K1 enables it, K2–K4 edit it,
-and ALGORITHM changes its position in the chain.
+Press **FX** for the visual Macros screen. **SELECT browses** thirteen factory presets,
+including **Deep Space**, **Orbit**, **Phone LP** and **Phone HP**; **SEL loads** the
+highlighted recipe. K1–K4 are **Space, Echo, Motion, Warmth**. **ALGORITHM** switches
+to Individual editing and back; effect order is fixed for factory recipes.
+One large combined readout follows the sound and settles at silence; **Motion Off**
+keeps it static. **SAVE** retains the sixteen-slot user bank and explicit management.
 
 Press **ENV** for attack/decay/sustain/release; turn SELECT to choose the sound target.
 For deep FM6/VA editing, use **ENV → EDIT**. To save just a synth sound, press **SAVE from ENV or the sound editor**,

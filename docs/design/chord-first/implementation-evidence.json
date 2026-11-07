@@ -151,52 +151,39 @@
       "evidence": "native-pages/README.md"
     },
     "FX_FILTER": {
-      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
-      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
-      "deviceVerification": "Pending — native host captures and device link only",
-      "evidence": "native-pages/README.md"
+      "designStatus": "Native Instrument Teal combined readout captured",
+      "implementationStatus": "Implemented locally on main 70ed4e4: thirteen approved factory recipes, anchored macros, ALGORITHM Macros/Individual, one large response field and existing Motion On/Off metadata",
+      "deviceVerification": "Pending physical FM-1 checks; host DSP/USB, storage and native-page checks pass"
     },
     "FX_DRIVE": {
-      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
-      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
-      "deviceVerification": "Pending — native host captures and device link only",
-      "evidence": "native-pages/README.md"
+      "designStatus": "Native Instrument Teal combined readout captured",
+      "implementationStatus": "Implemented locally on main 70ed4e4: thirteen approved factory recipes, anchored macros, ALGORITHM Macros/Individual, one large response field and existing Motion On/Off metadata",
+      "deviceVerification": "Pending physical FM-1 checks; host DSP/USB, storage and native-page checks pass"
     },
     "FX_CHORUS": {
-      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
-      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
-      "deviceVerification": "Pending — native host captures and device link only",
-      "evidence": "native-pages/README.md"
+      "designStatus": "Native Instrument Teal combined readout captured",
+      "implementationStatus": "Implemented locally on main 70ed4e4: thirteen approved factory recipes, anchored macros, ALGORITHM Macros/Individual, one large response field and existing Motion On/Off metadata",
+      "deviceVerification": "Pending physical FM-1 checks; host DSP/USB, storage and native-page checks pass"
     },
     "FX_PHASER": {
-      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
-      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
-      "deviceVerification": "Pending — native host captures and device link only",
-      "evidence": "native-pages/README.md"
+      "designStatus": "Native Instrument Teal combined readout captured",
+      "implementationStatus": "Implemented locally on main 70ed4e4: thirteen approved factory recipes, anchored macros, ALGORITHM Macros/Individual, one large response field and existing Motion On/Off metadata",
+      "deviceVerification": "Pending physical FM-1 checks; host DSP/USB, storage and native-page checks pass"
     },
     "FX_DELAY": {
-      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
-      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
-      "deviceVerification": "Pending — native host captures and device link only",
-      "evidence": "native-pages/README.md"
+      "designStatus": "Native Instrument Teal combined readout captured",
+      "implementationStatus": "Implemented locally on main 70ed4e4: thirteen approved factory recipes, anchored macros, ALGORITHM Macros/Individual, one large response field and existing Motion On/Off metadata",
+      "deviceVerification": "Pending physical FM-1 checks; host DSP/USB, storage and native-page checks pass"
     },
     "FX_REVERB": {
-      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
-      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
-      "deviceVerification": "Pending — native host captures and device link only",
-      "evidence": "native-pages/README.md"
-    },
-    "FX_ORDER": {
-      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
-      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
-      "deviceVerification": "Pending — native host captures and device link only",
-      "evidence": "native-pages/README.md"
+      "designStatus": "Native Instrument Teal combined readout captured",
+      "implementationStatus": "Implemented locally on main 70ed4e4: thirteen approved factory recipes, anchored macros, ALGORITHM Macros/Individual, one large response field and existing Motion On/Off metadata",
+      "deviceVerification": "Pending physical FM-1 checks; host DSP/USB, storage and native-page checks pass"
     },
     "FX_PRESETS": {
-      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
-      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
-      "deviceVerification": "Pending — native host captures and device link only",
-      "evidence": "native-pages/README.md"
+      "designStatus": "Native Instrument Teal combined readout captured",
+      "implementationStatus": "Implemented locally on main 70ed4e4: thirteen approved factory recipes, anchored macros, ALGORITHM Macros/Individual, one large response field and existing Motion On/Off metadata",
+      "deviceVerification": "Pending physical FM-1 checks; host DSP/USB, storage and native-page checks pass"
     },
     "FX_SAVE": {
       "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
@@ -907,5 +894,18 @@
       "Audition is monophonic in harmonic ownership: chord preview mutes scheduled chord/bass while groove and cursor continue.",
       "Now/Last/history follow foreground semantic chord snapshots, not individual arpeggiated notes."
     ]
+  },
+  "effectsRevision": {
+    "sourceBase": "70ed4e46c84b5b453b5fc06bab68b8727e06650a",
+    "factoryCount": 13,
+    "readout": "One combined response field, with one selected-effect field on Individual",
+    "captures": "previews/fx-screen",
+    "checks": [
+      "tools/test_fx.sh",
+      "tools/test_fx_presets.sh",
+      "tools/test_native_pages.sh",
+      "tools/test_keyboard.sh"
+    ],
+    "hardwareVerified": false
   }
 }

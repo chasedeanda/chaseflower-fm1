@@ -29,6 +29,7 @@ static void cfn_motion_frame(void)
     if(cu.scr==SCR_ENV)key|=(uint32_t)cu.env_tgt<<16;
     if(cu.scr==SCR_FX)key|=(uint32_t)fxpu.mode<<16 | (uint32_t)cu.fx_pos<<24;
     if(!cf_motion) {
+        cfx_visual_tick(0,0,0);
         cf_motion_epoch=cu.now;
         memset(&cfn_motion,0,sizeof cfn_motion);cfn_motion.workspace=key;
         cfn_motion.valid=1;cfn_motion.tick=cu.now;return;
@@ -63,6 +64,7 @@ static void cfn_motion_frame(void)
     else if(cu.now-cfn_motion.quiet_ms>=150)cfn_motion.active=0;
     if(cf_sn.visual_muted){cfn_motion.energy=cfn_motion.parts=cfn_motion.active=0;}
     cfn_motion.part_mask=raw?cf_sn.visual_parts:0;
+    cfx_visual_tick(dt,cfn_motion.energy,cfn_motion.active);
 }
 static int cfn_page_dx(void)
 { return cf_tween_offset(cfn_motion.page_ms,170,8)*cfn_motion.direction; }

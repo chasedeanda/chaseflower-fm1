@@ -549,10 +549,9 @@
       "group": "Effects",
       "sharedTemplate": "params",
       "musicalMilestone": 1,
-      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
-      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
-      "deviceVerification": "Pending — native host captures and device link only",
-      "evidence": "native-pages/README.md"
+      "designStatus": "Native Instrument Teal combined readout captured",
+      "implementationStatus": "Implemented locally on main 70ed4e4: thirteen approved factory recipes, anchored macros, ALGORITHM Macros/Individual, one large response field and existing Motion On/Off metadata",
+      "deviceVerification": "Pending physical FM-1 checks; host DSP/USB, storage and native-page checks pass"
     },
     {
       "id": "FX_DRIVE",
@@ -560,10 +559,9 @@
       "group": "Effects",
       "sharedTemplate": "params",
       "musicalMilestone": 1,
-      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
-      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
-      "deviceVerification": "Pending — native host captures and device link only",
-      "evidence": "native-pages/README.md"
+      "designStatus": "Native Instrument Teal combined readout captured",
+      "implementationStatus": "Implemented locally on main 70ed4e4: thirteen approved factory recipes, anchored macros, ALGORITHM Macros/Individual, one large response field and existing Motion On/Off metadata",
+      "deviceVerification": "Pending physical FM-1 checks; host DSP/USB, storage and native-page checks pass"
     },
     {
       "id": "FX_CHORUS",
@@ -571,10 +569,9 @@
       "group": "Effects",
       "sharedTemplate": "params",
       "musicalMilestone": 1,
-      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
-      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
-      "deviceVerification": "Pending — native host captures and device link only",
-      "evidence": "native-pages/README.md"
+      "designStatus": "Native Instrument Teal combined readout captured",
+      "implementationStatus": "Implemented locally on main 70ed4e4: thirteen approved factory recipes, anchored macros, ALGORITHM Macros/Individual, one large response field and existing Motion On/Off metadata",
+      "deviceVerification": "Pending physical FM-1 checks; host DSP/USB, storage and native-page checks pass"
     },
     {
       "id": "FX_PHASER",
@@ -582,10 +579,9 @@
       "group": "Effects",
       "sharedTemplate": "params",
       "musicalMilestone": 1,
-      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
-      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
-      "deviceVerification": "Pending — native host captures and device link only",
-      "evidence": "native-pages/README.md"
+      "designStatus": "Native Instrument Teal combined readout captured",
+      "implementationStatus": "Implemented locally on main 70ed4e4: thirteen approved factory recipes, anchored macros, ALGORITHM Macros/Individual, one large response field and existing Motion On/Off metadata",
+      "deviceVerification": "Pending physical FM-1 checks; host DSP/USB, storage and native-page checks pass"
     },
     {
       "id": "FX_DELAY",
@@ -593,10 +589,9 @@
       "group": "Effects",
       "sharedTemplate": "params",
       "musicalMilestone": 1,
-      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
-      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
-      "deviceVerification": "Pending — native host captures and device link only",
-      "evidence": "native-pages/README.md"
+      "designStatus": "Native Instrument Teal combined readout captured",
+      "implementationStatus": "Implemented locally on main 70ed4e4: thirteen approved factory recipes, anchored macros, ALGORITHM Macros/Individual, one large response field and existing Motion On/Off metadata",
+      "deviceVerification": "Pending physical FM-1 checks; host DSP/USB, storage and native-page checks pass"
     },
     {
       "id": "FX_REVERB",
@@ -604,32 +599,19 @@
       "group": "Effects",
       "sharedTemplate": "params",
       "musicalMilestone": 1,
-      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
-      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
-      "deviceVerification": "Pending — native host captures and device link only",
-      "evidence": "native-pages/README.md"
-    },
-    {
-      "id": "FX_ORDER",
-      "title": "Effect Order",
-      "group": "Effects",
-      "sharedTemplate": "timeline",
-      "musicalMilestone": 1,
-      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
-      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
-      "deviceVerification": "Pending — native host captures and device link only",
-      "evidence": "native-pages/README.md"
+      "designStatus": "Native Instrument Teal combined readout captured",
+      "implementationStatus": "Implemented locally on main 70ed4e4: thirteen approved factory recipes, anchored macros, ALGORITHM Macros/Individual, one large response field and existing Motion On/Off metadata",
+      "deviceVerification": "Pending physical FM-1 checks; host DSP/USB, storage and native-page checks pass"
     },
     {
       "id": "FX_PRESETS",
-      "title": "Effect Presets",
+      "title": "Effects — Macros",
       "group": "Effects",
-      "sharedTemplate": "picker",
-      "musicalMilestone": 2,
-      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
-      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
-      "deviceVerification": "Pending — native host captures and device link only",
-      "evidence": "native-pages/README.md"
+      "sharedTemplate": "params",
+      "musicalMilestone": 1,
+      "designStatus": "Native Instrument Teal combined readout captured",
+      "implementationStatus": "Implemented locally on main 70ed4e4: thirteen approved factory recipes, anchored macros, ALGORITHM Macros/Individual, one large response field and existing Motion On/Off metadata",
+      "deviceVerification": "Pending physical FM-1 checks; host DSP/USB, storage and native-page checks pass"
     },
     {
       "id": "FX_SAVE",

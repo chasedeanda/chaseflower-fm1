@@ -931,16 +931,7 @@ static void ui_select(int d)                     /* SELECT: the bass sound, or a
             cv_turned(d);
         return;
     }
-    if (cu.scr == SCR_FX && fxpu.mode) {
-        cu.save_hold = 0;
-        if (fxpu.mode == FXP_BROWSE) fxp_select(d);
-        else fxpu.slot = (uint8_t)clampi(fxpu.slot + d, 0, FXP_SLOTS - 1);
-        return;
-    }
-    if (cu.scr == SCR_FX) {                      /* FX: the effect along the chain */
-        cu.fx_pos = (uint8_t)clampi(cu.fx_pos + d, 0, CFX_N - 1);
-        return;
-    }
+    if (cu.scr == SCR_FX) { cfx_select(d); return; }
     if (screen_pages(cu.scr) > 1u) {
         cu.page[cu.scr] = (uint8_t)wrapi(cu.page[cu.scr] + d, (int)screen_pages(cu.scr));
         cv_turned(d);
@@ -989,8 +980,7 @@ static void ui_algo(int d)                       /* ALGORITHM: scene, effect, or
     if(cu.scr==SCR_PEDIT){if(!cfdu.conflict&&!cfdu.confirm)cu.page[SCR_PEDIT]=wrapi(cu.page[SCR_PEDIT]+d,CFD_NTAB);return;}
     if(cu.scr==SCR_ACC){cu.page[SCR_ACC]=(uint8_t)wrapi(cu.page[SCR_ACC]+d,CF_ACC_N);cf_acc_focus=0;cf_acc_page_ms=cf_motion?(cu.now?cu.now:1u):0;return;}
     if (cu.scr == SCR_FX) {
-        if (fxpu.mode) return;
-        cfx_move(d);
+        if (fxpu.mode != FXP_MANAGE) cfx_view(d);
         return;
     }
     if (cu.scr == SCR_SQ) {                      /* SEQUENCER: the pattern, then the song */
@@ -1254,7 +1244,8 @@ static void ui_button(uint32_t b)
         }
         break;
     case B_SCL:                                  /* (the drum machine: SEL takes the rhythm's own KIT and SWING back) */
-        if (cu.scr == SCR_DRUM)
+        if (cu.scr == SCR_FX) { if (fxpu.mode == FXP_BROWSE) cfx_recall(); }
+        else if (cu.scr == SCR_DRUM)
             dm_sel();
         else
             ui_open(SCR_SEL);
@@ -1266,9 +1257,9 @@ static void ui_button(uint32_t b)
         if(cpb_home())cpbu.menu_hold=cu.now?cu.now:1u;
         cvr_context_from_screen(); ui_open(SCR_GLO); break;
     case B_FX:
-        if (cu.scr == SCR_FX && fxpu.mode == FXP_EDIT) fxpu.mode = FXP_BROWSE;
-        else if (cu.scr == SCR_FX && fxpu.mode == FXP_MANAGE) { fxpu.mode = FXP_BROWSE; cu.save_hold = 0; }
-        else { fxpu.mode = FXP_EDIT; ui_open(SCR_FX); }
+        if (cu.scr == SCR_FX && fxpu.mode == FXP_MANAGE) { fxpu.mode = FXP_BROWSE; cu.save_hold = 0; }
+        else if (cu.scr == SCR_FX) ui_open(SCR_HOME);
+        else { cfx_sync(); fxpu.mode = FXP_BROWSE; cfxu.view = CFX_MACROS; ui_open(SCR_FX); }
         break;
     case B_ARP: ui_open(SCR_ARP); break;         /* (its ON/OFF is K1 there, as an effect's: the owner's) */
     case B_SEQ:                                  /* METRONOME, again the SEQUENCER (or the drum machine: the METRONOME's

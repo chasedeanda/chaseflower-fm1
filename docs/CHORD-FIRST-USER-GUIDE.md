@@ -165,14 +165,14 @@ The notes line shows actual chord tones. The phrase cue shows planned chords; it
 **Availability:** Play — first milestone. Use only the supported six effects with clear controls.
 
 1. **Press FX and SELECT Reverb.** — K1 is On, K2 Type, K3 Decay, K4 Mix. (Reverb).
-2. **ALGORITHM to Order; SELECT an effect and K1 to move it.** — Routing changes explicitly; ALGORITHM remains tab navigation. (Effect Order).
+2. **Turn ALGORITHM left to Macros.** — Individual edits remain audible; the four macro knobs start from those values. (Effects — Macros).
 3. **Return HOME.** — Current chain continues; phase-2 complete-song save retains it. (Progressions · CORE).
 
 ### Recall or save an effect preset
 
 **Availability:** Edit and save — second milestone. Swap effects without changing the harmony or groove.
 
-1. **Choose Presets tab; browse and press SEL to recall.** — Only supported effect chain parameters/order/bypass change; Undo is available. (Effect Presets).
+1. **Press FX; SELECT browses and SEL explicitly loads.** — Only the effects change; harmony, sounds and transport remain intact. (Effects — Macros).
 2. **Choose Save As New, enter a name and SAVE.** — Named effects-only record is saved; the whole song still uses its normal save route. (Name Effect Preset).
 
 ### Use an external clock deliberately
@@ -533,15 +533,14 @@ Every entry below is a planned screen or a named state/tab of a shared screen. A
 
 | Screen | Milestone | Open it | What it does |
 | --- | --- | --- | --- |
-| Filter | 1 | FX opens the last effect; SELECT chooses this effect along the chain. | Use the existing supported filter with its actual three musical controls. |
-| Drive | 1 | FX opens the last effect; SELECT chooses this effect along the chain. | Use the existing supported drive with its actual three musical controls. |
-| Chorus | 1 | FX opens the last effect; SELECT chooses this effect along the chain. | Use the existing supported chorus with its actual three musical controls. |
-| Phaser | 1 | FX opens the last effect; SELECT chooses this effect along the chain. | Use the existing supported phaser with its actual three musical controls. |
-| Delay | 1 | FX opens the last effect; SELECT chooses this effect along the chain. | Use the existing supported delay with its actual three musical controls. |
-| Reverb | 1 | FX opens the last effect; SELECT chooses this effect along the chain. | Use the existing supported reverb with its actual three musical controls. |
-| Effect Order | 1 | FX, ALGORITHM to Order. | Retain reorderable six-effect routing under a consistent tab-navigation rule. |
-| Effect Presets | 2 | FX, ALGORITHM to Presets. | Recall a complete configuration of the existing six effects without treating it as a whole song. |
-| Name Effect Preset | 2 | Effect Presets Action Save As New, then SEL. | Save the supported six-effect configuration as a named preset without implying a sound or song save. |
+| Filter | 1 | FX opens Macros; ALGORITHM right opens Individual, then SELECT this effect. | Use the existing supported filter with its actual three musical controls. |
+| Drive | 1 | FX opens Macros; ALGORITHM right opens Individual, then SELECT this effect. | Use the existing supported drive with its actual three musical controls. |
+| Chorus | 1 | FX opens Macros; ALGORITHM right opens Individual, then SELECT this effect. | Use the existing supported chorus with its actual three musical controls. |
+| Phaser | 1 | FX opens Macros; ALGORITHM right opens Individual, then SELECT this effect. | Use the existing supported phaser with its actual three musical controls. |
+| Delay | 1 | FX opens Macros; ALGORITHM right opens Individual, then SELECT this effect. | Use the existing supported delay with its actual three musical controls. |
+| Reverb | 1 | FX opens Macros; ALGORITHM right opens Individual, then SELECT this effect. | Use the existing supported reverb with its actual three musical controls. |
+| Effects — Macros | 1 | Press FX. | Browse thirteen distinct factory recipes and shape them with four macros above one combined response readout. |
+| Name Effect Preset | 2 | Effects — Macros Action Save As New, then SEL. | Save the supported six-effect configuration as a named preset without implying a sound or song save. |
 | FX preset Storage Full | 2 | FX preset save encounters no free named-record slot. | Keep the edited fx preset and prior valid record intact without displaying Song-capture status. |
 | FX preset Could Not Save | 2 | FX preset save encounters write validation failed. | Keep the edited fx preset and prior valid record intact without displaying Song-capture status. |
 

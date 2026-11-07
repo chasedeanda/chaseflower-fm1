@@ -3,7 +3,7 @@
  * settings, record store and sound engines remain the only owners of behavior.
  * Bounded copied models allow a resting page to skip raster/hash/LCD work.
  */
-enum { N_PARAMS, N_LINES, N_GRID, N_KEYS, N_NAME, N_ENV, N_LIST, N_RESULT };
+enum { N_PARAMS, N_LINES, N_GRID, N_KEYS, N_NAME, N_ENV, N_LIST, N_RESULT, N_FX };
 typedef struct {
     char title[24],section[48],status[24],hint[64],detail[64];
     char label[4][12],value[4][14],row[9][48],right[4][24];
@@ -114,12 +114,32 @@ static void cfn_page_model(cfn_page_t *m)
         NP(title,"Chord buttons");NP(section,cf_is_off(&cs.chord,cu.sel_btn)?"HOLD":ch.mode==CF_H_AUTO?cf_modifier_name(ch.slot[cu.sel_btn]):cf_type_name(sel_form()->type));NP(hint,"SELECT button / HOME back");break;
     case SCR_BASS:NP(title,"Linked bass");NP(section,cf_snd[CF_PART_BASS].name);break;
     case SCR_FX:
-        NP(title,"Effects");
-        if(fxpu.mode==FXP_BROWSE){m->kind=N_LINES;m->rows=4;NP(section,"FX presets");NP(row[0],fxp_pick_name());NP(row[1],!cs.fx.on?"No FX":cfx_bypass?"Chain bypassed":"K2 clear / K3 undo");NP(row[2],fxp_pending()?"Saving / keep power on":fxp_protected?"User bank protected":"SELECT hears presets");NP(hint,"SAVE manage / K4 edit");}
-        else if(fxpu.mode==FXP_MANAGE){m->kind=N_NAME;NP(section,fxpu.action==2?"Delete user FX":fxpu.action?"Replace user FX":"Save new FX");NP(detail,fxpu.name);m->name_cursor=fxpu.cursor;NP(hint,"Hold SAVE 1 second / FX back");if(cu.save_hold)m->progress=(cu.now-cu.save_hold>=1000)?100:(cu.now-cu.save_hold)/10;}
-        else {NP(section,CFX_NAME[cs.fx.order[cu.fx_pos%CFX_N]%CFX_N]);m->page=cu.fx_pos;m->npages=CFX_N;
-            for(unsigned i=0;i<CFX_N;i++){if(i)str_cpy(m->detail+str_len(m->detail)," > ",sizeof m->detail-str_len(m->detail));str_cpy(m->detail+str_len(m->detail),CFX_SHORT[cs.fx.order[i]%CFX_N],sizeof m->detail-str_len(m->detail));}
-            NP(hint,"SELECT effect / ALGORITHM order");}break;
+        cfx_sync();NP(title,"Effects");
+        if(fxpu.mode==FXP_MANAGE){
+            m->kind=N_NAME;
+            NP(section,fxpu.action==4?"Previous FX":fxpu.action==3?"Clear FX":fxpu.action==2?"Delete user FX":fxpu.action?"Replace user FX":"Save new FX");
+            NP(detail,fxpu.action>=3?"Hold SAVE to confirm":fxpu.name);m->name_cursor=fxpu.cursor;
+            NP(hint,"Hold SAVE 1 second / FX back");
+            if(cu.save_hold)m->progress=(cu.now-cu.save_hold>=1000)?100:(cu.now-cu.save_hold)/10;
+        } else {
+            m->kind=N_FX;m->focus=fxpu.mode==FXP_EDIT;m->page=0;m->npages=1;
+            NP(section,m->focus?"Individual":"Macros");
+            NP(row[0],m->focus?CFX_NAME[cfx_sel()]:cfx_loaded_name());
+            if(cfxu.edited)str_cpy(m->row[0]+str_len(m->row[0])," *",sizeof m->row[0]-str_len(m->row[0]));
+            NP(row[1],m->focus?(cfx_is_on(cfx_sel())?"On":"Off"):cfxu.loaded<FXP_FACTORY_N?CFX_CAPTION[cfxu.loaded]:"Your effect settings");
+            NP(row[2],fxp_pick_name());
+            if(!m->focus && (fxpu.pick!=cfxu.loaded || cfxu.edited)) {
+                NP(row[1],"Browse: ");str_cpy(m->row[1]+str_len(m->row[1]),fxp_pick_name(),sizeof m->row[1]-str_len(m->row[1]));
+            }
+            kint(m->right[0],fxpu.pick<FXP_FACTORY_N?fxpu.pick+1:fxpu.pick-FXP_FACTORY_N+1,fxpu.pick<FXP_FACTORY_N?" / 13":" / 16 user");
+            if(m->focus)kint(m->right[0],cu.fx_pos+1," / 6");
+            NP(detail,m->focus?"SELECT effect":"SELECT browse / SEL load");
+            NP(hint,m->focus?"ALGO < Macros / SAVE manage":"ALGO > Individual / SAVE manage");
+            m->keys=cfxu.vis_ms;m->env[0]=cfxu.level;m->cursor=(uint8_t)cfx_sel();
+            for(unsigned e=0;e<CFX_N;e++)m->bits[e]=cs.fx.v[e][0] | (uint32_t)cs.fx.v[e][1]<<8 | (uint32_t)cs.fx.v[e][2]<<16 | ((cs.fx.on>>e)&1u)<<24;
+            if(cfx_bypass)NP(row[1],"Chain bypassed");
+            if(fxp_pending())NP(row[1],"Saving / keep power on");
+        }break;
     case SCR_SAVE:
         m->kind=N_NAME;NP(title,cu.save_del?"Delete sound":"Save sound");NP(section,cf_save_part()==2?"Layer":cf_save_part()?"Bass":"Chord");NP(detail,cu.save_name);m->name_cursor=cu.save_cur;NP(hint,cu.save_del?"Hold SAVE to delete":"Hold SAVE to save / HOME cancel");
         if(cu.save_hold)m->progress=(cu.now-cu.save_hold>=1000)?100:(cu.now-cu.save_hold)/10;break;
@@ -174,6 +194,67 @@ static void cfn_controls(const char label[4][12],const char value[4][14],const u
         if(emphasis[k])fb_hline(x+30-emphasis[k],225,2*emphasis[k],C_ACC(0));
     }fb_unclip();
 }
+/* One shared response field: tails, repeats and modulation occupy the same
+ * space. Post-MASTER energy controls its breath; this is not an oscilloscope. */
+static unsigned cfn_fx_value(const cfn_page_t *m,unsigned e,unsigned k)
+{ return (m->bits[e]>>(k*8))&255u; }
+static int cfn_fx_on(const cfn_page_t *m,unsigned e)
+{ return (int)((m->bits[e]>>24)&1u) && (!m->focus || m->cursor==e); }
+static void cfn_fx_plot(const cfn_page_t *m,int dx)
+{
+    const int left=10+dx,width=220,bottom=169,height=59;
+    unsigned energy=m->env[0],ms=m->keys;
+    fb_hline(left,bottom,width,FL_BG3);
+    if(cfn_fx_on(m,CFX_REVERB)) {
+        unsigned mix=cfn_fx_value(m,CFX_REVERB,2),decay=cfn_fx_value(m,CFX_REVERB,1);
+        int a=(12+(int)mix*47/100)*(150+(int)energy*105/255)/255;
+        for(unsigned i=0;i<55;i++) {
+            int h=a*(12+(int)((i*2654435761u)>>29))/16;
+            if(h>height)h=height;
+            if(h>0)fb_rect(left+(int)i*4,bottom-h,2,h,C_ACC(2));
+            a=a*(205+(int)decay*45/100)/256;
+        }
+    }
+    if(cfn_fx_on(m,CFX_DELAY)) {
+        unsigned time=cfn_fx_value(m,CFX_DELAY,0),feedback=cfn_fx_value(m,CFX_DELAY,1),mix=cfn_fx_value(m,CFX_DELAY,2);
+        unsigned period=xf_ms(time*127u/100u),step=10+time*30/100,n=(width-3)/step+1;
+        int a=(8+(int)mix*47/100)*(150+(int)energy*105/255)/255;
+        for(unsigned i=0;i<n;i++) {
+            fb_rect(left+(int)(i*step),bottom-a,3,a,energy && i==(ms/period)%n?C_ACC(0):FL_INK2);
+            a=a*(80+(int)feedback*17/10)/256;
+        }
+    }
+    unsigned mod=cfn_fx_on(m,CFX_PHASER)?CFX_PHASER:CFX_CHORUS;
+    if(cfn_fx_on(m,mod)) {
+        unsigned rate=cfn_fx_value(m,mod,0),depth=cfn_fx_value(m,mod,1);
+        uint32_t phase=mod==CFX_PHASER?(uint32_t)(((uint64_t)CFX_PRATE[rate]*FS/32000u)*ms):
+            (uint32_t)((((uint64_t)LFO_HZ_X100[(8u+rate)&127u]<<32)/100000u)*ms);
+        int amp=(7+(int)depth*22/100)*(150+(int)energy*105/255)/255,py=0;
+        for(int x=0;x<width;x++) {
+            int y=140-osc_sine(phase+(uint32_t)x*40000000u)*amp/32768;
+            if(x)fb_line(left+x-1,py,left+x,y,C_ACC(0));py=y;
+        }
+    }
+    if(cfn_fx_on(m,CFX_FILTER)) {
+        unsigned type=cfn_fx_value(m,CFX_FILTER,0),cut=cfn_fx_value(m,CFX_FILTER,1),res=cfn_fx_value(m,CFX_FILTER,2);
+        int corner=(int)cut*(width-1)/99,py=0;
+        for(int x=0;x<width;x++) {
+            int d=x-corner,ad=d<0?-d:d;
+            int h=type==0?(d<0?40:40-d*height/28):type==2?(d>0?40:40+d*height/28):40-ad*height/28;
+            if(ad<8)h+=(int)res*height/160*(8-ad)/8;
+            if(h<0)h=0;if(h>height)h=height;
+            if(x)fb_line(left+x-1,py,left+x,bottom-h,C_ACC(0));py=bottom-h;
+        }
+    } else if(cfn_fx_on(m,CFX_DIST)) {
+        int py=0;unsigned drive=cfn_fx_value(m,CFX_DIST,0);
+        for(int x=0;x<width;x++) {
+            int32_t in=(x*2-width)*32768/width;
+            int y=140-softclip((int32_t)(((int64_t)in*CFX_DRIVE[drive])>>8))*28/32768;
+            if(x)fb_line(left+x-1,py,left+x,y,C_ACC(0));py=y;
+        }
+    }
+    if(energy)fb_rect(left,bottom-(int)energy*height/255,2,(int)energy*height/255,C_ACC(0));
+}
 static void cfn_page_draw(void)
 {
     cfn_page_t m;cfn_page_model(&m);
@@ -181,6 +262,12 @@ static void cfn_page_draw(void)
     cfn_page_last=m;cfn_page_valid=1;cfn_page_draws++;fb_unclip();fb_fill(FL_BG);
     cfn_fit(&CFN_16,10,20,m.title,130,FL_INK);cfn_fit(&CFN_12,142,20,m.status,88,m.rec?FL_C(FL_R_ROSE,0):C_ACC(0));fb_hline(10,28,220,FL_BG3);
     int x=m.dx;fb_clip(0,31,240,189);cfn_fit(&CFN_16,10+x,49,m.section,m.npages>1?180:220,FL_INK);
+    if(m.kind==N_FX) {
+        cfn_fit(&CFN_32,10+x,83,m.row[0],220,FL_INK);
+        cfn_fit(&CFN_12,10+x,103,m.row[1],220,FL_INK2);
+        cfn_text(&CFN_12,230+x-cfn_width(&CFN_12,m.right[0]),49,m.right[0],FL_INK2);
+        cfn_fx_plot(&m,x);
+    }
     if(m.npages>1){char page[16];kint(page,m.page+1,"/");kint(page+str_len(page),m.npages,0);cfn_text(&CFN_12,230+x-cfn_width(&CFN_12,page),49,page,FL_INK2);}
     if(m.kind==N_PARAMS)for(unsigned k=0;k<4;k++) {
         int y=76+29*k;cfn_fit(&CFN_12,10+x,y,m.label[k],103,FL_INK2);

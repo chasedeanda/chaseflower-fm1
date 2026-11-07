@@ -1,0 +1,20 @@
+{
+  "status": "Approved factory recipes; integrated in firmware; hardware verification pending",
+  "order": ["Filter", "Drive", "Chorus", "Phaser", "Delay", "Reverb"],
+  "parameter_order": ["Filter: type,cutoff,resonance", "Reverb: type,decay,mix", "Delay: time,feedback,mix", "Drive: drive,tone,level", "Chorus: rate,depth,mix", "Phaser: rate,depth,mix"],
+  "presets": [
+    {"id":"clean","name":"Clean","identity":"Unprocessed reference","on":0,"values":[[0,99,0],[0,0,0],[40,0,0],[0,50,70],[20,0,0],[20,0,0]]},
+    {"id":"velvet","name":"Velvet","identity":"Dark, rounded and close","on":9,"values":[[0,59,8],[0,12,0],[40,0,0],[12,24,65],[20,0,0],[20,0,0]]},
+    {"id":"bite","name":"Bite","identity":"Audible grit and forward harmonics","on":8,"values":[[0,99,0],[0,0,0],[40,0,0],[57,78,35],[20,0,0],[20,0,0]]},
+    {"id":"slap","name":"Slap","identity":"A short, separate double behind each attack","on":4,"values":[[0,99,0],[0,0,0],[43,8,58],[0,50,70],[20,0,0],[20,0,0]]},
+    {"id":"ping-pong","name":"Ping Pong","identity":"Clearly separated repeats across the stereo field","on":4,"values":[[0,99,0],[0,0,0],[82,61,49],[0,50,70],[20,0,0],[20,0,0]]},
+    {"id":"wide-drift","name":"Wide Drift","identity":"Slow chorus movement with no ambient wash","on":16,"values":[[0,99,0],[0,0,0],[40,0,0],[0,50,70],[14,88,100],[20,0,0]]},
+    {"id":"phase-sweep","name":"Phase Sweep","identity":"Pronounced moving notches and a hollow sweep","on":32,"values":[[0,99,0],[0,0,0],[40,0,0],[0,50,70],[20,0,0],[53,98,100]]},
+    {"id":"radio","name":"Radio","identity":"Narrow midrange focus and a boxy edge","on":9,"values":[[1,48,18],[0,0,0],[40,0,0],[26,68,62],[20,0,0],[20,0,0]]},
+    {"id":"silver-plate","name":"Silver Plate","identity":"Bright dense reflections; crisp attacks remain audible","on":2,"values":[[0,99,0],[2,47,68],[40,0,0],[0,50,70],[20,0,0],[20,0,0]]},
+    {"id":"deep-space","name":"Deep Space","identity":"Long diffuse hall with soft echoes and chorus","on":22,"values":[[0,99,0],[1,95,78],[88,45,23],[0,50,70],[9,47,45],[20,0,0]]},
+    {"id":"orbit","name":"Orbit","identity":"Liquid sweeping ambience: deep phaser and slow chorus into a bright long plate, without echoes","on":50,"values":[[0,99,0],[2,85,88],[40,0,0],[0,50,70],[6,80,70],[40,98,100]]},
+    {"id":"phone-lp","name":"Phone LP","identity":"Exaggerated muffled handset: resonant low-pass near 400 Hz, stronger drive and the darkest speaker tone; dry and close","on":9,"values":[[0,26,50],[0,0,0],[40,0,0],[40,0,45],[20,0,0],[20,0,0]]},
+    {"id":"phone-hp","name":"Phone HP","identity":"Exaggerated thin raspy handset: resonant high-pass near 1.6 kHz, maximum drive and a brighter speaker tone; dry and close","on":9,"values":[[2,52,45],[0,0,0],[40,0,0],[100,65,20],[20,0,0],[20,0,0]]}
+  ]
+}
