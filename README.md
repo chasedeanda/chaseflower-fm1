@@ -1,156 +1,234 @@
 # Chase FM-1
 
 Chase's personal firmware for the **M-VAVE FM-1**, built on [CoralFlower](https://github.com/FicusFicusov/CoralFlower).
+Explore chord progressions, build a groove, play over it, edit your own phrase and learn what makes the chords work.
 
-**New UI implementation handoff:** [Start here](docs/design/chord-first/AGENT-START.md) · [Full plan](docs/design/chord-first/IMPLEMENTATION-PLAN.md) · [Instrument Teal prototype](docs/design/chord-first/instrument-teal/prototype.html) · [Player guide](docs/CHORD-FIRST-USER-GUIDE.md).
-Instrument Teal is the planned default; Motion is On (adaptive) / Off. These are implementation references, not behavior in the release below.
+**This guide describes current `main`: the native Instrument Teal UI and Chord Lab.**
+The older [0.6-chase7 download](https://github.com/chasedeanda/chaseflower-fm1/releases/tag/v0.6-chase7)
+predates these changes. To try this interface, [build current main](#build-current-main) and install that `.fwsc`.
 
-**Chord Lab (development preview):** SEL on Progressions opens Notes, Intervals, Compare and offline Next.
-[Controls, native captures and verification](docs/CHORD-LAB.md). Physical FM-1 validation remains pending.
+<p align="center">
+  <img src="docs/design/chord-first/native-home-banks/core.png" width="240" alt="Native HOME with a sounding chord, planned progression and four labelled controls">
+  <img src="docs/design/chord-first/native-accompaniment/groove-playing.png" width="240" alt="Groove workspace with an actual drum pattern and shared playhead">
+  <img src="docs/images/chord-lab/notes.png" width="240" alt="Chord Lab showing a chord's degree and voiced notes">
+</p>
 
-**Release 0.6-chase7** adds a 100-idea HOME progression explorer, contextual variations with undo,
-and live FX preset auditioning. Auto Harmony, refreshed drum grooves, Bass/Bonfire visuals, Diagnostics
-and six-channel USB recording remain included.
+These are native firmware captures from the computer emulator. Physical display, listening and timing review of the combined build remains pending.
 
-**[Download the firmware (.fwsc)](https://github.com/chasedeanda/chaseflower-fm1/releases/download/v0.6-chase7/coralflower-0.6-chase7.fwsc)** ·
-[Release notes](docs/releases/0.6-chase7.md) · [All releases](https://github.com/chasedeanda/chaseflower-fm1/releases)
+## Make a beat in your first five minutes
 
-<p align="center"><img src="docs/images/chase-bass.gif" width="480" alt="Chase FM-1 HOME: a swimming bass with body motion and a small school of baitfish"></p>
+**0:00 — Find your starting point.** Start on **HOME**, with **CORE** at the bottom.
+From another page, HOME returns here; while already on HOME, tap it to cycle banks until CORE appears.
+Bring **MASTER** up gently. Turn **SELECT** to choose a progression; its key, scale and metre follow the idea.
+Try a 4/4 idea for this first pass.
 
-<table>
-  <tr>
-    <td align="center"><img src="docs/images/chase-bonfire.gif" width="320" alt="Bonfire: a triangular golden flame and rising embers"><br>Bonfire</td>
-    <td align="center"><img src="docs/images/chase-boot.gif" width="320" alt="Chase FM-1 boot: the bass jumps from a moonlit lake and swims completely off screen"><br>Chase FM-1 startup</td>
-  </tr>
-</table>
+**1:00 — Give it a groove.** In CORE, turn **K1 RHYTHM** to a named beat such as **Lo-fi** or **HipHop**;
+use **K4 TEMPO** to try about **85–100 BPM**. Press **SEQ**, turn **ALGORITHM** to **Loop**,
+and set **K1 MODE** to **Chord+Drum**. Press **HOME**, then **PLAY** to hear the progression and groove.
+Press PLAY again whenever you want to stop.
 
-These animations come from the firmware renderer. The boot preview holds its last frame for viewing; the
-instrument's intro runs for 2.4 seconds and any input skips it.
+**2:00 — Make it yours.** Tap HOME once for **SOUND**.
+Turn **K1** for the chord sound and **K2** for the bass sound; K3/K4 balance their levels.
+Tap HOME again for **TEXTURE** and add a little reverb or delay. If its value says **Off** or **Byp**,
+enable that effect in **FX** or recall an FX preset first.
 
-## Play and explore
+**3:00 — Change the pocket.** Tap HOME again for **GROOVE**.
+Try another **kit** with K1, balance **drums** with K2, and add **swing** with K3.
+K4 adds a **click** alongside the beat. While playing, kit/swing changes take effect at the next bar;
+the pending cue tells you what is queued.
 
-- **Top Lock, always.** Upper keys choose a chord type; lower keys play roots. The chosen chord stays latched until
-  you select another one. Your saved Top chord-button definitions are retained.
-- **Progressions, Bass, Bonfire, or Nothing.** Turn **ALGORITHM** on HOME to change the main screen without interrupting a held chord or playback.
-  Progressions is the new default; Progressions and Nothing skip scene animation. Your choice is saved. ALGORITHM still orders effects in FX and selects patterns/songs
-  in Sequencer.
-- **Four HOME views.** Tap HOME while already there to cycle **Scene → Chord → Keyboard → Diagnostics**. From
-  another screen, HOME returns to your selected view.
-- **Chords, bass, arpeggios and grooves.** Choose from 27 scales, chord extensions and inversions, a separate bass
-  voice, nine arpeggiator patterns, eight sequencer patterns and a song arrangement. Three additional grooves use 6/8.
-- **Ambient and lo-fi banks.** The chase3 library adds 96 chord/layer sounds, 24 bass sounds and eight drum kits in
-  eight style banks, including 32 CC0 Aquanode voices. Existing saved sound positions and user sounds are preserved.
-- **Six effects.** Filter, drive, chorus, phaser, delay and reverb, in the order you choose.
-- **USB audio and MIDI.** Record six-channel USB capture at 44.1 or 48 kHz while USB MIDI remains available.
-  See the [GarageBand and Spark setup](docs/USB-AUDIO.md).
-- **Diagnostics.** Monitor audio workload, UI cadence, linked memory and USB status. Configure the dashboard from
-  **GLO → Diagnostics**. [Read the measurements guide](docs/DIAGNOSTICS.md) before interpreting timing numbers.
+**4:00 — Play and keep a take.** Tap HOME once to return to CORE and press **REC**.
+After the one-bar count-in, **play the chords yourself** over the selected groove: upper keys choose a chord
+type/modifier, lower keys play roots. REC switches off the automatic progression chords for this manual take.
+Press REC again to finish in whole bars, or let it finish at eight bars. Hold REC to cancel the new take.
+Stop playback and let the instrument go quiet briefly so the completed recording can save.
 
-[Scenes and controls](docs/VISUALS.md) · [Sound banks and 6/8](docs/CHASE3.md) ·
-[Diagnostics](docs/DIAGNOSTICS.md) · [USB recording](docs/USB-AUDIO.md)
+Your newest take is **Recording 1**. Open **GLO**, turn SELECT to **Legacy tools**, choose **Recordings**
+with K1, then press **SEL**. PLAY replays it. You have made a groove, picked its sounds and captured your own playing.
 
-**Progression explorer:** HOME starts with [130 browsable ideas](docs/PROGRESSION-EXPLORER.md),
-including [30 selected song snippets](docs/research/SPOTIFY-COVER-SHORTLIST.md) in the development source,
-including [eight Morgan Wallen sections](docs/research/MORGAN-WALLEN-COVER-SNIPPETS.md).
-Turn SELECT to explore; key, scale and meter follow the idea. K1 changes rhythm, and matching chord cards light
-while you play. ALGORITHM cycles Progressions, Bass, Bonfire and Nothing.
+## Get around the new interface
 
-**Auto Harmony:** Open **GLO → Harmony** and turn **K1 On** for
-[major/minor chords and button-selected extensions](docs/AUTO-HARMONY.md). Off leaves normal playing alone.
+**K1–K4 are the four controls labelled along the bottom of the current screen.** Their jobs change with the page;
+the labels show exactly what each one will change.
 
-[Refreshed drum grooves and audio auditions](docs/DRUM-LOOPS.md): 39 two-bar patterns spanning lo-fi, trap, gaze,
-hip-hop, house, garage and breaks, including 12 refreshed additions and a 3/4 Waltz. Included in this release.
+| Control | Starting point / main use |
+| --- | --- |
+| **HOME** | Return to Progressions/Core; on HOME, cycle **Core → Sound → Texture → Groove** |
+| **SELECT** | On HOME, browse ideas from any bank; elsewhere, choose the item, slot or page |
+| **PRESETS** | On HOME, change the chord sound |
+| **ALGORITHM** | Change tabs in Accompaniment, the phrase editor or Chord Lab; in FX, move the selected effect in the chain |
+| **PLAY** | On HOME/Accompaniment, start or stop the selected phrase; in Recordings, replay the selected take |
+| **SEQ** | Open **Groove / Loop / Mix / Click**; press again to return HOME |
+| **EDIT** | From HOME/Accompaniment, open a protected working copy of the phrase |
+| **SEL** | From HOME, open **Chord Lab**; on action/confirmation pages, perform the displayed action |
+| **ENV / LFO / ARP** | Envelope / linked bass / arpeggiator |
+| **FX** | Open individual effects; press FX again for complete-chain presets |
+| **GLO** | System pages: Display, MIDI, Harmony, Variation, Browse, Recordings policy and Legacy tools |
+| **MASTER / OCT− / OCT+** | Output volume / playing register |
 
-[Four small sound additions](docs/MELODEE-DRUMS.md) are available in development source: **AQ33 DX SAX** and
-**AQ34 FULLFLU** chord sounds, plus **M Retro** and **M FM** drum kits. They reuse the existing engines,
-bringing the library to 190 named melodic presets and 24 kits.
+### The four HOME banks
 
-**FX presets:** [Browse 40 factory chains](docs/FX-PRESETS.md) across Signature, Space, Lo-fi, Motion and Punch,
-plus 16 optional user slots. SELECT auditions immediately, K2 clears to dry, and K3 restores the previous chain.
+| Bank | K1 | K2 | K3 | K4 |
+| --- | --- | --- | --- | --- |
+| **Core** | Rhythm | Key | Scale | Tempo |
+| **Sound** | Chord sound | Bass sound | Chord level | Bass level |
+| **Texture** | Reverb mix | Delay mix | Chorus mix | Glide |
+| **Groove** | Drum kit | Drum level | Swing | Click level / Off |
 
-**Variations:** Open **GLO → Variation**, choose a context and amount,
-turn **K3** to generate, and **K4** to undo. [Controls and scope](docs/PHASE4-PLAN.md).
+Switching banks leaves the music playing. SELECT still browses ideas in every bank.
+For separate chord/bass/drum levels and linked bass On/Off, use **SEQ → Mix**.
+For drums alone, use **SEQ → Loop → K1 Drums only**. **K4 Repeat Off** plays the full phrase once.
+For a metronome alongside any groove, use **SEQ → Click**: K1 On/Off, K2 level, K3 sound, K4 tempo.
 
-**Development source:** The chord-first build opens directly to Progressions and omits Bass/Bonfire scenes
-and the fish startup animation. [Scene removal and measured resources](docs/SCENE-FREE.md).
-[Three recent recordings, newest first](docs/RECORDINGS.md) replace the eight-slot recorder and recorder Undo.
-[Measured recording RAM savings](docs/PATTERN-MEMORY.md). The published download above remains the released build.
+## A few things to try next
 
-The development build now has native Instrument Teal HOME banks and a shared-clock
-**SEQ → Groove / Loop / Mix / Click** workspace (ALGORITHM changes tab). Loop
-supports the full phrase with Repeat On/Off; Click can sound alongside a groove.
-**GLO → Legacy tools → K1 → SEL** opens Recordings, Metronome or Drum grid.
-[Native captures and implementation checks](docs/design/chord-first/native-accompaniment/README.md)
-are host evidence; physical verification remains pending.
+### Turn a factory idea into your own phrase
 
-**EDIT** from the development Progressions/Accompaniment workspace now opens a
-protected sixteen-slot semantic draft: chord, timing, voicing, bass, phrase and
-undo controls share the existing player. Quiet checkpoints recover after reboot
-and support backups; numbered Songs and chord-library/audition are still pending.
-[Native editor controls, captures and evidence](docs/design/chord-first/native-editor/README.md).
+1. Choose an idea on HOME and press **EDIT**. SELECT chooses an explicit numbered slot.
+2. Turn **ALGORITHM** between **Edit Chord, Timing, Voicing, Bass and Phrase**.
+3. On **Edit Chord**, try K2 Quality or K3 Color. On **Timing**, change the unit/length or shorten the gate.
+   On **Voicing**, try **Smooth** inversion for closer movement between chords.
+4. Press **PLAY** to hear the whole draft. The focus box is what you edit; the underline is what is actually playing.
+5. To duplicate a slot, go to **Phrase**, choose **Duplicate** with K1 and press **SEL**.
+   Choose **Undo** and press SEL to undo the last phrase change. Remove asks for confirmation.
 
-## Install this release
+The factory original stays intact. The working draft supports **up to sixteen slots**.
+**SAVE** in the editor or on a **Draft:** HOME requests a recovery checkpoint.
+If it says **RAM PENDING**, stop playback, release keys/HOLD and let the tails fade; wait for **CHECKPOINT**
+before powering off. After reboot, the protected copy is available as **RECOVERED**.
+If you try editing another source while a dirty draft exists, **Return to draft** is the default choice.
 
-1. Download **`coralflower-0.6-chase7.fwsc`** from the [GitHub release](https://github.com/chasedeanda/chaseflower-fm1/releases/tag/v0.6-chase7).
-   This is the installable file; the separate app `.bin` and GitHub source archives are not installer packages.
-2. Save a current backup of your sounds, settings and patterns. The installer can back up compatible CoralFlower,
-   ChoralRoot and Felucca data. Keep the backup somewhere safe.
-3. Open the [upstream installer's custom-build section](https://ficusficusov.github.io/CoralFlower/#own) in Chrome
-   or Edge on a computer. Connect the FM-1 directly with a data-capable USB cable.
-4. Expand **Another version, or a build of your own**, click **Choose a .fwsc file**, and select your download.
-   Check that **`coralflower-0.6-chase7.fwsc`** is selected before pressing Install. The installer's default is
-   upstream CoralFlower, so select this custom file first.
-5. Install from that custom-build section and keep the cable connected and page open until the restart.
-6. Confirm the **Chase FM-1** bass-jump startup and **`CoralFlower 0.6-chase7`** in INFO. The INFO family, package
-   identity `FM-1_930` and USB names remain compatible with the existing installer and recording setup.
+This is one recoverable working draft. Named/numbered Songs management and arranged performance recording are still pending.
+[Detailed editor controls](docs/design/chord-first/native-editor/README.md).
 
-The release includes checksums and licence files. See [release notes](docs/releases/0.6-chase7.md) for validation
-and recovery details. Host and firmware-build checks pass; the combined release's hardware appearance and timing
-still need to be checked on the FM-1.
+### Get a spacious or lo-fi sound quickly
 
-## Build and verify
+Press **FX**, then **FX again**. Turn SELECT to hear complete chains such as **Glass Cathedral**, **Dream Pop**
+or **Dusty Cassette**. In this browser, **K2 clockwise clears to dry** and **K3 clockwise swaps back to the previous chain**.
+K4 clockwise returns to individual effects: SELECT chooses an effect, K1 enables it, K2–K4 edit it,
+and ALGORITHM changes its position in the chain.
 
-Generate headers with Python 3, Pillow 11.1.0 and fontTools 4.66.1, then run the feature checks:
+Press **ENV** for attack/decay/sustain/release; turn SELECT to choose the sound target.
+For deep FM6/VA editing, use **ENV → EDIT**. To save a synth sound, tap SAVE from a factory-idea HOME,
+choose **New**, edit its name/target, then **hold SAVE for one second**. SAVE in FX instead manages an FX user slot.
+[FX preset controls](docs/FX-PRESETS.md) · [Sound banks](docs/CHASE3.md).
+
+### Play richer chords with Auto Harmony
+
+Open **GLO → Harmony**, turn **K1 On**, then return HOME.
+In CORE, set **K2 KEY to E** and **K3 SCALE to Major**. Each root now makes a complete major/minor chord;
+the upper modifier buttons add colors. Tap **7**, then try roots **E → B → D♯** in E Major:
+you get **Emaj7 → Bmaj7 → D♯m7**. In Top Lock, a modifier stays selected until you change or clear it.
+
+**HOLD** sustains the live chord after you release the root. Turn HOLD off to release it.
+To change chord-button assignments, use **GLO → Harmony → SEL**.
+Auto requires Quantize Basic/Full and a seven-note scale; **AUTO?** means single-note fallback.
+[Auto Harmony and modifiers](docs/AUTO-HARMONY.md).
+
+### See and hear why a chord works
+
+Play a chord or start a progression, then press **SEL on HOME** to open **Chord Lab**.
+ALGORITHM selects **Notes & Degree → Intervals → Compare → Next Chord**.
+
+- **Notes / Intervals:** SELECT or K1 chooses **Now**, **Last** or a numbered planned slot.
+  See the voiced notes and degree; in Intervals, K2 focuses a note. `*` marks a tone outside the selected scale.
+- **Compare:** choose **Triad/Color** or **Root/Smooth** with K1, choose A/B with K2, and press **SEL** to hear
+  that side for one bar. Use a chord with an extension for Triad/Color; identical choices are disabled.
+- **Next Chord:** browse three local suggestions with SELECT/K1. K2 chooses **Live history** or **Draft path**.
+  Press SEL to hear a candidate. To use it, explicitly choose the destination with **K3 INSERT**, then press **EDIT**;
+  it replaces that numbered slot and opens the editor. **Phrase → Undo → SEL** restores the prior draft.
+
+Release live roots/HOLD before auditioning, and finish recording/replay first.
+Browsing alone is silent; Next works offline and needs a seven-note scale.
+Keep an existing dirty draft open before inserting into it. [Chord Lab details](docs/CHORD-LAB.md).
+The separate chord-library picker remains deferred.
+
+## Recordings, saving and quick tips
+
+- **Your latest three takes:** newest is always 1. By default a completed fourth take replaces the oldest;
+  an empty/cancelled take preserves the previous recordings. In **GLO → Recordings**, set **AUTO DEL Off**
+  to keep a full set until you clear one yourself.
+- **Replay or edit:** **GLO → Legacy tools → K1 Recordings → SEL**. ALGORITHM chooses the take,
+  SELECT chooses a track, EDIT opens its grid, and SAVE returns to the list. GLO shows help there.
+- **Clear one take:** stop playback, select it in Recordings and **hold SAVE for three seconds**.
+  Release early to cancel. Clearing has no Undo; hold REC cancels only a new take in progress.
+- **Favourite an idea:** hold SAVE on a factory idea on HOME. Use **GLO → Browse** to choose favourites/order.
+  SAVE is context-sensitive: sound saving, FX saving and a draft checkpoint are different operations.
+- **Read the queue:** **Next bar / Next chord / Next:** is a pending change. The current chord/cursor still describes
+  what is sounding. A focus box or a matching chord name does not start playback or audition.
+- **External clock:** **EXT WAIT** means the FM-1 is waiting for incoming MIDI clock. For standalone use,
+  go to **GLO → MIDI** and set CLOCK Off. After clock loss, send MIDI Start/Continue to resume.
+- **Make the display yours:** **GLO → Display**, K1 chooses Instrument/Studio/Editorial; K4 sets **Motion On/Off**.
+  Off settles all visual animation while notes, recording and transport keep updating.
+- **Record to a computer:** USB inputs **1/2 are the complete stereo mix**, **3/4 the chord stem**, **5/6 the bass stem**.
+  Choose 1/2 for a normal recording with drums and effects. USB MIDI stays available.
+  [GarageBand / USB setup](docs/USB-AUDIO.md).
+
+Completed takes save automatically when playback stops and the instrument is quiet. Wait before powering off.
+Keep a current firmware backup: it preserves sounds/settings/recordings, rather than creating WAVs or a DAW project.
+[Recording policy and backups](docs/RECORDINGS.md).
+
+## Build current main
+
+Wait for the changes you want to merge, then use a clean checkout of `main`. On an Apple Silicon Mac,
+start Docker Desktop; the JieLi compiler runs in a Linux x86-64 container.
 
 ```sh
-python3 tools/build.py --gen-only
-sh tools/test_fx_presets.sh
-sh tools/test_progressions.sh
-sh tools/test_variations.sh
-sh tools/test_drum_bank.sh
-sh tools/test_auto.sh
-sh tools/test_visuals.sh
-sh tools/test_diagnostics.sh
-sh tools/test_chase3.sh
-sh tools/test_usb.sh
+git clone https://github.com/chasedeanda/chaseflower-fm1.git
+cd chaseflower-fm1
+python3 -m venv ../fm1-build/venv
+../fm1-build/venv/bin/pip install Pillow==11.1.0 fonttools==4.66.1
+sh tools/get_toolchain.sh ../fm1-build/jieli
+PYTHON="$PWD/../fm1-build/venv/bin/python" \
+JIELI_TOOLCHAIN="$PWD/../fm1-build/jieli/toolchain" \
+./build.sh
 ```
 
-Build with the JieLi Linux x86-64 toolchain (Docker on Apple Silicon):
+The installable package is **`build/coralflower.fwsc`**. Keep the build output/checksums with the source revision
+you used. If your environment is already configured, only the final build command is needed.
+The build generates its own fonts/tables; you do not need to generate them separately first.
+[Mac setup details](docs/CHASEFLOWER.md#build-on-an-apple-silicon-mac).
 
-```sh
-./build.sh --release 0.6-chase7
-```
+For host checks without a device build, activate that Python environment and run `python tools/build.py --gen-only`,
+then the relevant `tools/test_*.sh` scripts. Examples: `test_native_pages.sh`, `test_home_banks.sh`,
+`test_accomp_workspace.sh`, `test_editor.sh`, `test_lab.sh`, `test_recordings.sh` and `test_usb.sh`.
+GitHub Actions runs the complete regression suite. [Local emulator](tools/emu/README.md).
 
-See [Mac build setup](docs/CHASEFLOWER.md#build-on-an-apple-silicon-mac) for the toolchain and Python environment.
-A fresh checkout generates fonts, icons, tables and samples into `build/gen/`. GitHub Actions runs the complete
-host checks; the release workflow builds firmware from its tagged source revision.
+## Install your build
 
-The inherited [CoralFlower browser demo](https://ficusficusov.github.io/CoralFlower/play/) runs upstream firmware;
-it does not include all Chase FM-1 changes.
+1. Save a current backup of your sounds, settings and recordings.
+2. Open the [upstream installer's custom-build section](https://ficusficusov.github.io/CoralFlower/#own)
+   in Chrome or Edge on a computer, and connect the FM-1 with a data-capable USB cable.
+3. Expand **Another version, or a build of your own**, choose your **`build/coralflower.fwsc`**, and install
+   from that section. Check the selected file first: the installer's default download is upstream CoralFlower.
+4. Keep the cable connected and the page open until restart. The current build opens directly to native **HOME / CORE**.
+
+The separate app `.bin` and GitHub source archives are not installer packages.
+The compatible `CoralFlower` INFO prefix, `FM-1_930` package identity and USB names remain in use;
+an old version label alone does not identify the new interface. The published
+[0.6-chase7 package](https://github.com/chasedeanda/chaseflower-fm1/releases/download/v0.6-chase7/coralflower-0.6-chase7.fwsc)
+has its own [release notes](docs/releases/0.6-chase7.md) and older controls/scene animations.
+The [upstream browser demo](https://ficusficusov.github.io/CoralFlower/play/) also runs upstream firmware.
+
+## More detail
+
+[Chord Lab](docs/CHORD-LAB.md) · [Native screens](docs/design/chord-first/native-pages/README.md) ·
+[Accompaniment](docs/design/chord-first/native-accompaniment/README.md) ·
+[Phrase editor](docs/design/chord-first/native-editor/README.md) · [Diagnostics](docs/DIAGNOSTICS.md) ·
+[Design / implementation plan](docs/design/chord-first/AGENT-START.md) ·
+[All releases](https://github.com/chasedeanda/chaseflower-fm1/releases)
 
 ## Credits and licence
 
 CoralFlower is a fork of [ChoralRoot FM-1](https://github.com/Quixotic7/ChoralRootFM1) by Quixotic7, which is itself
 a fork of [Felucca](https://github.com/hugelton/Felucca) by Leo Kuroshita (Hügelton Instruments). The FM engine comes
-from [Melodee](https://github.com/keremimo/melodee) by Kerem Kilic, and the screens use
-[Departure Mono](https://departuremono.com), a font by Helena Zhang. Thank you all.
+from [Melodee](https://github.com/keremimo/melodee) by Kerem Kilic. The native interface uses Inter Tight
+([SIL OFL licence](assets/fonts/OFL.txt)); inherited screens/assets also use
+[Departure Mono](https://departuremono.com) by Helena Zhang. Thank you all.
 
 CoralFlower is free software under the GPL-3.0. `LICENSE` and `LICENSING.md` have the details.
-
-M-VAVE and FM-1 are trademarks of their respective owners. Orchid is a product of Telepathic Instruments. CoralFlower
-is not affiliated with M-VAVE, Cuvave or Telepathic Instruments.
-
-## Feedback
+M-VAVE and FM-1 are trademarks of their respective owners. Orchid is a product of Telepathic Instruments.
+CoralFlower is not affiliated with M-VAVE, Cuvave or Telepathic Instruments.
 
 Track Chase FM-1 changes in [this repository's issues](https://github.com/chasedeanda/chaseflower-fm1/issues).
 Earlier ChaseFlower notes and plans remain in `docs/` as historical records.
