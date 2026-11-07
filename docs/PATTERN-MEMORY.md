@@ -31,18 +31,37 @@ copies account for 5,072 bytes; two song copies and flags/timing account for the
 other 80 bytes. This is the sequencer's undo; Variation has a separate, much
 smaller previous-result record.
 
-The existing scheme is useful when recording and arranging multi-part loops.
-For the chord-first instrument, I recommend keeping **live chord recording and
-one-step undo**, then replacing the general workstation container with a
-measured chord/timing/draft model. Existing takes must remain recoverable and
-fixed-note Auto recordings must keep their actual pitches.
+## Agreed smaller recording target
 
-That replacement could reduce overhead, but it still needs memory for recordings,
-a working draft and undo. Keeping all current event capacity in its present
-layout already requires 16,896 bytes. Loading fewer slots into working memory,
-using a compact encoding or a different undo strategy requires a tested storage
-and migration design before quoting net savings.
+The user clarified the intended workflow after this audit: select a progression
+and its rhythm/tempo, press REC, play the chords by hand over that beat, then
+keep the resulting loop. Keep at most **three individual recordings**, each
+playable and clearable. A two-bar take is a representative example; duration
+should remain selectable. A multi-pattern song arranger and recorder Undo/Redo
+are not needed. This supersedes the earlier recommendation to retain recorder
+undo. Variation's separate small previous-result record is outside this cut.
 
-This scene-removal change leaves patterns, recording, song capacity and undo
-intact. Scenes use the separate **POOL** region; removing their graphics does not
-turn the pattern allocation into free ordinary RAM.
+With the existing event/pattern capacity, three pattern records and the current
+48-byte header would occupy 7,656 bytes, compared with today's 20,336. Removing
+the 5,152-byte recorder undo allocation as well gives a **17,832-byte gross
+ordinary-RAM reduction**. This is a sizing target, not a measured replacement
+build: compatibility staging, take cancellation and revised controls still need
+to be accounted for. There is no reason to sacrifice voices or audible FX first.
+
+The current code still has eight patterns and Undo/Redo. The scene-removal PR
+leaves them intact. Scenes use the separate **POOL** region; removing their
+graphics does not turn the pattern allocation into free ordinary RAM.
+
+Before reducing the runtime slot count, separate it from the legacy on-flash and
+backup count: simply changing SQ_NPAT also changes the store checksum/layout,
+pattern sound records, song indices and backup lengths. Older recordings D–H
+and arrangements must remain recoverable without being silently remapped into
+A–C. Current take cancellation also uses the pre-edit snapshot; replace that
+behavior deliberately when removing the undo buffer.
+
+REC on progression HOME currently does not hand off the selected catalogue groove
+to the recorder: accompaniment blocks REC, and the existing HOME recording path
+uses the Rhythm Machine selection. The smaller recorder must explicitly carry
+the selected groove, kit, swing, meter and tempo into a manual chord take and
+release automatic chord ownership. Save/restart, individual clear, full-slot
+behavior, count-in/cancel and exact recorded Auto pitches need regression coverage.
