@@ -186,14 +186,6 @@ static void cfn_page_model(cfn_page_t *m)
     m->cursor_width=cfn_cursor(((unsigned)cu.scr<<24)|((unsigned)m->playrow<<8)|m->playcol);
     if(cu.upd_left){m->kind=N_RESULT;NP(title,"Firmware update");NP(status,"");NP(section,"Keep holding");kint(m->detail,cu.upd_left," seconds");NP(hint,"Release to cancel");}
 }
-static void cfn_controls(const char label[4][12],const char value[4][14],const uint8_t disabled[4],const uint8_t emphasis[4])
-{
-    for(unsigned k=0;k<4;k++) {
-        int x=k*60;fb_clip(x+3,211,x+57,240);cfn_center(&CFN_12,x+30,223,label[k],FL_INK2);
-        cfn_fit(cfn_width(&CFN_16,value[k])<=54?&CFN_16:&CFN_12,x+3,237,value[k],54,disabled[k]?FL_INK2:FL_INK);
-        if(emphasis[k])fb_hline(x+30-emphasis[k],225,2*emphasis[k],C_ACC(0));
-    }fb_unclip();
-}
 /* One shared response field: tails, repeats and modulation occupy the same
  * space. Post-MASTER energy controls its breath; this is not an oscilloscope. */
 static unsigned cfn_fx_value(const cfn_page_t *m,unsigned e,unsigned k)
@@ -261,7 +253,7 @@ static void cfn_page_draw(void)
     if(cfn_page_valid && !fb_full && !memcmp(&m,&cfn_page_last,sizeof m))return;
     cfn_page_last=m;cfn_page_valid=1;cfn_page_draws++;fb_unclip();fb_fill(FL_BG);
     cfn_fit(&CFN_16,10,20,m.title,130,FL_INK);cfn_fit(&CFN_12,142,20,m.status,88,m.rec?FL_C(FL_R_ROSE,0):C_ACC(0));fb_hline(10,28,220,FL_BG3);
-    int x=m.dx;fb_clip(0,31,240,189);cfn_fit(&CFN_16,10+x,49,m.section,m.npages>1?180:220,FL_INK);
+    int x=m.dx;fb_clip(0,31,240,184);cfn_fit(&CFN_16,10+x,49,m.section,m.npages>1?180:220,FL_INK);
     if(m.kind==N_FX) {
         cfn_fit(&CFN_32,10+x,83,m.row[0],220,FL_INK);
         cfn_fit(&CFN_12,10+x,103,m.row[1],220,FL_INK2);
@@ -281,10 +273,10 @@ static void cfn_page_draw(void)
     if(m.kind==N_ENV) {
         int xa=20+x+8+m.env[0]*40/99,xd=xa+8+m.env[1]*40/99,xs=xd+30,xr=xs+8+m.env[3]*40/99,ys=167-94*m.env[2]/99;
         fb_line(20+x,167,xa,73,C_ACC(0));fb_line(xa,73,xd,ys,C_ACC(0));fb_line(xd,ys,xs,ys,C_ACC(0));fb_line(xs,ys,xr,167,C_ACC(0));
-        cfn_text(&CFN_12,10+x,185,"A        D          S          R",FL_INK2);
+        cfn_text(&CFN_11,10+x,179,"A        D          S          R",FL_INK2);
     }
     if(m.kind==N_GRID && m.columns)for(unsigned r=0;r<m.rows;r++) {
-        int y=64+r*(m.rows>4?15:26);cfn_fit(&CFN_12,10+x,y+12,m.row[r],m.grid_label_width,FL_INK2);
+        int y=64+r*(m.rows>4?13:26);cfn_fit(&CFN_12,10+x,y+12,m.row[r],m.grid_label_width,FL_INK2);
         unsigned columns=m.cols[r]?m.cols[r]:m.columns;
         int left=13+m.grid_label_width,width=230-left;
         for(unsigned c=0;c<columns;c++) {
@@ -301,8 +293,8 @@ static void cfn_page_draw(void)
     if(m.kind==N_NAME || m.kind==N_RESULT) {
         cfn_fit(&CFN_32,10+x,103,m.detail,220,FL_INK);
         if(m.kind==N_NAME){char pre[32];str_cpy(pre,m.detail,(unsigned)m.name_cursor+1);int a=10+x+cfn_width(&CFN_32,pre);if(a<225)fb_hline(a,112,12,C_ACC(0));}
-    } else cfn_fit(&CFN_12,10+x,184,m.detail,220,FL_INK2);
+    } else cfn_fit(&CFN_12,10+x,181,m.detail,220,FL_INK2);
     if(m.progress){fb_rect(10+x,172,220,4,FL_BG1);fb_rect(10+x,172,220*m.progress/100,4,C_ACC(0));}
-    fb_unclip();fb_hline(10,190,220,FL_BG3);cfn_fit(&CFN_12,10,205,m.hint,220,FL_INK2);if(!cu.upd_left)cfn_controls(m.label,m.value,m.disabled,m.emphasis);if(!cu.pop || cu.upd_left)cf_present();
+    fb_unclip();cfn_hint(m.hint,FL_INK2);if(!cu.upd_left)cfn_controls(m.label,m.value,m.disabled,m.emphasis);if(!cu.pop || cu.upd_left)cf_present();
 }
 #undef NP

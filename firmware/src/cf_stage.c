@@ -63,6 +63,7 @@ static void cfn_fit(const cfn_font_t *f,int x,int baseline,const char *s,int wid
     }
     cfn_text(f,x,baseline,b,ink);
 }
+#include "cf_style.c"
 /* Translate a freshly composed panel in place, never a second framebuffer.
  * Used only for the finite workspace arrival; controls and header stay fixed. */
 static void cfn_shift_panel(int dx,int y0,int y1)
@@ -288,20 +289,7 @@ static void cf_stage_draw(void)
         cfn_squeezed(rail_face,x-rail_width/2,184,m.rail[i],54,match?56:m.slot==m.first+i?C_ACC(0):FL_INK);
         if(m.slot==m.first+i)fb_rect((int)i*60+12,191,36*m.cursor_width/100,2,C_ACC(0));
     }
-    fb_unclip();fb_hline(10,198,220,FL_BG3);
-    for(int i=1;i<4;i++)fb_vline(i*60,203,34,FL_BG3);
-    for(int i=0;i<4;i++) {
-        int x=i*60;fb_clip(x+3,201,x+57,240);
-        char label[12],value[14];str_cpy(label,m.label[i],sizeof label);str_cpy(value,m.value[i],sizeof value);
-        for(unsigned j=1;label[j];j++)if(label[j]>='A' && label[j]<='Z')label[j]+='a'-'A';
-        if(m.bank==CF_HB_CORE && i==2 && cs.chord.scale==CF_SC_MAJOR)str_cpy(value,"Major",sizeof value);
-        /* Tempo already has a label. Keep EXT/WAIT semantics, omit only BPM. */
-        unsigned len=str_len(value);if(len>=4 && !memcmp(value+len-4," BPM",4))value[len-4]=0;
-        cfn_center(&CFN_11,x+30,214,label,FL_INK2);
-        const cfn_font_t *face=cfn_width(&CFN_14,value)<=54?&CFN_14:&CFN_12;
-        int value_width=cfn_width(face,value);
-        cfn_fit(face,value_width>54?x+3:x+30-value_width/2,233,value,54,m.disabled[i]?FL_INK2:i==0?C_ACC(0):FL_INK);
-        if(m.emphasis[i])fb_hline(x+30-m.emphasis[i],239,2*m.emphasis[i],C_ACC(0));
-    }
+    if(m.bank==CF_HB_CORE && cs.chord.scale==CF_SC_MAJOR)str_cpy(m.value[2],"Major",sizeof m.value[2]);
+    cfn_controls(m.label,m.value,m.disabled,m.emphasis);
     fb_unclip();if(!cu.pop)cf_present();
 }

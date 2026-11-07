@@ -87,7 +87,6 @@ static void draw_top_sound(uint32_t part, int xmax)   /* xmax: where the chips o
 
 #include "cf_views.c"                           /* (the heads, the pager, the central pictures) */
 #include "cf_motion.c"
-static void cfn_controls(const char label[4][12],const char value[4][14],const uint8_t disabled[4],const uint8_t emphasis[4]);
 #include "cf_stage.c"
 #include "cf_acc_screen.c"
 #include "cf_draft_screen.c"

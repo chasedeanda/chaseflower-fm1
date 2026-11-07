@@ -55,9 +55,8 @@ static void cfd_draw(void)
     cfn_text(&CFN_12,10,65,"PLANNED",FL_INK2);cfn_text(&CFN_16,230-cfn_width(&CFN_16,m.degree),65,m.degree,C_ACC(0));
     fb_clip(0,70,240,107);cfn_fit(&CFN_32,10,101+m.chord_dy,m.chord,220,FL_INK);fb_unclip();cfn_fit(&CFN_12,10,119,m.notes,220,FL_INK2);
     for(unsigned i=0;i<4 && m.first+i<m.n;i++){int cx=30+i*60;fb_clip(i*60,125,(i+1)*60,170);if(m.focus==m.first+i){fb_frame(cx-27,127,54,39,FL_BG3);if(m.focus_weight)fb_hline(cx-26,128,52,C_ACC(0));}cfn_center(&CFN_16,cx,144,m.numeral[i],C_ACC(0));cfn_center(&CFN_12,cx,160,m.rail[i],FL_INK);if(m.slot==m.first+i)fb_hline(cx-22,168,44*m.cursor_width/100,C_ACC(0));}
-    fb_unclip();cfn_text(&CFN_12,10,183,m.position,FL_INK2);cfn_shift_panel(m.dx,31,189);fb_hline(10,190,220,FL_BG3);cfn_fit(&CFN_12,10,205,m.hint,220,FL_INK2);
+    fb_unclip();cfn_text(&CFN_11,10,180,m.position,FL_INK2);cfn_shift_panel(m.dx,31,182);cfn_hint(m.hint,FL_INK2);
     cfn_controls(m.label,m.value,m.disabled,m.emphasis);
-    fb_unclip();for(unsigned k=0;k<4;k++)if(m.emphasis[k])fb_hline(k*60+30-m.emphasis[k],225,2*m.emphasis[k],C_ACC(0));
     if(m.conflict || m.confirm || m.message[0]) {
         fb_rect(8,70,224,95,FL_BG);fb_frame(8,70,224,95,FL_BG3);
         const char *a=m.message[0]?m.message:m.conflict?"Keep the protected draft?":"Remove this numbered slot?";
