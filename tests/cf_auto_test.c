@@ -46,11 +46,23 @@ static void ui_and_store(void)
     ui_knob_turn(0,1); audio_ms(6); CHECK(ch.mode==CF_H_AUTO && cfc.harmony.mode==CF_H_AUTO);
     ui_knob_info(0,&knob); CHECK(!strcmp(knob.val,"On"));
     cf_harmony_t simple=ch;
-    for(int k=1;k<4;k++) {
+    for(int k=2;k<4;k++) {
         memset(&knob,0,sizeof knob); ui_knob_info(k,&knob);
         CHECK(!knob.name[0] && !knob.val[0]); ui_knob_turn(k,1);
     }
     CHECK(!memcmp(&simple,&ch,sizeof ch));
+    memset(&knob,0,sizeof knob); ui_knob_info(1,&knob);
+    CHECK(!strcmp(knob.name,"RESET") && !strcmp(knob.val,"Defaults"));
+    cf_harmony_t defaults; cf_harmony_defaults(&defaults);
+    for(int direction=-1;direction<=1;direction+=2) {
+        ch.mode=CF_H_AUTO; ch.slot[0]=CF_MOD_DIM; ch.inv[0]=2; ch.bass[0]=4;
+        simple=ch; ui_knob_turn(1,0); CHECK(!memcmp(&simple,&ch,sizeof ch));
+        ui_knob_turn(1,direction); audio_ms(6);
+        CHECK(!memcmp(&defaults,&ch,sizeof ch));
+        CHECK(!memcmp(&defaults,&cfc.harmony,sizeof ch));
+        CHECK(!memcmp(&manual,&cs.chord,sizeof manual));
+    }
+    ui_knob_turn(0,1); audio_ms(6);
     cu.scr=SCR_SEL; cu.sel_btn=0; ui_knob_turn(0,CF_MOD_DIM-ch.slot[0]); audio_ms(6); CHECK(ch.slot[0]==CF_MOD_DIM);
     CHECK(!memcmp(&manual,&cs.chord,sizeof manual));
     CHECK(cfh_write(0)==0); cf_harmony_t saved=ch;

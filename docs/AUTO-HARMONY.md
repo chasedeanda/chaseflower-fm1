@@ -5,11 +5,14 @@ simplification.
 
 ## Playing
 
-Open **GLO → Harmony** and turn **K1 On**. This page has one setting:
+Open **GLO → Harmony** and turn **K1 On**. Use **K1** for On/Off:
 
 - **Off**: normal playing, using the existing chord buttons and saved forms.
 - **On**: each root plays a complete major or minor chord. Modifier buttons add
   the notes you select.
+
+**K2 Reset → Defaults** restores all Harmony modifier assignments, inversions and
+bass tones, and turns Harmony Off. Turn K2 either way to reset. K3 and K4 are unused.
 
 Off is the default. HOME retains Quantize, Key, Scale and Glide. Use Quantize
 Basic or Full and a seven-note scale.

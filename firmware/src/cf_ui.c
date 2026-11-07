@@ -458,6 +458,7 @@ static void ui_knob_info(int k, cf_knob_t *o)
             break;
         case CF_GLO_HARMONY:
             if (k == 0) { kfmt(o->name, 12, "HARMONY"); kfmt(o->val, 14, ch.mode ? "On" : "Off"); }
+            if (k == 1) { kfmt(o->name, 12, "RESET"); kfmt(o->val, 14, "Defaults"); }
             break;
         case 6:
             if(k==0) {kfmt(o->name,12,"PAGE");kfmt(o->val,14,CF_DIAG_PAGES[cfd.page]);}
@@ -725,8 +726,9 @@ static void ui_knob_turn(int k, int d)
             cvr_knob_turn(k, d);
             break;
         case CF_GLO_HARMONY:
+            if (!d || k > 1) break;
             if (k == 0) ch.mode = (uint8_t)clampi(ch.mode + d, 0, CF_H_AUTO);
-            if (k != 0) break;
+            else { cf_harmony_defaults(&ch); cf_message("Harmony defaults restored"); }
             cf_send_config();
             if (ch.mode == CF_H_AUTO && !cf_harmony_supported(cs.chord.scale, cs.chord.quantize))
                 cf_message("Auto needs a 7-note scale\nand Quantize Basic or Full");
