@@ -697,12 +697,20 @@ static void cf_audio_block(uint32_t n)
 /* ISR-owned scalar activity mailbox; no retained sample buffer or new clock. */
 static volatile uint8_t cf_visual_want=1;
 static uint16_t cf_visual_peak;
+static uint16_t cf_visual_window_peak;
+static uint32_t cf_visual_window_ms;
 static uint8_t cf_visual_parts,cf_visual_muted;
 static uint32_t cf_visual_ms;
 static void cf_visual_publish(uint32_t peak)
 {
     cf_visual_peak=(uint16_t)(peak>32767?32767:peak);cf_visual_ms=cf_now_ms;
     cf_visual_muted=song.master_q12==0;
+    /* A foreground frame can fall between short drum hits. Retain the maximum
+     * until the existing IRQ-bounded snapshot consumes this display window. */
+    if(!cf_visual_want || cf_visual_muted || cf_now_ms-cf_visual_window_ms>100)cf_visual_window_peak=0;
+    if(cf_visual_want && !cf_visual_muted && cf_visual_peak>cf_visual_window_peak) {
+        cf_visual_window_peak=cf_visual_peak;cf_visual_window_ms=cf_now_ms;
+    }
     cf_visual_parts=0;
     if(trk[0].p[P_LEVEL] && (cfp.n || sqp.dn || cla.on))cf_visual_parts|=1;
     if(trk[1].p[P_LEVEL] && (cfp.nb || sqp.nb))cf_visual_parts|=2;
@@ -727,7 +735,7 @@ typedef struct {
     uint8_t n, note[CF_MAX_NOTES], nb, bass[2];
     uint8_t onset;
     uint8_t beat, metro_on, running, metro_level;
-    uint32_t beats_done, beat_ms, now_ms;
+    uint32_t beats_done, beat_ms, beat_acc, now_ms;
     uint32_t keys_held;          /* bit k: key k is down in the chord model's view */
     uint8_t arp_on, arp_latched, arp_steps, arp_note, arp_n, arp_note_list[CF_MAX_NOTES];
     uint32_t arp_idx;            /* the arpeggiator: steps played, the last note, the chord it plays */
@@ -759,7 +767,7 @@ static void cf_snapshot(void)
     uint32_t i;
     fm1_irq_off();
     cf_sn.audition=cla.chord;cf_sn.audition_on=cla.on;cf_sn.audition_blocked=cla.blocked;
-    cf_sn.visual_ms=cf_visual_ms;cf_sn.visual_peak=cf_visual_peak;
+    cf_sn.visual_ms=cf_visual_ms;cf_sn.visual_peak=cf_visual_window_peak;cf_visual_window_peak=0;
     cf_sn.visual_parts=cf_visual_parts;cf_sn.visual_muted=cf_visual_muted;
     cf_sn.ac_revision = cpa.revision;cf_sn.ac_n=cpa.plan.n;
     for(unsigned i=0;i<CF_P_MAX;i++) {
@@ -801,6 +809,7 @@ static void cf_snapshot(void)
     cf_sn.running = cfm.running;
     cf_sn.beats_done = cfm.beats_done;
     cf_sn.beat_ms = cfm.beat_ms;
+    cf_sn.beat_acc = cfm.acc;
     cf_sn.now_ms = cf_now_ms;
     cf_sn.sq_on = sqp.on;
     cf_sn.sq_rec = sqp.rec;

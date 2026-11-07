@@ -27,4 +27,20 @@ for size in (12,16,32,64):
     lines.append(f'static const cfn_glyph_t CFN_{size}_G[] = {{'+','.join('{'+','.join(map(str,g))+'}' for g in glyphs)+'};')
     lines.append(f'static const cfn_font_t CFN_{size} = {{CFN_{size}_G, CFN_{size}_BITS}};')
     print(f'HOME Inter Tight {size}px: {len(data)} bitmap bytes, {len(glyphs)} glyphs')
+# The supplied CORD boot mark uses one fixed 45px tracked word, rather than a
+# complete extra font atlas. Keep its exact bounded bitmap in the same licence.
+font=ImageFont.truetype(str(root/'assets/fonts/InterTight[wght].ttf'),45,layout_engine=ImageFont.Layout.BASIC)
+font.set_variation_by_axes([700])
+letters='CORD';gap=7;width=sum(round(font.getlength(c)) for c in letters)+gap*3
+top=min(font.getbbox(c,anchor='ls')[1] for c in letters);height=-top
+im=Image.new('1',(width,height));d=ImageDraw.Draw(im);d.fontmode='1';x=0
+for c in letters:
+    d.text((x,-top),c,font=font,anchor='ls',fill=1);x+=round(font.getlength(c))+gap
+bits=[int(im.getpixel((x,y))!=0) for y in range(height) for x in range(width)];data=[]
+for i in range(0,len(bits),8):
+    v=0
+    for j,b in enumerate(bits[i:i+8]):v|=b<<(7-j)
+    data.append(v)
+lines.append(f'enum {{ CFN_CORD_W={width}, CFN_CORD_H={height} }};')
+lines.append('static const uint8_t CFN_CORD_BITS[] = {'+','.join(map(str,data))+'};')
 out.parent.mkdir(parents=True,exist_ok=True);out.write_text('\n'.join(lines)+'\n')

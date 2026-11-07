@@ -6,8 +6,10 @@
 enum { CFN_CURSOR_HOME=1u<<16, CFN_FOCUS_LEGACY=1u<<18 };
 static struct {
     uint32_t workspace, page_ms, focus_key, focus_ms, cursor_key, cursor_ms, tick, part_ms, quiet_ms;
+    uint32_t audio_ms,received_ms;
     uint16_t energy;
     uint8_t valid, was_on, part_mask,parts,active;
+    uint8_t have_level,fresh;
     int8_t direction;
 } cfn_motion;
 static void cfn_motion_frame(void)
@@ -31,8 +33,14 @@ static void cfn_motion_frame(void)
     }
     unsigned dt=cu.now-cfn_motion.tick;cfn_motion.tick=cu.now;if(dt>100)dt=100;
     /* The ISR publishes a post-MASTER block peak, including real effect tails. */
+    /* Audio milliseconds have a different boot origin from cu.now on a device.
+     * Track receipt/progress in UI time; never subtract one clock from the other. */
+    if(!cfn_motion.have_level || cfn_motion.audio_ms!=cf_sn.visual_ms) {
+        cfn_motion.audio_ms=cf_sn.visual_ms;cfn_motion.received_ms=cu.now;cfn_motion.have_level=1;
+    }
+    cfn_motion.fresh=cu.now-cfn_motion.received_ms<=150;
     unsigned raw=cf_sn.visual_peak*255u/32768u;
-    if(cu.now-cf_sn.visual_ms>150 || cf_sn.visual_muted)raw=0;
+    if(!cfn_motion.fresh || cf_sn.visual_muted)raw=0;
     unsigned parts=0,mask=raw?cf_sn.visual_parts:0;for(unsigned bit=0;bit<4;bit++)parts+=(mask>>bit)&1;
     if(parts>=cfn_motion.parts){cfn_motion.parts=parts;cfn_motion.part_ms=cu.now;}
     else if(cu.now-cfn_motion.part_ms>=150){cfn_motion.parts=parts;cfn_motion.part_ms=cu.now;}

@@ -101,8 +101,92 @@ static void source_labels(void)
     }
     cf_sn.ac_on=0;
 }
-int main(void)
+static void home_feedback(void)
 {
-    emu_fw_options(NULL,1,0,1);emu_hal.ready=2;emu_fw_init(0);appearance();stage();source_labels();
+    /* Device UI uptime starts before cf_out_init resets the audio clock. */
+    cf_intro_on=0;cu.scr=SCR_HOME;home_boot_main=1;cu.pop=0;cf_motion=1;
+    cu.now=500000;memset(&cfn_motion,0,sizeof cfn_motion);
+    cf_sn.visual_muted=0;cf_sn.visual_peak=16000;cf_sn.visual_ms=100;cf_sn.now_ms=100;
+    cfn_motion_frame();cu.now+=60;cf_sn.visual_ms=160;cf_sn.now_ms=160;cfn_motion_frame();
+    CHECK(cfn_motion.energy>0);
+    cf_stage_model_t m;cf_stage_model(&m);CHECK(m.halo>0);
+    /* Stalled publication expires in UI time, regardless of audio clock origin. */
+    for(unsigned i=0;i<80;i++){cu.now+=100;cfn_motion_frame();}
+    CHECK(!cfn_motion.fresh && !cfn_motion.energy);cf_stage_model(&m);CHECK(!m.halo);
+    /* Short hits between frames survive until exactly one snapshot consumes them. */
+    song.master_q12=4096;cf_visual_want=1;cf_visual_window_peak=0;
+    cf_visual_publish(12000);cf_visual_publish(0);cf_snapshot();CHECK(cf_sn.visual_peak==12000);
+    cf_snapshot();CHECK(!cf_sn.visual_peak);
+    cf_visual_publish(8000);cf_now_ms+=200;cf_visual_publish(0);cf_snapshot();CHECK(!cf_sn.visual_peak);
+    /* Playing a live Auto triad lights its planned chord without moving PLAY. */
+    cpa_stop();sqp_stop();dmp_stop();cfp_panic();blocks(2);
+    cpg.idea=0;cs.chord.tonic=0;cs.chord.scale=CF_SC_MAJOR;cs.chord.quantize=CF_Q_BASIC;ch.mode=CF_H_AUTO;
+    cf_send_config();blocks(2);const cf_progression_t *p=cf_progression_current();
+    int key=cf_progression_slot_key(p,0,&cs.chord);CHECK(key>=0);
+    cf_post(CFE_KEY,key,0,1);blocks(4);cf_stage_model(&m);
+    CHECK(cf_sn.out.sounding && !cf_sn.out.single);
+    CHECK((m.matches&1) && m.slot==255);
+    cf_motion=0;cf_stage_draw();CHECK(fb[160*FB_W+4]==C_ACC(0)); /* filled match, also with Motion Off */
+    unsigned writes=emu_flash_writes,queued=cf_evq_w;cf_ui_draw();CHECK(writes==emu_flash_writes && queued==cf_evq_w);
+    cf_post(CFE_KEY,key,0,0);blocks(4);cf_stage_model(&m);CHECK(!m.matches);
+    /* Every repeated source chord lights; inversions/HOLD do not select PLAY. */
+    for(unsigned i=0;i<cf_progression_count();i++)if(cf_progression_get(i)->id==125)cpg.idea=i;
+    p=cf_progression_current();const cf_source_chord_t *source=cf_progression_source(p);CHECK(source!=0);
+    cs.chord.scale=p->scale;cs.chord.tonic=p->tonic;
+    cf_sn.out.sounding=1;cf_sn.out.single=0;cf_sn.out.n=4;cf_sn.out.hold=1;
+    cf_sn.out.root_pc=cf_progression_root(p,0,cs.chord.scale,cs.chord.tonic);cf_sn.out.mask=source[0].mask;
+    cf_sn.ac_on=1;cf_sn.ac_slot=1;cf_sn.ac_waiting=cf_sn.ac_paused=0;
+    cf_stage_model(&m);CHECK(m.matches==5 && m.slot==1);
+    cf_sn.out.mask=1u|(1u<<3)|(1u<<7);cf_stage_model(&m);CHECK(!m.matches); /* missing source seventh */
+    /* Header dots are native pixels and move only with accepted clock phase. */
+    cf_motion=1;cfn_motion.fresh=cfn_motion.active=1;cfn_motion.energy=180;
+    cf_sn.running=1;cf_sn.beats_done=1;cf_sn.ac_lost=0;cf_sn.beat_acc=0;cf_stage_draw();
+    CHECK(cf_stage_last.activity==1 && cf_stage_last.activity_step==0 && fb[8*FB_W+224]==C_ACC(0));
+    unsigned pulse=cf_stage_last.pulse;cf_sn.beat_acc=FS*60u/4u;cf_stage_draw();
+    CHECK(cf_stage_last.activity_step==1 && fb[12*FB_W+228]==C_ACC(0) && cf_stage_last.pulse>pulse);
+    /* A complete circle at every visible phase: no narrow nameplate clipping. */
+    for(unsigned skin=0;skin<CF_SKIN_N;skin++) {
+        cf_skin=skin;cf_palette_build();
+        for(unsigned phase=0;phase<15;phase++) {
+            cf_sn.beat_acc=phase*(FS*60u/16u);cf_stage_draw();unsigned r=cf_stage_last.pulse,ink=cf_stage_last.halo_ink;
+            CHECK(r>=42 && r<=52);
+            CHECK(fb[(103-r)*FB_W+120]==ink && fb[(103+r)*FB_W+120]==ink);
+            /* The chord intentionally paints over side pixels; the complete
+             * top/bottom survive outside its former nameplate draw region. */
+            CHECK(120-r>0 && 120+r<FB_W-1 && 103-r>47 && 103+r<156);
+        }
+    }
+    cf_skin=0;cf_palette_build();
+    cf_sn.ac_lost=1;cf_stage_model(&m);CHECK(m.activity!=1);cf_sn.ac_lost=0;
+    cf_motion=0;cf_stage_model(&m);CHECK(!m.activity && !m.halo && !m.pulse);
+    cf_sn.ac_on=cf_sn.running=0;cf_sn.out.sounding=0;
+}
+static void home_capture(const char *directory)
+{
+    cpa_stop();sqp_stop();dmp_stop();cfp_panic();blocks(2);cf_motion=1;cf_visual_want=1;
+    cu.scr=SCR_HOME;home_boot_main=1;cu.pop=0;cf_home_bank=0;cs.clock_in=0;cs.bpm=120;cs.beats=4;
+    cs.chord.tonic=0;cs.chord.scale=CF_SC_MAJOR;cs.chord.quantize=CF_Q_BASIC;ch.mode=CF_H_AUTO;
+    cpg.idea=0;cpg.mode=CPA_BOTH;cpg.rhythm=dm_nth(4,0);cpg.repeat_off=0;song.master_q12=4096;
+    cf_motion_epoch=0;cf_send_config();cf_send_metro();blocks(2);ui_button(B_PLAY);
+    for(unsigned frame=0;frame<20;frame++) {
+        blocks(FS/CTL/20);cu.now=600000+cf_now_ms;cf_ui_draw();
+        char path[512];snprintf(path,sizeof path,"%s/playing-%02u.ppm",directory,frame);
+        FILE *f=fopen(path,"wb");CHECK(f);if(!f)continue;fprintf(f,"P6\n240 240\n255\n");
+        for(unsigned p=0;p<FB_W*FB_H;p++){uint32_t c=cf_pal[fb[p]];uint8_t rgb[]={c>>16,c>>8,c};fwrite(rgb,1,3,f);}fclose(f);
+    }
+    ui_button(B_PLAY);blocks(2);int key=cf_progression_slot_key(cf_progression_current(),0,&cs.chord);
+    cf_post(CFE_KEY,key,0,1);blocks(FS/CTL/8);cu.now=600000+cf_now_ms;cf_ui_draw();
+    for(unsigned off=0;off<2;off++) {
+        if(off){cf_motion=0;cf_ui_draw();}
+        char path[512];snprintf(path,sizeof path,"%s/%s.ppm",directory,off?"match-motion-off":"live-match");
+        FILE *f=fopen(path,"wb");CHECK(f);if(!f)continue;fprintf(f,"P6\n240 240\n255\n");
+        for(unsigned p=0;p<FB_W*FB_H;p++){uint32_t c=cf_pal[fb[p]];uint8_t rgb[]={c>>16,c>>8,c};fwrite(rgb,1,3,f);}fclose(f);
+    }
+    cf_post(CFE_KEY,key,0,0);blocks(2);
+}
+int main(int argc,char **argv)
+{
+    emu_fw_options(NULL,1,0,1);emu_hal.ready=2;emu_fw_init(0);appearance();stage();source_labels();home_feedback();
+    if(argc==2)home_capture(argv[1]);
     printf("Instrument Teal HOME: %u checks, %u failures\n",checks,failures);return failures!=0;
 }
