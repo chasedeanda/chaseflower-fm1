@@ -3,8 +3,8 @@
 Chase's personal firmware for the **M-VAVE FM-1**, built on [CoralFlower](https://github.com/FicusFicusov/CoralFlower).
 Explore chord progressions, build a groove, play over it, edit your own phrase and learn what makes the chords work.
 
-**Development build:** [Devil/Ember and Cat/Plum mascots](docs/MASCOTS.md), a refined two-strip HOME with
-antialiased type, and [live fills, drum drops and downbeat returns](docs/DRUM-PERFORMANCE.md).
+**Development build:** [Devil/Ember and Cat/Plum mascots](docs/MASCOTS.md), antialiased type and a
+[shared screen style](docs/HOUSE-STYLE.md), plus [live fills, drum drops and downbeat returns](docs/DRUM-PERFORMANCE.md).
 These changes require building this source; they are not in the chase10 download below.
 
 **Release 0.6-chase10: Warm CORD boot chime, responsive HOME motion, Songs and Chord Lab.**
@@ -15,12 +15,26 @@ These changes require building this source; they are not in the chase10 download
 This guide covers the new interface. The older 0.6-chase7 download has different controls and scene animations.
 
 <p align="center">
-  <img src="docs/images/mascots/devil-core.png" width="240" alt="Development HOME with the Devil mascot, a sounding chord and refined bottom controls">
-  <img src="docs/design/chord-first/native-accompaniment/groove-playing.png" width="240" alt="Groove workspace with an actual drum pattern and shared playhead">
-  <img src="docs/images/chord-lab/notes.png" width="240" alt="Chord Lab showing a chord's degree and voiced notes">
+  <img src="docs/images/house-style/mascots-playing.gif" width="496" alt="Devil and Cat mascots moving during actual progression playback, with live chords, beat rings and matching Ember and Plum themes">
 </p>
 
-These are native firmware captures from the computer emulator. Physical display, listening and timing review of the combined build remains pending.
+**Devil / Ember and Cat / Plum during playback.** The eight-second loop shows actual firmware motion,
+chord changes and playheads. Choose your character in **GLO → Display → K1 CHARACTER**;
+its colors follow you through the screens below. **Motion Off** stops the animation while chords and playback status keep updating.
+
+<p align="center">
+  <img src="docs/images/house-style/devil-groove.png" width="240" alt="Ember Groove screen with a live drum pattern and the shared four-control footer">
+  <img src="docs/images/house-style/cat-effects.png" width="240" alt="Plum FX Macros screen with the Deep Space preset and its combined effect graph">
+  <img src="docs/images/house-style/devil-lab.png" width="240" alt="Ember Chord Lab showing the sounding chord, scale degree and voiced notes">
+</p>
+<p align="center">
+  <img src="docs/images/house-style/cat-arp.png" width="240" alt="Plum arpeggiator with the native piano roll and matching control spacing">
+  <img src="docs/images/house-style/devil-editor.png" width="240" alt="Ember phrase editor with planned chords and the shared footer">
+  <img src="docs/images/house-style/cat-songs.png" width="240" alt="Plum Songs library with its current row control in the shared footer">
+</p>
+
+These are native firmware captures from the computer emulator, including the animated preview.
+They show the current development source; physical display, listening and timing review of the combined build remains pending.
 
 ## Make a beat in your first five minutes
 

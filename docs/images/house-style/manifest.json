@@ -1,0 +1,28 @@
+{
+  "renderer": "tools/capture_house_style.c",
+  "themes": [
+    "Devil / Ember",
+    "Cat / Plum"
+  ],
+  "screens": [
+    "home",
+    "groove",
+    "effects",
+    "lab",
+    "editor",
+    "arp",
+    "display",
+    "songs"
+  ],
+  "native_size": [
+    240,
+    240
+  ],
+  "animation": {
+    "file": "mascots-playing.gif",
+    "frames": 160,
+    "fps": 20,
+    "duration_ms": 8000,
+    "source": "native framebuffer during actual progression playback"
+  }
+}

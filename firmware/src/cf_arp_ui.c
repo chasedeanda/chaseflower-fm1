@@ -91,7 +91,7 @@ static void cfarp_draw(void)
     cfarp_model_t m;cfarp_model(&m);
     if(cfarp_valid && !fb_full && !memcmp(&m,&cfarp_last,sizeof m))return;
     cfarp_last=m;cfarp_valid=1;cfarp_draws++;fb_unclip();fb_fill(FL_BG);
-    cfn_text(&CFN_12,10,18,"ARPEGGIO",FL_INK2);
+    cfn_text(&CFN_12,10,18,m.page?"ARP / Timing 2/2":"ARP / Pattern 1/2",FL_INK2);
     char tempo[16];kint(tempo,m.bpm,m.external?" EXT":" BPM");
     cfn_text(&CFN_12,230-cfn_width(&CFN_12,tempo),18,tempo,C_ACC(0));
     cfn_fit(&CFN_32,10,50,m.chord,144,FL_INK);
@@ -120,15 +120,7 @@ static void cfarp_draw(void)
         fb_rect(x,y-1,w,3,ink);
         if(i==m.current && m.run){fb_frame(x-1,y-3,w+2,7,FL_INK);if(!m.strum){int cx=x+(int)m.travel*interval/12;if(cx>229)cx=229;fb_vline(cx,98,81,C_ACC(0));fb_hline(x,184,interval>2?interval-2:2,C_ACC(0));}}
     }
-    cfn_fit(&CFN_12,10,195,m.detail,126,FL_INK2);cfn_fit(&CFN_12,140,195,m.owner,90,C_ACC(0));
-    fb_hline(10,201,220,FL_BG3);
-    cfn_text(&CFN_12,10,212,m.page?"Timing & hold":"Pattern",FL_INK2);
-    cfn_text(&CFN_12,181,212,m.page?"2 / 2":"1 / 2",FL_INK2);
-    /* Compact four-knob footer leaves the entire musical display intact. */
-    for(unsigned k=0;k<4;k++) {
-        int x=k*60;if(k)fb_vline(x,218,21,FL_BG3);fb_clip(x+3,214,x+58,240);
-        cfn_center(&CFN_11,x+30,225,m.label[k],FL_INK2);
-        cfn_center(cfn_width(&CFN_14,m.value[k])<=54?&CFN_14:&CFN_12,x+30,238,m.value[k],m.disabled[k]?FL_INK2:FL_INK);
-    }
+    cfn_fit(&CFN_11,10,CFN_HINT_BASE,m.detail,126,FL_INK2);cfn_fit(&CFN_11,140,CFN_HINT_BASE,m.owner,90,C_ACC(0));
+    const uint8_t emphasis[4]={0};cfn_controls(m.label,m.value,m.disabled,emphasis);
     fb_unclip();if(!cu.pop)cf_present();
 }

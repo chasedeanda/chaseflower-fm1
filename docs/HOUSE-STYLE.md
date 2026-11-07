@@ -28,3 +28,23 @@ Songs displays the controls actually available in each mode: row, action,
 confirmation choice, or rename position and letter. Keyboard Learn retains its
 full-screen guide and inactive-knob explanation. Boot, recovery, and update
 screens retain their purpose-specific layouts.
+
+## Native previews
+
+![Devil and Cat during actual progression playback](images/house-style/mascots-playing.gif)
+
+The README gallery is captured from this source at the native 240 × 240 size in
+both character palettes. The GIF pairs eight seconds of sample-driven playback
+at 20 frames per second; movement, rings, chords and playheads come from the
+firmware renderer. It has no audio track. No physical device is accessed.
+
+After generating build headers, reproduce the assets with Pillow available:
+
+```sh
+python3 tools/render_house_style.py
+```
+
+The capture helper compiles the native emulator, saves raw frames under
+`build/house-style-readme/`, and exports PNGs and the GIF to
+`docs/images/house-style/`. A shared GIF palette prevents color shimmer between
+frames. `manifest.json` records the dimensions, frame count and capture source.
