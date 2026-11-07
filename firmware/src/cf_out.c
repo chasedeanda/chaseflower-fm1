@@ -411,9 +411,8 @@ static void cf_click_mix(int32_t *out, uint32_t n)
                                                   * little over a usual chord, the median of the 51 sounds' peaks
                                                   * +1 dB: "я бы наоборот чуть громче сделал", the owner, 2026-10-20;
                                                   * a LEVEL the player set is used as it is) */
-        if (cpa.on && cpa.plan.rhythm == CPA_CLICK && !lv) lv = 65;
         int32_t amp = (cfm.on || cfm.running) ? 100 * lv : 0;
-        if (cpa.on && (cpa.paused || cpa.plan.rhythm != CPA_CLICK)) amp = 0;
+        if (cpa.on && cpa.paused) amp = 0; /* Click gain is independent of the selected drum groove. */
         int acc = cfm.click == 2u;
         if (!fx_usb_fixed)                       /* MASTER on it, as on the music: it was mixed in after MASTER, and the
                                                   * volume knob at its bottom left the click as loud as ever (the
@@ -618,9 +617,11 @@ static void cf_apply(const cf_ev_in_t *e)
             dmp_stop();
         break;
     case CFE_METRO:
-        if (e->a && !cfm.on && !cfm.running)
+        /* A queued foreground update must not undo a newer bar-boundary Click enable. */
+        if((e->a&0x80u) && cpa.on && (uint16_t)e->v!=(uint16_t)cpa.click_generation)break;
+        if ((e->a&1u) && !cfm.on && !cfm.running)
             cfm_restart();
-        cfm.on = e->a;
+        cfm.on = e->a&1u;
         cfm.level = e->b;
         break;
     case CFE_TEMPO: if (cfp_cfg.clock_in) break; cfm.bpm = (uint16_t)(e->v < 30 ? 30 : e->v > 300 ? 300 : e->v); break;
@@ -692,12 +693,13 @@ static void cf_audio_block(uint32_t n)
 /* ---------------------------------------------------- what the UI reads --- */
 typedef struct {
     uint32_t ac_revision;
-    uint8_t ac_kit, ac_swing;
+    uint8_t ac_waiting, ac_lost;
+    uint8_t ac_kit, ac_swing, ac_repeat_off, ac_next_beats, ac_next_mode, ac_next_kit, ac_next_swing, ac_next_repeat_off;
     uint8_t ac_on, ac_paused, ac_slot, ac_idea, ac_tonic, ac_scale, ac_beats, ac_rhythm, ac_mode, ac_next, ac_edits, ac_next_tonic, ac_next_scale, ac_next_rhythm;
     cf_chord_out_t out;          /* the chord model's answer */
     uint8_t n, note[CF_MAX_NOTES], nb, bass[2];
     uint8_t onset;
-    uint8_t beat, metro_on, running;
+    uint8_t beat, metro_on, running, metro_level;
     uint32_t beats_done, beat_ms, now_ms;
     uint32_t keys_held;          /* bit k: key k is down in the chord model's view */
     uint8_t arp_on, arp_latched, arp_steps, arp_note, arp_n, arp_note_list[CF_MAX_NOTES];
@@ -718,6 +720,7 @@ typedef struct {
     uint8_t sq_dn, sq_dnote[6], sq_droot, sq_dsingle, sq_dser, sq_bn, sq_bass[2];   /* .. the CHORDS track's chord
                                   * for HOME (cf_seqp.c sqp.dn ..), the bass sounding */
     uint32_t sq_dmask;
+    uint8_t dm_step;
     uint8_t dm_on, dm_r, dm_next, dm_bar, dm_rin;   /* the drum machine: a rhythm plays, which, the next, its bar;
                                   * REC in the SEQUENCER waits for its bar line (pattern + 1) */
     uint32_t dm_t, dm_left;      /* .. ticks into its bar; ticks till REC in's pattern takes over */
@@ -729,14 +732,17 @@ static void cf_snapshot(void)
     uint32_t i;
     fm1_irq_off();
     cf_sn.ac_revision = cpa.revision;
-    cf_sn.ac_kit = cpa.plan.kit; cf_sn.ac_swing = cpa.plan.swing;
+    cf_sn.ac_waiting=cpa.clock_wait;cf_sn.ac_lost=cpa.clock_lost;
+    cf_sn.ac_kit = cpa.plan.kit; cf_sn.ac_swing = cpa.plan.swing; cf_sn.ac_repeat_off=cpa.plan.repeat_off;
     cf_sn.ac_on = cpa.on; cf_sn.ac_paused = cpa.paused; cf_sn.ac_slot = cpa.slot;
     cf_sn.ac_idea = cpa.plan.idea; cf_sn.ac_tonic = cpa.plan.tonic; cf_sn.ac_scale = cpa.plan.scale;
     cf_sn.ac_beats = cpa.plan.beats; cf_sn.ac_rhythm = cpa.plan.rhythm; cf_sn.ac_mode = cpa.plan.mode;
     cf_sn.ac_next = cpa.on && cpa_setup.flags ? cpa_setup.plan.idea : CF_P_NONE;
     cf_sn.ac_edits = cpa.on ? cpa_edit.flags : 0;
-    cf_sn.ac_next_tonic = cpa_edit.plan.tonic; cf_sn.ac_next_scale = cpa_edit.plan.scale;
-    cf_sn.ac_next_rhythm = cpa_edit.plan.rhythm;
+    const cpa_plan_t *next=cpa_setup.flags?&cpa_setup.plan:&cpa_edit.plan;
+    cf_sn.ac_next_tonic=next->tonic; cf_sn.ac_next_scale=next->scale; cf_sn.ac_next_rhythm=next->rhythm;
+    cf_sn.ac_next_beats=next->beats; cf_sn.ac_next_mode=next->mode;
+    cf_sn.ac_next_kit=next->kit; cf_sn.ac_next_swing=next->swing; cf_sn.ac_next_repeat_off=next->repeat_off;
     cf_sn.out = cfc.out;
     cf_sn.n = cfp.n;
     for (i = 0; i < cfp.n; i++)
@@ -756,6 +762,7 @@ static void cf_snapshot(void)
     for (i = 0; i < cfa.n; i++)
         cf_sn.arp_note_list[i] = cfa.note[i];
     cf_sn.beat = cfm.beat;
+    cf_sn.metro_level=cfm.level;
     cf_sn.metro_on = cfm.on;
     cf_sn.running = cfm.running;
     cf_sn.beats_done = cfm.beats_done;
@@ -792,6 +799,7 @@ static void cf_snapshot(void)
     cf_sn.sq_bn = (sqp.on || cpa.on) ? sqp.nb : 0u;
     cf_sn.sq_bass[0] = sqp.bass[0];
     cf_sn.sq_bass[1] = sqp.bass[1];
+    cf_sn.dm_step=dmp.nh?(uint8_t)(dmp.nh-1u):0;
     cf_sn.dm_on = dmp.on;
     cf_sn.dm_r = dmp.r;
     cf_sn.dm_next = dmp.next;

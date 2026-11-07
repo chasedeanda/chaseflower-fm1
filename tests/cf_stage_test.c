@@ -18,7 +18,7 @@ static void appearance(void)
     CHECK(writes==emu_flash_writes); /* turning/drawing never writes flash */
     cpb_flush();CHECK(!cpb_dirty);cpb_load();CHECK(cf_skin==2 && !cf_motion && cpb.favorites[0]==1);
     cpb_rec_t current;CHECK(st_load(OBJ_CFPREFS,&current,sizeof current)==sizeof current && cpb_valid(&current));
-    current.reserved[1]=2;current.check=cfs_fnv(&current,__builtin_offsetof(cpb_rec_t,check));CHECK(!cpb_valid(&current));
+    current.reserved[1]=0x80;current.check=cfs_fnv(&current,__builtin_offsetof(cpb_rec_t,check));CHECK(!cpb_valid(&current));
     cf_skin=0;cf_palette_build();CHECK(cf_pal[FL_BG]==0x061B1E && cf_pal[FL_INK]==0xF2F8F4 && cf_pal[48]==0x77DACB);
 }
 static void stage(void)

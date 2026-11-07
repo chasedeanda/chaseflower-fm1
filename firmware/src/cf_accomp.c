@@ -14,7 +14,7 @@ typedef struct {
 } cpa_slot_t;
 typedef struct {
     cpa_slot_t slot[CF_P_MAX];
-    uint8_t idea, n, tonic, scale, beats, rhythm, mode, nb, kit, swing;
+    uint8_t idea, n, tonic, scale, beats, rhythm, mode, nb, kit, swing, repeat_off, click_start;
     uint8_t degree[CF_P_MAX];
 } cpa_plan_t;
 typedef struct { cpa_plan_t plan; volatile uint8_t flags; } cpa_mail_t;
@@ -24,7 +24,8 @@ static struct {
     cpa_plan_t plan;
     uint32_t t, elapsed, acc, revision, q2;
     volatile uint8_t on;
-    uint8_t paused, slot;
+    uint8_t paused, slot, clock_wait, clock_lost, clock_external;
+    uint32_t clock_ms, click_generation;
 } cpa;
 static int cpa_running(void) { return cpa.on; }
 static int cpa_valid(const cpa_plan_t *p)
@@ -32,7 +33,7 @@ static int cpa_valid(const cpa_plan_t *p)
     if (p->idea >= cf_progression_count() || !p->n || p->n > CF_P_MAX ||
         p->tonic > 11 || !cf_harmony_supported(p->scale, CF_Q_BASIC) ||
         !(p->beats == 2 || p->beats == 3 || p->beats == 4 || p->beats == 5 || p->beats == 6 || p->beats == 7) ||
-        p->mode >= CPA_NMODES || p->nb > 2 || p->kit >= SQ_NKIT || p->swing > 100 ||
+        p->mode >= CPA_NMODES || p->repeat_off > 1 || p->click_start > 100 || p->nb > 2 || p->kit >= SQ_NKIT || p->swing > 100 ||
         (p->rhythm != CPA_OFF && p->rhythm != CPA_CLICK &&
          (p->rhythm >= DM_N || DM_RHY[p->rhythm].beats != p->beats))) return 0;
     for (unsigned i = 0; i < p->n; i++) {
@@ -68,7 +69,7 @@ static void cpa_stop(void)
     cpa_commanded = 0;
     if (!cpa.on) return;
     cpa_release(); dmp_stop();
-    cpa.on = cpa.paused = 0;
+    cpa.on = cpa.paused = cpa.clock_wait = cpa.clock_lost = 0;
     cpa_setup.flags = cpa_edit.flags = 0;
     cfm.running = 0; cf_grid.on = 0; cpa.revision++;
 }
@@ -128,11 +129,14 @@ static void cpa_start(void)
     cpa.plan = cpa_setup.plan; cpa_setup.flags = cpa_edit.flags = 0;
     cpa.slot = 0; cpa.t = cpa.elapsed = cpa.acc = 0;
     cpa.on = cpa_commanded = 1; cpa.paused = 0; cpa_commit();
+    cpa.clock_wait=cpa.clock_external=cfp_cfg.clock_in; cpa.clock_lost=0; cpa.clock_ms=cf_now_ms;
+    if(cpa.clock_wait) { cfm.running=0; cf_grid.on=0; return; }
     cpa_grid_start();
     cpa_groove(1); cpa_emit(); if (dmp.on) dmp_now();
 }
 static void cpa_tick1(void)
 {
+    if (!cpa.on || cpa.paused) return;
     sqp_drum_offs(); cpa.q2 += cfm.beats == 6u ? 1u : 2u;
     cpa.t++; cpa.elapsed++;
     if (cpa.t >= cpa.plan.beats * SQ_PPQN) {
@@ -157,10 +161,14 @@ static void cpa_tick1(void)
                 cpa.plan.rhythm = cpa_edit.plan.rhythm;
                 cpa.plan.mode = cpa_edit.plan.mode;
                 cpa.plan.kit = cpa_edit.plan.kit; cpa.plan.swing = cpa_edit.plan.swing;
+                cpa.plan.repeat_off = cpa_edit.plan.repeat_off;
+                if(cpa_edit.plan.click_start){cfm.level=cpa_edit.plan.click_start;cpa.click_generation++;}
+                cpa.plan.click_start=cpa_edit.plan.click_start=0;
                 cpa_edit.flags &= ~CPA_GROOVE; cpa.revision++;
                 if (cpa.plan.mode == CPA_DRUMS) { sqp_chord_off(); sqp_bass_off(); sqp.dn = 0; }
             }
             if (onset) {
+                if(cpa.plan.repeat_off && cpa.slot+1u>=cpa.plan.n) { cpa_stop(); return; }
                 cpa.slot = (uint8_t)((cpa.slot + 1u) % cpa.plan.n); cpa.elapsed = 0;
             }
         }
@@ -178,10 +186,28 @@ static void cpa_tick1(void)
 }
 static void cpa_tick(uint32_t n, uint32_t pulses)
 {
-    if (!cpa.on || cpa.paused) return;
+    if(!cpa.on)return;
+    if(cpa.clock_external!=cfp_cfg.clock_in) {
+        cpa.clock_external=cfp_cfg.clock_in;cpa.clock_ms=cf_now_ms;cpa.clock_lost=0;
+        if(cpa.clock_external) {
+            cpa_release();cpa.paused=1;cpa.clock_wait=1;cfm.running=0;cf_grid.on=0;
+        } else {
+            if(cpa.clock_wait && !cpa.paused){cpa_grid_start();cpa_groove(1);cpa_emit();if(dmp.on)dmp_now();}
+            cpa.clock_wait=0;
+        }
+    }
+    if(cpa.paused)return;
     if (cfp_cfg.clock_in) {
+        if(cpa.clock_wait) {
+            if(!pulses)return;
+            cpa.clock_wait=0; cpa_grid_start(); cpa_groove(1); cpa_emit(); if(dmp.on)dmp_now();
+        }
+        if(pulses)cpa.clock_ms=cf_now_ms;
+        else if(cf_now_ms-cpa.clock_ms>=300u) {
+            cpa_release();cpa.paused=1;cpa.clock_lost=1;cfm.running=0;cf_grid.on=0;return;
+        }
         unsigned q2 = pulses * 8u;
-        while (q2) {
+        while (q2 && cpa.on && !cpa.paused) {
             q2 -= cfm.beats == 6u ? 1u : 2u;
             cpa_tick1();
         }
@@ -189,7 +215,7 @@ static void cpa_tick(uint32_t n, uint32_t pulses)
         /* Quarter-note units do not change at a queued metre boundary. This
          * also handles a boundary in the middle of an audio block/pulse batch. */
         cpa.acc += n * cfm.bpm * SQ_PPQN * 2u;
-        for (;;) {
+        while (cpa.on && !cpa.paused) {
             unsigned limit = FS * 60u * (cfm.beats == 6u ? 1u : 2u);
             if (cpa.acc < limit) break;
             cpa.acc -= limit; cpa_tick1();
@@ -199,13 +225,16 @@ static void cpa_tick(uint32_t n, uint32_t pulses)
 static void cpa_realtime(unsigned status)
 {
     if (!cpa.on) return;
-    if (status == 0xFCu) { cpa_release(); cpa.paused = 1; cfm.running = 0; cf_grid.on = 0; }
+    if(status==0xFAu || status==0xFBu || status==0xFCu)cpa.clock_external=cfp_cfg.clock_in;
+    if (status == 0xFCu) { cpa.clock_wait=cpa.clock_lost=0; cpa_release(); cpa.paused = 1; cfm.running = 0; cf_grid.on = 0; }
     if (status == 0xFAu) {
+        cpa.clock_wait=cpa.clock_lost=0;cpa.clock_ms=cf_now_ms;
         cpa_release(); cpa.slot = 0; cpa.t = cpa.elapsed = cpa.acc = 0;
         cpa.paused = 0; cpa_grid_start();
         cpa_groove(1); cpa_emit(); if (dmp.on) dmp_now();
     }
-    if (status == 0xFBu && cpa.paused) {
+    if (status == 0xFBu && (cpa.paused || cpa.clock_wait)) {
+        cpa.clock_wait=cpa.clock_lost=0;cpa.clock_ms=cf_now_ms;
         cpa.paused = 0; cfm.running = 1; cf_grid.on = 1; cpa_emit();
     }
 }

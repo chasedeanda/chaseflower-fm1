@@ -75,12 +75,22 @@ static void cf_send_config(void)                 /* the chord settings -> the au
     cf_post(CFE_CONFIG, 0, 0, 0);
     cpa_ui_dirty();
 }
+static void cf_click_sync(void)
+{
+    if(cpg.click_generation==cpa.click_generation)return;
+    fm1_irq_off();cs.metro_level=cfm.level;cpg.click_generation=cpa.click_generation;fm1_irq_on();
+}
+static void cf_click_cancel_pending(void);
 static void cf_send_metro(void)
 {
+    cf_click_sync();
+    if(cs.metro_level && cs.metro_level!=cf_click_level) {
+        cf_click_level=cs.metro_level;cpb_dirty=1;cpb_changed=cu.now;
+    }
     if (!cpa_running()) sq_beats = (uint8_t)(cs.beats >= 2u && cs.beats <= 7u ? cs.beats : 4u);   /* (the sequencer's bar: cf_seqd.c) */
     cf_post(CFE_TEMPO, 0, 0, cs.bpm);
     cf_post(CFE_SIG, 0, 0, cs.beats);
-    cf_post(CFE_METRO, 0, cs.metro_level, 0);   /* (the click only while the beat runs, PLAY: the owner, 2026-10-19;
+    cf_post(CFE_METRO, 0x80u, cs.metro_level, (int16_t)cpg.click_generation);   /* (the click only while the beat runs, PLAY: the owner, 2026-10-19;
                                                   * it sounded all the time the METRONOME or the SEQUENCER was open) */
 }
 
@@ -122,7 +132,9 @@ static const char *const ALG_NAME[CF_NALGS] = {"Top", "Top Lock", "Side", "Side 
 #define CF_GLO_ACCOMP 9u
 #define CF_GLO_BROWSE 10u
 #define CF_GLO_RECORDINGS 11u
-#define CF_GLO_NPAGES 12u
+#define CF_GLO_LEGACY 12u
+#define CF_GLO_NPAGES 13u
+static const char *const CF_LEGACY_NAME[]={"Recordings","Metronome","Drum grid"};
 
 static const cf_progression_t *cf_progression_current(void)
 {
@@ -215,7 +227,7 @@ static void cf_progression_choose(unsigned next)
         cpa_plan_t plan;
         const cf_progression_t *p = cf_progression_get(next);
         cf_chord_cfg_t cfg = cs.chord; cfg.tonic = p->tonic; cfg.scale = p->scale;
-        if (cpa_prepare(&plan, next, cfg, cpa_compatible(cpg.rhythm, p->beats), cpg.mode))
+        if (cpa_prepare_full(&plan, next, cfg, cpa_compatible(cpg.rhythm, p->beats), cpg.mode, cpg.repeat_off, 0))
             cpa_publish(&plan, 0, 1);
         return;
     }
@@ -274,6 +286,7 @@ static cf_form_t *sel_form(void)
 
 static int cf_home_bank_info(int k, cf_knob_t *o);
 static int cf_home_bank_turn(int k, int d);
+static void cf_acc_knob_info(int k,cf_knob_t *o);
 static void ui_knob_info(int k, cf_knob_t *o)
 {
     o->bar = -1;
@@ -428,6 +441,7 @@ static void ui_knob_info(int k, cf_knob_t *o)
             }
         }
         break;
+    case SCR_ACC: cf_acc_knob_info(k,o); break;
     case SCR_SEQ: metro_knob_info(k, o); break;
     case SCR_DRUM: dm_knob_info(k, o); break;
     case SCR_SQ:
@@ -437,6 +451,7 @@ static void ui_knob_info(int k, cf_knob_t *o)
         case CF_GLO_RECORDINGS:
             if (!k) { kfmt(o->name,12,"AUTO DEL"); kfmt(o->val,14,sq_pref.protect?"Off":"On"); }
             break;
+        case CF_GLO_LEGACY: if(k==0){kfmt(o->name,12,"OPEN");kfmt(o->val,14,CF_LEGACY_NAME[cf_legacy_pick]);} break;
         case CF_GLO_BROWSE: cpb_knob_info(k,o); break;
         case CF_GLO_ACCOMP:
             if (k == 0) { kfmt(o->name, 12, "ACCOMPANY"); kfmt(o->val, 14, CPA_MODE_NAME[cpg.mode]); }
@@ -555,6 +570,7 @@ static void cpa_glide(int d)
 }
 
 #include "cf_home_banks.c"
+#include "cf_acc_ui.c"
 
 static void ui_knob_turn(int k, int d)
 {
@@ -695,6 +711,7 @@ static void ui_knob_turn(int k, int d)
         }
         cf_send_config();
         break;
+    case SCR_ACC: cf_acc_knob_turn(k,d); break;
     case SCR_SEQ: metro_knob_turn(k, d); break;
     case SCR_DRUM: dm_knob_turn(k, d); break;
     case SCR_SQ:
@@ -705,6 +722,7 @@ static void ui_knob_turn(int k, int d)
             if (!k && d) { sq_pref.protect=d<0; sq_pref_dirty=1;
                 cf_message(sq_pref.protect?"Full: new takes are refused":"New takes replace the oldest"); }
             break;
+        case CF_GLO_LEGACY: if(k==0)cf_legacy_pick=(uint8_t)wrapi(cf_legacy_pick+d,3); break;
         case CF_GLO_BROWSE: cpb_knob_turn(k,d); break;
         case CF_GLO_ACCOMP:
             if (k == 0) cpa_ui_mode(d);
@@ -735,7 +753,7 @@ static void ui_knob_turn(int k, int d)
         case 0:
             if (k == 0 || k == 3) {
                 if (k == 0) cf_skin = (uint8_t)wrapi(cf_skin + d, CF_SKIN_N);
-                else { cf_motion = (uint8_t)(d > 0); cf_home_bank_ms = 0; }
+                else { cf_motion = (uint8_t)(d > 0); cf_home_bank_ms = 0; cf_motion_epoch=cu.now; }
                 cpb_dirty = 1; cpb_changed = cu.now;
             }
             if (k == 1) home_view_select(d);
@@ -827,6 +845,7 @@ static void ui_say(const char *a, const char *b)
 
 static uint32_t screen_pages(uint32_t scr)
 {
+    if (scr == SCR_ACC)return CF_ACC_N;
     if (scr == SCR_GLO)
         return CF_GLO_NPAGES;
     if (scr == SCR_ENV)
@@ -852,6 +871,7 @@ static void cv_turned(int d)
 
 static void ui_select(int d)                     /* SELECT: the bass sound, or a screen's page */
 {
+    if(cu.scr==SCR_ACC){cf_acc_select(d);return;}
     if(cpb_page()) { cf_progression_select(d); return; }
     if (cu.scr == SCR_HOME && home_view() == HV_FLOWER && cf_scene() == CF_SCENE_PROGRESSIONS) {
         cf_progression_select(d);
@@ -946,8 +966,9 @@ static void ui_presets(int d)                    /* PRESETS: the chord sound (a 
     ui_snd_heard(CF_PART_CHORD);
     cf_pop(POP_SOUND_CHORD, 1200);
 }
-static void ui_algo(int d)                       /* ALGORITHM: scene (FX: effect; SEQUENCER: pattern/song) */
+static void ui_algo(int d)                       /* ALGORITHM: scene, effect, or workspace tab */
 {
+    if(cu.scr==SCR_ACC){cu.page[SCR_ACC]=(uint8_t)wrapi(cu.page[SCR_ACC]+d,CF_ACC_N);cf_acc_focus=0;cf_acc_page_ms=cf_motion?(cu.now?cu.now:1u):0;return;}
     if (cu.scr == SCR_FX) {
         if (fxpu.mode) return;
         cfx_move(d);
@@ -996,6 +1017,7 @@ static void ui_open(uint32_t scr)
         ui_ctx_from_track(squ.trk);
     cu.scr = (uint8_t)(scr == was && scr != SCR_HOME ? SCR_HOME : scr);
     if (cu.scr == SCR_HOME && was != SCR_HOME) { cf_home_bank = CF_HB_CORE; cf_home_bank_ms = 0; }
+    if(cu.scr==SCR_ACC && was!=SCR_ACC)cf_acc_page_ms=0;
     if (cu.scr == SCR_SEQ && was != SCR_SEQ)
         dm_seq_to = 0;                           /* (the carousel starts on the SEQUENCER: SEQ twice opens it, as before) */
     if (cu.scr == SCR_SEL && cf_is_off(&cs.chord, cu.sel_btn))
@@ -1089,7 +1111,11 @@ static void ui_button(uint32_t b)
         cf_message("Reset cancelled");
         return;
     }
-    if (b == B_PLAY && (cpa_running() || cpa_commanded || cpb_page() || (cu.scr == SCR_HOME && cf_scene() == CF_SCENE_PROGRESSIONS && !sqk.on && !cf_sn.sq_on))) {
+    if(cu.scr==SCR_GLO && cu.page[SCR_GLO]==CF_GLO_LEGACY && b==B_SCL) {
+        static const uint8_t scr[]={SCR_SQ,SCR_SEQ,SCR_DRUM};ui_open(scr[cf_legacy_pick]);cu.pop=POP_NONE;return;
+    }
+    if(cu.scr==SCR_ACC && b==B_SCL){if(cf_acc_tab()==CF_ACC_GROOVE)cf_acc_restore();return;}
+    if (b == B_PLAY && (cu.scr==SCR_ACC || cpa_running() || cpa_commanded || cpb_page() || (cu.scr == SCR_HOME && cf_scene() == CF_SCENE_PROGRESSIONS && !sqk.on && !cf_sn.sq_on))) {
         cpa_ui_play(); return;
     }
     if (cu.scr == SCR_DRUM) {                    /* the rhythm machine: the SEQUENCER's grammar (the owner on rc3: "когда в
@@ -1204,10 +1230,10 @@ static void ui_button(uint32_t b)
     case B_ARP: ui_open(SCR_ARP); break;         /* (its ON/OFF is K1 there, as an effect's: the owner's) */
     case B_SEQ:                                  /* METRONOME, again the SEQUENCER (or the drum machine: the METRONOME's
                                                   * carousel), again HOME */
-        if (cu.scr == SCR_SEQ)
-            ui_open(dm_seq_to ? SCR_DRUM : SCR_SQ);
-        else
-            ui_open(sq_screen(cu.scr) || cu.scr == SCR_DRUM ? SCR_HOME : SCR_SEQ);
+        if(cu.scr==SCR_ACC) {ui_open(SCR_HOME);home_boot_main=1;}
+        else if(cu.scr==SCR_SEQ)ui_open(dm_seq_to?SCR_DRUM:SCR_SQ);
+        else if(sq_screen(cu.scr) || cu.scr==SCR_DRUM){ui_open(SCR_HOME);home_boot_main=1;}
+        else {cu.page[SCR_ACC]=CF_ACC_GROOVE;cf_acc_focus=0;cf_acc_page_ms=0;ui_open(SCR_ACC);}
         break;
     case B_SAVE:
         if(cpb_home() || cpb_page()) {
@@ -1808,7 +1834,7 @@ static void cf_leds(void)
 {
     uint8_t lit[FM1_NCOL] = {0}, mid[FM1_NCOL] = {0}, dim[FM1_NCOL] = {0}, faint[FM1_NCOL] = {0};
     static const uint8_t SCR_BTN[SCR_N] = {B_HOME, B_SCL, B_ENV, B_LFO, B_EDIT, B_GLO, B_FX, B_ARP, B_SEQ, B_SAVE,
-                                           B_SEQ, B_SEQ, B_SEQ};
+                                           B_SEQ, B_SEQ, B_SEQ, B_SEQ};
     const cf_chord_out_t *out = &cf_sn.out;
     uint32_t k, blink = (cu.now / 250u) & 1u, sq = sq_screen(cu.scr), rm = cu.scr == SCR_DRUM;
     uint16_t auto_notes = 0;
@@ -2051,7 +2077,7 @@ static void cf_edited(uint32_t part)
 /* ------------------------------------------------------------------ init --- */
 static void cf_ui_init(void)
 {
-    cpg.idea = CF_P_NONE;
+    cpg.idea = CF_P_NONE; cpg.repeat_off=0; cpg.click_generation=cpa.click_generation;
     cpb_load();
     if (!cfs_loaded)                             /* (cf_splash read the settings record: they stay) */
         cs_defaults(&cs);
