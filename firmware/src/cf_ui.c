@@ -170,6 +170,7 @@ static void kpc(char *b, int pc)
 }
 
 #include "cf_edit.c"                             /* (the ENV and EDIT screens' engine side) */
+#include "cf_fx_presets_ui.c"
 #include "cf_fxui.c"                             /* (the FX screen's controls) */
 static void cv_turned(int d);
 #include "cf_sequi.c"                            /* (the SEQUENCER screens' controls) */
@@ -816,6 +817,12 @@ static void ui_select(int d)                     /* SELECT: the bass sound, or a
             cv_turned(d);
         return;
     }
+    if (cu.scr == SCR_FX && fxpu.mode) {
+        cu.save_hold = 0;
+        if (fxpu.mode == FXP_BROWSE) fxpu.pick = (uint8_t)clampi(fxpu.pick + d, 0, FXP_FACTORY_N + FXP_SLOTS - 1);
+        else fxpu.slot = (uint8_t)clampi(fxpu.slot + d, 0, FXP_SLOTS - 1);
+        return;
+    }
     if (cu.scr == SCR_FX) {                      /* FX: the effect along the chain */
         cu.fx_pos = (uint8_t)clampi(cu.fx_pos + d, 0, CFX_N - 1);
         return;
@@ -863,6 +870,7 @@ static void ui_presets(int d)                    /* PRESETS: the chord sound (a 
 static void ui_algo(int d)                       /* ALGORITHM: scene (FX: effect; SEQUENCER: pattern/song) */
 {
     if (cu.scr == SCR_FX) {
+        if (fxpu.mode) return;
         cfx_move(d);
         return;
     }
@@ -1096,7 +1104,11 @@ static void ui_button(uint32_t b)
     case B_LFO: ui_open(SCR_BASS); break;
     case B_EDIT: ui_open(SCR_EDIT); break;
     case B_GLO: ui_open(SCR_GLO); break;
-    case B_FX: ui_open(SCR_FX); break;
+    case B_FX:
+        if (cu.scr == SCR_FX && fxpu.mode == FXP_EDIT) fxpu.mode = FXP_BROWSE;
+        else if (cu.scr == SCR_FX && fxpu.mode == FXP_MANAGE) { fxpu.mode = FXP_BROWSE; cu.save_hold = 0; }
+        else { fxpu.mode = FXP_EDIT; ui_open(SCR_FX); }
+        break;
     case B_ARP: ui_open(SCR_ARP); break;         /* (its ON/OFF is K1 there, as an effect's: the owner's) */
     case B_SEQ:                                  /* METRONOME, again the SEQUENCER (or the drum machine: the METRONOME's
                                                   * carousel), again HOME */
@@ -1105,7 +1117,13 @@ static void ui_button(uint32_t b)
         else
             ui_open(sq_screen(cu.scr) || cu.scr == SCR_DRUM ? SCR_HOME : SCR_SEQ);
         break;
-    case B_SAVE:                                 /* on SAVE: held 1 s saves, a tap goes HOME (cf_save_poll) */
+    case B_SAVE:
+        if (cu.scr == SCR_FX) {
+            if (fxpu.mode != FXP_MANAGE) fxp_manage_open();
+            else cu.save_hold = cu.now ? cu.now : 1u;
+            break;
+        }
+        /* on SAVE: held 1 s saves, a tap goes HOME (cf_save_poll) */
         if (cu.scr == SCR_SAVE) {
             cu.save_hold = cu.now ? cu.now : 1u;
         } else {
@@ -1314,7 +1332,10 @@ static void cf_save_poll(void)
     if (!cu.save_hold)
         return;
     held = (fm1_in.buttons >> panel.btn[B_SAVE]) & 1u;
-    if (cu.scr != SCR_SAVE) {
+    if (cu.scr == SCR_FX && fxpu.mode == FXP_MANAGE) {
+        if (held && cu.now - cu.save_hold >= 1000u) { cu.save_hold = 0; fxp_manage_do(); }
+        else if (!held) { cu.save_hold = 0; fxpu.mode = FXP_BROWSE; }
+    } else if (cu.scr != SCR_SAVE) {
         cu.save_hold = 0;
     } else if (held && cu.now - cu.save_hold >= 1000u) {
         cu.save_hold = 0;

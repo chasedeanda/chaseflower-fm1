@@ -42,6 +42,7 @@ static void cfx_rate(char *b, uint32_t hz100)
 
 static void cfx_knob_info(int knob, cf_knob_t *o)
 {
+    if (fxpu.mode) { fxp_knob_info(knob, o); return; }
     uint32_t e = cfx_sel();
     const uint8_t *v = cs.fx.v[e];
     int k = knob - 1;                            /* (KNOB 1 the switch, KNOB 2-4 the three values) */
@@ -72,6 +73,7 @@ static void cfx_knob_info(int knob, cf_knob_t *o)
 
 static void cfx_knob_turn(int knob, int d)
 {
+    if (fxpu.mode) { fxp_knob_turn(knob, d); return; }
     uint32_t e = cfx_sel();
     uint8_t *v = cs.fx.v[e];
     int k = knob - 1;
