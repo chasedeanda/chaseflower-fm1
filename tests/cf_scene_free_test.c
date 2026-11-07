@@ -24,7 +24,7 @@ static void controls(void)
     unsigned writes=emu_flash_writes,patterns=cfs_fnv(&sq_st,sizeof sq_st);
     for(unsigned i=0;i<20;i++){ui_algo(i%2?1:-1);CHECK(cf_scene()==CF_SCENE_PROGRESSIONS);}
     CHECK((cs.seq_hint&0x38)==0x38 && emu_flash_writes==writes && cfs_fnv(&sq_st,sizeof sq_st)==patterns);
-    cu.scr=SCR_GLO;cu.page[SCR_GLO]=0;cf_knob_t knob={0};ui_knob_info(1,&knob);CHECK(!knob.name[0]);
+    cu.scr=SCR_GLO;cu.page[SCR_GLO]=0;cf_knob_t knob={0};ui_knob_info(1,&knob);CHECK(!strcmp(knob.name,"HOME VIEW"));
     uint8_t backdrop=cs.backdrop;ui_knob_turn(1,1);CHECK(cs.backdrop==backdrop);
     /* Existing recovery screen still draws and remains outside the music UI. */
     cr_safe=1;cf_splash();unsigned ink=0;for(unsigned i=0;i<FB_W*FB_H;i++)ink+=fb[i]!=FL_BG;
@@ -36,8 +36,10 @@ static void controls(void)
         for(unsigned page=0;page<screen_pages(screen);page++){cu.page[screen]=(uint8_t)page;cf_ui_draw();}
     }
     cu.scr=SCR_HOME;home_boot_main=1;cf_ui_draw();
-    ui_button(B_HOME);CHECK(home_view()==HV_CHORD);ui_button(B_HOME);CHECK(home_view()==HV_KEYS);
-    ui_button(B_HOME);CHECK(home_view()==HV_DIAG);ui_button(B_HOME);CHECK(home_view()==HV_FLOWER);
+    for(unsigned bank=0;bank<CF_HB_N;bank++){CHECK(cf_home_bank==bank && home_view()==HV_FLOWER);ui_button(B_HOME);}
+    CHECK(cf_home_bank==CF_HB_CORE);
+    cu.scr=SCR_GLO;cu.page[SCR_GLO]=0;ui_knob_turn(1,HV_DIAG);ui_button(B_GLO);
+    CHECK(home_view()==HV_DIAG);ui_button(B_HOME);CHECK(home_view()==HV_FLOWER && cf_home_bank==0);
 #else
     CHECK(cf_intro_on && cf_intro_draw(16));
     cf_scene_set(CF_SCENE_BASS);CHECK(cf_scene()==CF_SCENE_BASS);

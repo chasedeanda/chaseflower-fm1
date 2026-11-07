@@ -1,6 +1,6 @@
 # Chord-first FM-1 engineering handoff
 
-Engineering preview: native Instrument Teal CORE HOME, paired planned degrees/names, actual Now/Last chord and notes, real cursor/window, and persisted theme/Motion On or Off. GLO > Display: K1 theme, K4 Motion. Existing HOME Chord/Keys/Diagnostics navigation and recording behavior are retained in this first slice; the four-bank gesture, finite transitions, full Songs lifecycle and device verification remain pending. On uses documented volume/activity metadata, not a measured audio envelope.
+Engineering preview: native Instrument Teal HOME now cycles Core/Sound/Texture/Groove with HOME. Every bank shows its real control mapping; SELECT still browses progressions and PRESETS still changes chord sound. GLO > Display exposes K1 theme, K2 retained HOME view, and K4 Motion On/Off. Tap GLO again to open the selected Chord/Keyboard/Diagnostics view; HOME always returns to Core. Bank-label motion is clipped to the footer and Off settles it immediately. Source cover-chord intervals and slash bass notes are preserved in the native rail. Full Songs, remaining page migration, detailed pending setup and device verification are still pending.
 
 **Status:** complete planned-interface inventory for review; not an implementation or hardware validation claim.
 

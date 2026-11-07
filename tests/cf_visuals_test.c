@@ -64,9 +64,10 @@ static void controls(void)
     ui_algo(1); CHECK(cf_scene()==CF_SCENE_PROGRESSIONS);
     ui_algo(0); CHECK(cf_scene()==CF_SCENE_PROGRESSIONS);
     CHECK(cf_evq_w==queue && !memcmp(&chord,&cs.chord,sizeof chord));
+    cf_home_bank=0;
     for(unsigned i=0;i<9;i++) {
         ui_button(B_HOME);
-        CHECK(home_view()==(i+1u)%HV_N && cf_scene()==CF_SCENE_PROGRESSIONS);
+        CHECK(home_view()==HV_FLOWER && cf_home_bank==(i+1u)%CF_HB_N && cf_scene()==CF_SCENE_PROGRESSIONS);
         CHECK((cs.seq_hint&7u)==7u);
     }
     cu.scr=SCR_GLO; ui_algo(1);

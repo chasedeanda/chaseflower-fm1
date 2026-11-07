@@ -1,0 +1,28 @@
+# Native C renderer via host HAL; no device timing or TFT verification.
+turn SELECT 9
+btn PLAY
+wait 800
+shot core
+btn HOME
+wait 200
+shot sound
+btn HOME
+wait 200
+shot texture
+btn HOME
+wait 200
+shot groove
+turn K1 1
+shot groove-pending
+btn GLO
+turn K4 -1
+btn GLO
+btn HOME
+shot sound-motion-off
+btn PLAY
+btn GLO
+turn K2 3
+btn GLO
+shot diagnostics
+btn HOME
+shot return-core

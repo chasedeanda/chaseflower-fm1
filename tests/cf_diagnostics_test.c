@@ -47,8 +47,9 @@ int main(int argc,char **argv)
     if(argc>1){FILE *f=fopen(argv[1],"wb");CHECK(f);if(f){fwrite(reply,1,reply_n,f);fclose(f);}}
     uint8_t bad[]={CRB_HDR0,CRB_HDR1,CRB_HDR2,80,1};CHECK(!crb_handle(bad,sizeof bad));
     /* Every view is reachable, hints survive, and the fourth view survives the settings store. */
-    cu.scr=SCR_HOME;cs.seq_hint=7;
-    for(unsigned i=0;i<12;i++){CHECK(home_view()==i%4);ui_button(B_HOME);CHECK((cs.seq_hint&63)==7);}
+    cu.scr=SCR_HOME;cs.seq_hint=7;home_boot_main=1;cf_home_bank=0;
+    for(unsigned i=0;i<12;i++){CHECK(home_view()==HV_FLOWER && cf_home_bank==i%CF_HB_N);ui_button(B_HOME);CHECK((cs.seq_hint&63)==7);}
+    home_boot_main=0;
     cs.seq_hint=7|(HV_DIAG<<HV_SHIFT);CHECK(cf_settings_write(0)==1);cs.seq_hint=0;
     CHECK(cf_settings_load() && home_view()==HV_DIAG && sizeof cs==188);
     /* GLO controls stay bounded, hold preserves collection, reset leaves transport/sounds alone. */

@@ -692,6 +692,7 @@ static void cf_audio_block(uint32_t n)
 /* ---------------------------------------------------- what the UI reads --- */
 typedef struct {
     uint32_t ac_revision;
+    uint8_t ac_kit, ac_swing;
     uint8_t ac_on, ac_paused, ac_slot, ac_idea, ac_tonic, ac_scale, ac_beats, ac_rhythm, ac_mode, ac_next, ac_edits, ac_next_tonic, ac_next_scale, ac_next_rhythm;
     cf_chord_out_t out;          /* the chord model's answer */
     uint8_t n, note[CF_MAX_NOTES], nb, bass[2];
@@ -728,6 +729,7 @@ static void cf_snapshot(void)
     uint32_t i;
     fm1_irq_off();
     cf_sn.ac_revision = cpa.revision;
+    cf_sn.ac_kit = cpa.plan.kit; cf_sn.ac_swing = cpa.plan.swing;
     cf_sn.ac_on = cpa.on; cf_sn.ac_paused = cpa.paused; cf_sn.ac_slot = cpa.slot;
     cf_sn.ac_idea = cpa.plan.idea; cf_sn.ac_tonic = cpa.plan.tonic; cf_sn.ac_scale = cpa.plan.scale;
     cf_sn.ac_beats = cpa.plan.beats; cf_sn.ac_rhythm = cpa.plan.rhythm; cf_sn.ac_mode = cpa.plan.mode;
