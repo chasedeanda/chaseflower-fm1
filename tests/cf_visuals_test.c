@@ -293,7 +293,7 @@ static void shot(const char *dir, const char *name)
     if (!out) return;
     fprintf(out, "P6\n240 240\n255\n");
     for (unsigned i = 0; i < FB_W * FB_H; i++) {
-        uint32_t rgb = cf_pal[fb[i] & 63u];
+        uint32_t rgb = cf_pal[fb[i]];
         uint8_t p[3] = {(uint8_t)(rgb >> 16), (uint8_t)(rgb >> 8), (uint8_t)rgb};
         fwrite(p, 3, 1, out);
     }

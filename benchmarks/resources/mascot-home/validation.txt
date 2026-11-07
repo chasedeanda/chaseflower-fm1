@@ -1,0 +1,133 @@
+Local combined-build validation
+
+Source: codex/mascot-home; exact firmware dependency hashes are in identity.json.
+Host tests do not replace physical TFT/audio/encoder/USB timing verification.
+
+--- mascot-mascots.log
+boot: normal reset power-on failed 0 pending 1 counted 0 prev_stage 0 (none)
+Mascot art, bounds, motion and migration: 12970727 checks, 0 failures
+
+--- mascot-stage.log
+boot: normal reset power-on failed 0 pending 1 counted 0 prev_stage 0 (none)
+Mascot HOME: 270 checks, 0 failures
+
+--- mascot-home_banks.log
+boot: normal reset power-on failed 0 pending 1 counted 0 prev_stage 0 (none)
+HOME banks: 3 checks, 0 failures
+PASS: identical audio with HOME bank cycling and drawing.
+
+--- mascot-perform.log
+performance: 215266 checks, 0 failures
+
+--- mascot-native_pages.log
+native pages and motion: 5 checks / 0 routes, 0 failures
+native pages and motion: 5 checks / 0 routes, 0 failures
+PASS: Motion On/Off preserve identical physical audio, six USB channels and MIDI at both rates.
+
+--- mascot-accomp_workspace.log
+boot: normal reset power-on failed 0 pending 1 counted 0 prev_stage 0 (none)
+accompaniment workspace: 730 checks, 0 failures
+
+--- mascot-cord_boot.log
+boot: normal reset power-on failed 0 pending 1 counted 0 prev_stage 0 (none)
+CORD boot: 3949559 checks, 0 failures
+
+--- mascot-boot_sound.log
+CORD boot sound: 343877 checks, 0 failures
+{"seconds": 1.299591836734694, "peak_dbfs": -17.86, "rms_dbfs": -32.64}
+PASS: first keys match physical output, six USB channels and MIDI with/without a queued chime at both rates.
+
+--- mascot-accomp.log
+accompaniment: 3 checks, 0 failures; plan 348 bytes, runtime+mailboxes 1088 bytes
+accompaniment: 3 checks, 0 failures; plan 348 bytes, runtime+mailboxes 1088 bytes
+PASS: accompaniment transport and identical physical output with USB capture/drawing at both rates.
+
+--- mascot-drum_bank.log
+loop 46 MathRock  130 BPM X Live  peak -10.2 dBFS clips 0
+loop 63 Waltz      90 BPM Brush   peak -12.7 dBFS clips 0
+drum bank: 149906 checks, 0 failures
+
+--- mascot-usb.log
+Ran 4 tests in 0.001s
+OK
+PASS: protocol/packet/resampler/drift checks and 64 render comparisons (including Auto, USB active vs idle, both rates).
+
+--- mascot-auto.log
+cf_harmony: 102660 checks, 0 failures
+boot: normal reset power-on failed 0 pending 1 counted 0 prev_stage 0 (none)
+cf_auto: 47420 checks, 0 failures
+
+--- mascot-recordings.log
+recording flash ranges: PASS
+PASS: recordings: reordered backup restores archives first and preserves all three takes
+PASS: recordings: Python restorer handles the same reordered backup ()
+
+--- mascot-library.log
+object 4 (512-byte entries): 1 changes without an erase
+object 5 (512-byte entries): 1 changes without an erase
+st_log: 1500 steps (0 saves as changes, 780 whole, 679 refused: no room without an erase), 6230 power cuts (1519 cut again at the power-on), 54660 checks, 0 failed
+
+--- mascot-editor.log
+object 0 (512-byte entries): 209 changes without an erase
+object 1 (256-byte entries): 225 changes without an erase
+st_log: 1500 steps (1307 saves as changes, 124 whole, 11 refused: no room without an erase), 2059 power cuts (201 cut again at the power-on), 10690 checks, 0 failed
+
+--- mascot-lab.log
+boot: normal reset power-on failed 0 pending 1 counted 0 prev_stage 0 (none)
+Chord Lab UI/ownership USB 48000: 6892 checks, 0 failures
+PASS: identical audio while browsing all Lab tabs at both USB capture rates.
+
+--- mascot-backup.log
+cf_backup_test: 247 checks, 0 failed
+
+--- mascot-chase3.log
+sound CF3-F066 AQ34 FULLFLU peak -14.4 dBFS rms -26.1 dBFS clips 0
+chase3: 47046556 checks, 0 failures
+cr_va_test: 230705 checks, 0 failed
+
+--- mascot-fx_presets.log
+VA POLY KEYS: RMS -20.72..-15.22 dBFS; 0 clipped samples
+FM PAD: RMS -23.80..-14.39 dBFS; 0 clipped samples
+PASS: 80 factory/voice auditions; WAVs and levels.csv in /Users/chase/.codex/worktrees/mascot-home/FM1 Custom Firmware/build/fx-auditions
+
+--- mascot-variations.log
+variations: 2 checks, 0 failures
+variations: 165 checks, 0 failures
+PASS: queued variations preserve identical physical/six-channel USB audio while waiting at both rates.
+
+--- mascot-progressions.log
+suggestions: 4454 checks, 0 failures
+suggestions: 4454 checks, 0 failures
+PASS: complete catalog, automatic setup, HOME controls, live highlighting and identical audio with/without drawing at both rates.
+
+--- mascot-song.log
+semantic phrase: 62449 checks, 0 failures
+
+--- mascot-diagnostics.log
+----------------------------------------------------------------------
+Ran 5 tests in 0.007s
+OK
+
+--- mascot-scene_free.log
+scene-free profile 1: 5 checks, 0 failures
+scene-free profile 1: 5 checks, 0 failures
+PASS: scene-free/legacy profiles preserve identical physical audio, six USB channels and MIDI at both rates.
+
+--- mascot-visuals.log
+visuals: 4756338 checks, 0 failures
+visuals: 8587 checks, 0 failures
+PASS: scene migration, persistence, Off bypass, HOME/FX/sequencer controls, boot exit/skip and identical physical/USB audio.
+
+--- mascot-resource-tests.log
+----------------------------------------------------------------------
+Ran 6 tests in 0.012s
+OK
+
+--- mascot-installer.log
+stock: confirmed -> backup, FM-1_015, the done panel names the backup; the install card left idle    ok
+tools/fm1pkg_make.py package (the real builder, tools/sdk): 605988 B, accepted by the page           ok
+all passed
+
+--- mascot-sanitize.log
+boot: normal reset power-on failed 0 pending 1 counted 0 prev_stage 0 (none)
+Mascot art, bounds, motion and migration: 12970727 checks, 0 failures

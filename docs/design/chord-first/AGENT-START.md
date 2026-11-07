@@ -1,5 +1,7 @@
 # Agent start: chord-first FM-1
 
+> **Current mascot build:** the owner approved only Devil/Ember and Cat/Plum, with palette tied to character. This supersedes the older theme/scene proposals below. The implemented two-strip HOME, four-level text and controls are documented in [MASCOTS](../../MASCOTS.md). Physical verification remains pending.
+
 Start implementation from the published plan on **`codex/chord-first-roadmap-01a1b40b`**. This publication changes documentation and browser references only. Its refreshed source base includes `main` at `29c3ba6e8fe87c33f94c8c139157460568ce89b3`, where [progression playback PR #53](https://github.com/chasedeanda/chaseflower-fm1/pull/53) has landed. Inspect and reuse that implementation; the milestones below define completion/verification, not a request to build a second playback engine. Recheck the current integration reference before source edits because other work can advance.
 
 ## Current execution priority

@@ -25,6 +25,11 @@ enum { DMK_STD, DMK_808, DMK_909, DMK_TIGHT, DMK_BOOM, DMK_LOFI, DMK_HAND, DMK_C
        DMK_XLIVE, DMK_XTECH, DMK_XBREAK,
        DMK_DUST, DMK_TAPE, DMK_BRUSH, DMK_AIR, DMK_GLASS, DMK_DUB, DMK_WOOD, DMK_CHILL };
 
+static uint32_t cf_perf_kit_style(uint32_t kit)
+{
+    return kit == DMK_808 || kit == DMK_CRUSH || kit == DMK_CHILL ? CFPERF_TIGHT : CFPERF_LOOSE;
+}
+
 /* Chase drum refresh: original two-bar patterns informed by the listening/production references in
  * docs/DRUM-LOOPS.md. Lo-fi, hip-hop, trap and gaze lead the browser; the other styles and metres follow.
  * Existing rhythm IDs retain their identity and saved KIT/SWING overrides. IDs 51..62 are new; retired
@@ -305,6 +310,12 @@ static const dm_rhythm_t DM_RHY[] = {
 };
 #define DM_N ((uint32_t)(sizeof DM_RHY / sizeof DM_RHY[0]))
 
+static uint32_t dmp_fill_style(uint32_t r)
+{
+    uint32_t id = DM_RHY[r % DM_N].id;
+    return (id >= 51u && id <= 54u) || id == 35u || id == 36u ? CFPERF_TIGHT : CFPERF_LOOSE;
+}
+
 /* the rhythms of a TIME SIG: how many, the k-th (DM_N: none) */
 static uint32_t dm_count(uint32_t beats)
 {
@@ -374,8 +385,8 @@ static void dmp_fire(uint32_t h)
     const dm_rhythm_t *y = &DM_RHY[dmp.r % DM_N];
     uint32_t l;
     for (l = 0; l < SQ_NLANE; l++)
-        if ((dm_mask(dmp.r, l, dmp.bar) >> h) & 1u) {
-            sqp_lane_kit(l, dmp.kit, y->lev[l]);
+        if (cf_perf_hit(l, h, sq_dsteps(), (dm_mask(dmp.r, l, dmp.bar) >> h) & 1u)) {
+            sqp_lane_kit(l, dmp.kit, cf_perf_level(l, h, sq_dsteps(), y->lev[l]));
             trk_note_on(&trk[CF_PART_DRUM], SQ_LANE_NOTE[l], 100);
             cfp_midi(0x90u, cfp_ch(CF_PART_DRUM), SQ_LANE_NOTE[l], 100);
             sqp.doff |= (uint16_t)(1u << l);
@@ -392,6 +403,7 @@ static void dmp_stop(void)
     if (!dmp.on)
         return;
     dmp.on = 0;
+    cf_perf_reset();
     dmp.next = 0xFF;
     dmp.rin = 0;
     sqp_drum_offs();
@@ -402,6 +414,7 @@ static void dmp_start(uint32_t r, uint32_t kit, uint32_t swing)
 {
     cpa_stop();
     sqp_stop();
+    cf_perf_reset();
     dmp.r = (uint8_t)(r % DM_N);
     dmp.kit = (uint8_t)kit;
     dmp.swing = (uint8_t)swing;
@@ -421,6 +434,7 @@ static void dmp_start(uint32_t r, uint32_t kit, uint32_t swing)
  * track trk */
 static void dmp_rec_in(uint32_t pat, uint32_t trk)
 {
+    cf_perf_reset();
     uint32_t bt = sqp_bar_ticks();
     if (!dmp.on) {
         sqp_rec_start(pat, trk);
@@ -463,8 +477,10 @@ static void dmp_next_bar(void)
 static void dmp_tick1(void)
 {
     sqp_drum_offs();
-    if (++dmp.t >= sqp_bar_ticks())
+    if (++dmp.t >= sqp_bar_ticks()) {
         dmp_next_bar();
+        if (dmp.on) cf_perf_bar(dmp_fill_style(dmp.r));
+    }
     if (dmp.on)
         dmp_now();
 }

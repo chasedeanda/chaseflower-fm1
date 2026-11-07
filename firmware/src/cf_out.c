@@ -236,6 +236,7 @@ static void events_block(uint32_t n)
 /* ------------------------------------------------------------ the queue --- */
 /* UI -> ISR. One producer (the main loop), one consumer (the audio ISR): the index stores are the publication */
 enum {
+    CFE_PERFORM,      /* a: CFPERF_FILL / DROP / BACK, next-bar transient moment */
     CFE_ACCOMP,       /* a: start/stop; plans published by UI in bounded mailboxes */
     CFE_KEY,          /* a: key 0..26, v: down */
     CFE_CONFIG,       /* the chord settings: cfc_shadow (cf_play.c) */
@@ -588,6 +589,13 @@ static void cf_apply(const cf_ev_in_t *e)
         else
             sqp_stop();
         break;
+    case CFE_PERFORM:
+        if ((cpa.on && !cpa.paused && !cpa.clock_wait && !cpa.clock_lost && dmp.on) ||
+            (!cpa.on && dmp.on && !dmp.rin) ||
+            (sqp.on && !sqp.cin && sqp.rec == 0xFFu &&
+             !((sq_st.pat[sqp.pat % SQ_NPAT].mute >> SQ_DRUMS) & 1u) &&
+             sq_own(&sq_st.pat[sqp.pat % SQ_NPAT], SQ_DRUMS))) cf_perf_queue(e->a);
+        break;
     case CFE_DRUM:
         if (cpa.on) {
             if (e->a == 0) cpa_stop();
@@ -756,6 +764,10 @@ typedef struct {
                                   * for HOME (cf_seqp.c sqp.dn ..), the bass sounding */
     uint32_t sq_dmask;
     uint8_t dm_step;
+    /* Transient drum-moment metadata. Zero until an actual performance owner
+     * publishes it; the renderer never guesses a fill from loudness. */
+    uint8_t perf_pending, perf_fill, perf_dropped;
+    uint32_t perf_bloom, perf_bloom_ms;
     uint8_t dm_on, dm_r, dm_next, dm_bar, dm_rin;   /* the drum machine: a rhythm plays, which, the next, its bar;
                                   * REC in the SEQUENCER waits for its bar line (pattern + 1) */
     uint32_t dm_t, dm_left;      /* .. ticks into its bar; ticks till REC in's pattern takes over */
@@ -848,6 +860,11 @@ static void cf_snapshot(void)
     cf_sn.dm_next = dmp.next;
     cf_sn.dm_bar = dmp.bar;
     cf_sn.dm_t = dmp.t;
+    cf_sn.perf_pending = cf_moment.pending;
+    cf_sn.perf_fill = cf_moment.fill;
+    cf_sn.perf_dropped = cf_moment.dropped;
+    cf_sn.perf_bloom = cf_moment.bloom;
+    cf_sn.perf_bloom_ms = cf_moment.bloom_ms;
     cf_sn.dm_rin = dmp.on ? dmp.rin : 0u;
     cf_sn.dm_left = dmp.rin ? (dmp.rbars - 1u) * sqp_bar_ticks() + (sqp_bar_ticks() - dmp.t) : 0u;
     fm1_irq_on();

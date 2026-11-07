@@ -12,8 +12,17 @@ static struct {
     uint8_t have_level,fresh;
     int8_t direction;
 } cfn_motion;
+/* Consume finite return events on every visible workspace, even with Motion Off.
+ * Audio and UI milliseconds have different boot origins on the physical unit. */
+static uint32_t cfn_moment_seen, cfn_moment_ms;
 static void cfn_motion_frame(void)
 {
+    if(cf_sn.perf_bloom!=cfn_moment_seen) {
+        cfn_moment_seen=cf_sn.perf_bloom;
+        cfn_moment_ms=cf_motion && home_stage() && cf_sn.perf_bloom &&
+            cf_sn.now_ms-cf_sn.perf_bloom_ms<200u ? (cu.now?cu.now:1u):0;
+    }
+    if(!cf_motion || !home_stage())cfn_moment_ms=0;
     cf_visual_want=cf_motion;
     uint32_t key=cu.scr | (uint32_t)cu.page[cu.scr]<<8;
     if(cu.scr==SCR_EDIT)key|=(uint32_t)cu.edit_sec<<16 | (uint32_t)cu.edit_part<<24;

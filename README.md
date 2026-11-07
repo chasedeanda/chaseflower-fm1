@@ -3,6 +3,10 @@
 Chase's personal firmware for the **M-VAVE FM-1**, built on [CoralFlower](https://github.com/FicusFicusov/CoralFlower).
 Explore chord progressions, build a groove, play over it, edit your own phrase and learn what makes the chords work.
 
+**Development build:** [Devil/Ember and Cat/Plum mascots](docs/MASCOTS.md), a refined two-strip HOME with
+antialiased type, and [live fills, drum drops and downbeat returns](docs/DRUM-PERFORMANCE.md).
+These changes require building this source; they are not in the chase10 download below.
+
 **Release 0.6-chase10: Warm CORD boot chime, responsive HOME motion, Songs and Chord Lab.**
 
 **[Download the firmware (.fwsc)](https://github.com/chasedeanda/chaseflower-fm1/releases/download/v0.6-chase10/coralflower-0.6-chase10.fwsc)** ·
@@ -11,7 +15,7 @@ Explore chord progressions, build a groove, play over it, edit your own phrase a
 This guide covers the new interface. The older 0.6-chase7 download has different controls and scene animations.
 
 <p align="center">
-  <img src="docs/design/chord-first/native-home-banks/core.png" width="240" alt="Native HOME with a sounding chord, planned progression and four labelled controls">
+  <img src="docs/images/mascots/devil-core.png" width="240" alt="Development HOME with the Devil mascot, a sounding chord and refined bottom controls">
   <img src="docs/design/chord-first/native-accompaniment/groove-playing.png" width="240" alt="Groove workspace with an actual drum pattern and shared playhead">
   <img src="docs/images/chord-lab/notes.png" width="240" alt="Chord Lab showing a chord's degree and voiced notes">
 </p>
@@ -20,7 +24,7 @@ These are native firmware captures from the computer emulator. Physical display,
 
 ## Make a beat in your first five minutes
 
-**0:00 — Find your starting point.** Start on **HOME**, with **CORE** at the bottom.
+**0:00 — Find your starting point.** Start on **HOME**, with **CORE** shown in the bank cue.
 From another page, HOME returns here; while already on HOME, tap it to cycle banks until CORE appears.
 Bring **MASTER** up gently. Turn **SELECT** to choose a progression; its key, scale and metre follow the idea.
 Try a 4/4 idea for this first pass.
@@ -40,7 +44,7 @@ Try another **kit** with K1, balance **drums** with K2, and add **swing** with K
 K4 adds a **click** alongside the beat. While playing, kit/swing changes take effect at the next bar;
 the pending cue tells you what is queued.
 
-**4:00 — Play and keep a take.** Tap HOME once to return to CORE and press **REC**.
+**4:00 — Play and keep a take.** Tap HOME until CORE returns and press **REC**.
 After the one-bar count-in, **play the chords yourself** over the selected groove: upper keys choose a chord
 type/modifier, lower keys play roots. REC switches off the automatic progression chords for this manual take.
 Press REC again to finish in whole bars, or let it finish at eight bars. Hold REC to cancel the new take.
@@ -57,7 +61,7 @@ the labels show exactly what each one will change.
 
 | Control | Starting point / main use |
 | --- | --- |
-| **HOME** | Return to Progressions/Core; on HOME, cycle **Core → Sound → Texture → Groove** |
+| **HOME** | Return to Progressions/Core; on HOME, cycle **Core → Sound → Texture → Groove → Perform** in development source |
 | **SELECT** | On HOME, browse ideas from any bank; elsewhere, choose the item, slot or page |
 | **PRESETS** | On HOME, change the chord sound |
 | **ALGORITHM** | Change tabs in Accompaniment, the phrase editor or Chord Lab; in FX, move the selected effect in the chain |
@@ -71,7 +75,7 @@ the labels show exactly what each one will change.
 | **GLO** | System pages: Display, MIDI, Harmony, Variation, Browse, Recordings policy and Legacy tools |
 | **MASTER / OCT− / OCT+** | Output volume / playing register |
 
-### The four HOME banks
+### The HOME banks
 
 | Bank | K1 | K2 | K3 | K4 |
 | --- | --- | --- | --- | --- |
@@ -79,8 +83,10 @@ the labels show exactly what each one will change.
 | **Sound** | Chord sound | Bass sound | Chord level | Bass level |
 | **Texture** | Reverb mix | Delay mix | Chorus mix | Glide |
 | **Groove** | Drum kit | Drum level | Swing | Click level / Off |
+| **Perform** (development) | One-bar fill | Drop drums | Bring back | Tempo |
 
 Switching banks leaves the music playing. SELECT still browses ideas in every bank.
+Perform gestures start on the next bar; fills return automatically. The published chase10 has the first four banks.
 For separate chord/bass/drum levels and linked bass On/Off, use **SEQ → Mix**.
 For drums alone, use **SEQ → Loop → K1 Drums only**. **K4 Repeat Off** plays the full phrase once.
 For a metronome alongside any groove, use **SEQ → Click**: K1 On/Off, K2 level, K3 sound, K4 tempo.
@@ -180,7 +186,8 @@ The separate chord-library picker remains deferred.
   what is sounding. A focus box or a matching chord name does not start playback or audition.
 - **External clock:** **EXT WAIT** means the FM-1 is waiting for incoming MIDI clock. For standalone use,
   go to **GLO → MIDI** and set CLOCK Off. After clock loss, send MIDI Start/Continue to resume.
-- **Make the display yours:** **GLO → Display**, K1 chooses Instrument/Studio/Editorial; K4 sets **Motion On/Off**.
+- **Make the display yours:** in development source, **GLO → Display → K1 CHARACTER** selects Devil/Ember or Cat/Plum.
+  The palette follows the character. The published chase10 instead has Instrument/Studio/Editorial themes. K4 sets **Motion On/Off**.
   Off settles all visual animation while notes, recording and transport keep updating.
 - **CORD startup:** piano keys assemble inside a complete ring in your saved theme, then open HOME / CORE.
   Touch a key, button or encoder to skip. Motion Off shows the finished logo during startup.

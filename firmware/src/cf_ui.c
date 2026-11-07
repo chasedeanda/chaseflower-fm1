@@ -490,7 +490,7 @@ static void ui_knob_info(int k, cf_knob_t *o)
             }
             break;
         case 0: /* Display */
-            if (k == 0) { kfmt(o->name, 12, "THEME"); kfmt(o->val, 14, CF_SKIN_NAME[cf_skin]); }
+            if (k == 0) { kfmt(o->name, 12, "CHARACTER"); kfmt(o->val, 14, CF_SKIN_NAME[cf_skin%CF_SKIN_N]); }
             if (k == 3) { kfmt(o->name, 12, "MOTION"); kfmt(o->val, 14, cf_motion ? "On" : "Off"); }
             if (k == 1) { kfmt(o->name, 12, "HOME VIEW"); kfmt(o->val, 14, HOME_VIEW_NAME[home_view()]); }
             if (k == 2) { kfmt(o->name, 12, "BOOT SND"); kfmt(o->val, 14, cs.boot_sound ? "On" : "Off"); }

@@ -1,5 +1,7 @@
 # FM-1 interface implementation plan
 
+> **Current mascot build:** the owner approved only Devil/Ember and Cat/Plum, with palette tied to character. This supersedes the older theme/scene proposals below. The implemented two-strip HOME, four-level text and controls are documented in [MASCOTS](../../MASCOTS.md). Physical verification remains pending.
+
 **Decision:** build the new interface from the user-supplied
 `fm1_adaptive_motion_prototype.html`, with **Instrument Teal as the default**.
 Motion is **On (adaptive) / Off**, with no Quiet/Expressive style or manual

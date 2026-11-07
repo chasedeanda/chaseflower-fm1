@@ -6,15 +6,26 @@ static unsigned checks,failures;
 static void blocks(unsigned n){int32_t out[CTL*2];while(n--)audio_block(out,CTL);cf_snapshot();cpa_ui_poll();}
 static void home(void){cu.scr=SCR_HOME;home_boot_main=1;cf_scene_set(CF_SCENE_PROGRESSIONS);cf_home_bank=0;cu.pop=POP_NONE;cf_motion=0;}
 static void setup(void){cpa_stop();sqp_stop();dmp_stop();cfp_panic();home();cpg.idea=0;cpg.rhythm=dm_nth(4,0);cpg.mode=CPA_BOTH;cs.chord.scale=CF_SC_MAJOR;cs.chord.tonic=0;cs.chord.quantize=CF_Q_BASIC;cs.beats=4;cs.bpm=120;cs.clock_in=0;cf_send_config();cf_send_metro();blocks(2);}
+static uint32_t musical_body_hash(void)
+{
+    /* The compact bank cue moved to the context line to leave exactly two
+     * bottom strips. All musical pixels outside that cue remain anchored. */
+    uint32_t hash=2166136261u;
+    for(unsigned y=0;y<198;y++)for(unsigned x=0;x<FB_W;x++) {
+        if(y>=28 && y<46 && x>=156)continue;
+        hash=(hash^fb[y*FB_W+x])*16777619u;
+    }
+    return hash;
+}
 static void navigation(void)
 {
     setup();cf_post(CFE_KEY,7,0,1);blocks(2);
     cf_post(CFE_KEY,25,0,1);cf_post(CFE_KEY,25,0,0);cf_post(CFE_KEY,7,0,0);blocks(2);CHECK(cf_sn.out.hold);
-    cf_ui_draw();unsigned body=cfs_fnv(fb,FB_W*198);
+    cf_ui_draw();unsigned body=musical_body_hash();
     cf_set_t settings=cs;unsigned queue=cf_evq_w,flash=emu_flash_writes,patterns=cfs_fnv(&sq_st,sizeof sq_st);cf_chord_out_t sounding=cf_sn.out;
-    for(unsigned i=0;i<24;i++) {
+    for(unsigned i=0;i<CF_HB_N*6u;i++) {
         CHECK(home_stage() && cf_home_bank==i%CF_HB_N);ui_button(B_HOME);cf_ui_draw();
-        CHECK(body==cfs_fnv(fb,FB_W*198));
+        CHECK(body==musical_body_hash());
         CHECK(!memcmp(&cs,&settings,sizeof cs) && cf_evq_w==queue && emu_flash_writes==flash);
         CHECK(cfs_fnv(&sq_st,sizeof sq_st)==patterns && !memcmp(&cf_sn.out,&sounding,sizeof sounding));
     }
@@ -70,7 +81,7 @@ static void queued(void)
     CHECK(cpa.plan.kit==nextkit && cpa.plan.swing==nextswing && !(cpa_edit.flags&CPA_GROOVE));
     /* Bank presentation alone never changes ownership, cursor, edits or transport. */
     unsigned slot=cpa.slot,flags=cpa_edit.flags,queue=cf_evq_w;cf_home_bank=0;
-    for(unsigned i=0;i<8;i++)ui_button(B_HOME);
+    for(unsigned i=0;i<CF_HB_N*2u;i++)ui_button(B_HOME);
     CHECK(cpa.on && cpa.slot==slot && cpa_edit.flags==flags && cf_evq_w==queue);
     ui_button(B_PLAY);blocks(2);CHECK(!cpa.on && !sqp.n && !sqp.nb);
 }

@@ -1,19 +1,20 @@
 {
   "status": "Engineering preview progress; physical verification remains pending",
   "defaultAppearance": {
-    "theme": "Instrument Teal",
+    "character": "Devil",
+    "theme": "Ember",
     "motion": "On (adaptive)",
     "motionChoices": [
       "On (adaptive)",
       "Off"
     ],
-    "background": "#061B1E",
-    "foreground": "#F2F8F4",
-    "secondary": "#89A7A5",
-    "separator": "#355054",
-    "subtle": "#113034",
-    "accent": "#77DACB",
-    "onAccent": "#092D2C"
+    "background": "#150F0C",
+    "foreground": "#FFF4E5",
+    "secondary": "#D0BFB1",
+    "separator": "#5D4537",
+    "subtle": "#241813",
+    "accent": "#FFA55B",
+    "onAccent": "#28170D"
   },
   "screens": [
     {
@@ -23,7 +24,7 @@
       "sharedTemplate": "chord",
       "musicalMilestone": 1,
       "designStatus": "Native preview alongside selected prototype; device review pending",
-      "implementationStatus": "Native HOME with audio-clock-safe complete round pulses, accepted-beat header indicator, sounding chord and live match fills independent of playback underline; physical verification pending",
+      "implementationStatus": "Native HOME with audio-clock-safe complete round pulses, accepted-beat header indicator, sounding chord and live match fills independent of playback underline; physical verification pending; two-strip mascot HOME with precomputed four-level type and shared-clock reactions",
       "deviceVerification": "Pending — host captures and device link only"
     },
     {
@@ -799,7 +800,7 @@
       "sharedTemplate": "chord",
       "musicalMilestone": 1,
       "designStatus": "Native bank preview follows selected prototype; physical review pending",
-      "implementationStatus": "Implemented preview: real parameters, explicit bank label, immediate ownership and clipped On/Off transition",
+      "implementationStatus": "Implemented preview: real parameters, explicit bank label, immediate ownership and clipped On/Off transition; two-strip mascot HOME with precomputed four-level type and shared-clock reactions",
       "deviceVerification": "Pending — native host captures and device link only"
     },
     {
@@ -809,7 +810,7 @@
       "sharedTemplate": "chord",
       "musicalMilestone": 1,
       "designStatus": "Native bank preview follows selected prototype; physical review pending",
-      "implementationStatus": "Implemented preview: real parameters, explicit bank label, immediate ownership and clipped On/Off transition",
+      "implementationStatus": "Implemented preview: real parameters, explicit bank label, immediate ownership and clipped On/Off transition; two-strip mascot HOME with precomputed four-level type and shared-clock reactions",
       "deviceVerification": "Pending — native host captures and device link only"
     },
     {
@@ -819,8 +820,18 @@
       "sharedTemplate": "chord",
       "musicalMilestone": 1,
       "designStatus": "Native bank preview follows selected prototype; physical review pending",
-      "implementationStatus": "Implemented preview: real parameters, explicit bank label, immediate ownership and clipped On/Off transition",
+      "implementationStatus": "Implemented preview: real parameters, explicit bank label, immediate ownership and clipped On/Off transition; two-strip mascot HOME with precomputed four-level type and shared-clock reactions",
       "deviceVerification": "Pending — native host captures and device link only"
+    },
+    {
+      "id": "HOME_PERFORM",
+      "title": "Progressions · PERFORM",
+      "group": "Home",
+      "sharedTemplate": "chord",
+      "musicalMilestone": 1,
+      "designStatus": "Native preview follows Instrument Teal; device review pending",
+      "implementationStatus": "Implemented in development source: fifth HOME bank; next-bar one-bar fills, drum drops and returns; Motion Off, live-only recorder scope. See docs/DRUM-PERFORMANCE.md.; two-strip mascot HOME with precomputed four-level type and shared-clock reactions",
+      "deviceVerification": "Pending — native host captures and linked firmware only"
     },
     {
       "id": "SYS-ROOT",
@@ -896,12 +907,12 @@
     },
     {
       "id": "DISPLAY-STYLE",
-      "title": "Appearance · Theme",
+      "title": "Appearance · Character",
       "group": "Display",
       "sharedTemplate": "params",
       "musicalMilestone": 1,
       "designStatus": "Native preview alongside selected prototype; device review pending",
-      "implementationStatus": "Implemented for all retained screens: three native themes and one Motion On/Off choice; finite transitions cancel completely with Off; physical tuning pending",
+      "implementationStatus": "Implemented native preview: exactly Devil/Ember and Cat/Plum, one Motion On/Off setting, v5 migration; physical tuning pending",
       "deviceVerification": "Pending — host captures and device link only"
     },
     {
@@ -911,7 +922,7 @@
       "sharedTemplate": "params",
       "musicalMilestone": 1,
       "designStatus": "Native preview alongside selected prototype; device review pending",
-      "implementationStatus": "Implemented for all retained screens: three native themes and one Motion On/Off choice; finite transitions cancel completely with Off; physical tuning pending",
+      "implementationStatus": "Implemented native preview: exactly Devil/Ember and Cat/Plum, one Motion On/Off setting, v5 migration; physical tuning pending",
       "deviceVerification": "Pending — host captures and device link only"
     },
     {
@@ -920,9 +931,9 @@
       "group": "Display",
       "sharedTemplate": "params",
       "musicalMilestone": 1,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Historical exploration, superseded",
+      "implementationStatus": "Not present in the two-character build",
+      "deviceVerification": "Not applicable to this build"
     },
     {
       "id": "SYS-MIDI",
@@ -2163,9 +2174,9 @@
       "group": "Display",
       "sharedTemplate": "params",
       "musicalMilestone": 1,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Historical exploration, superseded",
+      "implementationStatus": "Not present in the two-character build",
+      "deviceVerification": "Not applicable to this build"
     },
     {
       "id": "CTRL-BANKS",

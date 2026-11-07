@@ -1,12 +1,12 @@
 # Chord-first FM-1 engineering handoff
 
-Engineering preview: every retained old screen now routes through native Instrument Teal parameter, list, grid, name/confirmation and result families, including advanced FM6/VA, Layer, effects, recordings, system, diagnostics and recovery. HOME/banks, Groove/Loop/Mix/Click and the protected sixteen-slot editor retain their existing musical owners. Finite chord/cursor/knob/bank/workspace/focus/save transitions and a real post-MASTER output-driven halo share the single On/Off setting; Off cancels visual work and settled views skip rendering. The current manual-take/latest-three policy remains intact. Chord Lab adds Now/Last/planned-slot notes and intervals, fixed-context comparisons, offline Next suggestions, explicit one-bar audition and undoable insertion. Songs now adds six saved semantic ideas and existing recording rows, protected quiet-boundary writes, complete musical snapshots, progression rename/duplicate/delete and recording load/delete. SAVE opens Songs; SELECT Save current then SEL creates a new copy. Full arranged recording, recording rename/duplicate, bulk clear and physical verification remain pending. Chord library/audition remains explicitly deferred. See docs/SONGS-LIBRARY.md for native preview controls and limits. CORD now supplies the selected piano-key/ring boot in three saved themes; HOME fixes cross-clock freshness and clipped ellipses, adds accepted-beat header activity and lights live progression matches.
+Engineering preview: native HOME uses the approved Devil/Ember or Cat/Plum mascot, with its palette tied to the character, shared-clock/output-driven motion and a pulse ring. The two bottom strips use one separator, three control dividers and antialiased type; the bank cue is in the header. Five banks include Perform for real next-bar fills, drum drops and downbeat returns. Retained sound/FX/system/recovery pages, shared-clock accompaniment, the protected sixteen-slot editor, Songs and Chord Lab remain available. Motion Off settles effects while musical, record/save and transport states stay truthful. The manual-take/latest-three recording policy is unchanged. Full arranged recording, recording rename/duplicate, bulk clear, the separate chord library and physical-device validation remain pending.
 
 **Status:** complete planned-interface inventory for review; not an implementation or hardware validation claim.
 
-Start with the [implementation plan](IMPLEMENTATION-PLAN.md), [selected Instrument Teal prototype](instrument-teal/prototype.html) and [motion specification](MOTION-SPEC.md).
+Start with the [implementation plan](IMPLEMENTATION-PLAN.md), [historical adaptive study](instrument-teal/prototype.html) and [motion specification](MOTION-SPEC.md).
 
-Design version 0.4, 2026-11-06. 205 screen/state definitions and 37 workflows share canonical JSON with the board and player guide.
+Design version 0.4, 2026-11-07. 206 screen/state definitions and 38 workflows share canonical JSON with the board and player guide.
 
 ## Product contracts
 
@@ -20,11 +20,12 @@ Design version 0.4, 2026-11-06. 205 screen/state definitions and 37 workflows sh
 8. Songs is the one user-facing collection for saved progressions and recordings. Factory progression browsing remains on HOME. Editable Songs use semantic chord/degree/duration data; recorded Songs retain captured performance events and timing. Existing recorded Auto takes keep their fixed-note meaning and format.
 9. REC is direct from HOME. It captures the scheduled progression plus deliberate live/groove/key/tempo changes rather than unexpectedly muting the arranged chords. Ending a capture creates a new numbered Song copy; no mandatory Review/Keep step. Pending, Saving and Saved are different states, and flash writes wait for an actually safe quiet boundary without cutting independent HOLD or audible tails.
 10. Songs supports selected-row Load, Rename, Duplicate and Delete, plus counted Clear Recordings/Clear All actions. Bulk clear excludes factory templates, the protected working draft and Pending captures. A Pending capture can be discarded only through its own explicit selected action.
-11. The selected visual reference is fm1_adaptive_motion_prototype.html. Instrument Teal is the factory default: background #061b1e, foreground #f2f8f4, secondary #89a7a5, separator #355054, subtle surface #113034, accent #77dacb, and on-accent text #092d2c. Studio and Editorial are optional palettes of the same typography-led interface. Preserve the large chord, paired degrees, thin separators, four text controls and the supplied prototype's restrained halo/Bloom visual vocabulary; earlier Coral Bloom, Aurora and Studio Rack are historical alternatives.
+11. The selected current HOME appearance is the owner-approved soft mascot reference; the earlier adaptive prototype remains preserved as design history. The approved mascot build uses Devil/Ember by default and Cat/Plum as its only alternative. Character and theme are coupled; a separate theme/accent selector is not present. Preserve the large chord, paired degrees, thin separators, four text controls and the supplied prototype's restrained halo/Bloom visual vocabulary; earlier Coral Bloom, Aurora and Studio Rack are historical alternatives.
 12. Motion has exactly two user choices: On (adaptive) and Off. On responds automatically to output level/volume and semantic active-instrument activity using a smoothed bounded envelope, with musical motion tied to the shared clock. There is no manual Quiet/Expressive/intensity/speed selector. Off cancels every pulse, orbit, morph travel and tween; truthful chord, value, playback and record/save data still update instantly. The supplied loudness/layer sliders are simulation inputs, not new firmware settings or evidence of eight instrument parts. Measure display, input, memory and audio/USB timing on the FM-1.
-13. HOME from another screen returns to Progressions Core. Further HOME taps cycle Core/Sound/Texture/Groove without changing any parameter; SELECT still browses the complete catalogue, PRESETS still selects chord sound, ALGORITHM keeps its scene/workspace role and OCT± stays musical. Four text columns and a subtle bank indicator make each current mapping visible.
-14. No image, label or example value in this board is a physical-device measurement. Fonts, partial redraws, storage limits and audio/USB timing need linked-build and FM-1 verification before release.
-15. Advanced FM6/VA pages enumerate retained capabilities and repeatable control templates. Keep a usable Advanced Sound route while cosmetic migration proceeds; rewriting every advanced page is not a gate for the first audible progression-playback milestone.
+13. HOME from another screen returns to Progressions Core. Further HOME taps cycle Core/Sound/Texture/Groove/Perform without changing any parameter; SELECT still browses the complete catalogue, PRESETS still selects chord sound, ALGORITHM keeps its scene/workspace role and OCT± stays musical. Four text columns and a subtle bank indicator make each current mapping visible.
+14. HOME Perform is Fill / Drop drums / Bring back / Tempo. Moments commit at bar boundaries; Fill lasts one bar and returns automatically, Drop leaves chords and bass running, Back restores groove phase with a downbeat bloom. Motion Off keeps static truth. V1 is live-only; Breakdown and separate multi-bar builds are deferred.
+15. No image, label or example value in this board is a physical-device measurement. Fonts, partial redraws, storage limits and audio/USB timing need linked-build and FM-1 verification before release.
+16. Advanced FM6/VA pages enumerate retained capabilities and repeatable control templates. Keep a usable Advanced Sound route while cosmetic migration proceeds; rewriting every advanced page is not a gate for the first audible progression-playback milestone.
 
 ## Delivery
 
@@ -61,7 +62,7 @@ Browse and hear the complete catalogue with a large chord hero, paired degree/na
 | Metre | 4/4 |
 | Tempo | 108 BPM |
 | Phrase | IV / Bbmaj7 → V / C7 → vi / Dm7 → I / Fmaj7 |
-| Bank | CORE 1/4 |
+| Bank | CORE 1/5 |
 
 | Input | Action |
 | --- | --- |
@@ -71,7 +72,7 @@ Browse and hear the complete catalogue with a large chord hero, paired degree/na
 | K2 | Key: F |
 | K3 | Scale: Major |
 | K4 | Tempo: 108 quarter-note BPM |
-| HOME | While already on Progressions, cycle CORE → SOUND → TEXTURE → GROOVE. From any other screen or secondary scene, return Progressions CORE. |
+| HOME | While already on Progressions, cycle CORE → SOUND → TEXTURE → GROOVE → PERFORM. From any other screen or secondary scene, return Progressions CORE. |
 | PLAY | Start this selected progression at slot 1 with its groove; stop if transport is running. |
 | REC | From Progressions: stopped → one-bar count-in; running → arm next bar. During capture → finish at next bar. Every capture creates a new Song copy. |
 | EDIT | Open the explicitly focused progression slot; otherwise a unique live match, otherwise slot 1. |
@@ -106,7 +107,7 @@ Browse and hear the complete catalogue with a large chord hero, paired degree/na
 - Measure and cap foreground cadence, dirty regions, pixel work and scratch memory under demanding audio/USB. Do not promise FPS, CPU savings or polyphony from a concept.
 - The F-major seventh-color demonstration is explicitly arranged IVmaj7 → V7 → vi7 → Imaj7: Bbmaj7 → C7 → Dm7 → Fmaj7, with C7 notes C E G Bb. This stored V7 does not change deliberate live 7 following major/minor quality, including Emaj7 → Bmaj7 → D♯m7.
 - Instrument Teal palette: bg #061b1e, fg #f2f8f4, muted #89a7a5, line #355054, subtle #113034, accent #77dacb, onAccent #092d2c; custom solid accents must preserve contrast.
-- Retain all nine prototype studies, including Chord Morph and Generative / Bloom. Unsupported morph/generative DSP, Grain/Shimmer/Freeze/Human/Fill and all pictured capabilities are not thereby implemented.
+- Retain all nine prototype studies, including Chord Morph and Generative / Bloom. Unsupported morph/generative DSP, Grain/Shimmer/Freeze/Human and all pictured capabilities are not thereby implemented.
 - CORE is Rhythm / Key / Scale / Tempo. PRESETS stays global chord sound, HOME SELECT stays the complete catalogue, and OCT−/OCT+ stay musical.
 - HOME tap cycling reuses the existing view gesture and needs physical verification. No hold chord or encoder push. A bank switch changes no sound, value, note ownership, recording source or transport.
 - The latest adaptive-motion prototype is preserved byte-for-byte as the visual reference. Its up-to-eight demo layers are simulated response inputs, not a promise of eight device parts/engines/tracks/voices.
@@ -116,7 +117,7 @@ Browse and hear the complete catalogue with a large chord hero, paired degree/na
 2. In CORE use K1 Rhythm, K2 Key, K3 Scale and K4 Tempo.
 3. Press PLAY; tap HOME while on Progressions to cycle the visible live banks.
 
-**Related:** HOME_PENDING, ACC_GROOVE, EDIT_HARMONY, LAB_NOTES, IDEA_LIBRARY, HOME_SOUND, HOME_TEXTURE, HOME_GROOVE, CTRL-BANKS
+**Related:** HOME_PENDING, ACC_GROOVE, EDIT_HARMONY, LAB_NOTES, IDEA_LIBRARY, HOME_SOUND, HOME_TEXTURE, HOME_GROOVE, CTRL-BANKS, HOME_PERFORM
 
 ### HOME_PENDING — Progressions · Next Song Queued
 
@@ -140,7 +141,7 @@ Keep the current sound truthful while a browsed song waits for the next bar.
 | Key / scale | F Major |
 | Metre | 4/4 |
 | Position | 3 / 4 |
-| Bank | CORE 1/4 |
+| Bank | CORE 1/5 |
 
 | Input | Action |
 | --- | --- |
@@ -1641,7 +1642,7 @@ Record the performance heard on Progressions while HOME stays visible.
 | Recording | Armed · next bar |
 | Starts | Next downbeat |
 | Source | Current audible progression/manual/groove |
-| Bank | CORE 1/4 |
+| Bank | CORE 1/5 |
 
 | Input | Action |
 | --- | --- |
@@ -1697,7 +1698,7 @@ Record the performance heard on Progressions while HOME stays visible.
 | Recording | Count-in · 1 bar |
 | Count | 3 → 2 → 1 |
 | Source | Selected progression + groove |
-| Bank | CORE 1/4 |
+| Bank | CORE 1/5 |
 
 | Input | Action |
 | --- | --- |
@@ -1754,7 +1755,7 @@ Record the performance heard on Progressions while HOME stays visible.
 | Capture | What you hear · notes + performance events |
 | Limit | 128 bars / 1024 musical events design bound |
 | Source | Progression + live overrides + groove |
-| Bank | CORE 1/4 |
+| Bank | CORE 1/5 |
 
 | Input | Action |
 | --- | --- |
@@ -1813,7 +1814,7 @@ Record the performance heard on Progressions while HOME stays visible.
 | Recording | Recording ended at capacity |
 | Result | Captured content retained |
 | Next | New Song copy · Pending/Saving |
-| Bank | CORE 1/4 |
+| Bank | CORE 1/5 |
 
 | Input | Action |
 | --- | --- |
@@ -3167,7 +3168,7 @@ Record the performance heard on Progressions while HOME stays visible.
 | Recording | No musical content captured |
 | Result | No Song row created |
 | Current | Source saved Song unchanged |
-| Bank | CORE 1/4 |
+| Bank | CORE 1/5 |
 
 | Input | Action |
 | --- | --- |
@@ -3683,7 +3684,7 @@ Record the performance heard on Progressions while HOME stays visible.
 | Recording | Finishing · next bar |
 | Current | What you hear is still captured |
 | Next | Stop accompaniment and save a new Song copy |
-| Bank | CORE 1/4 |
+| Bank | CORE 1/5 |
 
 | Input | Action |
 | --- | --- |
@@ -3920,7 +3921,7 @@ Keep the edited fx preset and prior valid record intact without displaying Song-
 
 Keep the chord visible while the four physical knobs expose audited SOUND controls.
 
-**Entry:** On Progressions tap HOME until SOUND 2/4 appears, or open this bank from CTRL-BANKS.
+**Entry:** On Progressions tap HOME until SOUND 2/5 appears, or open this bank from CTRL-BANKS.
 **Exit:** Any destination button opens its workspace without stopping playback.
 
 | Visible field | Reference value/state |
@@ -3938,7 +3939,7 @@ Keep the chord visible while the four physical knobs expose audited SOUND contro
 | Metre | 4/4 |
 | Tempo | 108 BPM |
 | Phrase | IV / Bbmaj7 → V / C7 → vi / Dm7 → I / Fmaj7 |
-| Bank | SOUND 2/4 |
+| Bank | SOUND 2/5 |
 | Chord sound | Dusty EP |
 | Bass sound | Round Bass |
 | Chord level | 78% |
@@ -3952,7 +3953,7 @@ Keep the chord visible while the four physical knobs expose audited SOUND contro
 | K2 | Bass sound: Round Bass |
 | K3 | Chord level: 78% |
 | K4 | Bass level: 55% |
-| HOME | While already on Progressions, cycle CORE → SOUND → TEXTURE → GROOVE. From any other screen or secondary scene, return Progressions CORE. |
+| HOME | While already on Progressions, cycle CORE → SOUND → TEXTURE → GROOVE → PERFORM. From any other screen or secondary scene, return Progressions CORE. |
 | PLAY | Start this selected progression at slot 1 with its groove; stop if transport is running. |
 | REC | From Progressions: stopped → one-bar count-in; running → arm next bar. During capture → finish at next bar. Every capture creates a new Song copy. |
 | EDIT | Open the explicitly focused progression slot; otherwise a unique live match, otherwise slot 1. |
@@ -3987,7 +3988,7 @@ Keep the chord visible while the four physical knobs expose audited SOUND contro
 - Measure and cap foreground cadence, dirty regions, pixel work and scratch memory under demanding audio/USB. Do not promise FPS, CPU savings or polyphony from a concept.
 - The F-major seventh-color demonstration is explicitly arranged IVmaj7 → V7 → vi7 → Imaj7: Bbmaj7 → C7 → Dm7 → Fmaj7, with C7 notes C E G Bb. This stored V7 does not change deliberate live 7 following major/minor quality, including Emaj7 → Bmaj7 → D♯m7.
 - Instrument Teal palette: bg #061b1e, fg #f2f8f4, muted #89a7a5, line #355054, subtle #113034, accent #77dacb, onAccent #092d2c; custom solid accents must preserve contrast.
-- Retain all nine prototype studies, including Chord Morph and Generative / Bloom. Unsupported morph/generative DSP, Grain/Shimmer/Freeze/Human/Fill and all pictured capabilities are not thereby implemented.
+- Retain all nine prototype studies, including Chord Morph and Generative / Bloom. Unsupported morph/generative DSP, Grain/Shimmer/Freeze/Human and all pictured capabilities are not thereby implemented.
 - HOME tap cycling reuses the existing view gesture and needs physical verification. No hold chord or encoder push. A bank switch changes no sound, value, note ownership, recording source or transport.
 - K1–K4: Chord sound / Bass sound / Chord level / Bass level. These are existing controls; bank selection alone never edits them.
 - The latest adaptive-motion prototype is preserved byte-for-byte as the visual reference. Its up-to-eight demo layers are simulated response inputs, not a promise of eight device parts/engines/tracks/voices.
@@ -3997,7 +3998,7 @@ Keep the chord visible while the four physical knobs expose audited SOUND contro
 2. Read the bank/count and values before turning a knob.
 3. Keep playing; tap HOME again to continue the cycle.
 
-**Related:** HOME_STAGE, CTRL-BANKS
+**Related:** HOME_STAGE, CTRL-BANKS, HOME_PERFORM
 
 ### HOME_TEXTURE — Progressions · TEXTURE
 
@@ -4005,7 +4006,7 @@ Keep the chord visible while the four physical knobs expose audited SOUND contro
 
 Keep the chord visible while the four physical knobs expose audited TEXTURE controls.
 
-**Entry:** On Progressions tap HOME until TEXTURE 3/4 appears, or open this bank from CTRL-BANKS.
+**Entry:** On Progressions tap HOME until TEXTURE 3/5 appears, or open this bank from CTRL-BANKS.
 **Exit:** Any destination button opens its workspace without stopping playback.
 
 | Visible field | Reference value/state |
@@ -4023,7 +4024,7 @@ Keep the chord visible while the four physical knobs expose audited TEXTURE cont
 | Metre | 4/4 |
 | Tempo | 108 BPM |
 | Phrase | IV / Bbmaj7 → V / C7 → vi / Dm7 → I / Fmaj7 |
-| Bank | TEXTURE 3/4 |
+| Bank | TEXTURE 3/5 |
 | Reverb mix | 24% |
 | Delay mix | 18% |
 | Chorus mix | 18% |
@@ -4037,7 +4038,7 @@ Keep the chord visible while the four physical knobs expose audited TEXTURE cont
 | K2 | Delay mix: 18% |
 | K3 | Chorus mix: 18% |
 | K4 | Glide: 120 ms |
-| HOME | While already on Progressions, cycle CORE → SOUND → TEXTURE → GROOVE. From any other screen or secondary scene, return Progressions CORE. |
+| HOME | While already on Progressions, cycle CORE → SOUND → TEXTURE → GROOVE → PERFORM. From any other screen or secondary scene, return Progressions CORE. |
 | PLAY | Start this selected progression at slot 1 with its groove; stop if transport is running. |
 | REC | From Progressions: stopped → one-bar count-in; running → arm next bar. During capture → finish at next bar. Every capture creates a new Song copy. |
 | EDIT | Open the explicitly focused progression slot; otherwise a unique live match, otherwise slot 1. |
@@ -4072,7 +4073,7 @@ Keep the chord visible while the four physical knobs expose audited TEXTURE cont
 - Measure and cap foreground cadence, dirty regions, pixel work and scratch memory under demanding audio/USB. Do not promise FPS, CPU savings or polyphony from a concept.
 - The F-major seventh-color demonstration is explicitly arranged IVmaj7 → V7 → vi7 → Imaj7: Bbmaj7 → C7 → Dm7 → Fmaj7, with C7 notes C E G Bb. This stored V7 does not change deliberate live 7 following major/minor quality, including Emaj7 → Bmaj7 → D♯m7.
 - Instrument Teal palette: bg #061b1e, fg #f2f8f4, muted #89a7a5, line #355054, subtle #113034, accent #77dacb, onAccent #092d2c; custom solid accents must preserve contrast.
-- Retain all nine prototype studies, including Chord Morph and Generative / Bloom. Unsupported morph/generative DSP, Grain/Shimmer/Freeze/Human/Fill and all pictured capabilities are not thereby implemented.
+- Retain all nine prototype studies, including Chord Morph and Generative / Bloom. Unsupported morph/generative DSP, Grain/Shimmer/Freeze/Human and all pictured capabilities are not thereby implemented.
 - HOME tap cycling reuses the existing view gesture and needs physical verification. No hold chord or encoder push. A bank switch changes no sound, value, note ownership, recording source or transport.
 - K1–K4: Reverb mix / Delay mix / Chorus mix / Glide. These are existing controls; bank selection alone never edits them.
 - The latest adaptive-motion prototype is preserved byte-for-byte as the visual reference. Its up-to-eight demo layers are simulated response inputs, not a promise of eight device parts/engines/tracks/voices.
@@ -4082,7 +4083,7 @@ Keep the chord visible while the four physical knobs expose audited TEXTURE cont
 2. Read the bank/count and values before turning a knob.
 3. Keep playing; tap HOME again to continue the cycle.
 
-**Related:** HOME_STAGE, CTRL-BANKS
+**Related:** HOME_STAGE, CTRL-BANKS, HOME_PERFORM
 
 ### HOME_GROOVE — Progressions · GROOVE
 
@@ -4090,7 +4091,7 @@ Keep the chord visible while the four physical knobs expose audited TEXTURE cont
 
 Keep the chord visible while the four physical knobs expose audited GROOVE controls.
 
-**Entry:** On Progressions tap HOME until GROOVE 4/4 appears, or open this bank from CTRL-BANKS.
+**Entry:** On Progressions tap HOME until GROOVE 4/5 appears, or open this bank from CTRL-BANKS.
 **Exit:** Any destination button opens its workspace without stopping playback.
 
 | Visible field | Reference value/state |
@@ -4108,7 +4109,7 @@ Keep the chord visible while the four physical knobs expose audited GROOVE contr
 | Metre | 4/4 |
 | Tempo | 108 BPM |
 | Phrase | IV / Bbmaj7 → V / C7 → vi / Dm7 → I / Fmaj7 |
-| Bank | GROOVE 4/4 |
+| Bank | GROOVE 4/5 |
 | Kit | Dust |
 | Drum level | 68% |
 | Swing | 38% |
@@ -4122,7 +4123,7 @@ Keep the chord visible while the four physical knobs expose audited GROOVE contr
 | K2 | Drum level: 68% |
 | K3 | Swing: 38% |
 | K4 | Click: Off |
-| HOME | While already on Progressions, cycle CORE → SOUND → TEXTURE → GROOVE. From any other screen or secondary scene, return Progressions CORE. |
+| HOME | While already on Progressions, cycle CORE → SOUND → TEXTURE → GROOVE → PERFORM. From any other screen or secondary scene, return Progressions CORE. |
 | PLAY | Start this selected progression at slot 1 with its groove; stop if transport is running. |
 | REC | From Progressions: stopped → one-bar count-in; running → arm next bar. During capture → finish at next bar. Every capture creates a new Song copy. |
 | EDIT | Open the explicitly focused progression slot; otherwise a unique live match, otherwise slot 1. |
@@ -4157,7 +4158,7 @@ Keep the chord visible while the four physical knobs expose audited GROOVE contr
 - Measure and cap foreground cadence, dirty regions, pixel work and scratch memory under demanding audio/USB. Do not promise FPS, CPU savings or polyphony from a concept.
 - The F-major seventh-color demonstration is explicitly arranged IVmaj7 → V7 → vi7 → Imaj7: Bbmaj7 → C7 → Dm7 → Fmaj7, with C7 notes C E G Bb. This stored V7 does not change deliberate live 7 following major/minor quality, including Emaj7 → Bmaj7 → D♯m7.
 - Instrument Teal palette: bg #061b1e, fg #f2f8f4, muted #89a7a5, line #355054, subtle #113034, accent #77dacb, onAccent #092d2c; custom solid accents must preserve contrast.
-- Retain all nine prototype studies, including Chord Morph and Generative / Bloom. Unsupported morph/generative DSP, Grain/Shimmer/Freeze/Human/Fill and all pictured capabilities are not thereby implemented.
+- Retain all nine prototype studies, including Chord Morph and Generative / Bloom. Unsupported morph/generative DSP, Grain/Shimmer/Freeze/Human and all pictured capabilities are not thereby implemented.
 - HOME tap cycling reuses the existing view gesture and needs physical verification. No hold chord or encoder push. A bank switch changes no sound, value, note ownership, recording source or transport.
 - K1–K4: Kit / Drum level / Swing / Click. These are existing controls; bank selection alone never edits them.
 - The latest adaptive-motion prototype is preserved byte-for-byte as the visual reference. Its up-to-eight demo layers are simulated response inputs, not a promise of eight device parts/engines/tracks/voices.
@@ -4167,7 +4168,61 @@ Keep the chord visible while the four physical knobs expose audited GROOVE contr
 2. Read the bank/count and values before turning a knob.
 3. Keep playing; tap HOME again to continue the cycle.
 
-**Related:** HOME_STAGE, CTRL-BANKS
+**Related:** HOME_STAGE, CTRL-BANKS, HOME_PERFORM
+
+### HOME_PERFORM — Progressions · PERFORM
+
+**Group:** Home · **Delivery:** Play — first milestone · **Template:** chord
+
+Trigger one-bar fills, drum drops and downbeat returns while the sounding chord and phrase stay visible.
+
+**Entry:** On Progressions tap HOME until PERFORM 5/5 appears.
+**Exit:** Any destination button opens its workspace without stopping playback.
+
+| Visible field | Reference value/state |
+| --- | --- |
+| Bank | PERFORM 5/5 |
+| Header | FILL NEXT / DROP NEXT / BACK NEXT → FILL / DRUMS OFF / PLAY |
+| Now / degree / phrase | Actual harmony and transport cursor stay visible. |
+
+| Input | Action |
+| --- | --- |
+| SELECT | Browse one complete wrapping factory song list; use the pending selection as the next turn's origin. No tag/key/scale filtering or Apply step. |
+| ALGORITHM | Keep the existing secondary-scene role; bank switching uses HOME, not ALGORITHM. Other workspaces keep their named-tab role. |
+| K1 | Turn either way: queue one-bar Fill; repeated detents do not stack bars. |
+| K2 | Turn either way: Drop drums next bar; keep chords/bass and phase. |
+| K3 | Turn either way: Bring back on the next downbeat. |
+| K4 | Tempo; external MIDI clock retains ownership. |
+| HOME | While already on Progressions, cycle CORE → SOUND → TEXTURE → GROOVE → PERFORM. From any other screen or secondary scene, return Progressions CORE. |
+| PLAY | Start this selected progression at slot 1 with its groove; stop if transport is running. |
+| REC | From Progressions: stopped → one-bar count-in; running → arm next bar. During capture → finish at next bar. Every capture creates a new Song copy. |
+| EDIT | Open the explicitly focused progression slot; otherwise a unique live match, otherwise slot 1. |
+| SEL | Open LAB_NOTES on Now or the last sounding chord. |
+| SAVE | Open Songs library; this alone neither saves nor changes the loaded Song. |
+| SEQ | Open Accompaniment on Groove. |
+| ARP | Open Motion on Arpeggio. |
+| ENV | Open Envelope. |
+| LFO | Open Bass on Sound. |
+| FX | Open Effects on the last effect. |
+| GLO | Open System; Sound → Presets and Sound → Advanced remain reachable there. |
+
+**State coverage:**
+- Implemented in development source on top of 4502c2f; native host captures and linked firmware, physical review pending.
+- Fill begins at the next bar, lasts exactly one current-metre bar, then resumes the original phrase position automatically. First half retains the groove, second half turns around.
+- Lo-fi uses the current swing plus snare/tom movement; Trap/CloudTrap/Plugg/Rage/Drill/Grime use tighter snare/hat rolls. Sequencer copies select the family by kit.
+- Drop gates drums at the next bar, fading existing dry drum voices over one control block; effect tails decay naturally. Chords/bass/live HOLD continue. Back restores the groove phase on the next downbeat.
+- One pending moment; latest action wins. Repeated active Fill never extends it; Fill while dropped is unavailable. Back can replace a pending Drop.
+- Playback/compatible groove required. Clock waiting/lost/paused and count-in/recording disable actions. Stop, panic, recording ownership and clock interruption clear transient moments.
+- Fills/drops are live only in v1 and are not written into saved patterns or takes. Existing manual REC remains unchanged; use USB/external audio capture for these moments.
+- Motion On uses the real output activity plus bar phase: fill tension, smaller drop pulse, finite outward downbeat bloom. Motion Off cancels effects immediately while status stays truthful. No missed bloom replays after navigation or Off.
+- Build is the rising fill tension in v1; a separate multi-bar build and Breakdown to chords alone remain later work.
+
+**Player instructions:**
+1. Choose a groove and press PLAY.
+2. Tap HOME until PERFORM 5/5. Turn K1 for Fill, K2 for Drop, K3 for Back.
+3. Read NEXT until the downbeat commits the action; keep playing roots/modifiers.
+
+**Related:** HOME_STAGE, HOME_GROOVE, ACC_GROOVE
 
 ### SYS-ROOT — Settings
 
@@ -4447,48 +4502,45 @@ Preserve user chord forms for Harmony Off and imported content under an advanced
 
 **Related:** CTRL-ROOT, SYS-HARMONY
 
-### DISPLAY-STYLE — Appearance · Theme
+### DISPLAY-STYLE — Appearance · Character
 
 **Group:** Display · **Delivery:** Play — first milestone · **Template:** params
 
-Use Instrument Teal by default, with optional Studio/Editorial palettes and a custom solid accent in the same layout.
+Choose Devil/Ember or Cat/Plum; the entire palette is tied to the character.
 
-**Entry:** SYS-ROOT → Display
+**Entry:** GLO → Display
 **Exit:** GLO → SYS-ROOT; HOME → Progressions
 
 | Visible field | Reference value/state |
 | --- | --- |
-| Theme | Instrument Teal |
-| Background / primary | #061b1e / #f2f8f4 |
-| Secondary / line | #89a7a5 / #355054 |
-| Subtle / accent / onAccent | #113034 / #77dacb / #092d2c |
+| Character | Devil |
+| Theme | Ember · follows character |
+| Motion | On / Off |
+| Alternative | Cat / Plum |
 
 | Input | Action |
 | --- | --- |
-| SELECT | Choose Theme / Accent / Motion / Legacy scenes |
-| ALGORITHM | No action |
-| K1 | Theme · Instrument Teal |
-| K2 | Accent · #77dacb |
-| K3 | — |
-| K4 | — |
-| HOME | Return to Progressions |
-| GLO | Back one level |
-| SEL | Enter highlighted item |
+| SELECT | Choose another system page |
+| ALGORITHM | No character action |
+| K1 | Character · Devil / Cat |
+| K2 | Home view · Stage |
+| K3 | Boot sound · On / Off |
+| K4 | Motion · On / Off |
+| HOME | Return Progressions Core |
+| GLO | Return HOME |
 
 **State coverage:**
-- The owner-provided fm1_adaptive_motion_prototype.html is the authoritative visual/motion reference. Preserve its original bytes separately from any working adaptation.
-- Instrument Teal is default: bg #061b1e, fg #f2f8f4, muted #89a7a5, line #355054, subtle #113034, accent #77dacb, onAccent #092d2c. Studio and Editorial are optional palettes of the same layout.
-- Retain all nine approved visual studies, including Chord Morph and Generative / Bloom. This does not implement unsupported morph/generative DSP, new engines, macros or every pictured capability.
-- A custom accent is solid. Chord/degree anchors, thin separators, four text controls and a bank indicator remain readable; optional palette changes do not alter music or layout.
-- Coral Bloom, Aurora and Studio Rack are historical explorations and are not selected; the supplied prototype’s own Morph/Bloom studies remain part of the approved reference.
-- Motion has only On / Off. The earlier Quiet/Expressive/Reduced selector is superseded by adaptive output/active-part response; there are no independent Intensity, Speed or Calm motion preferences.
+- The approved soft mascot reference supersedes Instrument/Studio/Editorial for this build. Exactly Devil/Ember and Cat/Plum are selectable.
+- Character selection changes the entire palette, not music, transport, source or sounds. There is no independent theme or accent control.
+- Motion On follows real output/activity and shared musical phase. Off settles every effect; actual values and transport remain truthful.
+- Preference v5 preserves the 44-byte record and migrates v1–v4 favorites, Motion and Click without a load-time write.
 
 **Player instructions:**
-1. Choose Instrument Teal, Studio or Editorial with K1.
-2. Use SELECT for custom solid Accent detail or Motion.
-3. Return HOME; the same chord/degree, banks and musical controls remain.
+1. Open GLO → Display and turn K1 CHARACTER to Devil or Cat.
+2. The palette follows the character throughout HOME, menus and startup.
+3. K4 selects Motion On or Off; return HOME to play.
 
-**Related:** DISPLAY-ACCENT, DISPLAY-MOTION, DISPLAY-SCENES
+**Related:** DISPLAY-MOTION
 
 ### DISPLAY-MOTION — Motion
 
@@ -4496,7 +4548,7 @@ Use Instrument Teal by default, with optional Studio/Editorial palettes and a cu
 
 Choose adaptive On or totally Off, with no additional motion-style, intensity or speed selector.
 
-**Entry:** DISPLAY-STYLE → SELECT Motion
+**Entry:** GLO → Display → K4
 **Exit:** GLO → SYS-ROOT; HOME → Progressions
 
 | Visible field | Reference value/state |
@@ -4508,7 +4560,7 @@ Choose adaptive On or totally Off, with no additional motion-style, intensity or
 
 | Input | Action |
 | --- | --- |
-| SELECT | Choose Theme / Accent / Motion / Legacy scenes |
+| SELECT | Choose another system page |
 | ALGORITHM | No action |
 | K1 | Motion · On / Off |
 | K2 | Notes · On |
@@ -4521,7 +4573,7 @@ Choose adaptive On or totally Off, with no additional motion-style, intensity or
 **State coverage:**
 - Exactly two user options: On / Off. No Quiet, Expressive, Reduced, Calm, Intensity or Speed motion preference.
 - On derives a bounded response from smoothed volume/output level and active instrument-part count. Smooth level/activity changes so short percussion transients do not abruptly change the response.
-- Use the shared clock and resolved playing/ownership. A real output envelope and active-part snapshot require implementation/validation; prototype loudness/layers sliders are simulated inputs, not extra device Motion controls.
+- Use the shared clock and resolved playing/ownership. The firmware uses a real post-MASTER activity snapshot; physical tuning remains pending. Prototype loudness/layers sliders are not device controls.
 - The demonstration’s up-to-eight layer count is not a promise of eight hardware instrument parts, engines, tracks or voices.
 - Retain functional beat/playhead, chord transition, parameter/bank/focus, REC and confirmed Saved feedback across all nine studies, including Morph/Bloom visual motion. Unsupported musical features remain explicitly studies.
 - Off stops every animation and transition, including CSS pulses/halos, fades/interpolation, focus/parameter/bank, Morph/Bloom and Saved responses. Chord/notes/degree/cursor/status update immediately to the correct settled state.
@@ -4529,10 +4581,9 @@ Choose adaptive On or totally Off, with no additional motion-style, intensity or
 - Tune the hidden adaptive curve through engineering and physical validation, not a manual Motion Intensity/Speed dial. Measure and cap cadence, dirty regions, pixel work, scratch memory and foreground latency with demanding sound/drums/USB; no browser FPS/CPU/polyphony promises.
 
 **Player instructions:**
-1. Turn K1 for Motion On or Off.
-2. On: compare quiet/sparse and louder/more-active playing; response adapts automatically.
-3. Off: check that all tween/pulse/CSS motion stops while musical values update instantly.
-4. Turn notes and key lights independently with K2/K3.
+1. Open GLO → Display.
+2. Turn K4 for Motion On or Off.
+3. Return HOME; musical and saved-data state remains live.
 
 **Related:** DISPLAY-STYLE, DISPLAY-ACCENT
 
@@ -4540,9 +4591,9 @@ Choose adaptive On or totally Off, with no additional motion-style, intensity or
 
 **Group:** Display · **Delivery:** Play — first milestone · **Template:** params
 
-Retain the existing scenes out of the primary writing workflow until deliberate retirement.
+Historical exploration; not a route or appearance option in the two-character build.
 
-**Entry:** DISPLAY-STYLE → SELECT Legacy scenes
+**Entry:** Historical design inventory only
 **Exit:** GLO → SYS-ROOT; HOME → Progressions
 
 | Visible field | Reference value/state |
@@ -4565,15 +4616,10 @@ Retain the existing scenes out of the primary writing workflow until deliberate 
 | SEL | Enter highlighted item |
 
 **State coverage:**
-- HOME ALGORITHM cycle remains Progressions → Bass → Bonfire → Nothing
-- Scene-free successor build: show Scenes not included, not broken entries
-- Boot sound is a deliberate optional preference; turning it on must not disrupt playing
-- No LCD backlight toggle: that pin also serves the key matrix
+- Not implemented in this build; character and palette are coupled.
 
 **Player instructions:**
-1. Keep Progressions as HOME.
-2. Use ALGORITHM on HOME for the secondary scenes.
-3. Change optional scene preferences here.
+1. Use GLO → Display → K1 CHARACTER for the implemented appearance choices.
 
 **Related:** DISPLAY-STYLE, SYS-INFO
 
@@ -9297,9 +9343,9 @@ Keep the independent Layer envelope only for imported content in a build that re
 
 **Group:** Display · **Delivery:** Play — first milestone · **Template:** params
 
-Preview one readable custom solid accent in the selected palette.
+Historical exploration; not a route or appearance option in the two-character build.
 
-**Entry:** DISPLAY-STYLE → SELECT Accent → SEL
+**Entry:** Historical design inventory only
 **Exit:** GLO → DISPLAY-STYLE; HOME → Progressions CORE
 
 | Visible field | Reference value/state |
@@ -9322,14 +9368,10 @@ Preview one readable custom solid accent in the selected palette.
 | SEL | Return Appearance; keep the previewed solid accent |
 
 **State coverage:**
-- RGB values are bounded to 0–255; Instrument Teal’s default accent is #77dacb.
-- Restore returns the selected palette accent without changing the theme, music or Motion preference.
-- Validate primary/secondary/focus contrast on the TFT, and persist versioned settings safely outside audio work.
+- Not implemented in this build; character and palette are coupled.
 
 **Player instructions:**
-1. Use K1–K3 for red, green and blue.
-2. Use K4 to restore the selected palette accent if desired.
-3. Return HOME; the layout and music remain unchanged.
+1. Use GLO → Display → K1 CHARACTER for the implemented appearance choices.
 
 **Related:** DISPLAY-STYLE, DISPLAY-MOTION
 
@@ -9337,14 +9379,14 @@ Preview one readable custom solid accent in the selected palette.
 
 **Group:** Controls · **Delivery:** Play — first milestone · **Template:** picker
 
-Explain/select four real control banks without sacrificing CORE, catalogue browsing or musical keys.
+Explain/select five real control banks without sacrificing CORE, catalogue browsing or musical keys.
 
 **Entry:** SYS-ROOT → Controls → Live control banks
 **Exit:** SEL → chosen HOME bank; GLO → CTRL-ROOT; HOME → Progressions CORE
 
 | Visible field | Reference value/state |
 | --- | --- |
-| Current bank | CORE 1/4 |
+| Current bank | CORE 1/5 |
 | Gesture | Tap HOME on Progressions |
 | From elsewhere | HOME returns CORE |
 | Validation | Physical gesture test required |
@@ -9636,7 +9678,7 @@ Keep protected musical edits outside library clear scope.
 | 3 | IDEA_UNDO | Manage → Undo restores one musical gesture. | Saved-row deletion is not disguised as musical undo. |
 | 4 | IDEA_RECOVERY | After restart Recover the last valid stopped checkpoint. | Opens stopped; a never-written Pending recording is not falsely claimed recoverable. |
 
-### WF-LIVE-BANKS — Use the four live control banks
+### WF-LIVE-BANKS — Use the five live control banks
 
 Reach existing controls without sacrificing CORE, full catalogue browsing or musical keys.
 
@@ -9646,7 +9688,8 @@ Reach existing controls without sacrificing CORE, full catalogue browsing or mus
 | 2 | HOME_SOUND | Tap HOME while already on Progressions | SOUND: Chord sound / Bass sound / Chord level / Bass level; bank selection changes no values |
 | 3 | HOME_TEXTURE | Tap HOME again | TEXTURE: Reverb mix / Delay mix / Chorus mix / Glide |
 | 4 | HOME_GROOVE | Tap HOME again | GROOVE: Kit / Drum level / Swing / Click |
-| 5 | HOME_STAGE | Tap HOME again | CORE returns. SELECT still browses all songs; PRESETS stays chord sound; OCT keys remain musical. |
+| 5 | HOME_PERFORM | Tap HOME again | PERFORM: Fill / Drop / Back / Tempo. Turning K1–K3 triggers a bar-queued moment; bank selection alone changes no music. |
+| 6 | HOME_STAGE | Tap HOME again | CORE returns. SELECT still browses all songs; PRESETS stays chord sound; OCT keys remain musical. |
 
 ### WF_CHORD_LIBRARY — Browse, audition and replace a chord
 
@@ -9659,6 +9702,17 @@ Choose a named chord from the reference without losing the numbered edit destina
 | 3 | CHORD_LIBRARY | Press SEL | A deliberate bounded audition uses the shared note-owner rules; the slot is unchanged. |
 | 4 | EDIT_HARMONY | Press EDIT Replace | The named slot receives the candidate, one-step undo is available and any running plan change follows its musical boundary. |
 
+### WF-DRUM-MOMENTS — Perform fills, drops and downbeat returns
+
+Add live dramatic moments from HOME; Breakdown is deferred.
+
+| Step | Screen | Physical action | Result |
+| --- | --- | --- | --- |
+| 1 | HOME_PERFORM | Start a groove; tap HOME to Perform | Four labelled controls stay below the actual chord and phrase. |
+| 2 | HOME_PERFORM | Turn K1 once | FILL NEXT becomes a one-bar Fill at the next bar; the groove returns automatically with a bloom. |
+| 3 | HOME_PERFORM | Turn K2, keep playing, then turn K3 when ready | Drums leave next bar; chords and bass continue. BACK NEXT restores drums on the next downbeat. |
+| 4 | HOME_PERFORM | Set Motion Off in Display | The same musical actions work; labels update with no fill animation or bloom. |
+
 ### SYS-WF-HARMONY — Enable simple Harmony
 
 Play full major/minor chords with deliberate modifiers.
@@ -9669,15 +9723,14 @@ Play full major/minor chords with deliberate modifiers.
 | 2 | SYS-HARMONY | Turn K1 On | Auto active; show a direct support message if quantize/scale is unsupported |
 | 3 | CTRL-MODIFIERS | Choose a slot; assign modifier/inversion/bass | Assignments change deliberately; HOLD remains separate |
 
-### SYS-WF-DISPLAY — Set accent and motion
+### SYS-WF-DISPLAY — Choose a character and motion
 
-Use Instrument Teal or optional Studio/Editorial palettes, with adaptive Motion On or totally Off.
+Use Devil/Ember or Cat/Plum with adaptive Motion On or settled Off.
 
 | Step | Screen | Physical action | Result |
 | --- | --- | --- | --- |
-| 1 | DISPLAY-STYLE | Choose Instrument Teal, Studio or Editorial | The same type-led layout uses the selected flat palette |
-| 2 | DISPLAY-ACCENT | Preview a solid accent or restore its palette default | Chord/degree and focus/status stay readable |
-| 3 | DISPLAY-MOTION | Choose On or Off | On adapts to smoothed output/volume and active parts; Off stops all motion/transitions while values update instantly |
+| 1 | DISPLAY-STYLE | Open GLO → Display and turn K1 CHARACTER | Devil selects Ember; Cat selects Plum. The whole palette follows the character. |
+| 2 | DISPLAY-MOTION | Turn K4 MOTION On or Off | On follows actual activity; Off settles visuals while musical state updates. |
 
 ### SYS-WF-EXTERNAL — Use external MIDI and clock
 
