@@ -97,10 +97,22 @@ static int fails, checks;
                            printf(__VA_ARGS__); printf("\n"); } } while (0)
 
 /* ------------------------------------------------------------------ the objects --- */
+#ifdef ST_OLD
 #define NOBJ 3
-static const uint32_t OBJ[NOBJ] = {OBJ_PROJECT0 + 3u, OBJ_CFEDIT0, OBJ_CFPSND};
-static const uint32_t LEN[NOBJ] = {200u, 480u, 100u};
-static uint8_t model[NOBJ][480];                 /* what each loads as */
+#else
+#define NOBJ 4
+#endif
+static const uint32_t OBJ[NOBJ] = {OBJ_PROJECT0 + 3u, OBJ_CFEDIT0, OBJ_CFPSND
+#ifndef ST_OLD
+    , OBJ_CFXPRESET
+#endif
+};
+static const uint32_t LEN[NOBJ] = {200u, 480u, 100u
+#ifndef ST_OLD
+    , 752u
+#endif
+};
+static uint8_t model[NOBJ][752];                 /* what each loads as */
 static uint8_t has[NOBJ];                        /* .. once saved */
 #define NHIST 4096
 static uint32_t hist[NOBJ][NHIST], nhist[NOBJ];  /* every state saved (FNV-1a), for the old reader */
@@ -131,13 +143,13 @@ static void boot(void)                           /* power-on: what RAM knew is g
 }
 static int loads_as(int o, const uint8_t *r)
 {
-    uint8_t b[480];
+    uint8_t b[752];
     return st_load(OBJ[o], b, sizeof b) == (int)LEN[o] && !memcmp(b, r, LEN[o]);
 }
 
 /* a step: what it does (kind, its object, the record it saves) */
 enum { K_SMALL, K_BIG, K_RANDOM, K_QUIET, K_WHOLE, K_TIDY, K_BOOT };
-typedef struct { int kind, o; uint8_t rec[480]; } step_t;
+typedef struct { int kind, o; uint8_t rec[752]; } step_t;
 static long now_step;                            /* (steps 400 .. 1399 of each 2000: playing on, no quiet moment) */
 static int playing(void) { return now_step % 2000 >= 400 && now_step % 2000 < 1400; }
 static uint8_t refused[NOBJ];                    /* (the last save had no room: the next goes with its erase) */
@@ -187,7 +199,7 @@ static int saves(const step_t *s) { return s->kind <= K_RANDOM || s->kind == K_Q
 typedef struct {
     uint8_t fl[NOBJ][2][ST_SECTOR];
     uint8_t blank[sizeof st_blank];
-    uint8_t model[NOBJ][480], has[NOBJ], refused[NOBJ];
+    uint8_t model[NOBJ][752], has[NOBJ], refused[NOBJ];
 } snap_t;
 static void snap_take(snap_t *p)
 {
@@ -218,7 +230,7 @@ static long n_deltas, n_full, n_cuts, n_cut2, n_refused, n_old;
 static void cut_case(const snap_t *before, const step_t *s, long k, long k2)
 {
     static step_t nx;
-    uint8_t b[480];
+    uint8_t b[752];
     int o = s->o, ok, rc;
     snap_put(before);
     nor_ops = 0;
@@ -310,7 +322,7 @@ int main(int argc, char **argv)
                 CHECK(loads_as(o, model[o]), "step %ld kind %d: object %d does not load as saved", i, s.kind, o);
 #ifdef ST_OLD
         for (o = 0; o < NOBJ; o++) {              /* the old reader: a state the object had */
-            uint8_t b[480];
+            uint8_t b[752];
             uint32_t h, j;
             if (!has[o])
                 continue;
@@ -326,7 +338,7 @@ int main(int argc, char **argv)
         snap_put(&after);
 #ifdef ST_OLD
         if (i % 97 == 96) {                       /* a downgrade, a few saves there, back: the new reads them */
-            uint8_t r[480];
+            uint8_t r[752];
             int j;
             o = (int)(rnd() % NOBJ);
             if (has[o]) {
@@ -363,7 +375,7 @@ int main(int argc, char **argv)
                 memcpy(model[o], s.rec, LEN[o]);
             }
             CHECK(loads_as(o, model[o]), "capacity run: object %d does not load as its last save", o);
-            CHECK(n >= 180, "object %d: only %ld changes fit without an erase", o, n);
+            CHECK(n >= (LEN[o] > 512u ? 150 : 180), "object %d: only %ld changes fit without an erase", o, n);
             printf("object %d (%u-byte entries): %ld changes without an erase\n", o, (unsigned)ST_LSZ(OBJ[o]), n);
         }
     }

@@ -154,10 +154,51 @@ static void draw_fx_graph(uint32_t e, int x0, int yb, int w, int h)
     }
 }
 
+/* Preset pages share FX's existing top bar and knob row. */
+static void draw_fx_presets(void)
+{
+    char sub[32], text[32];
+    fb_rect(0, Y_VIEW, FB_W, H_VIEW, FL_BG);
+    if (fxpu.mode == FXP_BROWSE) {
+        if (fxpu.pick < FXP_FACTORY_N) kfmt(sub, sizeof sub, "Factory preset");
+        else kint(sub, fxpu.pick - FXP_FACTORY_N + 1, " / 16 user");
+        draw_title("FX presets", sub);
+        fb_text_c(&CF_FONT_UI, 120, Y_VIEW + 60, fxp_pick_name(), C_ACC(0), 1);
+        fb_text_c(&CF_FONT_UI, 120, Y_VIEW + 84, cfx_bypass ? "Chain bypassed" : "K1 recall  K3 previous", FL_INK2, 1);
+        if (fxp_pending()) fb_text_c(&CF_FONT_UI, 120, Y_VIEW + 106, "Save pending: keep power on", C_ACC(0), 1);
+        else if (fxp_protected) fb_text_c(&CF_FONT_UI, 120, Y_VIEW + 106, "User bank protected", C_ACC(0), 1);
+        else fb_text_c(&CF_FONT_UI, 120, Y_VIEW + 106, "Browse, then turn K1 to recall", FL_INK3, 1);
+        fb_text_c(&CF_FONT_UI, 120, Y_VIEW + 126, "SAVE manage   K4 edit", FL_INK2, 1);
+        static const char *const H[4] = {"SELECT", "browse", "SAVE", "manage"};
+        draw_hints(H, 2);
+    } else {
+        static const char *const A[3] = {"Save new FX", "Replace user FX", "Delete user FX"};
+        kint(sub, fxpu.slot + 1, " / 16");
+        draw_title(A[fxpu.action], sub);
+        memcpy(text, fxpu.name, FXP_NAME);
+        for (unsigned i = 0; i < FXP_NAME - 1; i++) if (!text[i]) text[i] = ' ';
+        text[FXP_NAME - 1] = 0;
+        int x = (FB_W - fb_text_w(&CF_FONT_UI, text, 1)) / 2;
+        fb_text(&CF_FONT_UI, x, Y_VIEW + 58, text, C_ACC(0), 1);
+        text[fxpu.cursor] = 0;
+        fb_rect(x + fb_text_w(&CF_FONT_UI, text, 1), Y_VIEW + 73, 7, 2, C_ACC(0));
+        const char *target = fxp_bank.used & (1u << fxpu.slot) ? fxp_bank.slot[fxpu.slot].name : "Empty slot";
+        fb_text_c(&CF_FONT_UI, 120, Y_VIEW + 87, target, FL_INK2, 1);
+        fb_text_c(&CF_FONT_UI, 120, Y_VIEW + 107, "Hold SAVE 1 second", FL_INK3, 1);
+        if (cu.save_hold) {
+            unsigned t = cu.now - cu.save_hold; if (t > 1000) t = 1000;
+            fb_rect(20, Y_VIEW + 126, (int)(t * 200 / 1000), 3, C_ACC(1));
+        }
+        static const char *const H[4] = {"SELECT", "slot", "FX", "back"};
+        draw_hints(H, 2);
+    }
+}
+
 /* FX: the chain as a row of tiles in its order (on: raised, off: dim), the sound running along it, the selected
  * effect named above and pictured below */
 static void draw_fx(void)
 {
+    if (fxpu.mode) { draw_fx_presets(); return; }
     uint32_t sel = cu.fx_pos % CFX_N, e = cs.fx.order[sel] % CFX_N, i;
     int x0 = 8, y0 = Y_VIEW + 58, tw = 34, gap = 4, run = 6 * tw + 5 * gap;
     char sub[24];
@@ -169,6 +210,7 @@ static void draw_fx(void)
     if (sub[0])
         str_cpy(sub + str_len(sub), "  ", 3);
     str_cpy(sub + str_len(sub), cfx_is_on(e) ? "on" : "off", 4);
+    if (cfx_bypass) str_cpy(sub, "Chain bypassed", sizeof sub);
     draw_title(CFX_NAME[e], sub);
     fb_hline(x0, y0 + 13, run, FL_BG3);          /* the signal's way, a dot running along it */
     {
@@ -187,8 +229,8 @@ static void draw_fx(void)
     fb_rect(x0 + (int)sel * (tw + gap) + tw / 2 - 1, y0 + 29, 3, 2, C_ACC(1));   /* (under the selected one) */
     draw_fx_graph(e, x0, Y_VIEW + 122, run, 24);
     {
-        static const char *const H[4] = {"SELECT", "pick", "ALGO", "move"};
-        draw_hints(H, 2);
+        static const char *const H[6] = {"SELECT", "pick", "ALGO", "move", "FX", "presets"};
+        draw_hints(H, 3);
     }
 }
 

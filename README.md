@@ -45,6 +45,9 @@ instrument's intro runs for 2.4 seconds and any input skips it.
 **Auto Harmony:** Open **GLO → Harmony** and turn **K1 to Auto** to enable
 [scale-aware chords and smart modifiers](docs/AUTO-HARMONY.md). Manual remains the default.
 
+**In development:** [Phase 2 FX presets](docs/FX-PRESETS.md) add eight factory chains, 16 user slots,
+and recall/bypass controls. Hardware validation is pending; they are not in the download above.
+
 ## Install this release
 
 1. Download **`coralflower-0.6-chase5.fwsc`** from the [GitHub release](https://github.com/chasedeanda/chaseflower-fm1/releases/tag/v0.6-chase5).
@@ -70,6 +73,7 @@ Generate headers with Python 3, Pillow 11.1.0 and fontTools 4.66.1, then run the
 
 ```sh
 python3 tools/build.py --gen-only
+sh tools/test_fx_presets.sh
 sh tools/test_auto.sh
 sh tools/test_visuals.sh
 sh tools/test_diagnostics.sh
