@@ -1,0 +1,19 @@
+In file included from firmware/src/coralflower.c:151:
+firmware/src/cf_song.c:31:21: warning: suggest braces around initialization of subobject [-Wmissing-braces]
+    cf_song_t next={0};unsigned n=0;while(n<CF_SONG_NAME && p->name[n]){next.name[n]=p->name[n];n++;}
+                    ^
+                    {}
+firmware/src/cf_song.c:124:21: warning: suggest braces around initialization of subobject [-Wmissing-braces]
+    cf_song_t next={0};memcpy(next.name,p+8,CF_SONG_NAME);next.source_id=csg_r16(p+32);next.bpm=csg_r16(p+34);next.rhythm=csg_r16(p+36);
+                    ^
+                    {}
+In file included from firmware/src/coralflower.c:181:
+In file included from firmware/src/cf_settings.c:61:
+firmware/src/cf_fx_store.c:31:23: warning: suggest braces around initialization of subobject [-Wmissing-braces]
+    fxp_preset_t p = {0};
+                      ^
+                      {}
+3 warnings generated.
+size: 98 main-loop functions built for size (780 not in this build)
+size: .text 457040 B, .ram_text 2924 B, .c1_text 128 B (RAMTEXT 3052 of 24576), .data 13308 B, .bss 67516 B; XIP 473400 B of 573440 (82.6%), RAM 80824 B of 98304 (82.2%), POOL 315404 B of 344064 (91.7%), NOINIT 216 B of 15664 (1.4%)
+checks: [] ['.ram_text: 916 insns, no calls', 'image 477208 B (stub 3808 + app 473400); RAM .data+.bss 80828 B of 98304; pool 315404 B of 344064']

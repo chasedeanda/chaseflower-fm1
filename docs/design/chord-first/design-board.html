@@ -16550,9 +16550,9 @@ html&gt;body{padding:0}&lt;/style&gt;
     &quot;onAccent&quot;: &quot;#092D2C&quot;
   },
   &quot;implementation&quot;: {
-    &quot;sourceBase&quot;: &quot;e3333c1a41a5fd5b953f377552daff02a9701da9&quot;,
+    &quot;sourceBase&quot;: &quot;3a1a88957519ec3796ee72b427074c518bc4c500&quot;,
     &quot;designRevision&quot;: &quot;845325136418dd038c7ef81eaca01ec64ac5e61e&quot;,
-    &quot;summary&quot;: &quot;Engineering preview: native Instrument Teal HOME and Core/Sound/Texture/Groove banks now lead into shared-clock Groove/Loop/Mix/Click through SEQ. Loop has whole-phrase play once/repeat, explicit focus and an independent true cursor; Mix and Click edit real parameters. Two bounded pending lines distinguish queued idea/setup from applied state. External PLAY waits for pulses, clock loss releases scheduled ownership while preserving live HOLD and pending setup, and explicit Start/Continue resumes. Finite bank/page/chord transitions cancel with Motion Off. GLO &gt; Legacy tools retains Recordings, Metronome and Drum grid. Existing manual takes and three-recording rotation remain in force. Full semantic Songs/editor, remaining page migration, motion hardware tuning and device verification are still pending.&quot;,
+    &quot;summary&quot;: &quot;Engineering preview: native Instrument Teal HOME and Core/Sound/Texture/Groove banks now lead into shared-clock Groove/Loop/Mix/Click through SEQ. Loop has whole-phrase play once/repeat, explicit focus and an independent true cursor; Mix and Click edit real parameters. Two bounded pending lines distinguish queued idea/setup from applied state. External PLAY waits for pulses, clock loss releases scheduled ownership while preserving live HOLD and pending setup, and explicit Start/Continue resumes. Finite bank/page/chord transitions cancel with Motion Off. GLO &gt; Legacy tools retains Recordings, Metronome and Drum grid. Existing manual takes and three-recording rotation remain in force. Full semantic Songs/editor, remaining page migration, motion hardware tuning and device verification are still pending. Milestone C now has a tested sixteen-slot semantic model, protected one-step draft/undo and checked v1 codec; native editor, scheduling integration and durable checkpoint remain pending.&quot;,
     &quot;screens&quot;: {
       &quot;HOME_STAGE&quot;: {
         &quot;designStatus&quot;: &quot;Native preview alongside selected prototype; device review pending&quot;,
@@ -16613,6 +16613,14 @@ html&gt;body{padding:0}&lt;/style&gt;
         &quot;designStatus&quot;: &quot;Native preview follows selected prototype; physical review pending&quot;,
         &quot;implementationStatus&quot;: &quot;Implemented native preview: independent On/Off and remembered level, real sound and shared tempo/clock&quot;,
         &quot;deviceVerification&quot;: &quot;Pending — native host captures and device link only&quot;
+      }
+    },
+    &quot;foundations&quot;: {
+      &quot;semanticDraft&quot;: {
+        &quot;implementationStatus&quot;: &quot;Implemented pure model and codec; native editor/transport/persistence integration pending&quot;,
+        &quot;evidence&quot;: &quot;SEMANTIC-DRAFT-CORE.md&quot;,
+        &quot;hostChecks&quot;: 62449,
+        &quot;deviceVerification&quot;: &quot;Pending&quot;
       }
     }
   }
