@@ -49,7 +49,8 @@ boundaries when they differ. Bars follow the metre; quarter-note units retain
 absolute quarter duration. Gate releases only scheduled chord/bass ownership.
 Tie carries identical resolved chord/bass notes without retrigger; changed notes
 articulate. The shared drum/click grid retains phase across short chord slots.
-Global Bass Off still overrides per-slot Follow. External waiting/loss/resume
+Global Bass Off still overrides per-slot Follow. External waiting hides an
+unstarted cursor; clock loss shows the retained position as paused, never playing. External waiting/loss/resume
 uses the merged accompaniment behavior, including a silent expired gate on resume.
 
 ## Keep a recoverable draft
@@ -85,7 +86,7 @@ Older firmware skips the new object; retain a backup for later recovery.
 
 ## Evidence and remaining scope
 
-- **3,141 native-editor checks**: explicit focus and controls, unchanged originals,
+- **3,144 native-editor checks**: explicit focus and controls, unchanged originals,
   conflict/confirmation/undo, gates/ties, independent HOLD, same-clock queues,
   all 128 quarter durations in all six metres, sixteen-slot completion, all
   sixteen membership bits, final rail window and settled Motion Off caches.
@@ -99,8 +100,8 @@ Older firmware skips the new object; retain a backup for later recovery.
   [device resource report](../../../../benchmarks/resources/native-editor/report.md)
   identifies exact committed inputs and measures static capacity, not CPU/audio
   or input latency. Compared with merged #64 this adds **2,240 bytes ordinary
-  RAM, 15,784 bytes XIP and 40 bytes RAM code**. Headroom is 15,240 bytes ordinary
-  RAM, 28,660 bytes POOL and 84,256 bytes XIP. The accompaniment plan is 348 bytes; runtime plus its two
+  RAM, 15,960 bytes XIP and 40 bytes RAM code**. Headroom is 15,240 bytes ordinary
+  RAM, 28,660 bytes POOL and 84,080 bytes XIP. The accompaniment plan is 348 bytes; runtime plus its two
   bounded mailboxes is 1,088 bytes. POOL allocation is unchanged.
 
 Reproduce after header generation:

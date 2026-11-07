@@ -1,6 +1,6 @@
 {
   "audit_tool_sha256": "71271bfdbf530d480c210e8f9937e06e196204c375bfc63d94ee84ef152b8c36",
-  "build_log_sha256": "54c71430cbbce5f35cd8696c9e3269394aa89931c55d0d3e69864f279bd1a8b4",
+  "build_log_sha256": "3f3a6856032d1ab3390cb7a9fead60b2079696afa30c6f2d1d33c4feaa09020f",
   "build_recipe_sha256": "46c72d745ef5fe21426838e293ce3bf28ca349fa8bfb0d444e9b1c13c85299c8",
   "compiler_flags": [
     "-Os",
@@ -57,7 +57,7 @@
     "firmware/src/cf_diag_view.c": "8544bc40ccf9f97640ee8e964fcb211cd4a742effd0a1e05355f0e9c3edb6c3a",
     "firmware/src/cf_dmui.c": "95a6a9712665b23f756cc7efd116449209fc4a185fde1cc6bf6ff5a5bc602448",
     "firmware/src/cf_dmv.c": "9532b6e5486928fee56a1cac6fff378b7449715f0d8dcbbee9c60d5cf8d8f4ef",
-    "firmware/src/cf_draft_screen.c": "4a8e6339fa0f186d6c3f089657f8c2e1b25254ffa1606c9c5b44deb82280e7bb",
+    "firmware/src/cf_draft_screen.c": "739ff8f13a5133b52e71853f9f74c12859233a306355a922ae051ec7effd94c8",
     "firmware/src/cf_draft_store.c": "30b26c15e40c094b3350fc21dd0eb9c2aaea4e2bde27f1c490f5c4c2234243f0",
     "firmware/src/cf_draft_ui.c": "831af6f82184064e25f9c5ec24dea11b0d16a43e3bcaf27f2ab2b47bf530208e",
     "firmware/src/cf_draw.c": "08b25ac60f2b6233567f734f04f916af226a08491dbe432ea5969119b11adf31",
@@ -94,7 +94,7 @@
     "firmware/src/cf_song.h": "2467e7e40a9a333ba05243d6756b4503119b55b34460de11a8a30f36c455946c",
     "firmware/src/cf_sound.c": "27f7147b3b0f6f89b991152d2fe17d70866643689248ad33e62deed9130f33d7",
     "firmware/src/cf_splash.c": "a49c60b1121aa38ebc8f43eb3b5f2fa1327d69b495ceb55fc8c19a3cfadb0507",
-    "firmware/src/cf_stage.c": "e28f2564a768914a8f172080b8dc6a510b66ff42471169fac48a9626e887be80",
+    "firmware/src/cf_stage.c": "aee2d5c4ae4094b09d9e96a4000f742d05ec3605c39d57642503700b47c8450e",
     "firmware/src/cf_state.h": "21aca534fdc15ed94e05de3b8c642a104619a0a1cab6d41d9562053f718c0236",
     "firmware/src/cf_theory.c": "cc879807635429d58d443f1226766e82beb49688bfbbca65e0addee2341fe2f7",
     "firmware/src/cf_theory.h": "cd838872bdd4e88ca1e4bfecc1c3592ee83e3af19f08d06980a7a778b5ec20a3",
@@ -165,7 +165,7 @@
     "firmware/src/voice.c": "d2fccf2b970075d17a668282be813a5c200100bf55b76ebdde40cbeffe6dd2e1"
   },
   "design_revision": "845325136418dd038c7ef81eaca01ec64ac5e61e",
-  "elf_sha256": "bc6fea21e6bac7d06daa4a7066c2453e5a23b61212682b9f4825a517c9e29706",
+  "elf_sha256": "51b84cc4180a5032b8dafa989f0f3d1bf0f2131431c3fbd447938a85f0e25e2e",
   "memory_regions": {
     "NOINIT": {
       "capacity": 15664,
@@ -189,7 +189,7 @@
     }
   },
   "recipe": "build.build_app(padded existing stub); build.check; audit_resources.capture/make_report",
-  "revision": "700917c3ab38192341117f42cbfd8bbe70cd125f",
+  "revision": "6628289acaa04728ea31214ff27b892caef4a3b3",
   "size_pass": true,
   "source_base": "8aa00071222dbc1ee35bb0011e63ac0b2ce794d8",
   "source_status": "clean committed firmware; evidence files pending"
