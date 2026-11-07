@@ -7,6 +7,9 @@ Explore chord progressions, build a groove, play over it, edit your own phrase a
 [shared screen style](docs/HOUSE-STYLE.md), plus [live fills, drum drops and downbeat returns](docs/DRUM-PERFORMANCE.md).
 These changes require building this source; they are not in the chase10 download below.
 
+The [compact Cord devil boot](docs/CORD-BOOT.md) reuses existing artwork, restores the visible startup
+timer and keeps the final lettering white. Unused large-font glyphs are removed to free 26,000 linked flash bytes.
+
 **Release 0.6-chase10: Warm CORD boot chime, responsive HOME motion, Songs and Chord Lab.**
 
 **[Download the firmware (.fwsc)](https://github.com/chasedeanda/chaseflower-fm1/releases/download/v0.6-chase10/coralflower-0.6-chase10.fwsc)** ·

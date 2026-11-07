@@ -134,7 +134,7 @@ jobs:
       - name: Mascot artwork bounds, motion and character preference migration
         run: sh tools/test_mascots.sh
 
-      - name: CORD boot themes, complete round shapes and input/Motion skip
+      - name: Cord devil boot, white lettering, startup timing and sparse font fallback
         run: sh tools/test_cord_boot.sh
 
       - name: CORD chime, finite fade, preference and first-key physical/USB/MIDI priority
