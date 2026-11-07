@@ -66,7 +66,7 @@ static void source_harmony(void)
     enum { MAJ=0x91, MIN=0x89, MAJ7=0x891, MIN7=0x489, DOM7=0x491,
            MIN9=0x4489, DOM13=0x204491, MAJ9=0x4891,
            HALF_DIM=0x449, SUS7=0x4a1, MIN6=0x289, POWER=0x81 };
-    static const struct { unsigned id,n; uint8_t root[8]; uint32_t mask[8]; } expected[]={
+    static const struct { unsigned id,n; uint8_t root[8]; uint32_t mask[8]; uint8_t bass[8]; } expected[]={
         {20,4,{11,11,6,4},{MAJ,MAJ,MIN6,MAJ7}},
         {55,4,{5,5,2,2},{POWER,POWER,POWER,POWER}},
         {56,3,{11,6,4},{MAJ,MIN6,MAJ7}},
@@ -78,6 +78,14 @@ static void source_harmony(void)
         {118,4,{4,9,2,7},{MIN9,DOM13,MAJ9,MAJ7}},
         {123,3,{5,4,2},{MAJ7,MIN7,MIN7}},
         {125,4,{7,9,7,9},{MIN7,MIN7,MIN7,MIN7}},
+        {128,4,{11,1,3,6},{MAJ,MAJ,MIN,MAJ}},
+        {129,6,{4,7,11,2,7,2},{MIN,MAJ,MIN,MAJ,MAJ,MAJ}},
+        {130,4,{0,2,7,9},{MAJ,MAJ,MAJ,MIN7}},
+        {131,3,{5,1,8},{MIN,MAJ,MAJ}},
+        {132,5,{2,9,11,7,2},{MAJ,MAJ,MIN,MAJ,MAJ},{0,4,0,0,0}},
+        {133,3,{6,1,8},{MAJ,MAJ,MIN7},{0,4,0}},
+        {134,4,{5,1,8,3},{MIN,MAJ,MAJ,MAJ}},
+        {135,3,{11,9,4},{MIN,MAJ,MAJ}},
     };
     for(unsigned e=0;e<sizeof expected/sizeof expected[0];e++) {
         unsigned idea=0;
@@ -104,10 +112,13 @@ static void source_harmony(void)
                     if(!ambiguous) {
                         cf_post(CFE_KEY,key,0,1); flush();
                         CHECK(cfc.out.root_pc==root && cfc.out.mask==mask);
+                        unsigned bass=(root+expected[e].bass[i])%12;
+                        CHECK(cfc.out.bass_pc==bass && cfc.out.note[0]%12==bass);
                         sqr_ev_t take={0}; sqp_rec_chord(&take);
                         CHECK(take.n==cfc.out.n && (take.btns&CF_H_EVENT));
                         CHECK(cf_harmony_event_mask(take.mask,take.btns)==mask);
                         CHECK(!memcmp(take.note,cfc.out.note,take.n));
+                        CHECK(take.nb && take.bass[0]%12==bass);
                         cf_post(CFE_KEY,key,0,0); flush();
                     }
                 }
@@ -116,6 +127,8 @@ static void source_harmony(void)
             for(unsigned i=0;i<p->n;i++) {
                 CHECK(sqp.droot%12==(expected[e].root[i]+trans)%12);
                 CHECK(sqp.dmask==expected[e].mask[i]);
+                unsigned bass=(expected[e].root[i]+trans+expected[e].bass[i])%12;
+                CHECK(sqp.note[0]%12==bass && sqp.nb && sqp.bass[0]%12==bass);
                 uint32_t played=0;
                 for(unsigned j=0;j<sqp.n;j++)played|=1u<<((sqp.note[j]+12-sqp.droot%12)%12);
                 uint32_t folded=0;
@@ -302,6 +315,13 @@ static void browsing(void)
     cf_browser_order(&cpb,CPB_SHUFFLE,3); CHECK(memcmp(old,cpb.order,cpb.n));
     memset(cpb.favorites,0,sizeof cpb.favorites);
     cf_browser_star(&cpb,72,1); cf_browser_star(&cpb,4,1);
+    /* Both order indices and stable favorite IDs cross the old 128 ceiling. */
+    unsigned last=cf_progression_count()-1;
+    CHECK(last>127 && cf_progression_get(last)->id>128);
+    cf_browser_star(&cpb,last,1); CHECK(cf_browser_favorite(&cpb,last));
+    cpb_changed_ui(); cpb_flush(); memset(&cpb,0,sizeof cpb); cpb_load();
+    CHECK(cf_browser_favorite(&cpb,last) && cf_browser_favorite(&cpb,72));
+    cf_browser_star(&cpb,last,0);
     cf_browser_order(&cpb,CPB_FAVORITES,1); CHECK(cpb.n==2);
     ui_select(1); flush(); CHECK(cpg.idea==4 || cpg.idea==72);
     unsigned first=cpg.idea; ui_select(1); flush(); CHECK(cpg.idea!=first); ui_select(1); flush(); CHECK(cpg.idea==first);

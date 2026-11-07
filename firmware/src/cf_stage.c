@@ -90,9 +90,12 @@ static void cf_stage_model(cf_stage_model_t *m)
     m->total=p->n;m->slot=cf_sn.ac_on?cf_sn.ac_slot:255;
     m->first=m->slot<p->n?(m->slot/4)*4:0;m->count=p->n-m->first;if(m->count>4)m->count=4;
     for(unsigned i=0;i<m->count;i++) {
-        unsigned at=m->first+i;int root=(cs.chord.tonic+cf_scale_step(cs.chord.scale,p->degree[at]))%12;
-        uint32_t mask=cf_progression_mask(cs.chord.scale,cs.chord.tonic,p->degree[at],&ch);
-        cf_chord_name(root,mask,-1,&cu_spell,m->rail[i]);
+        unsigned at=m->first+i;
+        int root=cf_progression_root(p,at,cs.chord.scale,cs.chord.tonic);
+        uint32_t mask=cf_progression_slot_mask(p,at,cs.chord.scale,cs.chord.tonic,&ch);
+        const cf_source_chord_t *source=cf_progression_source(p);
+        int bass=source && source[at].bass>=0 ? (root+source[at].bass)%12 : -1;
+        cf_chord_name(root,mask,bass,&cu_spell,m->rail[i]);
         cf_harmony_numeral(cs.chord.scale,cs.chord.tonic,root,m->numeral[i]);
     }
     for(int i=0;i<4;i++){cf_knob_t k;memset(&k,0,sizeof k);ui_knob_info(i,&k);str_cpy(m->label[i],k.name,sizeof m->label[i]);str_cpy(m->value[i],k.val,sizeof m->value[i]);}

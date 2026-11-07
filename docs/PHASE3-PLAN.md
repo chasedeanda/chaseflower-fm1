@@ -1,7 +1,7 @@
 # Phase 3: progression explorer
 
 The initial tag/scale-filtered suggestion browser has been replaced by the
-[122-idea HOME progression explorer](PROGRESSION-EXPLORER.md).
+[130-idea HOME progression explorer](PROGRESSION-EXPLORER.md).
 
 Current scope: complete-list SELECT browsing, automatic key/scale/meter setup,
 K1 rhythm selection, visible tags and meter, live chord matching, seven-mode

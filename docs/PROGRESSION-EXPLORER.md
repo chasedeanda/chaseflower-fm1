@@ -10,7 +10,7 @@ The optional exploration build (`CF_SCENES=1`) retains the cycle
 **Progressions → Bass → Bonfire → Nothing**. See [scene-free details](SCENE-FREE.md).
 HOME still cycles the main, Chord, Keyboard and Diagnostics views.
 
-- **SELECT** browses all **122 ideas**, wrapping at both ends. Tags and the current
+- **SELECT** browses all **130 ideas**, wrapping at both ends. Tags and the current
   scale never hide an idea. Selecting sets its starting key, scale and meter.
   Hold **GLO** for Browse: **K1 jumps ten**, **K2 jumps one**, **K3 chooses
   Catalog / A–Z / Shuffle / Favorites**, **K4 stars the idea**. #73 takes seven
@@ -19,7 +19,7 @@ HOME still cycles the main, Chord, Keyboard and Diagnostics views.
 - Hold **SAVE** on Progressions for 0.7 seconds to add/remove the visible idea
   from Favorites. A short SAVE press still opens sound saving. Favorites and the
   chosen order survive power-off and are included in backups. Shuffle visits all
-  122 once per traversal; choosing Shuffle again makes a new random order.
+  130 once per traversal; choosing Shuffle again makes a new random order.
 - **PLAY** starts the selected idea at its first slot, with chords, linked bass
   (when enabled) and the selected compatible groove. PLAY again stops accompaniment,
   including after navigating to another screen; independent live HOLD remains.
@@ -56,19 +56,20 @@ Four earlier entries use short sections of two Paramore songs:
   and major-seventh source chords. References: [licensed first-page preview](https://www.musicnotes.com/sheetmusic/paramore/the-only-exception/MN0084459),
   [full section chart](https://www.cifraclub.com/paramore/the-only-exception/).
 
-The added bank contains 22 song snippets selected from the user's combined Spotify
-top-song playlists. Repeated songs were retained as preference evidence; Dance
+The added bank contains 30 song snippets selected from the user's combined Spotify
+top-song playlists and later requests. Repeated songs were retained as preference evidence; Dance
 Gavin Dance, Dwellings, and mgk / Machine Gun Kelly (including features) are excluded. The additions include Movements, The
 Story So Far, Belmont, Clairo, Rex Orange County, Bazzi, Justin Bieber, Oliver
-Tree. See the [source and section notes](research/SPOTIFY-COVER-SHORTLIST.md)
+Tree and Morgan Wallen. The [eight Morgan Wallen sections](research/MORGAN-WALLEN-COVER-SNIPPETS.md)
+include written slash bass and seventh chords; Cover Me Up uses 6/8. See the [source and section notes](research/SPOTIFY-COVER-SHORTLIST.md)
 for full titles, charts, source details and songs held for further checking.
 
 Source song sections preserve their written chord qualities, sevenths, extensions
 and chromatic passing harmony. They are not reduced to fit the degree catalog.
 Pluto Projector includes F♯m7♭5 and G7sus4; Sofia keeps dominant G7 distinct from
 Cmaj7 and Fmaj7. Harmony On uses these source chords for manual keys as well as
-PLAY; upper buttons remain explicit performance overrides. The practice 4/4 setup
-and one-bar-per-slot playback do not claim original recorded timing.
+PLAY; upper buttons remain explicit performance overrides. The suggested meters
+and one-bar-per-slot practice playback do not claim original recorded timing.
 
 The table shows browser position and stable ID separately. Removed artist IDs are
 not reused; saved favorites for remaining IDs retain their identity.
@@ -204,12 +205,28 @@ Locrian and other altered modes also retain normal major/minor fifths as request
 | 120 | 123 | Changes | Justin Bieber: verse | C Ionian (Major) | 4/4 | IVmaj7–iii7–ii7 |
 | 121 | 124 | Forever | Justin Bieber, Post Malone, Clever: chorus phrase | C♯ Aeolian (Minor) | 4/4 | i–III–i–III |
 | 122 | 125 | Yummy | Justin Bieber: chorus | F Ionian (Major) | 4/4 | ii7–iii7–ii7–iii7 |
+| 123 | 128 | Last Night | Morgan Wallen: chorus opening | Eb Aeolian (Minor) | 4/4 | VI–VII–i–III |
+| 124 | 129 | Cover Me Up | Morgan Wallen: chorus ending | D Ionian (Major) | 6/8 | ii–IV–vi–I–IV–I |
+| 125 | 130 | One Thing At A Time | Morgan Wallen: verse phrase | G Ionian (Major) | 4/4 | IV–V–I–ii7 |
+| 126 | 131 | Everything I Love | Morgan Wallen: pre-chorus | Ab Ionian (Major) | 4/4 | vi–IV–I |
+| 127 | 132 | '98 Braves | Morgan Wallen: opening verse | D Ionian (Major) | 4/4 | I–V/3–vi–IV–I |
+| 128 | 133 | Thought You Should | Morgan Wallen: chorus loop | F# Ionian (Major) | 4/4 | I–V/3–ii7 |
+| 129 | 134 | Cowgirls | Morgan Wallen, ERNEST: chorus loop | F Aeolian (Minor) | 4/4 | i–VI–III–VII |
+| 130 | 135 | What I Want | Morgan Wallen, Tate McRae: chorus loop | B Dorian | 4/4 | i–VII–IV |
+
+V/3 denotes the major chord over its third: A/C♯ in '98 Braves and C♯/E♯
+in Thought You Should Know. The latter full title is shortened on the device.
 
 ## Compatibility and verification
 
 Browser selection is one RAM byte. Catalog and labels are read-only firmware
-constants; no new saved-content storage, audio buffer, framebuffer or heap is
-introduced. Legacy settings stay 188 bytes, pattern events 22 bytes and CHH1
+constants. The browser now holds up to 255 entries/IDs and 32 bytes of favorite
+bits, so entries above the old 128 limit remain reachable in every order.
+Browser preference v3 is 44 bytes in the existing object/sectors. It reads the
+28-byte v1/v2 records, preserving their favorites and appearance; migration
+happens in RAM and writes only after an explicit edit. Backup restore accepts
+both lengths and validates their version/checksum. No audio buffer, framebuffer
+or heap is added. Legacy settings stay 188 bytes, pattern events 22 bytes and CHH1
 preferences 38 bytes. Main-screen choice uses existing settings bits: bit 3
 Bonfire, bit 4 Nothing, bit 5 Bass, all clear Progressions. Hints and detailed
 HOME views keep their bits. Earlier clear/Bass records open Progressions;

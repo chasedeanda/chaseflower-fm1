@@ -1,11 +1,12 @@
 # Spotify cover expansion: source chord preservation
 
-The development catalog now includes **22 additional named song snippets**, IDs
-**101–127** (with removed artist IDs left unused), bringing the explorer to **122 ideas**. The existing 100 entries,
-including the four Paramore sections, retain their order and IDs. The earlier
-Paramore sections are also audited below. This document
-records the source and preserved harmony for each entry; the [explorer guide](../PROGRESSION-EXPLORER.md)
-is the player-facing catalog.
+The development catalog now includes **30 selected song snippets**, IDs
+**101–135** (with removed artist IDs left unused), bringing the explorer to
+**130 ideas**. This page records the first **22** retained additions and the
+Paramore audit. The next [eight Morgan Wallen sections](MORGAN-WALLEN-COVER-SNIPPETS.md)
+have their own source, tuning and exact-passage notes. The original 100 entries
+retain their order and IDs. The [explorer guide](../PROGRESSION-EXPLORER.md) is the
+complete player-facing catalog.
 
 ## Complete source coverage and preferences
 
@@ -69,12 +70,12 @@ change. All restored chords fit the existing six-note accompaniment voice limit;
 none needs a note removed. Uncertain harmony stays on the research list instead
 of being replaced by an easy progression. See [policy](cover-selection-policy.json).
 
-All 22 entries use **4/4 as a suggested practice setup**. This is not a claim
+All 22 entries in this first bank use **4/4 as a suggested practice setup**. This is not a claim
 that the source recording or each cited arrangement has that meter. Repeated
 cards, such as the two-chord phrases in Forever and The Shade, show a repeated
 phrase; they do not store chord durations or establish automatic song timing.
 
-## Implemented bank and sources
+## First bank and sources
 
 The full title and credits are retained here even when the device uses a shorter
 display name. TSSF means The Story So Far; Rex means Rex Orange County in device
