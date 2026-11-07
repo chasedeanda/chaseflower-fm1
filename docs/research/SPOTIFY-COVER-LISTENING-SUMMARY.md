@@ -2,7 +2,7 @@
 
 Source: [Your Top Songs 2020 (2)](https://open.spotify.com/playlist/1eSgJXraV9A5uJCenjzVtf). Extracted November 7, 2026 from the Spotify desktop app’s accessibility rows; every playlist position from 1 through 601 was observed.
 
-The supplied combined playlist contains **601 occurrences**. Excluding every row crediting **Dance Gavin Dance** or **Dwellings** removes **11 occurrences**, leaving **590 eligible occurrences** across **503 casefold-exact song/title-credit groups**. The complete occurrence list preserves excluded tracks and duplicates.
+The supplied combined playlist contains **601 occurrences**. Excluding every row crediting **Dance Gavin Dance**, **Dwellings**, or **mgk / Machine Gun Kelly** (including features) removes **20 occurrences**, leaving **581 eligible occurrences** across **495 casefold-exact song/title-credit groups**. The complete occurrence list preserves excluded tracks and duplicates.
 
 Repeated rows are retained as the user’s preference signal. Counts below are **occurrences in this combined playlist**, not listening playcounts and not a verified number of years. A row’s position is its place in the supplied playlist; it is not an overall listening rank.
 
@@ -33,10 +33,10 @@ Grouping uses the casefold-exact title and full displayed artist credits. Differ
 | 19 | Bowser's Castle | Belmont | 3 | 308, 452, 558 |
 | 20 | Intentions (feat. Quavo) | Justin Bieber, Quavo | 2 | 7, 296 |
 | 21 | Bacc Seat (feat. Ty Dolla $ign) | Roddy Ricch, Ty Dolla $ign | 2 | 29, 166 |
-| 22 | Sick and Tired (ft. Machine Gun Kelly and Travis Barker) | iann dior, mgk, Travis Barker | 2 | 30, 141 |
-| 23 | Big Stepper | Roddy Ricch | 2 | 41, 567 |
-| 24 | Changes | Justin Bieber | 2 | 43, 246 |
-| 25 | Intro | Roddy Ricch | 2 | 45, 522 |
+| 22 | Big Stepper | Roddy Ricch | 2 | 41, 567 |
+| 23 | Changes | Justin Bieber | 2 | 43, 246 |
+| 24 | Intro | Roddy Ricch | 2 | 45, 522 |
+| 25 | Perfect Time | Roddy Ricch | 2 | 49, 563 |
 
 ## Most represented artist-credit groups
 
@@ -78,4 +78,6 @@ Each row below groups the **complete displayed artist-credit string**. Collabora
 
 The first 100 positions were independently matched to public Spotify embed titles and full credits and retain their verified Spotify track URIs. Positions 101–601 have no invented URI. The grouped display identity does not prove that each repeated row is the same Spotify recording.
 
-Validation checks passed for 601 contiguous unique positions, 11 excluded occurrences, 590 eligible occurrences, 503 eligible song-credit groups, and 100 verified URI matches.
+Validation checks passed for 601 contiguous unique positions, 20 excluded occurrences, 581 eligible occurrences, 495 eligible song-credit groups, and 100 verified URI matches.
+
+The native and original annual snapshots record the earlier extraction policy; the combined list and preferences apply the current exclusions in [cover-selection-policy.json](cover-selection-policy.json).

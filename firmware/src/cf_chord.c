@@ -258,6 +258,16 @@ static int cfc_any_down(const cf_chord_t *c)  /* a root key physically down */
     return 0;
 }
 
+/* First source voicing for this root; PLAY retains per-slot alternatives. */
+static const cf_source_chord_t *cfc_source(const cf_chord_t *c, int root)
+{
+    if (c->source) for (unsigned si = 0; si < c->source_n; si++) {
+        const cf_source_chord_t *v = &c->source[si];
+        int pc = (c->cfg.tonic + cf_scale_step(c->cfg.scale, v->degree) + v->alter + 12) % 12;
+        if (pc == root) return v;
+    }
+    return 0;
+}
 static int cfc_resolve(cf_chord_t *c)
 {
     cf_chord_out_t o = c->out, *old = &c->out;
@@ -285,8 +295,11 @@ static int cfc_resolve(cf_chord_t *c)
     o.hold = c->hold;
     if (eligible) {
         int root = c->nroots ? cf_key_root_note(g, c->root_key[c->nroots - 1]) % 12 : g->tonic;
-        (void)cf_harmony_mask(&c->harmony, g->scale, g->tonic, root, eff,
-                              c->stamp, &o.buttons, &o.conflict);
+        const cf_source_chord_t *source = cfc_source(c, root);
+        if (source) (void)cf_harmony_apply(&c->harmony, source->mask, eff,
+                                         c->stamp, &o.buttons, &o.conflict);
+        else (void)cf_harmony_mask(&c->harmony, g->scale, g->tonic, root, eff,
+                                  c->stamp, &o.buttons, &o.conflict);
     }
     if (!o.sounding) {
         o.n = 0;
@@ -327,10 +340,12 @@ static int cfc_resolve(cf_chord_t *c)
         f = cf_merge_forms(held, nh);
         o.root_note = (uint8_t)cf_key_root_note(g, c->root_key[c->nroots - 1]);
         o.root_pc = (uint8_t)(o.root_note % 12);
+        const cf_source_chord_t *source = eligible ? cfc_source(c, o.root_pc) : 0;
         if (eligible) {
             uint16_t applied, ignored;
-            mask = cf_harmony_mask(&c->harmony, g->scale, g->tonic, o.root_pc, use,
-                                    c->stamp, &applied, &ignored);
+            mask = source ? cf_harmony_apply(&c->harmony, source->mask, use, c->stamp, &applied, &ignored)
+                          : cf_harmony_mask(&c->harmony, g->scale, g->tonic, o.root_pc, use,
+                                            c->stamp, &applied, &ignored);
             /* Lights describe the selected next chord in Wait; conflict marks
              * those choices rather than pretending they are sounding already. */
             f.type = (uint8_t)cf_mask_type(mask);
@@ -355,6 +370,11 @@ static int cfc_resolve(cf_chord_t *c)
         }
         if (g->quantize == CF_Q_FULL || (g->quantize == CF_Q_BASIC && f.type == CF_TYPE_DEFAULT && f.add))
             mask = cf_mask_snap(mask, o.root_pc, g->scale, g->tonic);
+        }
+        if (source && source->bass >= 0 && !f.inv && !f.bass) {
+            int8_t tones[12]; int nt = cf_mask_tones(mask, tones);
+            for (int ti = 0; ti < nt; ti++)
+                if (tones[ti] % 12 == source->bass) { f.inv = ti; break; }
         }
         base = o.root_note;
         inv = f.inv < 0 ? 0 : f.inv;
@@ -387,7 +407,8 @@ static int cfc_resolve(cf_chord_t *c)
         o.mask = mask;
         o.type = (uint8_t)cf_mask_type(mask);
         o.inv = (uint8_t)inv;
-        o.bass_pc = (int8_t)cf_bass_pc(o.root_pc, mask, f.bass);
+        o.bass_pc = source && source->bass >= 0 && !f.bass
+            ? (o.root_pc + source->bass) % 12 : (int8_t)cf_bass_pc(o.root_pc, mask, f.bass);
         o.form = f;
     }
     changed = o.sounding != old->sounding || o.single != old->single || o.n != old->n ||

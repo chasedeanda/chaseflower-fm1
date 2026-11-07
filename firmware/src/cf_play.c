@@ -44,6 +44,7 @@ static int cfp_holds(uint32_t part, uint32_t note);   /* (below: a note the keys
 static int cpa_running(void);
 static void cpa_stop(void);
 static void cpa_overlay_cfg(cf_chord_cfg_t *cfg);
+static void cpa_overlay_source(void);
 static int sqp_holds(uint32_t part, uint32_t note);   /* (cf_seqp.c: a note the sequencer sounds) */
 
 enum { CF_NI_KEYS = 0, CF_NI_ROOTS, CF_NI_DIRECT, CF_NI_N };   /* NOTES IN (0.5): the FM-1's keys, roots, as before */
@@ -82,6 +83,8 @@ static uint32_t cf_now_ms, cf_ms_rem;                /* the engine clock: audio 
 static cf_chord_t cfc;                               /* the chord model: the ISR's */
 static cf_chord_cfg_t cfc_shadow;                    /* the UI's copy; CFE_CONFIG takes it (IRQ off while written) */
 static cf_harmony_t cfh_shadow;
+static const cf_source_chord_t *cfsrc_shadow;
+static uint8_t cfsrc_n;
 static cf_play_cfg_t cfp_cfg = {0, 0, 100, 1, 0, 0, 1, 0, 1, 0, 0, CF_ARP_DEFAULT, 120, CF_LOOP_DEFAULT, 0};
 static uint8_t cfp_cp;                               /* the part the keys' chords sound on now (cfp_cfg.cpart, taken
                                                      * at a CFE_CONFIG with the notes let go) */
@@ -537,6 +540,8 @@ static void cfp_config(void)                         /* CFE_CONFIG: the UI's set
         cfp_bo = cfp_cfg.bass_only;
     }
     cfc.keep = cfp_cfg.retrig == CF_RT_WAIT;
+    cfc.source = cfsrc_shadow; cfc.source_n = cfsrc_n;
+    cpa_overlay_source();
     cf_chord_harmony(&cfc, &cfh_shadow);
     cf_chord_cfg_t cfg = cfc_shadow;
     cpa_overlay_cfg(&cfg);

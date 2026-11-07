@@ -121,7 +121,9 @@ static void render_audio(int browse, unsigned rate, const char *path)
             CHECK(queue==cf_evq_w && !memcmp(&held,&cfc,sizeof held));
         }
         uint32_t w=ua.cw; audio_block(mix,CTL);
-        CHECK(cfc.out.hold && cfc.out.n==6 && sqp.on);
+        /* The source power chords in Still Into You retain their absent
+         * third even with 13 selected: five notes, not a forced major triad. */
+        CHECK(cfc.out.hold && cfc.out.n==(cf_progression_get(cpg.idea)->id==55?5:6) && sqp.on);
         fwrite(mix,sizeof mix,1,out);
         for(unsigned i=w;i<ua.cw;i++) fwrite(ua.cap+(i&(UA_CAP_RING-1u))*6u,6u*sizeof(int16_t),1,out);
         ua.cr=ua.cw;
@@ -133,7 +135,7 @@ static void shots(const char *dir)
 {
     cf_intro_on=0; cu.pop=POP_NONE; cu.scr=SCR_HOME; cf_scene_set(CF_SCENE_PROGRESSIONS);
     ch.mode=CF_H_AUTO; cs.retrig=CF_RT_MOVE;
-    static const unsigned picks[]={0,9,19,40,44,49,52,78,100,102,111,113,115,116,118};
+    static const unsigned picks[]={0,9,19,40,44,49,52,54,55,78,100,102,109,110,111,112,113,114,115,116,118,119,121};
     for(unsigned i=0;i<sizeof picks/sizeof *picks;i++) {
         cpg.idea=CF_P_NONE; cf_progression_current(); ui_select((int)picks[i]);
         if(!picks[i]) { cs.chord.tonic=4; cs.chord.scale=CF_SC_MAJOR; cs.beats=4; cf_send_config(); }
