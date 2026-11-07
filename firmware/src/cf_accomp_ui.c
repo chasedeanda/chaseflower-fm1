@@ -180,7 +180,9 @@ static void cpa_ui_record(void)
     cs.chord.quantize = CF_Q_BASIC;
     cf_post(CFE_ACCOMP, 0, 0, 0);
     cf_send_config(); cf_send_metro();
+    unsigned workspace=cu.scr;
     sq_home_rec_r(plan.rhythm, 1);
+    if(workspace==SCR_PEDIT && sqk.on)cu.scr=SCR_PEDIT;
     if (sqk.on && plan.rhythm < DM_N) {
         sq_pat_t *p = &sq_st.pat[sqk.pat];
         p->kit = plan.kit; p->swing = plan.swing;

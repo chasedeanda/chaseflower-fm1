@@ -75,7 +75,7 @@ static void live_ownership(void)
 static void recording_guard(void)
 {
     setup(0);sq_defaults();sq_unavailable=0;sqk.on=0;sqk.last=255;ui_button(B_EDIT);ui_knob_turn(1,1);cf_song_t saved=cfwd.song;
-    while(emu_stall_blocks)blocks(3);ui_button(B_REC);fm1_in.buttons=0;cf_rec_poll();blocks(12);CHECK(sqk.on && sqp.cin && !cpa.on);
+    while(emu_stall_blocks)blocks(3);ui_button(B_REC);fm1_in.buttons=0;cf_rec_poll();blocks(12);CHECK(sqk.on && sqp.cin && !cpa.on && cu.scr==SCR_PEDIT);
     cfd_model_t model;cfd_model(&model);CHECK(model.rec && strstr(model.status,"REC in"));
     cu.page[SCR_PEDIT]=CFD_PHRASE;unsigned beats=cs.beats,bpm=cs.bpm;ui_knob_turn(2,1);cfdu.action=1;ui_button(B_SCL);
     CHECK(!memcmp(&saved,&cfwd.song,sizeof saved) && cs.beats==beats);
@@ -83,6 +83,7 @@ static void recording_guard(void)
     ui_button(B_PLAY);CHECK(cs.bpm==bpm && cs.beats==beats && !cpa_commanded);
     unsigned writes=emu_flash_writes;CHECK(!cfd_checkpoint() && writes==emu_flash_writes);
     sq_home_cancel();blocks(3);CHECK(!sqk.on && !memcmp(&saved,&cfwd.song,sizeof saved));
+    cf_sn.sq_on=1;cfd_model(&model);CHECK(!strcmp(model.status,"REPLAY"));ui_knob_turn(2,1);CHECK(!memcmp(&saved,&cfwd.song,sizeof saved));cf_sn.sq_on=0;
 }
 static void checkpoint(void)
 {

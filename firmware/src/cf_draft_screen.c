@@ -19,6 +19,7 @@ static void cfd_model(cfd_model_t *m)
     str_cpy(m->title,m->conflict?"Draft exists":m->confirm?"Remove slot?":CFD_TAB[cu.page[SCR_PEDIT]],sizeof m->title);
     str_cpy(m->status,cfds.error?"WRITE ERROR":cfds.pending?"RAM PENDING":cfds.checkpoint==CFD_RECOVERED?"RECOVERED":cfds.checkpoint==CFD_CHECKPOINTED?"CHECKPOINT":"FACTORY COPY",sizeof m->status);
     char rec[32];unsigned plaque=dm_plaque(rec,sizeof rec);
+    if(cf_sn.sq_on)str_cpy(m->status,"REPLAY",sizeof m->status);
     if(plaque==DMP_REC || plaque==DMP_RECIN){m->rec=1;str_cpy(m->status,rec,sizeof m->status);}
     str_cpy(m->name,cfwd.song.name,sizeof m->name);kint(m->position,m->focus+1,"/");kint(m->position+str_len(m->position),m->n," focus");
     if(m->slot!=255){str_cpy(m->position+str_len(m->position)," / ",sizeof m->position-str_len(m->position));kint(m->position+str_len(m->position),m->slot+1," playing");}
