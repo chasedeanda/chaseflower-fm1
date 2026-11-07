@@ -1799,6 +1799,12 @@ static void cf_leds(void)
                                            B_SEQ, B_SEQ, B_SEQ};
     const cf_chord_out_t *out = &cf_sn.out;
     uint32_t k, blink = (cu.now / 250u) & 1u, sq = sq_screen(cu.scr), rm = cu.scr == SCR_DRUM;
+    uint16_t auto_notes = 0;
+    /* Auto's generated tones light their mapped root keys as brightly as the modifiers.
+     * Use the sounding voicing, including HOLD and Wait's unchanged chord. */
+    if (out->automatic && !out->fallback && out->sounding)
+        for (k = 0; k < out->n; k++)
+            auto_notes |= (uint16_t)(1u << (out->note[k] % 12));
     /* buttons: the open screen lit, the others dim; PLAY with the beat. The sequencer: only what works there is up
      * (HOME, SEQ, GLO here; EDIT, SAVE, SEL, PLAY, REC below); the other screens' buttons do nothing there, dark */
     for (k = 0; k < SCR_N; k++)                  /* (the rhythm machine: as the sequencer, cf_dmui.c) */
@@ -1856,7 +1862,8 @@ static void cf_leds(void)
         cf_led(lit, panel.btn[B_ARP], 1);
     cf_led(cs.chord.octave < 0 ? (cs.chord.octave < -1 ? lit : mid) : faint, panel.btn[B_OCTDN], 1);
     cf_led(cs.chord.octave > 0 ? (cs.chord.octave > 1 ? lit : mid) : faint, panel.btn[B_OCTUP], 1);
-    /* keys: held lit; the effective chord buttons lit, the others faint; the chord's root mid; the scale dim */
+    /* keys: held and Auto chord tones lit; effective chord buttons lit, the others faint;
+     * the chord's root mid otherwise; the scale dim */
     for (k = 0; k < CF_NKEYS; k++) {
         int idx, role = cf_key_role(cs.chord.algo, (int)k, &idx), id = (int)(14u + k);
         if (sq_key_led(k, lit, mid, dim, faint))
@@ -1885,7 +1892,9 @@ static void cf_leds(void)
                 cf_led(faint, (uint32_t)id, 1);
         } else if (role == CF_ROLE_ROOT) {
             int pc = cf_key_root_note(&cs.chord, (int)k) % 12;
-            if (out->sounding && pc == out->root_pc)
+            if ((auto_notes >> pc) & 1u)
+                cf_led(lit, (uint32_t)id, 1);
+            else if (out->sounding && pc == out->root_pc)
                 cf_led(mid, (uint32_t)id, 1);
             else if (cs.lights && cs.chord.quantize != CF_Q_OFF && pc == cs.chord.tonic)
                 cf_led(dim, (uint32_t)id, 1);

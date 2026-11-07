@@ -157,9 +157,60 @@ static void recording(void)
     char expected[16]; cf_spell_t spell; cf_key_spell(0,0,&spell);
     cf_chord_name(0,sqp.dmask,-1,&spell,expected); CHECK(!strcmp(expected,"Cmaj13"));
 }
+static uint32_t bright_keys(void)
+{
+    uint32_t keys=0;
+    /* Read the actual LED matrix, independently of the UI's reverse lookup. */
+    for(unsigned row=1;row<5;row++) for(unsigned col=0;col<FM1_NCOL;col++) {
+        int id=emu_keymap[row][col];
+        if(id>=14 && (fm1_led[col]&(1u<<row))) keys|=1u<<(id-14);
+    }
+    return keys;
+}
+static void light_key(int k,int down)
+{
+    if(down) cu.keys|=1u<<k; else cu.keys&=~(1u<<k);
+    ui_note_key_aged(k,down,0); audio_ms(6); cf_ui_frame();
+}
+static void note_lights(void)
+{
+    /* C, E, G and F, A, C in the default lower-key mapping, in every octave. */
+    const uint32_t cmaj=(1u<<2)|(1u<<7)|(1u<<11)|(1u<<14)|(1u<<19)|(1u<<23)|(1u<<26);
+    const uint32_t fmaj=(1u<<0)|(1u<<4)|(1u<<7)|(1u<<12)|(1u<<16)|(1u<<19)|(1u<<24);
+    const uint32_t seventh=1u<<3, hold=1u<<25, bnotes=(1u<<6)|(1u<<18);
+    cfp_panic(); midi_drain();
+    cf_harmony_defaults(&ch); ch.mode=CF_H_AUTO;
+    cs.chord.algo=CF_ALG_TOP_LOCK; cs.chord.tonic=0; cs.chord.scale=CF_SC_MAJOR;
+    cs.chord.quantize=CF_Q_BASIC; cs.chord.octave=0; cs.retrig=CF_RT_MOVE;
+    cu.scr=SCR_HOME; cu.keys=0; cs.lights=0; config(); cf_ui_frame();
+    CHECK(bright_keys()==0);
+    light_key(7,1); CHECK(cfc.out.n==3 && bright_keys()==cmaj);
+    light_key(3,1); light_key(3,0);
+    CHECK(cfc.out.n==4 && bright_keys()==(cmaj|bnotes|seventh));
+    light_key(7,0); CHECK(bright_keys()==seventh);
+    light_key(3,1); light_key(3,0); CHECK(bright_keys()==0);
+    /* HOLD retains all chord tones; a replacement root removes the old tones. */
+    light_key(25,1); light_key(25,0); CHECK(bright_keys()==hold);
+    light_key(7,1); light_key(7,0); CHECK(bright_keys()==(cmaj|hold));
+    light_key(12,1); light_key(12,0); CHECK(bright_keys()==(fmaj|hold));
+    light_key(25,1); light_key(25,0); CHECK(bright_keys()==0); released();
+    /* Wait lights the selected modifier immediately, but its notes only at the next root. */
+    cs.retrig=CF_RT_WAIT; config(); light_key(7,1); audio_ms(60);
+    light_key(3,1); light_key(3,0); CHECK(bright_keys()==(cmaj|seventh));
+    light_key(19,1); CHECK(bright_keys()==(cmaj|bnotes|seventh));
+    light_key(7,0); light_key(19,0); CHECK(bright_keys()==seventh);
+    light_key(3,1); light_key(3,0); CHECK(bright_keys()==0); released();
+    /* Auto Off and unsupported-scale fallback retain the usual pressed-key lighting. */
+    ch.mode=CF_H_MANUAL; config(); light_key(7,1); CHECK(bright_keys()==(1u<<7));
+    light_key(7,0); CHECK(bright_keys()==0); released();
+    ch.mode=CF_H_AUTO; cs.chord.quantize=CF_Q_OFF; config();
+    light_key(7,1); CHECK(cfc.out.fallback && bright_keys()==(1u<<7));
+    light_key(7,0); CHECK(bright_keys()==0); released();
+    cs.chord.quantize=CF_Q_BASIC; cs.retrig=CF_RT_MOVE; cs.lights=1; config();
+}
 int main(void)
 {
     emu_fw_options(NULL,1,0,1); emu_hal.ready=2; emu_fw_init(0); audio_ms(1600); midi_drain();
-    ui_and_store(); simple_harmony(); performance(); recording();
+    ui_and_store(); simple_harmony(); performance(); recording(); note_lights();
     printf("cf_auto: %u checks, %u failures\n",checks,failures); return failures!=0;
 }
