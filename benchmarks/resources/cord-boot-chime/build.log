@@ -1,0 +1,16 @@
+In file included from firmware/src/coralflower.c:182:
+In file included from firmware/src/cf_settings.c:61:
+firmware/src/cf_fx_store.c:31:23: warning: suggest braces around initialization of subobject [-Wmissing-braces]
+    fxp_preset_t p = {0};
+                      ^
+                      {}
+In file included from firmware/src/coralflower.c:185:
+In file included from firmware/src/cf_screens.c:94:
+firmware/src/cf_lab_screen.c:54:39: warning: suggest braces around initialization of subobject [-Wmissing-braces]
+    for(int k=0;k<4;k++){cf_knob_t o={0};cfl_knob_info(k,&o);str_cpy(m->label[k],o.name,sizeof m->label[k]);str_cpy(m->value[k],o.val,sizeof m->value[k]);}
+                                      ^
+                                      {}
+2 warnings generated.
+size: 95 main-loop functions built for size (783 not in this build)
+size: .text 446752 B, .ram_text 3000 B, .c1_text 128 B (RAMTEXT 3128 of 24576), .data 13308 B, .bss 74332 B; XIP 463188 B of 573440 (80.8%), RAM 87640 B of 98304 (89.2%), POOL 316792 B of 344064 (92.1%), NOINIT 216 B of 15664 (1.4%)
+checks: [] ['.ram_text: 932 insns, no calls', 'image 466996 B (stub 3808 + app 463188); RAM .data+.bss 87644 B of 98304; pool 316792 B of 344064']

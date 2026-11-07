@@ -564,117 +564,72 @@ static void cfx_phaser(int32_t *l, int32_t *r, uint32_t n)
 
 /* fx.c's FX_MIX_HOOK: the chain, in its order, on the mixed parts */
 /* ------------------------------------------------------ the power-on sound --- */
-/* the intro's sound (cf_splash.c starts it; GLO > Display > BOOT SND), always the same: a voice of its own, not a part,
- * after the effects (so neither the sounds nor the effects set then change it) and before MASTER. A strum of glass
- * bells: a wide Cmaj9#11 (Lydian: the bright, floating fourth) upward over a soft sub C, faster and louder as it
- * rises, echoed once a third of a second later, softer; a second on, a shower down from above. Each bell: two sines
- * 5 cents apart (they beat, slowly), a shimmer of phase modulation at 3.5 times its pitch gone in a tenth of a second
- * (glass), coming in 40 cents flat and sliding up (the bloom), 6 ms in, a long decay (0.74 s). */
+/* CORD: a short Dm7 electric-key signature, matching the piano-key logo.
+ * Four softly rolled notes, a brief second harmonic and a finite 1.1 s tail.
+ * Independent of the chosen patches/FX, after the effects and before MASTER.
+ * This audio-owned voice never emits MIDI, changes a part or writes a recording.
+ */
 static const struct { uint16_t ms; uint8_t note, vel; int8_t pan; } CF_BOOT[] = {
-    {0, 36, 90, 0},                                              /* (the sub: a plain sine) */
-    {0, 48, 50, -6}, {75, 55, 56, 6}, {140, 62, 62, -10}, {198, 64, 68, 10}, {250, 71, 74, -14}, {296, 78, 80, 14},
-    {338, 81, 86, -18}, {376, 86, 92, 18}, {411, 91, 98, 0},
-    {420, 62, 26, 16}, {480, 71, 30, -16}, {540, 78, 34, 18}, {590, 86, 38, -18},          /* (the echo) */
-    {1050, 98, 40, 12}, {1105, 93, 44, -12}, {1155, 90, 48, 9}, {1200, 83, 52, -9}, {1242, 76, 56, 4},
+    {0,50,88,-10}, {65,53,76,-4}, {130,57,72,4}, {195,60,84,10} /* D3 F3 A3 C4 */
 };
 #define CF_BOOT_N ((uint32_t)(sizeof CF_BOOT / sizeof CF_BOOT[0]))
-static const uint32_t CF_BOOT_INC[12] = {796254u, 843601u, 893765u, 946911u, 1003217u, 1062871u, 1126073u, 1193033u,
-                                         1263974u, 1339134u, 1418763u, 1503127u};   /* MIDI note 0..11, per sample */
-static volatile uint8_t cf_boot_go;              /* the UI's: start it */
+#define CF_BOOT_SAMPLES (FS * 1100u / 1000u)
+#define CF_BOOT_FADE (FS * 180u / 1000u)
+static const uint32_t CF_BOOT_INC[12] = {796254u,843601u,893765u,946911u,1003217u,1062871u,
+    1126073u,1193033u,1263974u,1339134u,1418763u,1503127u}; /* MIDI 0..11, per sample */
+static volatile uint8_t cf_boot_go; /* UI mailbox: 1 start/audition, 2 cancel/fade */
 static struct {
-    uint8_t on;
-    uint8_t yield;                               /* the audio is overloaded: it fades out at once (audio.c shed) */
-    int32_t gain;                                /* .. its level on the way out, Q15 */
-    uint32_t t;                                  /* samples since the start */
-    uint32_t pa[CF_BOOT_N], pb[CF_BOOT_N], pm[CF_BOOT_N];
-    int32_t e[CF_BOOT_N], ei[CF_BOOT_N], bloom[CF_BOOT_N];   /* level, shimmer (Q30); the slide still to go (Q16) */
+    uint8_t on,yield;
+    int32_t gain; /* Q15; sample ramp gives way to a note or overload in <=256 samples */
+    uint32_t t,pa[CF_BOOT_N];
+    int32_t e[CF_BOOT_N],ei[CF_BOOT_N]; /* Q30 body and short hammer brightness */
 } cfb;
-static void cf_boot_mix(int32_t *l, int32_t *r, uint32_t n)
+static void cf_boot_mix(int32_t *l,int32_t *r,uint32_t n)
 {
-    uint32_t i, k;
-    uint32_t live = 0;
-    if (cf_boot_go) {
-        cf_boot_go = 0;
-        memset(&cfb, 0, sizeof cfb);
-        cfb.on = 1;
-        cfb.gain = 32768;
+    unsigned request=cf_boot_go;
+    if(request) {
+        cf_boot_go=0;
+        if(request==1){memset(&cfb,0,sizeof cfb);cfb.on=1;cfb.gain=32768;}
+        else cfb.yield=1;
     }
-    if (!cfb.on)
-        return;
-    if (cfb.yield) {                             /* (the chords come first: out over 4 blocks, 2.9 ms) */
-        cfb.gain -= 8192;
-        if (cfb.gain <= 0) {
-            cfb.on = 0;
-            return;
+    if(!cfb.on)return;
+    for(unsigned i=0;i<n;i++) {
+        if(cfb.t>=CF_BOOT_SAMPLES || (cfb.yield && (cfb.gain-=128)<=0)){cfb.on=0;return;}
+        int32_t left=0,right=0;
+        for(unsigned k=0;k<CF_BOOT_N;k++) {
+            unsigned start=CF_BOOT[k].ms*FS/1000u;
+            if(cfb.t<start)continue;
+            unsigned age=cfb.t-start;
+            if(!age)cfb.e[k]=cfb.ei[k]=1<<30;
+            unsigned attack=age<FS*8u/1000u?age*32768u/(FS*8u/1000u):32768u;
+            int32_t bright=(osc_sine(cfb.pa[k]*2u)*(cfb.ei[k]>>15))>>15;
+            int32_t y=(osc_sine(cfb.pa[k])*7+bright)/8;
+            y=(y*(cfb.e[k]>>15))>>15;y=(y*(int32_t)attack)>>15;
+            y=y*(CF_BOOT[k].vel*40)/32768;
+            left+=y*(32-CF_BOOT[k].pan)/32;right+=y*(32+CF_BOOT[k].pan)/32;
+            cfb.pa[k]+=CF_BOOT_INC[CF_BOOT[k].note%12u]<<(CF_BOOT[k].note/12u);
+            cfb.e[k]-=cfb.e[k]>>14;cfb.ei[k]-=cfb.ei[k]>>12;
         }
+        unsigned remain=CF_BOOT_SAMPLES-cfb.t;
+        int32_t fade=remain<CF_BOOT_FADE?remain*32768u/CF_BOOT_FADE:32768u;
+        int32_t gain=(cfb.gain*fade)>>15;
+        l[i]+=(left*gain)>>15;r[i]+=(right*gain)>>15;cfb.t++;
     }
-    for (k = 0; k < CF_BOOT_N; k++) {
-        uint32_t t0 = CF_BOOT[k].ms * (FS / 1000u), inc, inc_a, inc_b, inc_m, a;
-        int32_t amp = (CF_BOOT[k].vel * 36 * cfb.gain) >> 15, pan = CF_BOOT[k].pan, sub = k == 0u;
-        if (cfb.t + n <= t0) {
-            live = 1;                            /* (still to come) */
-            continue;
-        }
-        if (cfb.e[k] == 0 && cfb.t <= t0 + n) {      /* (its start: in this block) */
-            cfb.e[k] = 1 << 30;
-            cfb.ei[k] = 1 << 30;
-            cfb.bloom[k] = sub ? 0 : 1497;
-        }
-        if (cfb.e[k] < (1 << 20))
-            continue;                                /* (gone: -60 dB under its strike, below -79 dBFS; it was computed on to
-                                                      * -84 dB for the whole 6 s, as dear as a 6-operator FM chord on the
-                                                      * one core: the first chords after power-on lost their notes to the
-                                                      * overload guard, the owner, 2026-10-21) */
-        live = 1;
-        inc = CF_BOOT_INC[CF_BOOT[k].note % 12u] << (CF_BOOT[k].note / 12u);
-        inc = (uint32_t)(((uint64_t)inc * (uint32_t)(65536 - cfb.bloom[k])) >> 16);
-        inc_a = inc + (uint32_t)(((uint64_t)inc * 190u) >> 17);
-        inc_b = inc - (uint32_t)(((uint64_t)inc * 190u) >> 17);
-        inc_m = inc * 7u / 2u;
-        cfb.bloom[k] -= cfb.bloom[k] >> 5;           /* (the slide up: ~50 ms) */
-        for (i = 0; i < n; i++) {
-            uint32_t tt = cfb.t + i;
-            int32_t y, off;
-            if (tt < t0)
-                continue;
-            a = tt - t0 < FS * 6u / 1000u ? (tt - t0) * 32768u / (FS * 6u / 1000u) : 32768u;
-            if (sub) {
-                y = osc_sine(cfb.pa[k]);
-            } else {
-                off = osc_sine(cfb.pm[k]) * (cfb.ei[k] >> 17);
-                y = (osc_sine(cfb.pa[k] + (uint32_t)off) + osc_sine(cfb.pb[k] + (uint32_t)off)) >> 1;
-                cfb.pm[k] += inc_m;
-            }
-            y = (y * (cfb.e[k] >> 15)) >> 15;        /* (32 bits: |y| <= 2^15, e >> 15 <= 2^15) */
-            y = ((y * (int32_t)a) >> 15) * amp / 32768;
-            l[i] += y * (32 - pan) / 32;
-            r[i] += y * (32 + pan) / 32;
-            cfb.pa[k] += inc_a;
-            cfb.pb[k] += inc_b;
-            cfb.e[k] -= cfb.e[k] >> 15;
-            cfb.ei[k] -= cfb.ei[k] >> 12;
-        }
-    }
-    cfb.t += n;
-    if (cfb.t > FS * 6u || !live)
-        cfb.on = 0;
+    if(cfb.t>=CF_BOOT_SAMPLES)cfb.on=0;
 }
-/* audio.c's SHED_FIRST: the audio overloaded; the power-on sound, while it rings, goes before any voice. 1: it was it */
+/* The signature always yields before an instrument voice or its ringing tail. */
 static int cf_boot_yield(void)
 {
-    if (!cfb.on)
-        return voice_tail_yield();               /* (then the tail ringing out: CF_NTAIL, voice.c) */
-    cfb.yield = 1;
-    return 1;
+    if(cf_boot_go==1){cf_boot_go=0;return 1;}
+    if(!cfb.on)return voice_tail_yield();
+    cfb.yield=1;return 1;
 }
 #define SHED_FIRST() cf_boot_yield()
-/* voice.c VOICE_NEW_NOTE: a note starts while the power-on sound rings: it gives way at once. It takes about half the
- * core at its start, and a chord beside it took the half past the guard's line: the guard let it go only two halves
- * later and, a half after that, still cut a note of the chord (rc3, the emulator's CF_LOADMODEL) */
+/* Also cancel a queued start: a key can arrive before the first chime block. */
 static void cf_boot_note(void)
 {
-    if (cfb.on)
-        cfb.yield = 1;
+    if(cf_boot_go==1)cf_boot_go=0;
+    if(cfb.on)cfb.yield=1;
 }
 
 static void cf_fx_chain(int32_t *l, int32_t *r, uint32_t n)
