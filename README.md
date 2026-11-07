@@ -24,8 +24,8 @@ instrument's intro runs for 2.4 seconds and any input skips it.
 
 - **Top Lock, always.** Upper keys choose a chord type; lower keys play roots. The chosen chord stays latched until
   you select another one. Your saved Top chord-button definitions are retained.
-- **Bass or Bonfire.** Turn **ALGORITHM** on HOME to change scenes without interrupting a held chord or playback.
-  Bass is the default and your choice is saved. ALGORITHM still orders effects in FX and selects patterns/songs
+- **Bass, Bonfire, or Scene Off.** Turn **ALGORITHM** on HOME to change scenes without interrupting a held chord or playback.
+  Scene Off skips scene animation and rendering for reduced UI work. Bass is the default and your choice is saved. ALGORITHM still orders effects in FX and selects patterns/songs
   in Sequencer.
 - **Four HOME views.** Tap HOME while already there to cycle **Scene → Chord → Keyboard → Diagnostics**. From
   another screen, HOME returns to your selected view.

@@ -1,16 +1,24 @@
 /* SPDX-License-Identifier: GPL-3.0-only
  * Chase FM-1: approved bonfire and bass scenes. Integer rendering, no allocation.
- * seq_hint bit 3 selects Bonfire; clear selects Bass (the default for older records). Bits 0..2 remain sequencer hints; 6..7 remain HOME views.
+ * seq_hint bit 3 selects Bonfire; bit 4 disables scenes. Both clear selects Bass
+ * (the default for older records). Bits 0..2 remain sequencer hints; 6..7 remain HOME views.
  * The 188-byte settings record and backup format do not change.
  */
-enum { CF_SCENE_FIRE, CF_SCENE_BASS, CF_SCENE_N };
+enum { CF_SCENE_BASS, CF_SCENE_FIRE, CF_SCENE_OFF, CF_SCENE_N };
 #define CF_SCENE_FIRE_BIT 0x08u
-static const char *const CF_SCENE_NAME[CF_SCENE_N] = {"Bonfire", "Bass"};
+#define CF_SCENE_OFF_BIT 0x10u
+static const char *const CF_SCENE_NAME[CF_SCENE_N] = {"Bass", "Bonfire", "Scene Off"};
 
-static uint32_t cf_scene(void) { return cs.seq_hint & CF_SCENE_FIRE_BIT ? CF_SCENE_FIRE : CF_SCENE_BASS; }
+static uint32_t cf_scene(void)
+{
+    if (cs.seq_hint & CF_SCENE_OFF_BIT) return CF_SCENE_OFF;
+    return cs.seq_hint & CF_SCENE_FIRE_BIT ? CF_SCENE_FIRE : CF_SCENE_BASS;
+}
 static void cf_scene_set(uint32_t scene)
 {
-    cs.seq_hint = (uint8_t)((cs.seq_hint & ~CF_SCENE_FIRE_BIT) | (scene == CF_SCENE_FIRE ? CF_SCENE_FIRE_BIT : 0u));
+    cs.seq_hint = (uint8_t)((cs.seq_hint & ~(CF_SCENE_FIRE_BIT | CF_SCENE_OFF_BIT)) |
+                           (scene == CF_SCENE_FIRE ? CF_SCENE_FIRE_BIT :
+                            scene == CF_SCENE_OFF ? CF_SCENE_OFF_BIT : 0u));
 }
 static int scene_sin(uint32_t a, int amplitude) { return fl_fsin((int32_t)(a & 1023u)) * amplitude / 16384; }
 static void scene_line(flc_t *c, int x0, int y0, int x1, int y1, uint8_t col)
@@ -37,17 +45,35 @@ static int scene_pulse(const flora_t *f)
     return pulse > 255 ? 255 : pulse;
 }
 
-static void scene_fire(const flora_t *f, flc_t *c, int pulse)
+/* Follow the audio clock's actual beat timestamp, including MIDI clock and 6/8.
+ * Keep this separate from note accents: a held chord must not hide the beat.
+ * Reading the UI snapshot adds no events, state or work to the audio engine. */
+static int scene_beat_pulse(void)
+{
+    uint32_t age, duration, bpm;
+    if ((!cf_sn.running && !cf_sn.metro_on) || !cf_sn.beats_done)
+        return 0;
+    bpm = cf_sn.ext_clock && cf_sn.ext_bpm ? cf_sn.ext_bpm : cs.bpm;
+    if (bpm < 30u) bpm = 30u;
+    duration = 45000u / (bpm * (cs.beats == 6u ? 2u : 1u));
+    if (duration > 280u) duration = 280u;
+    age = cf_sn.now_ms - cf_sn.beat_ms;
+    if (age >= duration) return 0;
+    return (int)((duration - age) * 255u / duration);
+}
+
+static void scene_fire(const flora_t *f, flc_t *c, int pulse, int beat)
 {
     int x, y, i, cx = c->w / 2, base = c->h - 10;
-    int energy = pulse / 32 + f->level / 8192;
+    int energy = pulse / 32 + f->level / 8192 + beat / 24;
+    int accent = pulse > beat ? pulse : beat;
     uint32_t t = f->t;
     /* A low ring of stones and a warm pool of light. */
     for (y = base - 2; y < c->h; y++)
         for (x = cx - 30; x <= cx + 30; x++) {
             int dx = x - cx, dy = (y - base - 3) * 4;
             if (dx * dx + dy * dy < 900 && ((x + y) & 1) == 0)
-                flc_pset(c, x, y, FL_C(FL_R_FIRE, 3));
+                flc_pset(c, x, y, FL_C(FL_R_FIRE, beat > 128 ? 2 : 3));
         }
     for (i = 0; i < 9; i++) {
         int a = i * 114;
@@ -63,7 +89,8 @@ static void scene_fire(const flora_t *f, flc_t *c, int pulse)
      * foot and narrower crown suggest a ritual bonfire rather than a row of flames. */
     for (i = 0; i < 3; i++) {
         int height = 40 - i * 7 + energy + scene_sin(t / 2u + i * 149u, 3);
-        int foot = 20 - i * 6;
+        int foot = 20 - i * 6 + beat / 85;
+        if (height > base - 2) height = base - 2;
         for (y = 0; y < height; y++) {
             int width = (height - 1 - y) * foot / height;
             int curl = scene_sin(t / 3u + y * 13u + i * 101u, 1 + y / 10);
@@ -100,7 +127,7 @@ static void scene_fire(const flora_t *f, flc_t *c, int pulse)
     for (i = 0; i < 12; i++) {
         uint32_t h = fl_hash32((uint32_t)i + 704u);
         int age = (int)((t / (i < 5 ? 24u : 14u) + h) % 46u);
-        if (i >= 5 && pulse < (i - 4) * 30) continue;
+        if (i >= 5 && accent < (i - 4) * 30) continue;
         x = cx + (int)(h % 25u) - 12 + scene_sin(t / 4u + i * 70u, age / 9);
         y = base - 9 - age;
         flc_pset(c, x, y, FL_C(FL_R_FIRE, age > 30 ? 2 : 0));
@@ -118,7 +145,7 @@ static void scene_bass_body(uint32_t t, flc_t *target, int dstx, int dsty, int p
 {
     flc_t body = {scene_body_px, CF_FISH_W, CF_FISH_H}, *c = &body;
     int cx = CF_FISH_X, cy = CF_FISH_Y, x, y, i;
-    int tail = scene_sin(t / 2u, 4) + scene_sin(t, pulse / 64);
+    int tail = scene_sin(t / 2u, 4) * (255 - pulse / 2) / 255 - pulse / 64;
     flc_clear(c, FL_BG);
     /* Broad tail and the bass's two-part spiny dorsal fin. */
     scene_tri(c, cx - 23, cy, cx - 39 + tail, cy - 11, cx - 37 + tail, cy + 11, FL_C(FL_R_JADE, 2));
@@ -156,7 +183,7 @@ static void scene_bass_body(uint32_t t, flc_t *target, int dstx, int dsty, int p
     for (x = 0; x < CF_FISH_W; x++) {
         int behind = CF_FISH_X + 25 - x;
         int bend = scene_sin(t / 2u + (uint32_t)((x - CF_FISH_X + 44) * 9), 256);
-        int dy_q8 = bend * behind * behind / (69 * 69) * (3 + pulse / 128);
+        int dy_q8 = bend * behind * behind / (69 * 69) * (3 + pulse / 64);
         int dy = dy_q8 / 256;
         for (y = 0; y < CF_FISH_H; y++) {
             uint8_t col = body.px[y * CF_FISH_W + x];
@@ -166,19 +193,20 @@ static void scene_bass_body(uint32_t t, flc_t *target, int dstx, int dsty, int p
     }
 }
 
-static void scene_bass(const flora_t *f, flc_t *c, int pulse)
+static void scene_bass(const flora_t *f, flc_t *c, int pulse, int beat)
 {
     uint32_t t = f->t;
-    int cx = c->w / 2 + scene_sin(t / 18u, 10);
-    int cy = c->h * 3 / 5 + scene_sin(t / 7u, 3);
+    int accent = pulse > beat ? pulse : beat;
+    int cx = c->w / 2 + scene_sin(t / 18u, 10) + beat * 6 / 255 + pulse * 2 / 255;
+    int cy = c->h * 3 / 5 + scene_sin(t / 7u, 3) - beat * 4 / 255;
     int x, y, i;
     /* A small, distant school: muted silhouettes and only a few pixels of slow drift.
      * Draw before the bass so the main fish naturally passes in front of them. */
     if (f->backdrop == FL_BD_SCENE) {
         static const int8_t school[4][2] = {{17, 24}, {29, 19}, {40, 23}, {49, 16}};
         for (i = 0; i < 4; i++) {
-            int bx = school[i][0] + scene_sin(t / 48u + i * 27u, 2);
-            int by = school[i][1] + scene_sin(t / 64u + i * 91u, 1);
+            int bx = school[i][0] + scene_sin(t / 48u + i * 27u, 2) + beat * (2 + (i & 1)) / 255;
+            int by = school[i][1] + scene_sin(t / 64u + i * 91u, 1) - beat * 2 / 255;
             int flick = (int)((t / 1600u + (uint32_t)i) & 1u);
             uint8_t shade = FL_C(FL_R_SAGE, 2);
             scene_line(c, bx - 1, by, bx + 2, by, shade);
@@ -199,11 +227,11 @@ static void scene_bass(const flora_t *f, flc_t *c, int pulse)
                 flc_pset(c, bx + dx + 1, y, FL_C(FL_R_JADE, 2));
             }
         }
-    scene_bass_body(t, c, cx, cy, pulse);
+    scene_bass_body(t, c, cx, cy, accent);
     /* Small rising bubbles; more appear when notes strike. */
     for (i = 0; i < 5; i++) {
         int age = (int)((t / 35u + i * 13u) % 45u);
-        if (i > 1 && pulse < i * 50) continue;
+        if (i > 1 && accent < i * 50) continue;
         x = cx + 31 + scene_sin(t / 8u + i * 133u, 3);
         y = cy - 2 - age;
         flc_pset(c, x, y, FL_C(FL_R_SEA, 0));
@@ -213,10 +241,13 @@ static void scene_bass(const flora_t *f, flc_t *c, int pulse)
 
 static void cf_scene_render(flora_t *f, flc_t *c)
 {
-    int pulse = scene_pulse(f);
+    /* draw_plant clears the display directly in Off mode. Skip all scene work,
+     * including the background, beat envelope and intermediate canvas. */
+    if (cf_scene() == CF_SCENE_OFF) return;
+    int pulse = scene_pulse(f), beat = scene_beat_pulse();
     /* Use the existing Scene / Ripples / None backdrop setting and shared music clock. */
     f->species = cf_scene() == CF_SCENE_BASS ? FL_SP_CORAL : FL_SP_PLANT;
     fl_backdrop(f, c);
-    if (cf_scene() == CF_SCENE_BASS) scene_bass(f, c, pulse);
-    else scene_fire(f, c, pulse);
+    if (cf_scene() == CF_SCENE_BASS) scene_bass(f, c, pulse, beat);
+    else scene_fire(f, c, pulse, beat);
 }
