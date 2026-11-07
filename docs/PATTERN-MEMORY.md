@@ -56,7 +56,7 @@ from ordinary RAM and do not recreate edit/redo history.
 | --- | ---: | ---: | ---: |
 | Ordinary RAM | 97,048 | 79,320 | **−17,728** |
 | POOL | 308,980 | 315,404 | +6,424 |
-| XIP | 419,652 | 421,640 | +1,988 |
+| XIP | 419,652 | 421,624 | +1,972 |
 | RAM code | 3,016 | 3,052 | +36 |
 
 Full inputs, compiler flags, section/symbol inventories and the linked baseline

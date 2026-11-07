@@ -104,6 +104,9 @@ jobs:
       - name: Three recordings, legacy archives, save power cuts and flash boundaries
         run: sh tools/test_recordings.sh
 
+      - name: Full installer, update and backup regression suite
+        run: node web/test_installer.mjs
+
       - name: Diagnostics snapshots, HOME controls and performance report protocol (host HAL)
         run: sh tools/test_diagnostics.sh
 
