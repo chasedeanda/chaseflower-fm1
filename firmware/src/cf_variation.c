@@ -180,7 +180,7 @@ static int cvr_ready(unsigned context, const cv_value_t *v)
     }
     if (context == CV_HARMONY || context == CV_FX) return 1;
     if (context == CV_DRUMS && cf_sn.dm_on && !sqk.on && !cf_sn.dm_rin && cf_sn.sq_rec == 0xFFu && v->bpm == cs.bpm) return 1;
-    if (cf_sn.sq_on || sqk.on || cf_sn.dm_rin || cf_sn.sq_rec != 0xFFu || cf_sn.n || cf_sn.nb ||
+    if (cf_sn.sq_on || cf_sn.ac_on || sqk.on || cf_sn.dm_rin || cf_sn.sq_rec != 0xFFu || cf_sn.n || cf_sn.nb ||
         cf_sn.out.sounding || cf_sn.arp_n || cu.keys) return 0;
     /* These are settings changes, not flash writes: an enabled metronome and
      * old FX tails or an independent drum groove do not make them unsafe.
@@ -231,7 +231,7 @@ static void cvr_defer(unsigned action, unsigned part)
     cvr.pending = (uint8_t)action; cvr.pending_context = cvr.context;
     cvr.pending_level = cvr.level; cvr.pending_part = cvr.part;
     cvr.pending_sound_gen = cf_snd_gen[part];
-    cf_message(cf_sn.sq_on || sqk.on || cf_sn.dm_rin || cf_sn.sq_rec != 0xFFu ?
+    cf_message(cf_sn.sq_on || cf_sn.ac_on || sqk.on || cf_sn.dm_rin || cf_sn.sq_rec != 0xFFu ?
         "Queued: finish playback\nthen applies automatically" :
         cf_sn.out.hold || cf_sn.arp_latched ? "Queued: turn off HOLD/Latch\nthen applies automatically" :
         "Queued: release played notes\nthen applies automatically");

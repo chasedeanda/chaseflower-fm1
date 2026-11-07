@@ -175,6 +175,7 @@ static uint32_t dm_beats(void) { return cs.beats >= 2u && cs.beats <= 7u ? cs.be
 static uint8_t dm_view = 0xFF;
 static uint32_t dm_cur(void)
 {
+    if(cf_sn.ac_on && cf_sn.ac_rhythm<DM_N)return cf_sn.ac_rhythm;
     uint32_t b = dm_beats(), i;
     if (dm_view < DM_N)
         return dm_view;
@@ -456,6 +457,7 @@ static void dm_hold_poll(void);
 static void dm_poll(void)
 {
     static uint8_t was = 0xFF;
+    if (cf_sn.ac_on) return;
     if (cu.scr == SCR_DRUM && was != SCR_DRUM && !sqk.on)   /* (opened, even only looked at: what PLAY on HOME plays) */
         dmr.last = 1;
     else if (sq_screen(cu.scr) && ((squ.pat < SQ_NPAT && sq_has(squ.pat)) ||

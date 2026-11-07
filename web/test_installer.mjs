@@ -20,6 +20,7 @@
 
 import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
+import { fileURLToPath } from "node:url";
 import { tmpdir } from "node:os";
 import { spawnSync } from "node:child_process";
 import vm from "node:vm";
@@ -30,7 +31,7 @@ import { bkU32, bkR32, bkPack, bkUnpack, bkCrc, CR_BACKUP_IDS, CF_BACKUP_IDS, CF
 let failed = 0;
 const ok = (cond, what) => { console.log(`${what.padEnd(100)} ${cond ? "ok" : "FAIL"}`); if (!cond) failed++; };
 const eq = (a, b) => a.length === b.length && a.every((v, i) => v === b[i]);
-const HERE = new URL(".", import.meta.url).pathname;
+const HERE = fileURLToPath(new URL(".", import.meta.url));
 const ROOT = join(HERE, "..");
 const count = (s, sub) => s.split(sub).length - 1;
 const html = readFileSync(join(HERE, "index.html"), "utf8");

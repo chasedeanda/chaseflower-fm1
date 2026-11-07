@@ -102,7 +102,7 @@ static void sqp_rpush(const sqr_ev_t *e)
 static int sqp_holds(uint32_t part, uint32_t note)
 {
     uint32_t i;
-    if (!sqp.on)
+    if (!sqp.on && !cpa_running())
         return 0;
     if (part == 0u || part == 2u) {              /* (a track's arpeggiator: the notes it sounds) */
         const cfa_t *a = &cfa_sq[part == 2u];
@@ -772,6 +772,7 @@ static void sqp_stop(void)
 static void dmp_stop(void);
 static void sqp_setup(uint32_t pat, uint32_t slot)
 {
+    cpa_stop();
     uint32_t i;
     sqp_stop();
     dmp_stop();                                  /* (one thing plays: a rhythm of the drum machine stops) */

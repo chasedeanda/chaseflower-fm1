@@ -209,10 +209,12 @@ int main(void)
     CHECK(a && a[1] == 5, "GET before LIST: 5");
 
     /* ---- a fresh device: the 8 objects, nothing stored but what the boot wrote ---- */
-    CHECK(t_list() == 0 && nman == 28, "LIST on a fresh flash: 28 objects (%u)", nman);
+    CHECK(t_list() == 0 && nman == 29, "LIST on a fresh flash: 29 objects (%u)", nman);
     CHECK(t_find(50) && !t_find(50)->size && t_find(55) && !t_find(55)->size, "LIST: no patterns stored yet");
 
     CHECK(t_find(CFB_FX) && !t_find(CFB_FX)->size, "FX bank absent on an old/blank device");
+    CHECK(t_find(CFB_PREFS) && !t_find(CFB_PREFS)->size,"favorites absent on an old/blank device");
+    cf_browser_star(&cpb,72,1); cpb_dirty=1;
     CHECK(fxp_save_slot(7, "BACKUP FX"), "save an independent FX preset");
     /* ---- content: a user sound, the settings, a loop ---- */
     CHECK(cf_snd_save(CF_PART_CHORD, 1, "BACKUP TEST") == 0, "a chord sound saved as new");
@@ -239,6 +241,7 @@ int main(void)
     sq_st.pat[7].dlev[3] = 42;                       /* (in the last object) */
     sq_dirty = 1;
     CHECK(t_list() == 0, "LIST");
+    CHECK(t_find(CFB_PREFS)->size==sizeof(cpb_rec_t),"LIST flushes pending favorites");
     CHECK(t_find(CFB_FX)->size == sizeof(fxp_bank_t), "LIST includes the pending FX bank");
     for (i = 0, k = 0; i < nman; i++) k += man[i].size != 0;
     CHECK(t_find(6)->size && t_find(30)->size && t_find(31)->size, "LIST: the bank, the settings and the loop hold data");
@@ -305,6 +308,13 @@ int main(void)
     CHECK(sq_st.magic == SQ_MAGIC && sq_st.song.n == 3 && sq_st.song.pat[1] == 7 && sq_st.pat[2].hit[0][1] == 0x1111u &&
           sq_st.pat[7].dlev[3] == 42 && sq_st.pat[0].dlev[0] == 0, "the restored patterns and song read in whole (sq_load's checks)");
 
+    cpb_load(); CHECK(cf_browser_favorite(&cpb,72),"favorites reload after backup restore");
+    {
+        obj_t *o=t_find(CFB_PREFS); cpb_rec_t bad;
+        memcpy(&bad,o->bytes,sizeof bad); bad.version++;
+        CHECK(t_put(CFB_PREFS,(const uint8_t *)&bad,sizeof bad,st_crc32(&bad,sizeof bad))==2,
+              "invalid favorites record refused before flash write");
+    }
     /* ---- FX payload validation through actual PUT (wire CRC alone is insufficient) ---- */
     {
         obj_t *o = t_find(CFB_FX); fxp_bank_t bad;

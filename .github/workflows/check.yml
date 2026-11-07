@@ -98,6 +98,9 @@ jobs:
       - name: Progression suggestions, controls and uninterrupted audio (host HAL)
         run: sh tools/test_progressions.sh
 
+      - name: Progression accompaniment transport, queues, ownership and clocks
+        run: sh tools/test_accomp.sh
+
       - name: Diagnostics snapshots, HOME controls and performance report protocol (host HAL)
         run: sh tools/test_diagnostics.sh
 

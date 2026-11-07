@@ -76,7 +76,7 @@ static void controls(void)
         for(int k=0;k<4;k++){cf_knob_t knob={0};ui_knob_info(k,&knob);}cf_ui_draw();
     }
     ui_knob_turn(0,1000);CHECK(cvr.context==CV_N-1);ui_knob_turn(1,-1000);CHECK(cvr.level==0);
-    ui_select(1);CHECK(cu.page[SCR_GLO]==0 && screen_pages(SCR_GLO)==CF_GLO_NPAGES);
+    ui_select(CF_GLO_NPAGES-CF_GLO_VARIATION);CHECK(cu.page[SCR_GLO]==0 && screen_pages(SCR_GLO)==CF_GLO_NPAGES);
     cs=original;ch=harmony;cf_send_config();quiet();
 }
 static void sound(void)

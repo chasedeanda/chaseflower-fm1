@@ -12,28 +12,31 @@ HOME still cycles the main, Chord, Keyboard and Diagnostics views.
 
 - **SELECT** browses all **100 ideas**, wrapping at both ends. Tags and the current
   scale never hide an idea. Selecting sets its starting key, scale and meter.
-- **K1 RHYTHM** cycles grooves in the current/pending meter. PLAY starts/stops the
-  selected rhythm through the existing transport controls. K1 does not start it
-  automatically or replace saved patterns. A new 3/4 Waltz completes groove
-  coverage across all six supported meters, using unused stable rhythm ID 63.
-- **K2 KEY**, **K3 SCALE** and **K4 GLIDE** keep their existing playing controls.
-  Key/scale overrides stay until another idea is selected.
-- Enable **GLO → Harmony → On** for automatic chords. Browsing does not change
-  that On/Off choice or your extension buttons. If quantization was Off, selecting
-  an idea enables Basic so its key and scale can work.
-
-The screen retains the existing visual style: idea count/name, descriptive genre
-or artist/section, mood, key/mode, meter, chord cards, physical key numbers and
-**Now**. Long ideas use two rows, with all eight chords visible. A sounding
-chord lights every matching card, including repeated chords, HOLD and sequencer
-playback. Matching uses root and major/minor quality; extensions and inversions
-are allowed. Silence and single notes clear the highlight.
-
-Meter changes while a rhythm plays arrive at the existing bar boundary. The
-screen shows the current and queued meters until it arrives. Rapid browsing
-replaces a pending change, including when returning to the original meter.
-Browse and rhythm changes are held off during a take so its setup stays stable.
-Tempo, synth/FX sounds, manual chord forms, patterns and transport stay intact.
+  Hold **GLO** for Browse: **K1 jumps ten**, **K2 jumps one**, **K3 chooses
+  Catalog / A–Z / Shuffle / Favorites**, **K4 stars the idea**. #73 takes seven
+  K1 turns and two K2 turns from #1. SELECT follows the chosen order; direct number
+  jumps always use the stable catalogue number, regardless of order.
+- Hold **SAVE** on Progressions for 0.7 seconds to add/remove the visible idea
+  from Favorites. A short SAVE press still opens sound saving. Favorites and the
+  chosen order survive power-off and are included in backups. Shuffle visits all
+  100 once per traversal; choosing Shuffle again makes a new random order.
+- **PLAY** starts the selected idea at its first slot, with chords, linked bass
+  (when enabled) and the selected compatible groove. PLAY again stops accompaniment,
+  including after navigating to another screen; independent live HOLD remains.
+- **K1 RHYTHM** cycles **Off → Click → compatible grooves** without changing BPM.
+  During playback the latest choice arrives at the next bar.
+- **K2 KEY**, **K3 SCALE**, **K4 TEMPO** retain the active values while changes wait.
+  Key/mode arrive at the next chord; tempo changes preserve phase. External MIDI
+  clock shows **EXT** and disables the local tempo control.
+- **SELECT while playing** queues the whole idea for the next bar, then begins its
+  first slot. **Next** is separate from the active title/key/mode/meter.
+- **GLO → Accompany** offers **Chords + Drums / Drums only**, rhythm, tempo and
+  the chord sound's Glide. **PRESETS** still selects the chord sound.
+- The playback cursor is an underline and slot number, independent of the chord
+  match highlights (a repeated chord can light several matching cards).
+- Browsed musical setup and accompaniment choices are session state; browsing/playback
+  do not save them to flash or modify patterns. Explicit favorite/order changes save
+  a separate small preference record. See [playback details](PROGRESSION-PLAYBACK.md).
 
 ## Catalog and sources
 
