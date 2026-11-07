@@ -10,7 +10,7 @@ typedef struct {
     cf_arp_t arp;
     cf_snd_t sound;
     uint16_t bpm;
-    uint8_t tonic, scale, quantize, tag, idea, beats, rhythm, kit, swing, auto_on;
+    uint8_t tonic, scale, quantize, idea, beats, rhythm, kit, swing, auto_on;
     uint8_t part, env_kind, carrier, edited, env[30]; /* kind 0 ADSR, 1 FM, 2 VA */
 } cv_value_t;
 static struct {
@@ -25,7 +25,7 @@ static void cvr_init(void) { memset(&cvr, 0, sizeof cvr); cvr.seed = 1; }
 static int cvr_value_valid(const cv_value_t *v)
 {
     if (!fxp_chain_valid(&v->fx) || v->tonic > 11 || v->scale >= CF_NSCALES || v->quantize > CF_Q_FULL ||
-        v->tag >= CF_P_NTAGS || (v->idea != CF_P_NONE && v->idea >= cf_progression_count()) ||
+        (v->idea != CF_P_NONE && v->idea >= cf_progression_count()) ||
         v->beats < 2 || v->beats > 7 || v->rhythm >= DM_N || DM_RHY[v->rhythm].beats != v->beats ||
         v->kit >= SQ_NKIT || v->swing > 100 || v->bpm < 30 || v->bpm > 300 ||
         v->auto_on > 1 || v->part > 2 || v->env_kind > 2 || v->carrier > 63 || v->edited > 1 ||
@@ -42,7 +42,7 @@ static void cvr_capture(cv_value_t *v, unsigned part)
     memset(v, 0, sizeof *v);
     v->fx = cs.fx; v->arp = cs.arp; v->bpm = cs.bpm;
     v->tonic = cs.chord.tonic; v->scale = cs.chord.scale; v->quantize = cs.chord.quantize;
-    v->tag = cpg.tag; v->idea = cpg.idea; v->auto_on = ch.mode != 0;
+    v->idea = cpg.idea; v->auto_on = ch.mode != 0;
     v->beats = DM_RHY[r].beats; v->rhythm = (uint8_t)r; v->kit = (uint8_t)dm_kit(r); v->swing = (uint8_t)dm_swing(r);
     v->part = (uint8_t)part; v->sound = cf_snd[part]; v->edited = (uint8_t)cfk_edited(part);
     if (cfe_fm6(part)) {
@@ -70,13 +70,18 @@ static int cvr_generate(cv_value_t *v, unsigned context, unsigned level, uint32_
     if (context >= CV_N || level > 2) return 0;
     switch (context) {
     case CV_HARMONY: {
-        if (level == 2) v->tag = CF_P_ALL;
-        unsigned choices[64], n = 0;
-        for (unsigned i = 0; i < cf_progression_count() && n < 64; i++)
-            if (cf_progression_matches(i, v->scale, v->tag)) choices[n++] = i;
-        if (!n) return 0;
-        if (!level) v->idea = cf_progression_pick(v->scale, v->tag, v->idea, cvr_random(&rng) & 1u ? 1 : -1);
-        else v->idea = (uint8_t)choices[cvr_random(&rng) % n];
+        unsigned n = cf_progression_count();
+        if (!level) v->idea = cf_progression_pick(v->idea, cvr_random(&rng) & 1u ? 1 : -1);
+        else {
+            unsigned compatible = 0;
+            if (level == 1) for (unsigned i = 0; i < n; i++)
+                compatible += cf_progression_get(i)->scale == v->scale;
+            unsigned pick = cvr_random(&rng) % (compatible ? compatible : n);
+            for (unsigned i = 0; i < n; i++) {
+                if (compatible && cf_progression_get(i)->scale != v->scale) continue;
+                if (!pick--) { v->idea = (uint8_t)i; break; }
+            }
+        }
         break;
     }
     case CV_ARP:
@@ -139,7 +144,7 @@ static int cvr_generate(cv_value_t *v, unsigned context, unsigned level, uint32_
         }
         if (!n) return 0;
         v->scale = (uint8_t)choices[cvr_random(&rng) % n];
-        v->idea = cf_progression_pick(v->scale, v->tag, v->idea, 0);
+        v->idea = cf_progression_pick(v->idea, 0);
         break;
     }
     }
@@ -166,12 +171,12 @@ static int cvr_ready(unsigned context, const cv_value_t *v)
 static void cvr_apply(const cv_value_t *v, unsigned context)
 {
     switch (context) {
-    case CV_HARMONY: cpg.tag = v->tag; cpg.idea = cf_progression_pick(cs.chord.scale, v->tag, v->idea, 0); break;
+    case CV_HARMONY: cpg.idea = cf_progression_pick(v->idea, 0); break;
     case CV_ARP: cs.arp = v->arp; cf_send_config(); break;
     case CV_FX: cs.fx = v->fx; cf_fx_recall(&cs.fx); break;
     case CV_SCALE:
         cs.chord.tonic = v->tonic; cs.chord.scale = v->scale;
-        cpg.tag = v->tag; cpg.idea = v->idea; cu_spell_update(); cf_send_config(); break;
+        cpg.idea = v->idea; cu_spell_update(); cf_send_config(); break;
     case CV_DRUMS:
         dmr.pos[v->beats] = DM_RHY[v->rhythm].id; dmr.last = 1; dm_view = v->rhythm;
         dmr.kit[dm_uid(v->rhythm)] = v->kit; dmr.swing[dm_uid(v->rhythm)] = v->swing;

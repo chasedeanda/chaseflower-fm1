@@ -30,7 +30,7 @@ static void bank(void)
 {
     const uint8_t old[]={1,2,7,30,4,18,5,13,31,14,39,32,34,35,36,38,40,41,42,29,48,49,50,47,45,46};
     const uint8_t retired[]={33,37,43,44};
-    CHECK(DM_N==38 && DM_N<255);
+    CHECK(DM_N==39 && DM_N<255);
     for (uint32_t i=0; i<sizeof old; i++) CHECK(by_id(old[i])<DM_N);
     for (uint32_t i=0; i<sizeof retired; i++) CHECK(by_id(retired[i])==DM_N);
     for (uint32_t id=51; id<=62; id++) CHECK(by_id(id)<DM_N);

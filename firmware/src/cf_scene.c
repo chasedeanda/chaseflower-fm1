@@ -1,24 +1,28 @@
 /* SPDX-License-Identifier: GPL-3.0-only
  * Chase FM-1: approved bonfire and bass scenes. Integer rendering, no allocation.
- * seq_hint bit 3 selects Bonfire; bit 4 disables scenes. Both clear selects Bass
- * (the default for older records). Bits 0..2 remain sequencer hints; 6..7 remain HOME views.
+ * seq_hint bit 3 selects Bonfire; bit 4 selects Nothing; bit 5 selects Bass.
+ * All clear selects Progressions. Bits 0..2 are hints; 6..7 remain HOME views.
  * The 188-byte settings record and backup format do not change.
  */
-enum { CF_SCENE_BASS, CF_SCENE_FIRE, CF_SCENE_OFF, CF_SCENE_N };
+enum { CF_SCENE_BASS, CF_SCENE_FIRE, CF_SCENE_OFF, CF_SCENE_PROGRESSIONS, CF_SCENE_N };
 #define CF_SCENE_FIRE_BIT 0x08u
 #define CF_SCENE_OFF_BIT 0x10u
-static const char *const CF_SCENE_NAME[CF_SCENE_N] = {"Bass", "Bonfire", "Scene Off"};
+#define CF_SCENE_BASS_BIT 0x20u
+static const char *const CF_SCENE_NAME[CF_SCENE_N] = {"Bass", "Bonfire", "Nothing", "Progressions"};
 
 static uint32_t cf_scene(void)
 {
     if (cs.seq_hint & CF_SCENE_OFF_BIT) return CF_SCENE_OFF;
-    return cs.seq_hint & CF_SCENE_FIRE_BIT ? CF_SCENE_FIRE : CF_SCENE_BASS;
+    if (cs.seq_hint & CF_SCENE_FIRE_BIT) return CF_SCENE_FIRE;
+    return cs.seq_hint & CF_SCENE_BASS_BIT ? CF_SCENE_BASS : CF_SCENE_PROGRESSIONS;
 }
+static int cf_scene_animated(void) { return cf_scene() <= CF_SCENE_FIRE; }
 static void cf_scene_set(uint32_t scene)
 {
-    cs.seq_hint = (uint8_t)((cs.seq_hint & ~(CF_SCENE_FIRE_BIT | CF_SCENE_OFF_BIT)) |
+    cs.seq_hint = (uint8_t)((cs.seq_hint & ~(CF_SCENE_FIRE_BIT | CF_SCENE_OFF_BIT | CF_SCENE_BASS_BIT)) |
                            (scene == CF_SCENE_FIRE ? CF_SCENE_FIRE_BIT :
-                            scene == CF_SCENE_OFF ? CF_SCENE_OFF_BIT : 0u));
+                            scene == CF_SCENE_OFF ? CF_SCENE_OFF_BIT :
+                            scene == CF_SCENE_BASS ? CF_SCENE_BASS_BIT : 0u));
 }
 static int scene_sin(uint32_t a, int amplitude) { return fl_fsin((int32_t)(a & 1023u)) * amplitude / 16384; }
 static void scene_line(flc_t *c, int x0, int y0, int x1, int y1, uint8_t col)
@@ -243,7 +247,7 @@ static void cf_scene_render(flora_t *f, flc_t *c)
 {
     /* draw_plant clears the display directly in Off mode. Skip all scene work,
      * including the background, beat envelope and intermediate canvas. */
-    if (cf_scene() == CF_SCENE_OFF) return;
+    if (!cf_scene_animated()) return;
     int pulse = scene_pulse(f), beat = scene_beat_pulse();
     /* Use the existing Scene / Ripples / None backdrop setting and shared music clock. */
     f->species = cf_scene() == CF_SCENE_BASS ? FL_SP_CORAL : FL_SP_PLANT;

@@ -5,11 +5,11 @@ This feature replaces the flower/coral pictures with the approved bonfire and sw
 ## Controls and saved settings
 
 - The instrument always plays in **Top Lock**, including after loading an older record or restoring a backup. The Top chord-button definitions and other musical settings are preserved.
-- Turn **ALGORITHM** on HOME to cycle **Bass → Bonfire → Scene Off** (reverse the encoder to go back). The selection appears immediately, including when starting from Chord or Keyboard view. A brief name message confirms the selection. It does not reconfigure the chord player, retrigger a held chord, or change transport.
+- Turn **ALGORITHM** on HOME to cycle **Progressions → Bass → Bonfire → Nothing** (reverse the encoder to go back). The selection appears immediately, including when starting from Chord or Keyboard view. A brief name message confirms the selection. It does not reconfigure the chord player, retrigger a held chord, or change transport.
 - **Scene Off** uses a plain background throughout HOME and the menus. It bypasses scene/background rendering, the scene canvas blit, animation ticks, note-particle/geometry updates and the visual voice-level scan. Chord names, controls and beat indicators still work. The choice is saved with settings and survives switching HOME views. Use it to compare device performance with the animations disabled; host audio comparisons do not establish hardware timing or diagnose a glitch. The brief startup intro has its existing behavior.
 - Tap HOME while already on HOME to cycle **Scene → Chord → Keyboard**. The scene and HOME view persist independently.
 - ALGORITHM retains effect ordering in FX and pattern/song selection in Sequencer. Elsewhere, its former chord-mode action selects the scene.
-- Bass is the default, including for older records without a scene flag. Bit 3 of `cf_set_t.seq_hint` selects Bonfire when set; bit 4 selects Scene Off and takes priority. Bits 0–2 remain sequencer hints, bit 5 remains free, and bits 6–7 remain the existing HOME view. The settings record remains 188 bytes and backup formats do not change.
+- Progressions is the default in the development source; see the [explorer guide](PROGRESSION-EXPLORER.md). Bit 3 of `cf_set_t.seq_hint` selects Bonfire, bit 4 selects Nothing and bit 5 selects Bass; all clear selects Progressions. Bits 0–2 remain hints and bits 6–7 remain the HOME view. The settings record stays 188 bytes. Progressions also skips scene animation/rendering. The historical measurements below predate this explorer update.
 
 ## Approved visuals
 

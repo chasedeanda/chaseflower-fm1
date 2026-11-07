@@ -113,15 +113,15 @@ static struct {
 static const char *const Q_NAME[3] = {"Off", "Basic", "Full"};
 static const char *const ALG_NAME[CF_NALGS] = {"Top", "Top Lock", "Side", "Side Lock"};
 #define CF_GLO_HARMONY 7u
-#define CF_GLO_PROGRESSIONS 8u
-#define CF_GLO_VARIATION 9u
-#define CF_GLO_NPAGES 10u
+#define CF_GLO_VARIATION 8u
+#define CF_GLO_NPAGES 9u
 
 static const cf_progression_t *cf_progression_current(void)
 {
-    cpg.idea = cf_progression_pick(cs.chord.scale, cpg.tag, cpg.idea, 0);
+    cpg.idea = cf_progression_pick(cpg.idea, 0);
     return cf_progression_get(cpg.idea);
 }
+static void cf_progression_select(int d);
 
 static void kfmt(char *b, uint32_t n, const char *s) { str_cpy(b, s, n); }
 static void kint(char *b, int v, const char *unit)
@@ -177,6 +177,43 @@ static void cv_turned(int d);
 #include "cf_dmui.c"                             /* (the drum machine's page, 0.6) */
 #include "cf_variation.c"                         /* one-page variation and undo */
 
+/* SELECT on Progressions: apply the idea's setup, without touching sounds,
+ * modifiers, saved patterns or transport. Drum meter changes use its bar queue. */
+static void cf_progression_select(int d)
+{
+    if (!d) return;
+    if (sqk.on || cf_sn.sq_rec != 0xFFu) {
+        cf_message("Finish recording to browse");
+        return;
+    }
+    cpg.idea = cf_progression_pick(cpg.idea, d);
+    const cf_progression_t *p = cf_progression_current();
+    cs.chord.tonic = p->tonic;
+    cs.chord.scale = p->scale;
+    if (cs.chord.quantize == CF_Q_OFF) cs.chord.quantize = CF_Q_BASIC;
+    if (cs.beats != p->beats || (cf_sn.dm_on && dm_view < DM_N && DM_RHY[dm_view].beats != p->beats)) {
+        uint32_t r = dm_nth(p->beats, 0);
+        for (uint32_t i = 0; i < DM_N; i++)
+            if (DM_RHY[i].beats == p->beats && DM_RHY[i].id == dmr.pos[p->beats]) r = i;
+        if (cf_sn.dm_on && r < DM_N) dm_select((int)r - (int)dm_cur());
+        else { cs.beats = p->beats; dm_view = 0xFF; cf_send_metro(); }
+    }
+    cu_spell_update();
+    cf_send_config();
+}
+
+/* K1 changes the groove within the active/pending meter, so a groove choice
+ * cannot accidentally change the progression's time signature. */
+static void cf_progression_rhythm(int d)
+{
+    uint32_t r = dm_cur(), beats = dm_view < DM_N ? DM_RHY[dm_view].beats : dm_beats();
+    uint32_t n = dm_count(beats);
+    if (!d || !n || sqk.on) return;
+    dmr.last = 1;
+    int pos = ((int)dm_place(r) + d % (int)n + (int)n) % (int)n;
+    dm_select((int)dm_nth(beats, (uint32_t)pos) - (int)r);
+}
+
 /* EDIT's part keys, as printed on the unit: MONO (upper key 8) the bass, POLY (9) the chords, the next (10) the LAYER */
 static uint32_t edit_key_part(int u) { return u == 8 ? CF_PART_BASS : u == 9 ? CF_PART_CHORD : CF_PART_LAYER; }
 static uint32_t env_part(void)
@@ -210,6 +247,12 @@ static void ui_knob_info(int k, cf_knob_t *o)
     o->bar = -1;
     switch (cu.scr) {
     case SCR_HOME:
+        if (k == 0 && home_view() == HV_FLOWER && cf_scene() == CF_SCENE_PROGRESSIONS) {
+            kfmt(o->name, 12, "RHYTHM");
+            kfmt(o->val, 14, DM_RHY[dm_cur()].name);
+            o->dis = sqk.on;
+            break;
+        }
         switch (k) {
         case 0: kfmt(o->name, 12, "QUANTIZE"); kfmt(o->val, 14, Q_NAME[cs.chord.quantize]); break;
         case 1:
@@ -368,19 +411,6 @@ static void ui_knob_info(int k, cf_knob_t *o)
         case CF_GLO_VARIATION:
             cvr_knob_info(k, o);
             break;
-        case CF_GLO_PROGRESSIONS:
-            cf_progression_current();
-            if (k == 0) { kfmt(o->name, 12, "TAG"); kfmt(o->val, 14, cf_progression_tag(cpg.tag)); }
-            if (k == 1) {
-                kfmt(o->name, 12, "IDEA");
-                kint(o->val, (int)cf_progression_position(cs.chord.scale, cpg.tag, cpg.idea), 0);
-                str_cpy(o->val + str_len(o->val), "/", 2);
-                kint(o->val + str_len(o->val), (int)cf_progression_filtered_count(cs.chord.scale, cpg.tag), 0);
-                o->dis = cpg.idea == CF_P_NONE;
-            }
-            if (k == 2) { kfmt(o->name, 12, "KEY"); kpc(o->val, cs.chord.tonic); o->dis = cs.chord.quantize == CF_Q_OFF; }
-            if (k == 3) { kfmt(o->name, 12, "SCALE"); kfmt(o->val, 14, CF_SCALES[cs.chord.scale].shrt); o->dis = cs.chord.quantize == CF_Q_OFF; }
-            break;
         case CF_GLO_HARMONY:
             if (k == 0) { kfmt(o->name, 12, "HARMONY"); kfmt(o->val, 14, ch.mode ? "On" : "Off"); }
             break;
@@ -475,6 +505,10 @@ static void ui_knob_turn(int k, int d)
     cu.knob_last = (uint8_t)k;
     switch (cu.scr) {
     case SCR_HOME:
+        if (k == 0 && home_view() == HV_FLOWER && cf_scene() == CF_SCENE_PROGRESSIONS) {
+            cf_progression_rhythm(d);
+            break;
+        }
         if (k == 0) {
             cs.chord.quantize = (uint8_t)clampi(cs.chord.quantize + d, 0, 2);
             if (cs.chord.quantize != CF_Q_OFF && cu.pop == POP_MSG && !memcmp(cu.msg, CF_MSG_QOFF, sizeof CF_MSG_QOFF))
@@ -628,21 +662,6 @@ static void ui_knob_turn(int k, int d)
         case CF_GLO_VARIATION:
             cvr_knob_turn(k, d);
             break;
-        case CF_GLO_PROGRESSIONS:
-            cf_progression_current();
-            if (k == 0) cpg.tag = (uint8_t)clampi(cpg.tag + d, 0, CF_P_NTAGS - 1);
-            if (k == 1) cpg.idea = cf_progression_pick(cs.chord.scale, cpg.tag, cpg.idea, d);
-            if (k == 2 || k == 3) {
-                if (cs.chord.quantize == CF_Q_OFF) cf_message(CF_MSG_QOFF);
-                else {
-                    if (k == 2) cs.chord.tonic = (uint8_t)wrapi(cs.chord.tonic + d, 12);
-                    if (k == 3) cs.chord.scale = (uint8_t)clampi(cs.chord.scale + d, 0, CF_NSCALES - 1);
-                    cu_spell_update();
-                    cf_send_config();
-                }
-            }
-            cf_progression_current();
-            break;
         case CF_GLO_HARMONY:
             if (k == 0) ch.mode = (uint8_t)clampi(ch.mode + d, 0, CF_H_AUTO);
             if (k != 0) break;
@@ -778,6 +797,10 @@ static void cv_turned(int d)
 
 static void ui_select(int d)                     /* SELECT: the bass sound, or a screen's page */
 {
+    if (cu.scr == SCR_HOME && home_view() == HV_FLOWER && cf_scene() == CF_SCENE_PROGRESSIONS) {
+        cf_progression_select(d);
+        return;
+    }
     if (cu.scr == SCR_DRUM) {                    /* the drum machine: the rhythm */
         dm_select(d);
         return;
@@ -879,7 +902,9 @@ static void ui_algo(int d)                       /* ALGORITHM: scene (FX: effect
         return;
     }
     if (!d) return;
-    cf_scene_set((uint32_t)wrapi((int)cf_scene() + d, CF_SCENE_N));
+    int pos = cf_scene() == CF_SCENE_PROGRESSIONS ? 0 : (int)cf_scene() + 1;
+    pos = wrapi(pos + d % CF_SCENE_N, CF_SCENE_N);
+    cf_scene_set(pos ? (uint32_t)(pos - 1) : CF_SCENE_PROGRESSIONS);
     if (cu.scr == SCR_HOME)
         cs.seq_hint &= (uint8_t)~(3u << HV_SHIFT); /* show the scene immediately, keeping hints and scene selection */
     cf_message(CF_SCENE_NAME[cf_scene()]);         /* no CONFIG event: a held chord is untouched */
@@ -1853,7 +1878,7 @@ static void cf_feed_plant(uint32_t dt)
 {
     const cf_chord_out_t *o = &cf_sn.out;
     uint32_t i, lvl = 0, src, ser;
-    if (cf_scene() == CF_SCENE_OFF) {
+    if (!cf_scene_animated()) {
         /* No animation tick, geometry rebuild, note particles or voice scans.
          * Resync the current chord on return, without replaying old onsets. */
         cu_last_src = 0xFFu;
@@ -1941,7 +1966,6 @@ static void cf_edited(uint32_t part)
 /* ------------------------------------------------------------------ init --- */
 static void cf_ui_init(void)
 {
-    cpg.tag = CF_P_ALL;
     cpg.idea = CF_P_NONE;
     if (!cfs_loaded)                             /* (cf_splash read the settings record: they stay) */
         cs_defaults(&cs);

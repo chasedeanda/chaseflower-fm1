@@ -471,6 +471,7 @@ static void draw_home(void)
 {
     char key[16], k2[8];
     uint32_t view = home_view();
+    if (view == HV_FLOWER && cf_scene() == CF_SCENE_PROGRESSIONS) { view_progressions(12); return; }
     cf_scene_render(&flo, &fl_cv);
     draw_plant(Y_VIEW);
     if(view==HV_DIAG) {draw_home_diag();return;}
@@ -637,7 +638,7 @@ static void draw_edit(void)
 
 static void draw_generic(void)
 {
-    static const char *const PG_GLO[CF_GLO_NPAGES] = {"Display", "MIDI", "Channels", "Play", "Reset", "Library", "Diagnostics", "Harmony", "Progressions", "Variation"};
+    static const char *const PG_GLO[CF_GLO_NPAGES] = {"Display", "MIDI", "Channels", "Play", "Reset", "Library", "Diagnostics", "Harmony", "Variation"};
     cf_scene_render(&flo, &fl_cv);
     draw_plant(Y_VIEW);
     fb_veil(0, Y_VIEW, FB_W, H_VIEW, FL_BG);   /* (the plant faint: the picture leads) */
@@ -649,12 +650,8 @@ static void draw_generic(void)
         uint32_t p = cu.page[SCR_GLO] % CF_GLO_NPAGES;
         draw_head(PG_GLO[p]);
         draw_pager((int)p, CF_GLO_NPAGES, 1, 0);
-        if (p >= CF_GLO_VARIATION) {
+        if (p == CF_GLO_VARIATION) {
             cvr_draw();
-        }
-        else if (p == CF_GLO_PROGRESSIONS) {
-            fb_text_r(&CF_FONT_UI, 234, HEAD_LINE, cf_progression_tag(cpg.tag), C_ACC(1), 1);
-            draw_view(view_progressions);
         }
         else if (p == CF_GLO_HARMONY) {
             fb_text_c(&CF_FONT_UI, 120, Y_VIEW + 65, ch.mode ? "AUTO HARMONY" : "MANUAL HARMONY", C_ACC(0), 1);

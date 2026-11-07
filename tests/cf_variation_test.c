@@ -32,6 +32,15 @@ static void properties(void)
         base.scale=scale;base.quantize=quant;
         for(unsigned ctx=0;ctx<CV_N;ctx++) { a=base;if(cvr_generate(&a,ctx,2,42)) CHECK(cvr_value_valid(&a)); }
     }
+    /* Chaos can reach the complete explorer catalog, including entries beyond
+     * the old 64-element temporary choice array. It does not alter key/scale. */
+    uint8_t seen[CF_P_NONE]={0}; unsigned reached=0;
+    for(unsigned seed=1;seed<=4000;seed++) {
+        a=base; CHECK(cvr_generate(&a,CV_HARMONY,2,seed));
+        CHECK(a.tonic==base.tonic && a.scale==base.scale);
+        if(!seen[a.idea]) { seen[a.idea]=1; reached++; }
+    }
+    CHECK(reached==cf_progression_count());
     a=base; CHECK(!cvr_generate(&a,99,0,1)); CHECK(!cvr_generate(&a,CV_FX,3,1));
 }
 static void controls(void)
@@ -60,7 +69,7 @@ static void controls(void)
         for(int k=0;k<4;k++){cf_knob_t knob={0};ui_knob_info(k,&knob);}cf_ui_draw();
     }
     ui_knob_turn(0,1000);CHECK(cvr.context==CV_N-1);ui_knob_turn(1,-1000);CHECK(cvr.level==0);
-    ui_select(1);CHECK(cu.page[SCR_GLO]==0 && screen_pages(SCR_GLO)==10);
+    ui_select(1);CHECK(cu.page[SCR_GLO]==0 && screen_pages(SCR_GLO)==CF_GLO_NPAGES);
     cs=original;ch=harmony;cf_send_config();quiet();
 }
 static void sound(void)

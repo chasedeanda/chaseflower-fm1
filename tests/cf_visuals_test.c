@@ -14,19 +14,19 @@ static void test_settings(void)
 {
     CHECK(sizeof(cf_set_t) == 188u);
     cs_defaults(&cs);
-    CHECK(cs.chord.algo == CF_ALG_TOP_LOCK && cf_scene() == CF_SCENE_BASS);
+    CHECK(cs.chord.algo == CF_ALG_TOP_LOCK && cf_scene() == CF_SCENE_PROGRESSIONS);
     for (unsigned mode = 0; mode <= CF_NALGS; mode++) {
         cs_defaults(&cs);
         cs.chord.algo = mode == CF_NALGS ? 255u : mode;
         cs.bpm = 137; cs.snd[0] = 3; cs.snd[1] = 2;
-        cs.seq_hint = (HV_KEYS << HV_SHIFT) | 0x27u;
+        cs.seq_hint = (HV_KEYS << HV_SHIFT) | 0x07u;
         cf_scene_set(CF_SCENE_FIRE);
-        CHECK((cs.seq_hint & ~CF_SCENE_FIRE_BIT) == ((HV_KEYS << HV_SHIFT) | 0x27u));
+        CHECK((cs.seq_hint & ~CF_SCENE_FIRE_BIT) == ((HV_KEYS << HV_SHIFT) | 0x07u));
         CHECK(cf_settings_write(0) == 1);
         memset(&cs, 0, sizeof cs);
         CHECK(cf_settings_load());
         CHECK(cs.chord.algo == CF_ALG_TOP_LOCK && cs.bpm == 137 && cs.snd[0] == 3 && cs.snd[1] == 2);
-        CHECK(cf_scene() == CF_SCENE_FIRE && home_view() == HV_KEYS && (cs.seq_hint & 0x27u) == 0x27u);
+        CHECK(cf_scene() == CF_SCENE_FIRE && home_view() == HV_KEYS && (cs.seq_hint & 0x07u) == 0x07u);
         cf_scene_set(CF_SCENE_BASS);
         CHECK(cf_settings_write(0) == 1);
         cf_scene_set(CF_SCENE_FIRE);
@@ -35,12 +35,12 @@ static void test_settings(void)
         CHECK(cf_settings_write(0) == 1);
         cf_scene_set(CF_SCENE_FIRE);
         CHECK(cf_settings_load() && cf_scene() == CF_SCENE_OFF && home_view() == HV_KEYS);
-        CHECK((cs.seq_hint & 0x27u) == 0x27u);
+        CHECK((cs.seq_hint & 0x07u) == 0x07u);
     }
     /* Old records had no scene flag: their hints and HOME view still survive. */
     cs.seq_hint = (HV_CHORD << HV_SHIFT) | 7u;
     CHECK(cf_settings_write(0) == 1);
-    CHECK(cf_settings_load() && cf_scene() == CF_SCENE_BASS && home_view() == HV_CHORD);
+    CHECK(cf_settings_load() && cf_scene() == CF_SCENE_PROGRESSIONS && home_view() == HV_CHORD);
     cs.chord.algo = CF_ALG_SIDE;
     cf_send_config();
     CHECK(cs.chord.algo == CF_ALG_TOP_LOCK && cfc_shadow.algo == CF_ALG_TOP_LOCK);
@@ -49,29 +49,28 @@ static void test_settings(void)
 static void controls(void)
 {
     cs_defaults(&cs); cu.scr = SCR_HOME;
-    cs.seq_hint = (HV_KEYS << HV_SHIFT) | 0x27u;
+    cs.seq_hint = (HV_KEYS << HV_SHIFT) | 0x07u;
     uint32_t queue = cf_evq_w;
     cf_chord_cfg_t chord = cs.chord;
     uint8_t selected = cu.sel_btn;
     ui_algo(1);
-    CHECK(cf_scene() == CF_SCENE_FIRE && home_view() == HV_FLOWER);
-    CHECK(cf_evq_w == queue && !memcmp(&chord, &cs.chord, sizeof chord) && selected == cu.sel_btn);
-    CHECK((cs.seq_hint & 0x27u) == 0x27u);
-    ui_algo(-1); CHECK(cf_scene() == CF_SCENE_BASS);
-    ui_algo(0); CHECK(cf_scene() == CF_SCENE_BASS);
-    ui_algo(1); CHECK(cf_scene() == CF_SCENE_FIRE);
-    ui_algo(1); CHECK(cf_scene() == CF_SCENE_OFF);
-    CHECK(cf_evq_w == queue && !memcmp(&chord, &cs.chord, sizeof chord) && selected == cu.sel_btn);
-    ui_algo(1); CHECK(cf_scene() == CF_SCENE_BASS);
-    ui_algo(-1); CHECK(cf_scene() == CF_SCENE_OFF);
-    ui_algo(1); CHECK(cf_scene() == CF_SCENE_BASS);
-    for (unsigned i = 0; i < 9; i++) {
+    CHECK(cf_scene()==CF_SCENE_BASS && home_view()==HV_FLOWER);
+    CHECK(cf_evq_w==queue && !memcmp(&chord,&cs.chord,sizeof chord) && selected==cu.sel_btn);
+    CHECK((cs.seq_hint&7u)==7u);
+    ui_algo(1); CHECK(cf_scene()==CF_SCENE_FIRE);
+    ui_algo(1); CHECK(cf_scene()==CF_SCENE_OFF);
+    ui_algo(1); CHECK(cf_scene()==CF_SCENE_PROGRESSIONS);
+    ui_algo(-1); CHECK(cf_scene()==CF_SCENE_OFF);
+    ui_algo(1); CHECK(cf_scene()==CF_SCENE_PROGRESSIONS);
+    ui_algo(0); CHECK(cf_scene()==CF_SCENE_PROGRESSIONS);
+    CHECK(cf_evq_w==queue && !memcmp(&chord,&cs.chord,sizeof chord));
+    for(unsigned i=0;i<9;i++) {
         ui_button(B_HOME);
-        CHECK(home_view() == (i + 1u) % HV_N && cf_scene() == CF_SCENE_BASS);
-        CHECK((cs.seq_hint & 0x27u) == 0x27u);
+        CHECK(home_view()==(i+1u)%HV_N && cf_scene()==CF_SCENE_PROGRESSIONS);
+        CHECK((cs.seq_hint&7u)==7u);
     }
-    cu.scr = SCR_GLO; ui_algo(1);
-    CHECK(cu.scr == SCR_GLO && cf_scene() == CF_SCENE_FIRE && cs.chord.algo == CF_ALG_TOP_LOCK);
+    cu.scr=SCR_GLO; ui_algo(1);
+    CHECK(cu.scr==SCR_GLO && cf_scene()==CF_SCENE_BASS && cs.chord.algo==CF_ALG_TOP_LOCK);
     uint8_t hints = cs.seq_hint;
     cu.scr = SCR_FX; cu.fx_pos = 0;
     uint8_t first = cs.fx.order[0], second = cs.fx.order[1];
