@@ -7,7 +7,7 @@ static unsigned checks, failures;
 static cf_fx_t chain = {{0,3,4,5,2,1}, 6, {{0,99,10},{1,40,5},{40,35,8},{40,50,70},{30,45,50},{30,60,60}}};
 int main(void)
 {
-    fxp_bank_t b, before; fxp_preset_t p = {"Original FX", {0}};
+    fxp_bank_t b, before; fxp_preset_t p = {.name = "Original FX"};
     p.fx = chain; fxp_bank_init(&b); CHECK(fxp_bank_valid(&b));
     CHECK(sizeof b == 752 && sizeof p == 46);
     for (unsigned i = 0; i < FXP_SLOTS; i++) {
