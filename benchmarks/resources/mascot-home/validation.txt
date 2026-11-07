@@ -131,3 +131,37 @@ all passed
 --- mascot-sanitize.log
 boot: normal reset power-on failed 0 pending 1 counted 0 prev_stage 0 (none)
 Mascot art, bounds, motion and migration: 12970727 checks, 0 failures
+
+Merged main validation (source 01504c673cd6ca44ff0fcfcf33a23dc7dba1b1c5):
+ARM syntax-only compile: PASS
+--- mascot-merged-mascots.log
+boot: normal reset power-on failed 0 pending 1 counted 0 prev_stage 0 (none)
+Mascot art, bounds, motion and migration: 12970727 checks, 0 failures
+--- mascot-merged-stage.log
+boot: normal reset power-on failed 0 pending 1 counted 0 prev_stage 0 (none)
+Mascot HOME: 270 checks, 0 failures
+--- mascot-merged-perform.log
+performance: 215266 checks, 0 failures
+--- mascot-merged-home_banks.log
+boot: normal reset power-on failed 0 pending 1 counted 0 prev_stage 0 (none)
+HOME banks: 3 checks, 0 failures
+PASS: identical audio with HOME bank cycling and drawing.
+--- mascot-merged-progressions.log
+suggestions: 4454 checks, 0 failures
+suggestions: 4454 checks, 0 failures
+PASS: complete catalog, automatic setup, HOME controls, live highlighting and identical audio with/without drawing at both rates.
+--- mascot-merged-native_pages.log
+native pages and motion: 5 checks / 0 routes, 0 failures
+native pages and motion: 5 checks / 0 routes, 0 failures
+PASS: Motion On/Off preserve identical physical audio, six USB channels and MIDI at both rates.
+--- mascot-merged-boot_sound.log
+CORD boot sound: 343877 checks, 0 failures
+{"seconds": 1.299591836734694, "peak_dbfs": -17.86, "rms_dbfs": -32.64}
+PASS: first keys match physical output, six USB channels and MIDI with/without a queued chime at both rates.
+--- mascot-merged-accomp.log
+accompaniment: 3 checks, 0 failures; plan 348 bytes, runtime+mailboxes 1088 bytes
+accompaniment: 3 checks, 0 failures; plan 348 bytes, runtime+mailboxes 1088 bytes
+PASS: accompaniment transport and identical physical output with USB capture/drawing at both rates.
+LED guide: 55 checks, 0 failures
+Actual 0.6-mascot package parsed by web/fm1pkg.js: FM-1_930, 610313 bytes, appBase 0x4000, update loader present.
+Package SHA256: 4e487632ffcc0f4b7a771cb7e0536c662f7cf08abe90276b4ae39f33aadefecb

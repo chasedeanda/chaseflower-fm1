@@ -116,8 +116,8 @@ build options. The resulting memory use is:
 
 | Region | Used | Capacity |
 | --- | ---: | ---: |
-| XIP application | 553,624 B | 573,440 B |
-| Ordinary RAM (.data + .bss) | 88,696 B | 98,304 B |
+| XIP application | 554,952 B | 573,440 B |
+| Ordinary RAM (.data + .bss) | 88,728 B | 98,304 B |
 | POOL | 316,792 B | 344,064 B |
 | RAM-resident code, including core 1 | 3,128 B | 24,576 B |
 | NOINIT | 216 B | 15,664 B |
