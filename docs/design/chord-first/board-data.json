@@ -14659,9 +14659,9 @@
     "onAccent": "#092D2C"
   },
   "implementation": {
-    "sourceBase": "abd37afab562555d4e8a58a66d18b488cce594f9",
+    "sourceBase": "09403c9aecb96afed05a63f6938e17c226dd6ee7",
     "designRevision": "845325136418dd038c7ef81eaca01ec64ac5e61e",
-    "summary": "Engineering preview: native Instrument Teal HOME/banks and Groove/Loop/Mix/Click now lead into EDIT for a protected sixteen-slot semantic draft. Numbered chord/timing/voicing/bass/phrase controls, explicit remove confirmation and one-step undo feed the same accompaniment clock; quarter slots, gates/ties and bar-bound groove edits preserve phase. Active and pending plans, real cursor and planned focus stay distinct. Safe stopped-only checkpoints report RAM Pending, verified Checkpoint or Recovered, with checked backup object 75. Native editor count-in/capture stays visible with real REC status and read-only draft controls. Factory originals, live Harmony/HOLD and the current manual-take/latest-three policy remain protected. Songs now has a first native preview: SAVE from HOME, accompaniment or editor opens a shared list with six saved semantic idea slots plus the existing three recording slots. SEL on Save current stages a complete musical snapshot; stopped/quiet persistence reports Pending until its checked A/B commit succeeds. Saved ideas support Load, Rename, Duplicate and Cancel-default Delete; existing recordings load their fixed-note workspace or can be deleted while quiet. Unsaved working drafts block replacement, and sound-only SAVE remains on sound pages. Direct arranged capture, expanded recording capacity, recording rename/duplicate, counted bulk clear, chord-library/audition, learning/suggestions, remaining page/motion migration and physical verification are pending. See docs/SONGS-LIBRARY.md for this preview's exact controls and limits.",
+    "summary": "Engineering preview: every retained old screen now routes through native Instrument Teal parameter, list, grid, name/confirmation and result families, including advanced FM6/VA, Layer, effects, recordings, system, diagnostics and recovery. HOME/banks, Groove/Loop/Mix/Click and the protected sixteen-slot editor retain their existing musical owners. Finite chord/cursor/knob/bank/workspace/focus/save transitions and a real post-MASTER output-driven halo share the single On/Off setting; Off cancels visual work and settled views skip rendering. The current manual-take/latest-three policy remains intact. Songs now adds six saved semantic ideas and existing recording rows, protected quiet-boundary writes, complete musical snapshots, progression rename/duplicate/delete and recording load/delete. SAVE opens Songs; SELECT Save current then SEL creates a new copy. Full arranged recording, recording rename/duplicate, bulk clear, Learn/Next and physical verification remain pending. Chord library/audition remains explicitly deferred. See docs/SONGS-LIBRARY.md for the native preview controls and limits.",
     "screens": {
       "HOME_STAGE": {
         "designStatus": "Native preview alongside selected prototype; device review pending",
@@ -14675,12 +14675,12 @@
       },
       "DISPLAY-STYLE": {
         "designStatus": "Native preview alongside selected prototype; device review pending",
-        "implementationStatus": "Implemented preview: three persisted palettes; physical validation pending",
+        "implementationStatus": "Implemented for all retained screens: three native themes and one Motion On/Off choice; finite transitions cancel completely with Off; physical tuning pending",
         "deviceVerification": "Pending — host captures and device link only"
       },
       "DISPLAY-MOTION": {
         "designStatus": "Native preview alongside selected prototype; device review pending",
-        "implementationStatus": "Partial implementation: persisted On/Off, bounded HOME activity, finite clipped bank/page/chord transitions and settled caches; audio-tail metadata and hardware tuning pending",
+        "implementationStatus": "Implemented for all retained screens: three native themes and one Motion On/Off choice; finite transitions cancel completely with Off; physical tuning pending",
         "deviceVerification": "Pending — host captures and device link only"
       },
       "HOME_SOUND": {
@@ -14768,6 +14768,672 @@
         "implementationStatus": "Implemented native phrase one-step undo; independent variation undo retained; library/next insertion pending",
         "deviceVerification": "Pending — native host captures and linked device build only"
       },
+      "MOTION_ARP": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "MOTION_FEEL": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "BASS_SOUND": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "BASS_BEHAVIOR": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "ENV_ENVELOPE": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "SOUND_PRESETS": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "SOUND_SAVE": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "FX_FILTER": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "FX_DRIVE": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "FX_CHORUS": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "FX_PHASER": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "FX_DELAY": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "FX_REVERB": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "FX_ORDER": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "FX_PRESETS": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "FX_SAVE": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "CTRL-MODIFIERS": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "CTRL-FORMS": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "SYS-MIDI": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "SYS-MIDI-CHANNELS": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "SYS-DIAG-OVERVIEW": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "SYS-DIAG-TIMING": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "SYS-DIAG-MEMORY": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "SYS-DIAG-USB": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "SYS-LEGACY-PATTERNS": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "SND-LEGACY-LAYER-VOICE": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "SND-LEGACY-LAYER-ENV": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "SYS-RESET-ARM": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "SYS-RESET-HOLD": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "SYS-RESET-CONFIRM": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "SYS-RESET-BUSY": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "SYS-UPDATE-COUNTDOWN": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "SYS-UPDATE-ACTIVE": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "SYS-SAFE": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "SYS-RECOVERY": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "SYS-BOOT": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "SND-SAVED": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "SND-DELETED": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "SND-FM6-OP1-RATE": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "SND-FM6-OP1-LEVEL": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "SND-FM6-OP1-TUNING": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "SND-FM6-OP1-SENS": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "SND-FM6-OP1-SCALING": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "SND-FM6-OP1-CURVES": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "SND-FM6-OP2-RATE": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "SND-FM6-OP2-LEVEL": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "SND-FM6-OP2-TUNING": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "SND-FM6-OP2-SENS": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "SND-FM6-OP2-SCALING": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "SND-FM6-OP2-CURVES": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "SND-FM6-OP3-RATE": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "SND-FM6-OP3-LEVEL": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "SND-FM6-OP3-TUNING": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "SND-FM6-OP3-SENS": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "SND-FM6-OP3-SCALING": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "SND-FM6-OP3-CURVES": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "SND-FM6-OP4-RATE": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "SND-FM6-OP4-LEVEL": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "SND-FM6-OP4-TUNING": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "SND-FM6-OP4-SENS": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "SND-FM6-OP4-SCALING": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "SND-FM6-OP4-CURVES": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "SND-FM6-OP5-RATE": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "SND-FM6-OP5-LEVEL": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "SND-FM6-OP5-TUNING": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "SND-FM6-OP5-SENS": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "SND-FM6-OP5-SCALING": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "SND-FM6-OP5-CURVES": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "SND-FM6-OP6-RATE": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "SND-FM6-OP6-LEVEL": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "SND-FM6-OP6-TUNING": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "SND-FM6-OP6-SENS": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "SND-FM6-OP6-SCALING": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "SND-FM6-OP6-CURVES": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "SND-FM6-PITCH-RATE": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "SND-FM6-PITCH-LEVEL": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "SND-FM6-GLOBAL-VOICE": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "SND-FM6-GLOBAL-LFO": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "SND-FM6-GLOBAL-LFO2": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "SND-VA-OSC1": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "SND-VA-OSC1-DETAIL": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "SND-VA-OSC2": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "SND-VA-OSC2-DETAIL": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "SND-VA-OSC3": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "SND-VA-OSC3-DETAIL": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "SND-VA-OSC4": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "SND-VA-OSC4-DETAIL": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "SND-VA-FILTER": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "SND-VA-FILTER-DETAIL": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "SND-VA-ENV1": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "SND-VA-ENV1-DETAIL": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "SND-VA-ENV2": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "SND-VA-ENV2-DETAIL": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "SND-VA-ENV3": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "SND-VA-ENV3-DETAIL": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "SND-VA-ENV4": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "SND-VA-ENV4-DETAIL": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "SND-VA-LFO1": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "SND-VA-LFO2": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "SND-VA-LFO3": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "SND-VA-LFO4": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "SND-VA-LFO-SYNC": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "SND-VA-VOICE": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "SND-VA-MOD1": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "SND-VA-MOD2": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "SND-VA-MOD3": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "SND-VA-MOD4": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "SND-VA-MOD5": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "SND-VA-MOD6": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "SND-VA-MOD7": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
+      "SND-VA-MOD8": {
+        "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
+        "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
+        "deviceVerification": "Pending — native host captures and device link only",
+        "evidence": "native-pages/README.md"
+      },
       "IDEA_LIBRARY": {
         "designStatus": "Native preview alongside selected prototype; device review pending",
         "implementationStatus": "Partial native preview: six saved ideas plus existing recording rows; SELECT focus, SEL load and explicit Save current; no bulk clear yet",
@@ -14796,10 +15462,23 @@
         "hostChecks": 62449,
         "deviceVerification": "Pending"
       },
+      "nativeRetainedScreens": {
+        "implementationStatus": "Implemented migration of every existing screen and popup; future Songs/Learn/Next/library workflows remain pending",
+        "evidence": "native-pages/README.md",
+        "hostChecks": 1823,
+        "settledRoutes": 871,
+        "deviceVerification": "Pending"
+      },
+      "nativeMotion": {
+        "implementationStatus": "Implemented bounded transitions and post-MASTER scalar output/activity response, unchanged speaker/USB/MIDI streams at both sample rates",
+        "evidence": "native-pages/README.md",
+        "deviceVerification": "Pending: LCD/CPU/input timing and motion tuning"
+      },
       "songLibrary": {
         "implementationStatus": "First native saved-idea slice: six atomic records, protected pending write, complete musical snapshots and existing recording rows; full #46 remains open",
         "evidence": "../../SONGS-LIBRARY.md",
-        "deviceVerification": "Pending"
+        "deviceVerification": "Pending",
+        "hostChecks": 2125
       }
     }
   }

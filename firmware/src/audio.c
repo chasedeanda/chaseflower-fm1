@@ -104,12 +104,27 @@ static void audio_block(int32_t *out, uint32_t n)       /* mix (fx.c), then Q15 
     mix_block(out, n);
     if (fx_usb_fixed)                                   /* Options > USB Level = Fixed: USB took the full level, the */
         usb_fixed_dac(out, n);                          /* DAC (speaker, headphones) gets MASTER's (fx.c) */
+#ifdef CF_UNIT
+    uint32_t visual_peak=0;uint8_t visual_scan=cf_visual_want;
+#endif
     for (i = 0; i < n; i++) {
+#ifdef CF_UNIT
+        /* Reuse the conversion pass; read only, and skip analysis with Motion Off. */
+        if(visual_scan) {
+            int32_t vl=out[2u*i],vr=out[2u*i+1];
+            uint32_t al=vl<0?0u-(uint32_t)vl:(uint32_t)vl;
+            uint32_t ar=vr<0?0u-(uint32_t)vr:(uint32_t)vr;
+            if(al>visual_peak)visual_peak=al;if(ar>visual_peak)visual_peak=ar;
+        }
+#endif
         if (i & 1u)
             scope_buf[scope_w++ & (SCOPE_N - 1u)] = (int16_t)out[2u * i];
         out[2u * i] *= 1 << OUT_SHIFT;
         out[2u * i + 1u] *= 1 << OUT_SHIFT;
     }
+#ifdef CF_UNIT
+    cf_visual_publish(visual_peak);
+#endif
     if (fx_out_blk)                                     /* Output Clean (fx.c): the 7 bits under the Q15 sample */
         for (i = 0; i < 2u * n; i++)
             out[i] += out_frac[i & (2u * CTL - 1u)];

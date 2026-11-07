@@ -2,7 +2,8 @@
 
 Development implementation for [issue #46](https://github.com/chasedeanda/chaseflower-fm1/issues/46).
 This is a firmware/emulator preview, with physical FM-1 checks still pending.
-Source base: `abd37afab562555d4e8a58a66d18b488cce594f9`; design reference:
+Initial source base: `abd37afab562555d4e8a58a66d18b488cce594f9`; integrated with
+`09403c9` (native pages/motion) before final verification. Design reference:
 `845325136418dd038c7ef81eaca01ec64ac5e61e`.
 
 ## Use it
@@ -92,6 +93,13 @@ address isolation, backup restore validation and existing recording routing.
 The six-object storage simulation passed **6,230 power cuts**, **54,660 checks**,
 and **1,500 operations** with no failures. Existing editor, HOME-bank, accompaniment,
 progression, Auto Harmony, recording, USB, backup and installer checks also passed.
+After merging the native-pages update, library/editor/recording/backup/accompaniment
+and USB suites passed again, including 874 native routes and identical Motion
+On/Off audio, six USB channels and MIDI at both sample rates.
+
+The integration preserves the upstream native page/motion renderer. Two upstream
+UI tag values are expressed as bit shifts so the register-address lint recognizes
+them as data; their values and motion behavior are unchanged.
 
 [Linked report](../benchmarks/resources/song-library/report.md) and
 [dependency/build identity](../benchmarks/resources/song-library/identity.json)
@@ -99,13 +107,13 @@ record the working source and compiler options. Linked totals:
 
 | Region | Used | Remaining |
 | --- | ---: | ---: |
-| Ordinary RAM | 83,848 B | 14,456 B |
+| Ordinary RAM | 84,648 B | 13,656 B |
 | POOL | 316,792 B | 27,272 B |
-| XIP | 495,036 B | 78,404 B |
+| XIP | 449,708 B | 123,732 B |
 | RAM code | 3,128 B | 21,448 B |
 
-Against the native-editor reference, this adds 784 B ordinary RAM, 1,388 B POOL,
-5,676 B XIP and 36 B RAM code. The comparison reference is recorded in the report;
+Against the integrated native-pages reference, this adds 768 B ordinary RAM, 1,388 B POOL,
+7,388 B XIP and 36 B RAM code. The comparison reference is recorded in the report;
 these linked headrooms do not measure runtime stack or audio timing. Physical
 edit → save → power-cycle → recall, TFT legibility, live HOLD/tails and USB recording
 under library use remain device-validation work. No hardware was flashed.

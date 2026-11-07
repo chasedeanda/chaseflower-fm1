@@ -86,6 +86,8 @@ static void draw_top_sound(uint32_t part, int xmax)   /* xmax: where the chips o
 }
 
 #include "cf_views.c"                           /* (the heads, the pager, the central pictures) */
+#include "cf_motion.c"
+static void cfn_controls(const char label[4][12],const char value[4][14],const uint8_t disabled[4],const uint8_t emphasis[4]);
 #include "cf_stage.c"
 #include "cf_acc_screen.c"
 #include "cf_draft_screen.c"
@@ -837,7 +839,7 @@ static void draw_popup(void)
 
 /* -------------------------------------------------------------- the frame --- */
 static int cf_intro_draw(uint32_t dt);
-static void cf_ui_draw(void)
+static void cf_legacy_frame(void)
 {
     char top[24];
     fb_unclip();
@@ -937,5 +939,75 @@ static void cf_ui_draw(void)
                                                   * screen draws it (the owner saw it over the m6 key, 2026-10-19) */
     draw_keys();
     draw_knobs();
+    cf_present();
+}
+
+#include "cf_native_pages.c"
+typedef struct { char text[3][64];char name[3][24];uint16_t pos,n;uint8_t kind,skin,ack,focus,progress,warn; } cfn_popup_t;
+static cfn_popup_t cfn_popup_last;
+static uint32_t cfn_saved_ms,cfn_popup_focus_ms;
+static uint16_t cfn_popup_target;
+static void cfn_message_lines(char dst[3][64],const char *src)
+{
+    for(unsigned row=0;row<3 && *src;row++) {
+        unsigned n=0,space=0;
+        while(src[n] && src[n]!='\n' && n<62){dst[row][n]=src[n];dst[row][n+1]=0;if(cfn_width(&CFN_12,dst[row])>208){dst[row][n]=0;break;}if(src[n]==' ')space=n;n++;}
+        if(src[n] && src[n]!='\n' && space)n=space;
+        dst[row][n]=0;src+=n;while(*src==' ' || *src=='\n')src++;
+    }
+}
+static void cf_ui_draw(void)
+{
+    fb_unclip();cfn_motion_frame();
+    if(cf_intro_draw(cu.frame_dt)){cf_stage_valid=cf_acc_valid=cfd_valid=cfn_page_valid=0;return;}
+    if(!cu.upd_left && cu.scr==SCR_SONGS) {
+        cf_stage_valid=cf_acc_valid=cfd_valid=cfn_page_valid=0;
+        memset(&cfn_popup_last,0,sizeof cfn_popup_last);cfl_draw();return;
+    }
+    cfl_screen_valid=0;
+    cfn_popup_t pop;memset(&pop,0,sizeof pop);pop.kind=cu.pop;pop.skin=cf_skin;
+    if(cu.pop==POP_SOUND_CHORD || cu.pop==POP_SOUND_BASS || cu.pop==POP_SOUND_LAYER) {
+        unsigned part=cu.pop==POP_SOUND_LAYER?2:cu.pop==POP_SOUND_BASS?1:0;
+        pop.pos=cf_snd_pos(part);pop.n=cf_snd_count(part);
+        str_cpy(pop.text[0],part==2?"Layer sound":part?"Bass sound":"Chord sound",sizeof pop.text[0]);
+        for(unsigned i=0;i<3;i++) {unsigned idx=pop.n?(pop.pos+pop.n+i-1)%pop.n:0,e,pp;cf_snd_at(part,idx,&e,&pp);pool_name(e,pp,pop.name[i]);}
+        unsigned target=(pop.kind<<9)|pop.pos;
+        if(cfn_popup_target!=target){cfn_popup_target=target;cfn_popup_focus_ms=cf_motion?(cu.now?cu.now:1):0;}
+        unsigned age=cu.now-cfn_popup_focus_ms;
+        if(cf_motion && cfn_popup_focus_ms && (int32_t)(cfn_popup_focus_ms-cf_motion_epoch)>0 && age<100)pop.focus=2*(100-age)*(100-age)/10000;
+    } else if(cu.pop==POP_ALGO) {str_cpy(pop.text[0],"Chord layout",sizeof pop.text[0]);str_cpy(pop.text[1],ALG_NAME[cs.chord.algo],sizeof pop.text[1]);str_cpy(pop.text[2],cs.chord.algo&1?"Buttons latch":"Hold chord buttons",sizeof pop.text[2]);}
+    else if(cu.pop==POP_OCTAVE){str_cpy(pop.text[0],"Octave",sizeof pop.text[0]);kint(pop.text[1],cs.chord.octave,0);}
+    else if(cu.pop==POP_MSG) {
+        cfn_message_lines(pop.text,cu.msg);
+    }
+    if(cu.scr==SCR_SQ && sq_clear_down) {
+        unsigned elapsed=cu.now-sq_clear_down;pop.kind=POP_MSG;pop.warn=1;
+        kint(pop.text[0],sq_number(sq_clear_slot)," / Clear recording");
+        str_cpy(pop.text[1],"Hold SAVE: ",sizeof pop.text[1]);kint(pop.text[1]+str_len(pop.text[1]),elapsed>=3000?0:(3000-elapsed+999)/1000," s left");
+        str_cpy(pop.text[2],"Release to cancel",sizeof pop.text[2]);pop.progress=elapsed>=3000?100:elapsed/30;
+    }
+    if(cu.upd_left)memset(&pop,0,sizeof pop);
+    if(pop.kind==POP_MSG && !memcmp(pop.text[0],"Saved ",6)) {
+        if(cfn_popup_last.kind!=POP_MSG || memcmp(pop.text,cfn_popup_last.text,sizeof pop.text))cfn_saved_ms=cf_motion?(cu.now?cu.now:1):0;
+        pop.ack=cf_tween_offset(cfn_saved_ms,240,20);
+    } else cfn_saved_ms=0;
+    int changed=memcmp(&pop,&cfn_popup_last,sizeof pop)!=0;
+    if(changed){cf_stage_valid=cf_acc_valid=cfd_valid=cfn_page_valid=0;cfn_popup_last=pop;}
+    unsigned before=cf_stage_draws+cf_acc_draws+cfd_draws+cfn_page_draws;
+    if(!cu.upd_left && cu.scr==SCR_PEDIT){cf_stage_valid=cf_acc_valid=cfn_page_valid=0;cfd_draw();}
+    else if(!cu.upd_left && (cu.scr==SCR_ACC || (cu.scr==SCR_GLO && cu.page[SCR_GLO]==CF_GLO_LEGACY))) {cf_stage_valid=cfd_valid=cfn_page_valid=0;cf_acc_draw();}
+    else if(!cu.upd_left && cu.scr==SCR_HOME && home_view()==HV_FLOWER && cf_scene()==CF_SCENE_PROGRESSIONS){cf_acc_valid=cfd_valid=cfn_page_valid=0;cf_stage_draw();}
+    else {cf_stage_valid=cf_acc_valid=cfd_valid=0;cfn_page_draw();}
+    if(!pop.kind || (!changed && before==cf_stage_draws+cf_acc_draws+cfd_draws+cfn_page_draws))return;
+    fb_unclip();fb_rect(8,55,224,131,FL_BG);fb_frame(8,55,224,131,pop.warn?FL_C(FL_R_ROSE,0):FL_BG3);
+    if(pop.n) {
+        cfn_text(&CFN_12,16,74,pop.text[0],FL_INK2);
+        for(unsigned i=0;i<3;i++){if(i==1){fb_rect(12,109,216,29,FL_BG1);fb_rect(12,109,2+pop.focus,29,C_ACC(0));}cfn_fit(&CFN_16,20,100+i*30,pop.name[i],200,i==1?C_ACC(0):FL_INK2);}
+        char b[20];kint(b,pop.pos+1," / ");kint(b+str_len(b),pop.n,0);cfn_text(&CFN_12,16,181,b,FL_INK2);
+    } else {
+        for(unsigned i=0;i<3;i++)cfn_fit(i==1 && pop.kind!=POP_MSG?&CFN_32:pop.kind==POP_MSG?&CFN_12:&CFN_16,16,89+i*32,pop.text[i],208,i?FL_INK:FL_INK2);
+        if(pop.ack)fb_hline(16,168,20-pop.ack+8,C_ACC(0));
+        if(pop.progress)fb_rect(16,174,208*pop.progress/100,3,FL_C(FL_R_ROSE,0));
+    }
     cf_present();
 }

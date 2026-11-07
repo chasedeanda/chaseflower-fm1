@@ -1,0 +1,42 @@
+In file included from firmware/src/coralflower.c:181:
+In file included from firmware/src/cf_settings.c:61:
+firmware/src/cf_fx_store.c:31:23: warning: suggest braces around initialization of subobject [-Wmissing-braces]
+    fxp_preset_t p = {0};
+                      ^
+                      {}
+1 warning generated.
+size: 95 main-loop functions built for size (783 not in this build)
+HOME Inter Tight 12px: 724 bitmap bytes, 95 glyphs
+HOME Inter Tight 16px: 1231 bitmap bytes, 95 glyphs
+HOME Inter Tight 32px: 4830 bitmap bytes, 95 glyphs
+HOME Inter Tight 64px: 18731 bitmap bytes, 95 glyphs
+stub: 2268 B of 3808 (59.6%), version 3, sha256 baee55ed142fe1cc
+face S: InterTight[wght].ttf@400 12px h15 base12  105 glyphs x 4  data 10425 B + table 3360 B + kern 0 B (0 pairs) = 13795 B   digit adv 7.00px
+face M: InterTight[wght].ttf@500 15px h19 base15  105 glyphs x 4  data 13094 B + table 3360 B + kern 0 B (0 pairs) = 16464 B   digit adv 9.00px
+face L: InterTight[wght].ttf@600 28px h35 base28  36 glyphs x 2  data 4926 B + table 576 B + kern 0 B (0 pairs) = 5537 B   digit adv 18.00px
+fonts total 35796 B  -> /private/tmp/fm1-song-library/build/gen/ui_fonts.h
+pixfont: UI 104 glyphs 14 rows, MICRO 72 glyphs -> /private/tmp/fm1-song-library/build/gen/cf_fonts.h
+2 extra bytes in post.stringData array
+2 extra bytes in post.stringData array
+icons: x_oct_up: symbol_pitch_up not in the font yet, using control_arrow_up
+icons: x_oct_dn: symbol_pitch_down not in the font yet, using control_arrow_down
+icons 12px: 125 cells, 9145 B
+icons 16px: 51 cells, 6673 B
+icons 24px: 14 cells, 4177 B
+icons total 19995 B -> /private/tmp/fm1-song-library/build/gen/ui_icons.h   (87 legacy names + 58 new)
+keycaps: 26 pills, data 4383 B + table 208 B; knob arcs 584 B = 5175 B -> /private/tmp/fm1-song-library/build/gen/ui_keycaps.h
+tables: /private/tmp/fm1-song-library/build/gen/felucca_tables.h
+fm6 patches: 8 -> /private/tmp/fm1-song-library/build/gen/felucca_fm6.h
+generated waves into /private/tmp/fm1-song-library/build/genwav
+samples: no CC0 samples in assets/samples-cc0 - generated material only
+samples: 1 sets, 18 zones, 68326 B ADPCM, SLICE BREAK 44100 samples (cached)
+loader: image 8416 B at 0x1c0a800, bss end 0x1c0f4ac
+loader: ota.bin 7157 B
+  ok    .ram_text: 932 insns, no calls
+  ok    image 453516 B (stub 3808 + app 449708); RAM .data+.bss 84652 B of 98304; pool 316792 B of 344064
+  ok    register access: hal/ only (src/, loader/ clean)
+size: .text 433272 B, .ram_text 3000 B, .c1_text 128 B (RAMTEXT 3128 of 24576), .data 13308 B, .bss 71340 B; XIP 449708 B of 573440 (78.4%), RAM 84648 B of 98304 (86.1%), POOL 316792 B of 344064 (92.1%), NOINIT 216 B of 15664 (1.4%)
+sector 0x4000 (the directory and the stub: constant while the stub is) sha256 0f33c838a23961d8; marker at 0x91fe0, body 449708 B
+app      /private/tmp/fm1-song-library/build/coralflower.bin  453516 B
+loader   /private/tmp/fm1-song-library/build/loader/ota.bin  7157 B
+package  /private/tmp/fm1-song-library/build/coralflower.fwsc  610313 B, identity FM-1_930

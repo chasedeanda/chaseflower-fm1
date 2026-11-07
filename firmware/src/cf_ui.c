@@ -880,6 +880,7 @@ static void cv_turned(int d)
 
 static void ui_select(int d)                     /* SELECT: the bass sound, or a screen's page */
 {
+    cf_nav_dir=d<0?-1:1;
     if(cu.scr==SCR_SONGS){cfl_select(d);return;}
     if(cu.scr==SCR_PEDIT){if(cfwd.have&&!cfdu.conflict&&!cfdu.confirm)cfdu.focus=wrapi(cfdu.focus+d,cfwd.song.n);return;}
     if(cu.scr==SCR_ACC){cf_acc_select(d);return;}
@@ -979,6 +980,7 @@ static void ui_presets(int d)                    /* PRESETS: the chord sound (a 
 }
 static void ui_algo(int d)                       /* ALGORITHM: scene, effect, or workspace tab */
 {
+    cf_nav_dir=d<0?-1:1;
     if(cu.scr==SCR_SONGS)return;
     if(cu.scr==SCR_PEDIT){if(!cfdu.conflict&&!cfdu.confirm)cu.page[SCR_PEDIT]=wrapi(cu.page[SCR_PEDIT]+d,CFD_NTAB);return;}
     if(cu.scr==SCR_ACC){cu.page[SCR_ACC]=(uint8_t)wrapi(cu.page[SCR_ACC]+d,CF_ACC_N);cf_acc_focus=0;cf_acc_page_ms=cf_motion?(cu.now?cu.now:1u):0;return;}
@@ -1227,6 +1229,7 @@ static void ui_button(uint32_t b)
     switch (b) {
     case B_HOME:
         if (home_stage()) {
+            cf_nav_dir=1;
             cf_home_bank = (uint8_t)((cf_home_bank + 1u) % CF_HB_N);
             cf_home_bank_ms = cf_motion ? (cu.now ? cu.now : 1u) : 0u;
             if (cu.pop == POP_SOUND_CHORD || cu.pop == POP_SOUND_BASS) cu.pop = POP_NONE;
