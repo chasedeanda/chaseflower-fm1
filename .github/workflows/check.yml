@@ -98,6 +98,9 @@ jobs:
       - name: Progression suggestions, controls and uninterrupted audio (host HAL)
         run: sh tools/test_progressions.sh
 
+      - name: HOME banks, retained view routes and unchanged audio
+        run: sh tools/test_home_banks.sh
+
       - name: Native HOME, appearance migration and settled Motion Off
         run: sh tools/test_stage.sh
 

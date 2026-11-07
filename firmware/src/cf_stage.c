@@ -38,7 +38,8 @@ typedef struct {
     char chord[24],degree[12],notes[48],idea[40],sound[16],context[48],status[24],pending[48];
     char rail[4][24],numeral[4][12];
     char value[4][14],label[4][12];
-    uint8_t live,hold,slot,first,count,total,skin,motion,battery,halo,rec;
+    uint8_t live,hold,slot,first,count,total,skin,motion,battery,halo,rec,bank,disabled[4];
+    int8_t bank_dx;
 } cf_stage_model_t;
 static cf_stage_model_t cf_stage_last;
 static uint8_t cf_stage_valid;
@@ -49,6 +50,11 @@ static uint32_t cf_stage_tick;
 static void cf_stage_model(cf_stage_model_t *m)
 {
     memset(m,0,sizeof *m);name_update();
+    m->bank=cf_home_bank;
+    if(cf_motion && cf_home_bank_ms && cu.now-cf_home_bank_ms<160u) {
+        unsigned left=160u-(cu.now-cf_home_bank_ms);
+        m->bank_dx=(int8_t)(10u*left*left*left/(160u*160u*160u));
+    }
     m->live=cu_name_live;m->hold=cf_sn.out.hold;m->skin=cf_skin;m->motion=cf_motion;m->battery=(uint8_t)cf_batt();
     str_cpy(m->chord,cu_name[0]?cu_name:"--",sizeof m->chord);
     str_cpy(m->degree,cu_name_sub,sizeof m->degree);
@@ -76,12 +82,14 @@ static void cf_stage_model(cf_stage_model_t *m)
     kint(b,cs.beats,cs.beats==6?"/8":"/4");
     str_cpy(m->context+str_len(m->context),"   ",sizeof m->context-str_len(m->context));
     str_cpy(m->context+str_len(m->context),b,sizeof m->context-str_len(m->context));
-    str_cpy(m->status,cf_sn.ac_on?(cf_sn.ac_paused?"PAUSE":"PLAY"):"STOP",sizeof m->status);
+    str_cpy(m->status,cf_sn.ac_on?(cf_sn.ac_paused?"PAUSE":"PLAY"):
+        cf_sn.sq_on?"REPLAY":cf_sn.dm_on?"DRUMS":(cf_sn.running || cf_sn.metro_on)?"CLOCK":"STOP",sizeof m->status);
     if(cs.clock_in==1 && !cf_sn.ext_clock)str_cpy(m->status,"EXT WAIT",sizeof m->status);
     /* The existing recording plaque owns count-in/capture/save truth. */
     unsigned plaque=dm_plaque(m->pending,sizeof m->pending);
     if(plaque==DMP_REC || plaque==DMP_RECIN) {
         m->rec=1;
+        str_cpy(m->status,plaque==DMP_RECIN?"COUNT IN":"REC",sizeof m->status);
     } else m->pending[0]=0;
     if(!m->rec && cf_sn.ac_next!=CF_P_NONE && cf_sn.ac_on) {
         str_cpy(m->pending,"Next: ",sizeof m->pending);
@@ -95,7 +103,7 @@ static void cf_stage_model(cf_stage_model_t *m)
         cf_chord_name(root,mask,-1,&cu_spell,m->rail[i]);
         cf_harmony_numeral(cs.chord.scale,cs.chord.tonic,root,m->numeral[i]);
     }
-    for(int i=0;i<4;i++){cf_knob_t k;memset(&k,0,sizeof k);ui_knob_info(i,&k);str_cpy(m->label[i],k.name,sizeof m->label[i]);str_cpy(m->value[i],k.val,sizeof m->value[i]);}
+    for(int i=0;i<4;i++){cf_knob_t k;memset(&k,0,sizeof k);ui_knob_info(i,&k);str_cpy(m->label[i],k.name,sizeof m->label[i]);str_cpy(m->value[i],k.val,sizeof m->value[i]);m->disabled[i]=k.dis;}
     /* Documented volume/activity fallback, not a measured audio envelope.
      * Real hits only: a selected/muted drum pattern alone cannot animate. */
     unsigned parts=(n && cs.level_chord?1:0)+(cf_sn.nb && cs.bass_level?1:0);
@@ -133,7 +141,6 @@ static void cf_stage_draw(void)
     cfn_fit(&CFN_12,140,43,m.sound,90,FL_INK2);
     if(m.pending[0])cfn_fit(&CFN_12,10,59,m.pending,178,m.rec?FL_C(FL_R_ROSE,0):C_ACC(0));
     else cfn_text(&CFN_12,10,59,m.hold?"HOLD":m.live?"NOW":cu_name[0]?"LAST":"READY",FL_INK2);
-    cfn_text(&CFN_12,230-cfn_width(&CFN_12,"CORE"),59,"CORE",FL_INK2);
     cfn_center(&CFN_16,120,76,m.degree,C_ACC(0));
     if(m.halo) {
         int px=120+82+m.halo,py=107;
@@ -155,10 +162,13 @@ static void cf_stage_draw(void)
         if(m.slot==m.first+i)fb_hline((int)i*60+9,193,42,C_ACC(0));
     }
     fb_unclip();fb_hline(10,198,220,FL_BG3);
+    char bank[24];str_cpy(bank,CF_HOME_BANK_NAME[m.bank],sizeof bank);
+    str_cpy(bank+str_len(bank)," ",sizeof bank-str_len(bank));kint(bank+str_len(bank),m.bank+1,"/4");
+    fb_clip(10,199,230,211);cfn_center(&CFN_12,120+m.bank_dx,209,bank,FL_INK2);
     for(int i=0;i<4;i++) {
-        int x=i*60;fb_clip(x+3,199,x+57,240);
-        cfn_center(&CFN_12,x+30,214,m.label[i],FL_INK2);
-        cfn_fit(cfn_width(&CFN_16,m.value[i])<=54?&CFN_16:&CFN_12,x+3,234,m.value[i],54,FL_INK);
+        int x=i*60;fb_clip(x+3,211,x+57,240);
+        cfn_center(&CFN_12,x+30,223,m.label[i],FL_INK2);
+        cfn_fit(cfn_width(&CFN_16,m.value[i])<=54?&CFN_16:&CFN_12,x+3,239,m.value[i],54,m.disabled[i]?FL_INK2:FL_INK);
     }
     fb_unclip();cf_present();
 }

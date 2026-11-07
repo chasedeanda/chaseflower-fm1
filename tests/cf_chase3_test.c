@@ -125,14 +125,15 @@ static void banks(void)
 
 static void views(void)
 {
-    cs.seq_hint = 7; cu.scr = SCR_HOME;
+    cs.seq_hint = 7; cu.scr = SCR_HOME; home_boot_main=1;cf_home_bank=0;
     for (uint32_t i = 0; i < 9; i++) {
-        CHECK(home_view() == i % HV_N);
+        CHECK(home_view() == HV_FLOWER && cf_home_bank==i%CF_HB_N);
         ui_button(B_HOME); CHECK((cs.seq_hint & 7u) == 7u);
     }
-    cs.seq_hint = 0xC7; CHECK(home_view() == HV_DIAG);
-    cu.scr = SCR_GLO; ui_button(B_HOME); CHECK(cu.scr == SCR_HOME && cs.seq_hint == 0xC7);
-    cs.seq_hint = (HV_KEYS << HV_SHIFT) | 7u;
+    home_boot_main=0;cs.seq_hint = 0xC7; CHECK(home_view() == HV_DIAG);
+    cu.scr = SCR_GLO; ui_button(B_HOME); CHECK(cu.scr == SCR_HOME && home_view()==HV_FLOWER && cf_home_bank==0 && cs.seq_hint==0xC7);
+    /* Explicit legacy view choice remains a valid saved setting. */
+    home_boot_main=0;cs.seq_hint = (HV_KEYS << HV_SHIFT) | 7u;
     CHECK(cf_settings_write(0) == 1); cs.seq_hint = 0;
     CHECK(cf_settings_load() && home_view() == HV_KEYS && (cs.seq_hint & 7u) == 7u);
     CHECK(sizeof(cf_set_t) == 188u);

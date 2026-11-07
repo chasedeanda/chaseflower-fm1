@@ -162,6 +162,15 @@ static uint32_t home_view(void)
     uint32_t v = (uint32_t)cs.seq_hint >> HV_SHIFT & 3u;
     return v < HV_N ? v : HV_FLOWER;
 }
+static int home_stage(void)
+{ return cu.scr == SCR_HOME && home_view() == HV_FLOWER && cf_scene() == CF_SCENE_PROGRESSIONS; }
+static const char *const HOME_VIEW_NAME[] = {"Stage", "Chord", "Keyboard", "Diagnostics"};
+static void home_view_select(int d)
+{
+    uint32_t v = (uint32_t)wrapi((int)home_view() + d, HV_N);
+    home_boot_main = 0;
+    cs.seq_hint = (uint8_t)((cs.seq_hint & 63u) | v << HV_SHIFT);
+}
 static void home_view_next(void)
 {
     static const char *const NAME[HV_N] = {"View: Scene", "View: Chord", "View: Keyboard", "View: Diagnostics"};
@@ -260,11 +269,14 @@ static cf_form_t *sel_form(void)
     return &cs.chord.side[cu.sel_btn < CF_SIDE_NBTN ? cu.sel_btn : 0];
 }
 
+static int cf_home_bank_info(int k, cf_knob_t *o);
+static int cf_home_bank_turn(int k, int d);
 static void ui_knob_info(int k, cf_knob_t *o)
 {
     o->bar = -1;
     switch (cu.scr) {
     case SCR_HOME:
+        if (home_stage() && cf_home_bank_info(k, o)) break;
         if (k == 0 && (cf_scene() == CF_SCENE_PROGRESSIONS || cpa_running())) {
             kfmt(o->name, 12, "RHYTHM");
             kfmt(o->val, 14, cpa_rhythm_name(cpg.rhythm));
@@ -454,13 +466,7 @@ static void ui_knob_info(int k, cf_knob_t *o)
         case 0: /* Display */
             if (k == 0) { kfmt(o->name, 12, "THEME"); kfmt(o->val, 14, CF_SKIN_NAME[cf_skin]); }
             if (k == 3) { kfmt(o->name, 12, "MOTION"); kfmt(o->val, 14, cf_motion ? "On" : "Off"); }
-#if CF_SCENES
-            if (k == 1) {
-                static const char *const BD[FL_NBD] = {"Scene", "Ripples", "None"};
-                kfmt(o->name, 12, "BACKDROP");
-                kfmt(o->val, 14, BD[cs.backdrop % FL_NBD]);
-            }
-#endif
+            if (k == 1) { kfmt(o->name, 12, "HOME VIEW"); kfmt(o->val, 14, HOME_VIEW_NAME[home_view()]); }
             if (k == 2) { kfmt(o->name, 12, "BOOT SND"); kfmt(o->val, 14, cs.boot_sound ? "On" : "Off"); }
             break;
         case 1: /* MIDI: out on or off, the clock in (the channels: the next page, four of them since the sequencer's
@@ -545,12 +551,15 @@ static void cpa_glide(int d)
 
 }
 
+#include "cf_home_banks.c"
+
 static void ui_knob_turn(int k, int d)
 {
     cu.knob_ms[k] = cu.now ? cu.now : 1u;
     cu.knob_last = (uint8_t)k;
     switch (cu.scr) {
     case SCR_HOME:
+        if (home_stage() && cf_home_bank_turn(k, d)) break;
         if (cpa_running() && (k == 1 || k == 2)) { cpa_home_key(k, d); break; }
         if (k == 3) { cpa_tempo(d); break; }
         if (k == 0 && (cf_scene() == CF_SCENE_PROGRESSIONS || cpa_running())) {
@@ -723,13 +732,10 @@ static void ui_knob_turn(int k, int d)
         case 0:
             if (k == 0 || k == 3) {
                 if (k == 0) cf_skin = (uint8_t)wrapi(cf_skin + d, CF_SKIN_N);
-                else cf_motion = (uint8_t)(d > 0);
+                else { cf_motion = (uint8_t)(d > 0); cf_home_bank_ms = 0; }
                 cpb_dirty = 1; cpb_changed = cu.now;
             }
-#if CF_SCENES
-            if (k == 1)
-                cs.backdrop = (uint8_t)wrapi(cs.backdrop + d, FL_NBD);
-#endif
+            if (k == 1) home_view_select(d);
             if (k == 2) {
                 cs.boot_sound = (uint8_t)(d > 0);
                 if (cs.boot_sound)
@@ -986,6 +992,7 @@ static void ui_open(uint32_t scr)
     if (sq_screen(was) && !sq_screen(scr) && scr != SCR_SEQ)
         ui_ctx_from_track(squ.trk);
     cu.scr = (uint8_t)(scr == was && scr != SCR_HOME ? SCR_HOME : scr);
+    if (cu.scr == SCR_HOME && was != SCR_HOME) { cf_home_bank = CF_HB_CORE; cf_home_bank_ms = 0; }
     if (cu.scr == SCR_SEQ && was != SCR_SEQ)
         dm_seq_to = 0;                           /* (the carousel starts on the SEQUENCER: SEQ twice opens it, as before) */
     if (cu.scr == SCR_SEL && cf_is_off(&cs.chord, cu.sel_btn))
@@ -1163,11 +1170,16 @@ static void ui_button(uint32_t b)
         }
     }
     switch (b) {
-    case B_HOME:                                 /* (on HOME: the next view, as ChoralRoot's HOME) */
-        if (cu.scr == SCR_HOME)
-            home_view_next();
-        else
-            ui_open(SCR_HOME);
+    case B_HOME:
+        if (home_stage()) {
+            cf_home_bank = (uint8_t)((cf_home_bank + 1u) % CF_HB_N);
+            cf_home_bank_ms = cf_motion ? (cu.now ? cu.now : 1u) : 0u;
+            if (cu.pop == POP_SOUND_CHORD || cu.pop == POP_SOUND_BASS) cu.pop = POP_NONE;
+        } else {
+            ui_open(SCR_HOME); home_boot_main = 1;
+            cf_scene_set(CF_SCENE_PROGRESSIONS);
+            cf_home_bank = CF_HB_CORE; cf_home_bank_ms = 0;
+        }
         break;
     case B_SCL:                                  /* (the drum machine: SEL takes the rhythm's own KIT and SWING back) */
         if (cu.scr == SCR_DRUM)
@@ -2033,6 +2045,7 @@ static void cf_ui_init(void)
         cs_defaults(&cs);
     cvr_init();
     home_boot_main = !CF_SCENES;
+    cf_home_bank = CF_HB_CORE; cf_home_bank_ms = 0;
     cu.scr = SCR_HOME;
     cu.sel_btn = sel_first();
     cf_led_init();
