@@ -8481,74 +8481,65 @@ html&gt;body{padding:0}&lt;/style&gt;
     {
       &quot;id&quot;: &quot;DISPLAY-STYLE&quot;,
       &quot;group&quot;: &quot;Display&quot;,
-      &quot;title&quot;: &quot;Appearance · Theme&quot;,
+      &quot;title&quot;: &quot;Appearance · Character&quot;,
       &quot;phase&quot;: 1,
       &quot;kind&quot;: &quot;params&quot;,
-      &quot;purpose&quot;: &quot;Use Instrument Teal by default, with optional Studio/Editorial palettes and a custom solid accent in the same layout.&quot;,
-      &quot;entry&quot;: &quot;SYS-ROOT → Display&quot;,
+      &quot;purpose&quot;: &quot;Choose Devil/Ember or Cat/Plum; the entire palette is tied to the character.&quot;,
+      &quot;entry&quot;: &quot;GLO → Display&quot;,
       &quot;fields&quot;: [
         {
+          &quot;label&quot;: &quot;Character&quot;,
+          &quot;value&quot;: &quot;Devil&quot;
+        },
+        {
           &quot;label&quot;: &quot;Theme&quot;,
-          &quot;value&quot;: &quot;Instrument Teal&quot;
+          &quot;value&quot;: &quot;Ember · follows character&quot;
         },
         {
-          &quot;label&quot;: &quot;Background / primary&quot;,
-          &quot;value&quot;: &quot;#061b1e / #f2f8f4&quot;
+          &quot;label&quot;: &quot;Motion&quot;,
+          &quot;value&quot;: &quot;On / Off&quot;
         },
         {
-          &quot;label&quot;: &quot;Secondary / line&quot;,
-          &quot;value&quot;: &quot;#89a7a5 / #355054&quot;
-        },
-        {
-          &quot;label&quot;: &quot;Subtle / accent / onAccent&quot;,
-          &quot;value&quot;: &quot;#113034 / #77dacb / #092d2c&quot;
+          &quot;label&quot;: &quot;Alternative&quot;,
+          &quot;value&quot;: &quot;Cat / Plum&quot;
         }
       ],
       &quot;knobs&quot;: [
-        &quot;Theme · Instrument Teal&quot;,
-        &quot;Accent · #77dacb&quot;,
-        &quot;—&quot;,
-        &quot;—&quot;
+        &quot;Character · Devil / Cat&quot;,
+        &quot;Home view · Stage&quot;,
+        &quot;Boot sound · On / Off&quot;,
+        &quot;Motion · On / Off&quot;
       ],
-      &quot;select&quot;: &quot;Choose Theme / Accent / Motion / Legacy scenes&quot;,
-      &quot;algorithm&quot;: &quot;No action&quot;,
+      &quot;select&quot;: &quot;Choose another system page&quot;,
+      &quot;algorithm&quot;: &quot;No character action&quot;,
       &quot;buttons&quot;: {
-        &quot;HOME&quot;: &quot;Return to Progressions&quot;,
-        &quot;GLO&quot;: &quot;Back one level&quot;,
-        &quot;SEL&quot;: &quot;Enter highlighted item&quot;
+        &quot;HOME&quot;: &quot;Return Progressions Core&quot;,
+        &quot;GLO&quot;: &quot;Return HOME&quot;
       },
       &quot;exit&quot;: &quot;GLO → SYS-ROOT; HOME → Progressions&quot;,
       &quot;states&quot;: [
-        &quot;The owner-provided fm1_adaptive_motion_prototype.html is the authoritative visual/motion reference. Preserve its original bytes separately from any working adaptation.&quot;,
-        &quot;Instrument Teal is default: bg #061b1e, fg #f2f8f4, muted #89a7a5, line #355054, subtle #113034, accent #77dacb, onAccent #092d2c. Studio and Editorial are optional palettes of the same layout.&quot;,
-        &quot;Retain all nine approved visual studies, including Chord Morph and Generative / Bloom. This does not implement unsupported morph/generative DSP, new engines, macros or every pictured capability.&quot;,
-        &quot;A custom accent is solid. Chord/degree anchors, thin separators, four text controls and a bank indicator remain readable; optional palette changes do not alter music or layout.&quot;,
-        &quot;Coral Bloom, Aurora and Studio Rack are historical explorations and are not selected; the supplied prototype’s own Morph/Bloom studies remain part of the approved reference.&quot;,
-        &quot;Motion has only On / Off. The earlier Quiet/Expressive/Reduced selector is superseded by adaptive output/active-part response; there are no independent Intensity, Speed or Calm motion preferences.&quot;
+        &quot;The approved soft mascot reference supersedes Instrument/Studio/Editorial for this build. Exactly Devil/Ember and Cat/Plum are selectable.&quot;,
+        &quot;Character selection changes the entire palette, not music, transport, source or sounds. There is no independent theme or accent control.&quot;,
+        &quot;Motion On follows real output/activity and shared musical phase. Off settles every effect; actual values and transport remain truthful.&quot;,
+        &quot;Preference v5 preserves the 44-byte record and migrates v1–v4 favorites, Motion and Click without a load-time write.&quot;
       ],
       &quot;playerSteps&quot;: [
-        &quot;Choose Instrument Teal, Studio or Editorial with K1.&quot;,
-        &quot;Use SELECT for custom solid Accent detail or Motion.&quot;,
-        &quot;Return HOME; the same chord/degree, banks and musical controls remain.&quot;
+        &quot;Open GLO → Display and turn K1 CHARACTER to Devil or Cat.&quot;,
+        &quot;The palette follows the character throughout HOME, menus and startup.&quot;,
+        &quot;K4 selects Motion On or Off; return HOME to play.&quot;
       ],
       &quot;related&quot;: [
-        &quot;DISPLAY-ACCENT&quot;,
-        &quot;DISPLAY-MOTION&quot;,
-        &quot;DISPLAY-SCENES&quot;
+        &quot;DISPLAY-MOTION&quot;
       ],
       &quot;items&quot;: [
         {
-          &quot;label&quot;: &quot;Instrument Teal&quot;,
-          &quot;value&quot;: &quot;Deep teal · default&quot;,
+          &quot;label&quot;: &quot;Devil&quot;,
+          &quot;value&quot;: &quot;Ember · default&quot;,
           &quot;selected&quot;: true
         },
         {
-          &quot;label&quot;: &quot;Studio&quot;,
-          &quot;value&quot;: &quot;Dark&quot;
-        },
-        {
-          &quot;label&quot;: &quot;Editorial&quot;,
-          &quot;value&quot;: &quot;Warm light&quot;
+          &quot;label&quot;: &quot;Cat&quot;,
+          &quot;value&quot;: &quot;Plum&quot;
         }
       ]
     },
@@ -8559,7 +8550,7 @@ html&gt;body{padding:0}&lt;/style&gt;
       &quot;phase&quot;: 1,
       &quot;kind&quot;: &quot;params&quot;,
       &quot;purpose&quot;: &quot;Choose adaptive On or totally Off, with no additional motion-style, intensity or speed selector.&quot;,
-      &quot;entry&quot;: &quot;DISPLAY-STYLE → SELECT Motion&quot;,
+      &quot;entry&quot;: &quot;GLO → Display → K4&quot;,
       &quot;fields&quot;: [
         {
           &quot;label&quot;: &quot;Motion&quot;,
@@ -8584,7 +8575,7 @@ html&gt;body{padding:0}&lt;/style&gt;
         &quot;Lights · Scale&quot;,
         &quot;—&quot;
       ],
-      &quot;select&quot;: &quot;Choose Theme / Accent / Motion / Legacy scenes&quot;,
+      &quot;select&quot;: &quot;Choose another system page&quot;,
       &quot;algorithm&quot;: &quot;No action&quot;,
       &quot;buttons&quot;: {
         &quot;HOME&quot;: &quot;Return to Progressions&quot;,
@@ -8595,7 +8586,7 @@ html&gt;body{padding:0}&lt;/style&gt;
       &quot;states&quot;: [
         &quot;Exactly two user options: On / Off. No Quiet, Expressive, Reduced, Calm, Intensity or Speed motion preference.&quot;,
         &quot;On derives a bounded response from smoothed volume/output level and active instrument-part count. Smooth level/activity changes so short percussion transients do not abruptly change the response.&quot;,
-        &quot;Use the shared clock and resolved playing/ownership. A real output envelope and active-part snapshot require implementation/validation; prototype loudness/layers sliders are simulated inputs, not extra device Motion controls.&quot;,
+        &quot;Use the shared clock and resolved playing/ownership. The firmware uses a real post-MASTER activity snapshot; physical tuning remains pending. Prototype loudness/layers sliders are not device controls.&quot;,
         &quot;The demonstration’s up-to-eight layer count is not a promise of eight hardware instrument parts, engines, tracks or voices.&quot;,
         &quot;Retain functional beat/playhead, chord transition, parameter/bank/focus, REC and confirmed Saved feedback across all nine studies, including Morph/Bloom visual motion. Unsupported musical features remain explicitly studies.&quot;,
         &quot;Off stops every animation and transition, including CSS pulses/halos, fades/interpolation, focus/parameter/bank, Morph/Bloom and Saved responses. Chord/notes/degree/cursor/status update immediately to the correct settled state.&quot;,
@@ -8603,10 +8594,9 @@ html&gt;body{padding:0}&lt;/style&gt;
         &quot;Tune the hidden adaptive curve through engineering and physical validation, not a manual Motion Intensity/Speed dial. Measure and cap cadence, dirty regions, pixel work, scratch memory and foreground latency with demanding sound/drums/USB; no browser FPS/CPU/polyphony promises.&quot;
       ],
       &quot;playerSteps&quot;: [
-        &quot;Turn K1 for Motion On or Off.&quot;,
-        &quot;On: compare quiet/sparse and louder/more-active playing; response adapts automatically.&quot;,
-        &quot;Off: check that all tween/pulse/CSS motion stops while musical values update instantly.&quot;,
-        &quot;Turn notes and key lights independently with K2/K3.&quot;
+        &quot;Open GLO → Display.&quot;,
+        &quot;Turn K4 for Motion On or Off.&quot;,
+        &quot;Return HOME; musical and saved-data state remains live.&quot;
       ],
       &quot;related&quot;: [
         &quot;DISPLAY-STYLE&quot;,
@@ -8619,8 +8609,8 @@ html&gt;body{padding:0}&lt;/style&gt;
       &quot;title&quot;: &quot;Secondary scenes&quot;,
       &quot;phase&quot;: 1,
       &quot;kind&quot;: &quot;params&quot;,
-      &quot;purpose&quot;: &quot;Retain the existing scenes out of the primary writing workflow until deliberate retirement.&quot;,
-      &quot;entry&quot;: &quot;DISPLAY-STYLE → SELECT Legacy scenes&quot;,
+      &quot;purpose&quot;: &quot;Historical exploration; not a route or appearance option in the two-character build.&quot;,
+      &quot;entry&quot;: &quot;Historical design inventory only&quot;,
       &quot;fields&quot;: [
         {
           &quot;label&quot;: &quot;HOME view&quot;,
@@ -8654,15 +8644,10 @@ html&gt;body{padding:0}&lt;/style&gt;
       },
       &quot;exit&quot;: &quot;GLO → SYS-ROOT; HOME → Progressions&quot;,
       &quot;states&quot;: [
-        &quot;HOME ALGORITHM cycle remains Progressions → Bass → Bonfire → Nothing&quot;,
-        &quot;Scene-free successor build: show Scenes not included, not broken entries&quot;,
-        &quot;Boot sound is a deliberate optional preference; turning it on must not disrupt playing&quot;,
-        &quot;No LCD backlight toggle: that pin also serves the key matrix&quot;
+        &quot;Not implemented in this build; character and palette are coupled.&quot;
       ],
       &quot;playerSteps&quot;: [
-        &quot;Keep Progressions as HOME.&quot;,
-        &quot;Use ALGORITHM on HOME for the secondary scenes.&quot;,
-        &quot;Change optional scene preferences here.&quot;
+        &quot;Use GLO → Display → K1 CHARACTER for the implemented appearance choices.&quot;
       ],
       &quot;related&quot;: [
         &quot;DISPLAY-STYLE&quot;,
@@ -15305,8 +15290,8 @@ html&gt;body{padding:0}&lt;/style&gt;
       &quot;title&quot;: &quot;Solid Accent&quot;,
       &quot;phase&quot;: 1,
       &quot;kind&quot;: &quot;params&quot;,
-      &quot;purpose&quot;: &quot;Preview one readable custom solid accent in the selected palette.&quot;,
-      &quot;entry&quot;: &quot;DISPLAY-STYLE → SELECT Accent → SEL&quot;,
+      &quot;purpose&quot;: &quot;Historical exploration; not a route or appearance option in the two-character build.&quot;,
+      &quot;entry&quot;: &quot;Historical design inventory only&quot;,
       &quot;fields&quot;: [
         {
           &quot;label&quot;: &quot;Red&quot;,
@@ -15340,14 +15325,10 @@ html&gt;body{padding:0}&lt;/style&gt;
       },
       &quot;exit&quot;: &quot;GLO → DISPLAY-STYLE; HOME → Progressions CORE&quot;,
       &quot;states&quot;: [
-        &quot;RGB values are bounded to 0–255; Instrument Teal’s default accent is #77dacb.&quot;,
-        &quot;Restore returns the selected palette accent without changing the theme, music or Motion preference.&quot;,
-        &quot;Validate primary/secondary/focus contrast on the TFT, and persist versioned settings safely outside audio work.&quot;
+        &quot;Not implemented in this build; character and palette are coupled.&quot;
       ],
       &quot;playerSteps&quot;: [
-        &quot;Use K1–K3 for red, green and blue.&quot;,
-        &quot;Use K4 to restore the selected palette accent if desired.&quot;,
-        &quot;Return HOME; the layout and music remain unchanged.&quot;
+        &quot;Use GLO → Display → K1 CHARACTER for the implemented appearance choices.&quot;
       ],
       &quot;related&quot;: [
         &quot;DISPLAY-STYLE&quot;,
@@ -15360,12 +15341,12 @@ html&gt;body{padding:0}&lt;/style&gt;
       &quot;title&quot;: &quot;Live Control Banks&quot;,
       &quot;phase&quot;: 1,
       &quot;kind&quot;: &quot;picker&quot;,
-      &quot;purpose&quot;: &quot;Explain/select four real control banks without sacrificing CORE, catalogue browsing or musical keys.&quot;,
+      &quot;purpose&quot;: &quot;Explain/select five real control banks without sacrificing CORE, catalogue browsing or musical keys.&quot;,
       &quot;entry&quot;: &quot;SYS-ROOT → Controls → Live control banks&quot;,
       &quot;fields&quot;: [
         {
           &quot;label&quot;: &quot;Current bank&quot;,
-          &quot;value&quot;: &quot;CORE 1/4&quot;
+          &quot;value&quot;: &quot;CORE 1/5&quot;
         },
         {
           &quot;label&quot;: &quot;Gesture&quot;,
@@ -15403,6 +15384,10 @@ html&gt;body{padding:0}&lt;/style&gt;
         {
           &quot;label&quot;: &quot;GROOVE&quot;,
           &quot;value&quot;: &quot;Kit / Drum level / Swing / Click&quot;
+        },
+        {
+          &quot;label&quot;: &quot;PERFORM&quot;,
+          &quot;value&quot;: &quot;Fill / Drop / Back / Tempo&quot;
         }
       ],
       &quot;select&quot;: &quot;Choose a bank inside this detail page. SELECT on HOME always remains the complete catalogue.&quot;,
@@ -16201,24 +16186,19 @@ html&gt;body{padding:0}&lt;/style&gt;
     },
     {
       &quot;id&quot;: &quot;SYS-WF-DISPLAY&quot;,
-      &quot;title&quot;: &quot;Set accent and motion&quot;,
+      &quot;title&quot;: &quot;Choose a character and motion&quot;,
       &quot;phase&quot;: 1,
-      &quot;goal&quot;: &quot;Use Instrument Teal or optional Studio/Editorial palettes, with adaptive Motion On or totally Off.&quot;,
+      &quot;goal&quot;: &quot;Use Devil/Ember or Cat/Plum with adaptive Motion On or settled Off.&quot;,
       &quot;steps&quot;: [
         {
-          &quot;screen&quot;: &quot;DISPLAY-STYLE&quot;,
-          &quot;action&quot;: &quot;Choose Instrument Teal, Studio or Editorial&quot;,
-          &quot;result&quot;: &quot;The same type-led layout uses the selected flat palette&quot;
+          &quot;action&quot;: &quot;Open GLO → Display and turn K1 CHARACTER&quot;,
+          &quot;result&quot;: &quot;Devil selects Ember; Cat selects Plum. The whole palette follows the character.&quot;,
+          &quot;screen&quot;: &quot;DISPLAY-STYLE&quot;
         },
         {
-          &quot;screen&quot;: &quot;DISPLAY-ACCENT&quot;,
-          &quot;action&quot;: &quot;Preview a solid accent or restore its palette default&quot;,
-          &quot;result&quot;: &quot;Chord/degree and focus/status stay readable&quot;
-        },
-        {
-          &quot;screen&quot;: &quot;DISPLAY-MOTION&quot;,
-          &quot;action&quot;: &quot;Choose On or Off&quot;,
-          &quot;result&quot;: &quot;On adapts to smoothed output/volume and active parts; Off stops all motion/transitions while values update instantly&quot;
+          &quot;action&quot;: &quot;Turn K4 MOTION On or Off&quot;,
+          &quot;result&quot;: &quot;On follows actual activity; Off settles visuals while musical state updates.&quot;,
+          &quot;screen&quot;: &quot;DISPLAY-MOTION&quot;
         }
       ]
     },
@@ -16441,7 +16421,7 @@ html&gt;body{padding:0}&lt;/style&gt;
     }
   ],
   &quot;title&quot;: &quot;Chord-first FM-1 — screen and workflow inventory&quot;,
-  &quot;status&quot;: &quot;Planned behavior and coverage; selected visual reference is the supplied adaptive prototype with Instrument Teal default. Earlier inventory layout sketches are not the selected screen design or released firmware.&quot;,
+  &quot;status&quot;: &quot;Planned behavior and coverage; selected visual reference is the supplied adaptive prototype with the current Devil/Ember and Cat/Plum mascot selection. Earlier inventory layout sketches are not the selected screen design or released firmware.&quot;,
   &quot;version&quot;: &quot;0.4&quot;,
   &quot;date&quot;: &quot;2026-11-07&quot;,
   &quot;phases&quot;: [
@@ -16620,7 +16600,7 @@ html&gt;body{padding:0}&lt;/style&gt;
     &quot;Songs is the one user-facing collection for saved progressions and recordings. Factory progression browsing remains on HOME. Editable Songs use semantic chord/degree/duration data; recorded Songs retain captured performance events and timing. Existing recorded Auto takes keep their fixed-note meaning and format.&quot;,
     &quot;REC is direct from HOME. It captures the scheduled progression plus deliberate live/groove/key/tempo changes rather than unexpectedly muting the arranged chords. Ending a capture creates a new numbered Song copy; no mandatory Review/Keep step. Pending, Saving and Saved are different states, and flash writes wait for an actually safe quiet boundary without cutting independent HOLD or audible tails.&quot;,
     &quot;Songs supports selected-row Load, Rename, Duplicate and Delete, plus counted Clear Recordings/Clear All actions. Bulk clear excludes factory templates, the protected working draft and Pending captures. A Pending capture can be discarded only through its own explicit selected action.&quot;,
-    &quot;The selected visual reference is fm1_adaptive_motion_prototype.html. Instrument Teal is the factory default: background #061b1e, foreground #f2f8f4, secondary #89a7a5, separator #355054, subtle surface #113034, accent #77dacb, and on-accent text #092d2c. Studio and Editorial are optional palettes of the same typography-led interface. Preserve the large chord, paired degrees, thin separators, four text controls and the supplied prototype&#x27;s restrained halo/Bloom visual vocabulary; earlier Coral Bloom, Aurora and Studio Rack are historical alternatives.&quot;,
+    &quot;The selected current HOME appearance is the owner-approved soft mascot reference; the earlier adaptive prototype remains preserved as design history. The approved mascot build uses Devil/Ember by default and Cat/Plum as its only alternative. Character and theme are coupled; a separate theme/accent selector is not present. Preserve the large chord, paired degrees, thin separators, four text controls and the supplied prototype&#x27;s restrained halo/Bloom visual vocabulary; earlier Coral Bloom, Aurora and Studio Rack are historical alternatives.&quot;,
     &quot;Motion has exactly two user choices: On (adaptive) and Off. On responds automatically to output level/volume and semantic active-instrument activity using a smoothed bounded envelope, with musical motion tied to the shared clock. There is no manual Quiet/Expressive/intensity/speed selector. Off cancels every pulse, orbit, morph travel and tween; truthful chord, value, playback and record/save data still update instantly. The supplied loudness/layer sliders are simulation inputs, not new firmware settings or evidence of eight instrument parts. Measure display, input, memory and audio/USB timing on the FM-1.&quot;,
     &quot;HOME from another screen returns to Progressions Core. Further HOME taps cycle Core/Sound/Texture/Groove/Perform without changing any parameter; SELECT still browses the complete catalogue, PRESETS still selects chord sound, ALGORITHM keeps its scene/workspace role and OCT± stays musical. Four text columns and a subtle bank indicator make each current mapping visible.&quot;,
     &quot;HOME Perform is Fill / Drop drums / Bring back / Tempo. Moments commit at bar boundaries; Fill lasts one bar and returns automatically, Drop leaves chords and bass running, Back restores groove phase with a downbeat bloom. Motion Off keeps static truth. V1 is live-only; Breakdown and separate multi-bar builds are deferred.&quot;,
@@ -16640,28 +16620,29 @@ html&gt;body{padding:0}&lt;/style&gt;
     &quot;trimming&quot;: 51
   },
   &quot;defaultAppearance&quot;: {
-    &quot;theme&quot;: &quot;Instrument Teal&quot;,
+    &quot;character&quot;: &quot;Devil&quot;,
+    &quot;theme&quot;: &quot;Ember&quot;,
     &quot;motion&quot;: &quot;On (adaptive)&quot;,
     &quot;motionChoices&quot;: [
       &quot;On (adaptive)&quot;,
       &quot;Off&quot;
     ],
-    &quot;background&quot;: &quot;#061B1E&quot;,
-    &quot;foreground&quot;: &quot;#F2F8F4&quot;,
-    &quot;secondary&quot;: &quot;#89A7A5&quot;,
-    &quot;separator&quot;: &quot;#355054&quot;,
-    &quot;subtle&quot;: &quot;#113034&quot;,
-    &quot;accent&quot;: &quot;#77DACB&quot;,
-    &quot;onAccent&quot;: &quot;#092D2C&quot;
+    &quot;background&quot;: &quot;#150F0C&quot;,
+    &quot;foreground&quot;: &quot;#FFF4E5&quot;,
+    &quot;secondary&quot;: &quot;#D0BFB1&quot;,
+    &quot;separator&quot;: &quot;#5D4537&quot;,
+    &quot;subtle&quot;: &quot;#241813&quot;,
+    &quot;accent&quot;: &quot;#FFA55B&quot;,
+    &quot;onAccent&quot;: &quot;#28170D&quot;
   },
   &quot;implementation&quot;: {
     &quot;sourceBase&quot;: &quot;0d76e5b3370f6b7e43a41ed09089491e1f4320a0&quot;,
     &quot;designRevision&quot;: &quot;845325136418dd038c7ef81eaca01ec64ac5e61e&quot;,
-    &quot;summary&quot;: &quot;Engineering preview: every retained old screen now routes through native Instrument Teal parameter, list, grid, name/confirmation and result families, including advanced FM6/VA, Layer, effects, recordings, system, diagnostics and recovery. HOME/banks, Groove/Loop/Mix/Click and the protected sixteen-slot editor retain their existing musical owners. Finite chord/cursor/knob/bank/workspace/focus/save transitions and a real post-MASTER output-driven halo share the single On/Off setting; Off cancels visual work and settled views skip rendering. The current manual-take/latest-three policy remains intact. Chord Lab adds Now/Last/planned-slot notes and intervals, fixed-context comparisons, offline Next suggestions, explicit one-bar audition and undoable insertion. Songs now adds six saved semantic ideas and existing recording rows, protected quiet-boundary writes, complete musical snapshots, progression rename/duplicate/delete and recording load/delete. SAVE opens Songs; SELECT Save current then SEL creates a new copy. Full arranged recording, recording rename/duplicate, bulk clear and physical verification remain pending. Chord library/audition remains explicitly deferred. See docs/SONGS-LIBRARY.md for native preview controls and limits. CORD now supplies the selected piano-key/ring boot in three saved themes; HOME fixes cross-clock freshness and clipped ellipses, adds accepted-beat header activity and lights live progression matches.&quot;,
+    &quot;summary&quot;: &quot;Engineering preview: native HOME uses the approved Devil/Ember or Cat/Plum mascot, with its palette tied to the character, shared-clock/output-driven motion and a pulse ring. The two bottom strips use one separator, three control dividers and antialiased type; the bank cue is in the header. Five banks include Perform for real next-bar fills, drum drops and downbeat returns. Retained sound/FX/system/recovery pages, shared-clock accompaniment, the protected sixteen-slot editor, Songs and Chord Lab remain available. Motion Off settles effects while musical, record/save and transport states stay truthful. The manual-take/latest-three recording policy is unchanged. Full arranged recording, recording rename/duplicate, bulk clear, the separate chord library and physical-device validation remain pending.&quot;,
     &quot;screens&quot;: {
       &quot;HOME_STAGE&quot;: {
         &quot;designStatus&quot;: &quot;Native preview alongside selected prototype; device review pending&quot;,
-        &quot;implementationStatus&quot;: &quot;Native HOME with audio-clock-safe complete round pulses, accepted-beat header indicator, sounding chord and live match fills independent of playback underline; physical verification pending&quot;,
+        &quot;implementationStatus&quot;: &quot;Native HOME with audio-clock-safe complete round pulses, accepted-beat header indicator, sounding chord and live match fills independent of playback underline; physical verification pending; two-strip mascot HOME with precomputed four-level type and shared-clock reactions&quot;,
         &quot;deviceVerification&quot;: &quot;Pending — host captures and device link only&quot;
       },
       &quot;HOME_PENDING&quot;: {
@@ -16671,27 +16652,27 @@ html&gt;body{padding:0}&lt;/style&gt;
       },
       &quot;DISPLAY-STYLE&quot;: {
         &quot;designStatus&quot;: &quot;Native preview alongside selected prototype; device review pending&quot;,
-        &quot;implementationStatus&quot;: &quot;Implemented for all retained screens: three native themes and one Motion On/Off choice; finite transitions cancel completely with Off; physical tuning pending&quot;,
+        &quot;implementationStatus&quot;: &quot;Implemented native preview: exactly Devil/Ember and Cat/Plum, one Motion On/Off setting, v5 migration; physical tuning pending&quot;,
         &quot;deviceVerification&quot;: &quot;Pending — host captures and device link only&quot;
       },
       &quot;DISPLAY-MOTION&quot;: {
         &quot;designStatus&quot;: &quot;Native preview alongside selected prototype; device review pending&quot;,
-        &quot;implementationStatus&quot;: &quot;Implemented for all retained screens: three native themes and one Motion On/Off choice; finite transitions cancel completely with Off; physical tuning pending&quot;,
+        &quot;implementationStatus&quot;: &quot;Implemented native preview: exactly Devil/Ember and Cat/Plum, one Motion On/Off setting, v5 migration; physical tuning pending&quot;,
         &quot;deviceVerification&quot;: &quot;Pending — host captures and device link only&quot;
       },
       &quot;HOME_SOUND&quot;: {
         &quot;designStatus&quot;: &quot;Native bank preview follows selected prototype; physical review pending&quot;,
-        &quot;implementationStatus&quot;: &quot;Implemented preview: real parameters, explicit bank label, immediate ownership and clipped On/Off transition&quot;,
+        &quot;implementationStatus&quot;: &quot;Implemented preview: real parameters, explicit bank label, immediate ownership and clipped On/Off transition; two-strip mascot HOME with precomputed four-level type and shared-clock reactions&quot;,
         &quot;deviceVerification&quot;: &quot;Pending — native host captures and device link only&quot;
       },
       &quot;HOME_TEXTURE&quot;: {
         &quot;designStatus&quot;: &quot;Native bank preview follows selected prototype; physical review pending&quot;,
-        &quot;implementationStatus&quot;: &quot;Implemented preview: real parameters, explicit bank label, immediate ownership and clipped On/Off transition&quot;,
+        &quot;implementationStatus&quot;: &quot;Implemented preview: real parameters, explicit bank label, immediate ownership and clipped On/Off transition; two-strip mascot HOME with precomputed four-level type and shared-clock reactions&quot;,
         &quot;deviceVerification&quot;: &quot;Pending — native host captures and device link only&quot;
       },
       &quot;HOME_GROOVE&quot;: {
         &quot;designStatus&quot;: &quot;Native bank preview follows selected prototype; physical review pending&quot;,
-        &quot;implementationStatus&quot;: &quot;Implemented preview: real parameters, explicit bank label, immediate ownership and clipped On/Off transition&quot;,
+        &quot;implementationStatus&quot;: &quot;Implemented preview: real parameters, explicit bank label, immediate ownership and clipped On/Off transition; two-strip mascot HOME with precomputed four-level type and shared-clock reactions&quot;,
         &quot;deviceVerification&quot;: &quot;Pending — native host captures and device link only&quot;
       },
       &quot;ACC_GROOVE&quot;: {
@@ -17492,8 +17473,18 @@ html&gt;body{padding:0}&lt;/style&gt;
       },
       &quot;HOME_PERFORM&quot;: {
         &quot;designStatus&quot;: &quot;Native preview follows Instrument Teal; device review pending&quot;,
-        &quot;implementationStatus&quot;: &quot;Implemented in development source: fifth HOME bank; next-bar one-bar fills, drum drops and returns; Motion Off, live-only recorder scope. See docs/DRUM-PERFORMANCE.md.&quot;,
+        &quot;implementationStatus&quot;: &quot;Implemented in development source: fifth HOME bank; next-bar one-bar fills, drum drops and returns; Motion Off, live-only recorder scope. See docs/DRUM-PERFORMANCE.md.; two-strip mascot HOME with precomputed four-level type and shared-clock reactions&quot;,
         &quot;deviceVerification&quot;: &quot;Pending — native host captures and linked firmware only&quot;
+      },
+      &quot;DISPLAY-ACCENT&quot;: {
+        &quot;designStatus&quot;: &quot;Historical exploration, superseded&quot;,
+        &quot;implementationStatus&quot;: &quot;Not present in the two-character build&quot;,
+        &quot;deviceVerification&quot;: &quot;Not applicable to this build&quot;
+      },
+      &quot;DISPLAY-SCENES&quot;: {
+        &quot;designStatus&quot;: &quot;Historical exploration, superseded&quot;,
+        &quot;implementationStatus&quot;: &quot;Not present in the two-character build&quot;,
+        &quot;deviceVerification&quot;: &quot;Not applicable to this build&quot;
       }
     },
     &quot;foundations&quot;: {
