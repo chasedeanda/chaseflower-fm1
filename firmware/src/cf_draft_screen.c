@@ -17,7 +17,7 @@ static void cfd_model(cfd_model_t *m)
     m->slot=cf_sn.ac_on && cf_sn.ac_idea==CF_P_DRAFT?cf_sn.ac_slot:255;
     m->confirm=cfdu.confirm;m->conflict=cfdu.conflict;m->choice=cfdu.choice;
     str_cpy(m->title,m->conflict?"Draft exists":m->confirm?"Remove slot?":CFD_TAB[cu.page[SCR_PEDIT]],sizeof m->title);
-    str_cpy(m->status,cfds.error?"WRITE ERROR":cfds.pending?"RAM PENDING":cfds.recovered?"RECOVERED":cfwd.dirty?"CHECKPOINT":"FACTORY COPY",sizeof m->status);
+    str_cpy(m->status,cfds.error?"WRITE ERROR":cfds.pending?"RAM PENDING":cfds.checkpoint==CFD_RECOVERED?"RECOVERED":cfds.checkpoint==CFD_CHECKPOINTED?"CHECKPOINT":"FACTORY COPY",sizeof m->status);
     str_cpy(m->name,cfwd.song.name,sizeof m->name);kint(m->position,m->focus+1,"/");kint(m->position+str_len(m->position),m->n," focus");
     if(m->slot!=255){str_cpy(m->position+str_len(m->position)," / ",sizeof m->position-str_len(m->position));kint(m->position+str_len(m->position),m->slot+1," playing");}
     cf_spell_t spell;cf_key_spell(cfwd.song.tonic,cfwd.song.scale,&spell);cf_chord_cfg_t cfg=cs.chord;cfg.tonic=cfwd.song.tonic;cfg.scale=cfwd.song.scale;

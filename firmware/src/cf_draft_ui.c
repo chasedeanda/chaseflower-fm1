@@ -46,7 +46,8 @@ static void cfd_clone(unsigned idea)
     s.rhythm=cpg.rhythm<DM_N?DM_RHY[cpg.rhythm].id:cpg.rhythm==CPA_CLICK?65534:65535;
     s.kit=cpg.rhythm<DM_N?dm_kit(cpg.rhythm):0;s.swing=cpg.rhythm<DM_N?dm_swing(cpg.rhythm):0;
     s.drums_only=cpg.mode;s.repeat_off=cpg.repeat_off;
-    cfwd.dirty=0;cf_song_draft_begin(&cfwd,&s);cfdu.focus=0;cfdu.confirm=cfdu.conflict=0;cfd_view_update();
+    if(!cfd_device_valid(&s))return;
+    cfwd.dirty=0;if(!cf_song_draft_begin(&cfwd,&s))return;memset(&cfds,0,sizeof cfds);cfdu.focus=0;cfdu.confirm=cfdu.conflict=0;cfd_view_update();
 }
 static void cfd_open(void)
 {

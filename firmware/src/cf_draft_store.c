@@ -3,8 +3,9 @@
  * Included after cfs_sounding; all storage happens in the foreground at rest.
  */
 _Static_assert(CF_SONG_WIRE<=ST_LMAX(OBJ_CFDRAFT),"draft fits logged entry");
+enum { CFD_RAM,CFD_RECOVERED,CFD_CHECKPOINTED };
 static cf_song_draft_t cfwd;
-static struct { uint32_t changed,retry;uint8_t pending,error,unavailable,recovered; } cfds;
+static struct { uint32_t changed,retry;uint8_t pending,error,unavailable,checkpoint; } cfds;
 static cf_progression_t cfd_view;
 static cf_source_chord_t cfd_source[CF_SONG_MAX];
 static void cfd_view_update(void)
@@ -41,14 +42,14 @@ static void cfd_load(void)
         uint8_t bytes[CF_SONG_WIRE];st_hdr_t h;
         if(st_current(OBJ_CFDRAFT,&h)>=0 && h.len) {
             if(st_load(OBJ_CFDRAFT,bytes,sizeof bytes)==sizeof bytes && cf_song_decode(&cfwd.song,bytes,sizeof bytes) && cfd_device_valid(&cfwd.song))
-                {cfwd.have=cfwd.dirty=1;cfds.recovered=1;}
+                {cfwd.have=cfwd.dirty=1;cfds.checkpoint=CFD_RECOVERED;}
             else cfds.unavailable=1; /* preserve unknown/corrupt checkpoint until explicit recovery */
         }
     }
     cfd_view_update();
 }
 static void cfd_changed(void)
-{ cfds.pending=1;cfds.changed=cu.now;cfds.error=cfds.recovered=0;cfd_view_update(); }
+{ cfds.pending=1;cfds.changed=cu.now;cfds.error=cfds.checkpoint=CFD_RAM;cfd_view_update(); }
 static int cfd_audio_quiet(void)
 {
     return !cr_safe && !cpa.on && !cpa_commanded && !cf_sn.ac_on &&
@@ -64,7 +65,7 @@ static int cfd_checkpoint(void)
     if(!cfd_device_valid(&cfwd.song) || !cf_song_encode(&cfwd.song,bytes) || st_put(OBJ_CFDRAFT,bytes,sizeof bytes,0)) {
         cfds.error=1;cfds.retry=cu.now+1000u;return 0;
     }
-    cfds.pending=cfds.error=0;return 1;
+    cfds.pending=cfds.error=0;cfds.checkpoint=CFD_CHECKPOINTED;return 1;
 }
 static void cfd_poll(uint32_t now,int quiet)
 {

@@ -75,7 +75,7 @@ static void checkpoint(void)
     setup(0);ui_button(B_EDIT);ui_knob_turn(1,1);unsigned writes=emu_flash_writes;ui_button(B_PLAY);blocks(2);CHECK(!cfd_checkpoint() && emu_flash_writes==writes && cfds.pending);
     cpa_stop();blocks(FS/CTL*3);cu.keys=0;cf_sn.running=cf_sn.metro_on=0;cfx_quiet=FS/CTL*2;
     CHECK(cfd_checkpoint() && !cfds.pending && emu_flash_writes>writes);
-    cf_song_t saved=cfwd.song;cfd_load();CHECK(cfwd.have && cfwd.dirty && cfds.recovered && !cfds.pending && !memcmp(&saved,&cfwd.song,sizeof saved));
+    cf_song_t saved=cfwd.song;cfd_load();CHECK(cfwd.have && cfwd.dirty && cfds.checkpoint==CFD_RECOVERED && !cfds.pending && !memcmp(&saved,&cfwd.song,sizeof saved));
     /* Valid storage envelope but unsupported future codec is preserved, not overwritten. */
     uint8_t raw[CF_SONG_WIRE];CHECK(cf_song_encode(&cfwd.song,raw));raw[4]++;CHECK(!st_save(OBJ_CFDRAFT,raw,sizeof raw));writes=emu_flash_writes;cfd_load();CHECK(cfds.unavailable && !cfwd.have && emu_flash_writes==writes);
     ui_button(B_HOME);ui_button(B_EDIT);CHECK(cu.scr!=SCR_PEDIT && cfds.unavailable && emu_flash_writes==writes);
