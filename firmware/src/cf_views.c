@@ -1424,3 +1424,12 @@ static void view_library(int x)
     }
     fb_text(&CF_FONT_MICRO, x + 2, VIEW_Y + 71, "K4: ALL / FILTERS RESET AT BOOT", FL_INK2, 1);
 }
+
+/* Diagnostic controls: musical encoders retain their normal roles on HOME. */
+static void view_diagnostics(int x)
+{
+    fb_text(&CF_FONT_UI,x+2,VIEW_Y+2,"HOME: fourth view",FL_INK,1);
+    fb_text(&CF_FONT_UI,x+2,VIEW_Y+22,"K1 page / K2 hold display",FL_INK2,1);
+    fb_text(&CF_FONT_UI,x+2,VIEW_Y+42,"K3 resets session only",FL_INK2,1);
+    fb_text(&CF_FONT_MICRO,x+2,VIEW_Y+68,"COLLECTS ON ALL VIEWS / NO FLASH WRITES",FL_INK3,1);
+}

@@ -1,106 +1,93 @@
-# ChaseFlower
+# Chase FM-1
 
-Chase's personal build of [CoralFlower](https://github.com/FicusFicusov/CoralFlower).
+Chase's personal firmware for the **M-VAVE FM-1**, built on [CoralFlower](https://github.com/FicusFicusov/CoralFlower).
 
-**Current candidate: 0.6-chase3 — 6/8, ambient/lo-fi banks, Chord and Keyboard views.**
-[Download the firmware](releases/0.6-chase3/chaseflower-0.6-chase3.fwsc) and read
-[installation and new controls](docs/CHASE3.md). USB recording and the
-[GarageBand/Spark setup](docs/USB-AUDIO.md) remain available.
-Select this `.fwsc` in the upstream installer's **Another version, or a build of your own** section before pressing
-Install; the installer's default choice is upstream CoralFlower.
+**Release 0.6-chase4** combines the swimming bass and bonfire visuals, bass-jump boot screen and Diagnostics
+dashboard with the ambient/lo-fi sound banks, sequencer and six-channel USB recording.
 
-Chase installed chase1 and chase2 and reports that chase2 is working. Chase3 adds 128 sound options in eight style
-banks (96 chord/layer sounds, 24 basses, eight kits), restores eight hidden FM sounds, and keeps the existing sound
-order. It incorporates 32 original CC0 Aquanode voices with [source records](assets/sounds/candidates/aquanode/).
-The [release guide](docs/CHASE3.md) distinguishes host verification from the remaining device listening check.
-The [original plan](docs/CHASEFLOWER-NEXT-RELEASE.md) is retained for context.
-The upstream documentation and credits follow below.
+**[Download the firmware (.fwsc)](https://github.com/chasedeanda/chaseflower-fm1/releases/download/v0.6-chase4/coralflower-0.6-chase4.fwsc)** ·
+[Release notes](docs/releases/0.6-chase4.md) · [All releases](https://github.com/chasedeanda/chaseflower-fm1/releases)
 
-## CoralFlower
-
-**Your M-VAVE FM-1, made for chords.** CoralFlower is free firmware for the FM-1. Press a chord key, and every note
-you play becomes a whole chord, with a bass underneath. While you play, a pixel flower grows from your chords.
-
-CoralFlower is inspired by the Telepathic Instruments Orchid. Its controls are redesigned for the FM-1's keys and
-buttons, because every instrument is played differently.
-
-<p align="center"><img src="docs/images/grow.gif" width="480" alt="A pink pixel flower growing and changing as chords are played"></p>
-
-<p align="center">
-  <a href="https://ficusficusov.github.io/CoralFlower/play/"><b>Play it in your browser</b></a> ·
-  <a href="https://ficusficusov.github.io/CoralFlower/"><b>Install it on your FM-1</b></a> ·
-  <a href="https://github.com/FicusFicusov/CoralFlower/releases"><b>Releases</b></a>
-</p>
-
-Not sure yet? The browser version runs the same firmware with sound. Try it with your mouse or computer keyboard
-before you install anything.
-
-## What it does
-
-- **Notes or chords.** The lower keys play the notes of a scale you choose. Press an upper key, and each note
-  becomes a chord: major, minor, sus2 or sus4, plus major and minor 6, 7 and add9. Press two upper keys together to
-  combine them. The chord stays on until you choose another one. The key marked Off turns chords off, and the keys
-  play single notes, several at once. Choose from 27 scales, chromatic included, starting on any note. Chord glide (off by default) slides
-  each note into the next chord.
-- **Two layouts, each with a Lock mode.** In the Top layout, the upper row picks the chord type and the lower row the
-  root. In the Side layout, a few keys on the left pick the type and the rest play roots. Lock mode keeps the chord
-  type you tapped, so you don't have to hold its key. A new FM-1 starts in Top with Lock; without Lock, a chord
-  plays only while you hold its key.
-- **A bass part under your chords** (you can turn it off), with its own sound and range, plus an octaver that doubles each bass note.
-- **An arpeggiator** with nine patterns, including a strum like the one on the Orchid chord synth. It locks to the
-  metronome or to an external MIDI clock.
-- **A sequencer** with eight patterns of chords, bass, drums and one more sound (the layer), and a song made of them.
-  REC on the main screen records what you play into a new pattern, after a one-bar count-in.
-- **Six effects** in an order you choose: filter, drive, chorus, phaser, delay and reverb.
-- **About 60 sounds** from two synth engines, virtual analogue and FM: pads, keys, strings and basses. Many pads
-  change slowly on their own. Chords and basses have separate lists. Every sound has an editor, and you can save your
-  own.
-- **A plant that grows from your music.** In the Top key layout a flower grows; in the Side layout, a coral.
-  Each note of the chord adds a part: a bloom, a bud, a cluster of berries. The plant's structure follows
-  [PlantStudio](https://github.com/pdfernhout/PlantStudio), a program that models real plants.
-- **MIDI over USB.** The chords, the bass and the sequencer's Layer and Drums go out on four channels you set. The
-  FM-1 follows an external MIDI clock or sends its own.
+<p align="center"><img src="docs/images/chase-bass.gif" width="480" alt="Chase FM-1 HOME: a swimming bass with body motion and a small school of baitfish"></p>
 
 <table>
   <tr>
-    <td><img src="docs/images/home.png" width="260" alt="HOME: the chord name above a pink flower"></td>
-    <td><img src="docs/images/coral.png" width="260" alt="The Side layout: a pink coral"></td>
-    <td><img src="docs/images/chord.png" width="260" alt="CHORD: a chord button's notes on a piano"></td>
-  </tr>
-  <tr>
-    <td><img src="docs/images/fm-voice.png" width="260" alt="The FM editor: the algorithm's operators"></td>
-    <td><img src="docs/images/arp.png" width="260" alt="ARPEGGIO: the pattern as a little piano roll"></td>
-    <td><img src="docs/images/take.png" width="260" alt="A take being recorded into a new pattern's Chords track"></td>
+    <td align="center"><img src="docs/images/chase-bonfire.gif" width="320" alt="Bonfire: a triangular golden flame and rising embers"><br>Bonfire</td>
+    <td align="center"><img src="docs/images/chase-boot.gif" width="320" alt="Chase FM-1 boot: the bass jumps from a moonlit lake and swims completely off screen"><br>Chase FM-1 startup</td>
   </tr>
 </table>
 
-## Install
+These animations come from the firmware renderer. The boot preview holds its last frame for viewing; the
+instrument's intro runs for 2.4 seconds and any input skips it.
 
-1. Open <https://ficusficusov.github.io/CoralFlower/> in **Chrome or Edge** on a computer. Only these browsers can talk
-   to the FM-1 over USB.
-2. Connect the FM-1 straight to the computer. Don't use a USB hub, and use a cable that carries data, not a
-   charge-only one.
-3. Press **Install on your FM-1**. Keep the page open and the cable in for about a minute. The FM-1 restarts as
-   CoralFlower.
+## Play and explore
 
-If the FM-1 runs CoralFlower, ChoralRoot or Felucca, the installer saves your sounds to a file first. The official firmware's sounds can't be backed up. To return to the stock firmware, download FM-1
-V15 from [m-vave.com](https://www.m-vave.com) and install it from the same CoralFlower page. Installing firmware is at
-your own risk.
+- **Top Lock, always.** Upper keys choose a chord type; lower keys play roots. The chosen chord stays latched until
+  you select another one. Your saved Top chord-button definitions are retained.
+- **Bass or Bonfire.** Turn **ALGORITHM** on HOME to change scenes without interrupting a held chord or playback.
+  Bass is the default and your choice is saved. ALGORITHM still orders effects in FX and selects patterns/songs
+  in Sequencer.
+- **Four HOME views.** Tap HOME while already there to cycle **Scene → Chord → Keyboard → Diagnostics**. From
+  another screen, HOME returns to your selected view.
+- **Chords, bass, arpeggios and grooves.** Choose from 27 scales, chord extensions and inversions, a separate bass
+  voice, nine arpeggiator patterns, eight sequencer patterns and a song arrangement. Three additional grooves use 6/8.
+- **Ambient and lo-fi banks.** The chase3 library adds 96 chord/layer sounds, 24 bass sounds and eight drum kits in
+  eight style banks, including 32 CC0 Aquanode voices. Existing saved sound positions and user sounds are preserved.
+- **Six effects.** Filter, drive, chorus, phaser, delay and reverb, in the order you choose.
+- **USB audio and MIDI.** Record six-channel USB capture at 44.1 or 48 kHz while USB MIDI remains available.
+  See the [GarageBand and Spark setup](docs/USB-AUDIO.md).
+- **Diagnostics.** Monitor audio workload, UI cadence, linked memory and USB status. Configure the dashboard from
+  **GLO → Diagnostics**. [Read the measurements guide](docs/DIAGNOSTICS.md) before interpreting timing numbers.
 
-## Build it yourself
+[Scenes and controls](docs/VISUALS.md) · [Sound banks and 6/8](docs/CHASE3.md) ·
+[Diagnostics](docs/DIAGNOSTICS.md) · [USB recording](docs/USB-AUDIO.md)
 
-- **From a fresh clone.** Nothing generated is in git: every build first writes the fonts, icons, tables and samples
-  into `build/gen/`, with Python 3, Pillow and fontTools. `python3 tools/build.py --gen-only` does that step alone, for
-  any other way of building the firmware. On GitHub, the check workflow (`.github/workflows/check.yml`) builds a fresh
-  clone on every push.
-- **The emulator and the site.** Install the [Emscripten SDK](https://emscripten.org), then run
-  `sh tools/emu/web/build_web.sh` and `sh tools/make_site.sh build/site`. The site lands in `build/site/`, with the
-  emulator in `build/site/play/`.
-- **The headless runner.** `sh tools/emu/cf_headless.sh SCRIPT` plays a script of key presses, takes screenshots and
-  records audio. The tests use it.
-- **The firmware package.** `./build.sh --release X.Y` needs the toolchain from JieLi, the maker of the FM-1's chip.
-  The toolchain runs on Linux x86-64 only, and `tools/get_toolchain.sh` fetches it. On GitHub, the release workflow
-  (`.github/workflows/release.yml`) builds the package for you.
+**Next build:** [Auto harmony and smart modifiers](docs/AUTO-HARMONY.md) are available in source via
+**GLO → Harmony**. They are not included in the existing 0.6-chase4 download above.
+
+## Install this release
+
+1. Download **`coralflower-0.6-chase4.fwsc`** from the [GitHub release](https://github.com/chasedeanda/chaseflower-fm1/releases/tag/v0.6-chase4).
+   This is the installable file; the separate app `.bin` and GitHub source archives are not installer packages.
+2. Save a current backup of your sounds, settings and patterns. The installer can back up compatible CoralFlower,
+   ChoralRoot and Felucca data. Keep the backup somewhere safe.
+3. Open the [upstream installer's custom-build section](https://ficusficusov.github.io/CoralFlower/#own) in Chrome
+   or Edge on a computer. Connect the FM-1 directly with a data-capable USB cable.
+4. Expand **Another version, or a build of your own**, click **Choose a .fwsc file**, and select your download.
+   Check that **`coralflower-0.6-chase4.fwsc`** is selected before pressing Install. The installer's default is
+   upstream CoralFlower, so select this custom file first.
+5. Install from that custom-build section and keep the cable connected and page open until the restart.
+6. Confirm the **Chase FM-1** bass-jump startup and **`CoralFlower 0.6-chase4`** in INFO. The INFO family, package
+   identity `FM-1_930` and USB names remain compatible with the existing installer and recording setup.
+
+The release includes checksums and licence files. See [release notes](docs/releases/0.6-chase4.md) for validation
+and recovery details. Host and firmware-build checks pass; the combined release's hardware appearance and timing
+still need to be checked on the FM-1.
+
+## Build and verify
+
+Generate headers with Python 3, Pillow 11.1.0 and fontTools 4.66.1, then run the feature checks:
+
+```sh
+python3 tools/build.py --gen-only
+sh tools/test_visuals.sh
+sh tools/test_diagnostics.sh
+sh tools/test_chase3.sh
+sh tools/test_usb.sh
+```
+
+Build with the JieLi Linux x86-64 toolchain (Docker on Apple Silicon):
+
+```sh
+./build.sh --release 0.6-chase4
+```
+
+See [Mac build setup](docs/CHASEFLOWER.md#build-on-an-apple-silicon-mac) for the toolchain and Python environment.
+A fresh checkout generates fonts, icons, tables and samples into `build/gen/`. GitHub Actions runs the complete
+host checks; the release workflow builds firmware from its tagged source revision.
+
+The inherited [CoralFlower browser demo](https://ficusficusov.github.io/CoralFlower/play/) runs upstream firmware;
+it does not include all Chase FM-1 changes.
 
 ## Credits and licence
 
@@ -114,14 +101,7 @@ CoralFlower is free software under the GPL-3.0. `LICENSE` and `LICENSING.md` hav
 M-VAVE and FM-1 are trademarks of their respective owners. Orchid is a product of Telepathic Instruments. CoralFlower
 is not affiliated with M-VAVE, Cuvave or Telepathic Instruments.
 
-## Feedback and support
+## Feedback
 
-CoralFlower is new, and your feedback decides what comes next. Tell me what feels good, what feels off, and which
-sounds or features you want:
-
-- open a [GitHub issue](https://github.com/FicusFicusov/CoralFlower/issues);
-- email me at iambemoli@gmail.com;
-- follow the news in the Telegram channel [t.me/ficusficusov](https://t.me/ficusficusov).
-
-CoralFlower has no ads and no paid version. To support it, press **Support** on
-[the site](https://ficusficusov.github.io/CoralFlower/): it lists crypto wallets.
+Track Chase FM-1 changes in [this repository's issues](https://github.com/chasedeanda/chaseflower-fm1/issues).
+Earlier ChaseFlower notes and plans remain in `docs/` as historical records.

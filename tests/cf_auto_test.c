@@ -35,6 +35,9 @@ static void ui_and_store(void)
 {
     cf_chord_cfg_t manual=cs.chord;
     CHECK(sizeof(cf_set_t)==188 && sizeof(sq_ev_t)==22);
+    CHECK(screen_pages(SCR_GLO)==8 && CF_GLO_HARMONY==7);
+    cu.scr=SCR_GLO; cu.page[SCR_GLO]=6; cfd.page=DP_OVERVIEW;
+    ui_knob_turn(0,1); CHECK(cfd.page==DP_TIMING && ch.mode==CF_H_MANUAL);
     CHECK(st_sector(OBJ_CFHARM,0)==0xB4000 && st_sector(OBJ_CFHARM,1)==0xB5000);
     for(unsigned o=0;o<OBJ_COUNT;o++) if(o!=OBJ_CFHARM)
         for(unsigned a=0;a<2;a++) for(unsigned b=0;b<2;b++) CHECK(st_sector(o,a)!=st_sector(OBJ_CFHARM,b));
@@ -68,6 +71,8 @@ static void performance(void)
         key(3,0); key(7,0); key(9,0); audio_ms(60); released();
         key(25,1); key(25,0); key(7,1); key(7,0); CHECK(cfc.out.sounding && cfc.out.hold);
         key(14,1); key(14,0); CHECK(cfc.nroots==1 && cfc.out.root_pc==7);
+        cf_chord_out_t held=cfc.out; cu.scr=SCR_HOME; ui_algo(1); audio_ms(6);
+        CHECK(cfc.out.hold && cfc.out.n==held.n && !memcmp(cfc.out.note,held.note,held.n));
         key(25,1); key(25,0); released();
     }
     CHECK(on_count[cs.ch_chord]>0 && on_count[cs.ch_bass]>0);

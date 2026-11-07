@@ -130,7 +130,7 @@ static void views(void)
         CHECK(home_view() == i % HV_N);
         ui_button(B_HOME); CHECK((cs.seq_hint & 7u) == 7u);
     }
-    cs.seq_hint = 0xC7; CHECK(home_view() == HV_FLOWER);
+    cs.seq_hint = 0xC7; CHECK(home_view() == HV_DIAG);
     cu.scr = SCR_GLO; ui_button(B_HOME); CHECK(cu.scr == SCR_HOME && cs.seq_hint == 0xC7);
     cs.seq_hint = (HV_KEYS << HV_SHIFT) | 7u;
     CHECK(cf_settings_write(0) == 1); cs.seq_hint = 0;

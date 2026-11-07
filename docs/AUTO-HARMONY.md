@@ -1,7 +1,7 @@
 # Phase 1: Auto harmony
 
-Implementation for roadmap issues #5–#12, based on `origin/main` at
-`83fe5a1a4c317b18d62b3c27662c5dcfcfee5ee7`. The user authorized implementation
+Implementation for roadmap issues #5–#12, integrated with `origin/main` at
+`502ff9c` (Chase4 visuals and diagnostics). The user authorized implementation
 and an MR on November 6, 2026, with the combined device build after the other
 features merge. Device listening, performance measurements and GarageBand
 validation remain release checks; host results do not replace the Phase 0 baseline.
@@ -38,10 +38,10 @@ recipes; broader open voicings and elaborate Dreamy rules can follow separately.
 
 ## Physical keys and persistence
 
-The root mapping is unchanged. Top uses all 16 lower keys for roots and the
-upper keys for modifiers. Side uses its existing seven left-side buttons and
-20 root keys. The pure chord model supports all four layouts; this feature does
-not change ALGORITHM navigation or the independent Bonfire/Bass work.
+The root mapping is unchanged. The Chase4 UI remains fixed in Top Lock, with
+16 lower root keys and upper modifier keys. ALGORITHM retains Bonfire/Bass and
+its FX/sequencer contextual actions. The pure chord model also retains Top,
+Side (seven left-side buttons and 20 roots) and Side Lock for regression coverage.
 
 Default Top assignments, left to right:
 
@@ -132,8 +132,9 @@ with FX off/on and both output modes, comparing capture-active/idle physical
 output word for word. Existing Chase3, backup, storage power-cut and installer
 tests remain required. The check workflow runs the new Auto suite.
 
-After merging the other feature MRs: resolve the shared GLO page tables if
-Diagnostics adds a page, build/link the combined firmware, inspect RAM/pool/flash
+Latest main was merged before submission. Diagnostics keeps GLO page 6 and
+Harmony follows as page 7; all eight pages remain accessible. After merging the
+other feature MRs, build/link the combined firmware, inspect RAM/pool/flash
 headroom, run the Phase 0 benchmark matrix and verify controls, shedding, sustained
 USB recording and listening on the FM-1. This MR does not produce or flash a
 release package and does not claim those hardware gates are complete.

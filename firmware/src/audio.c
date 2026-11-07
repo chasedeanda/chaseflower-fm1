@@ -56,6 +56,9 @@ static void cpu_window(uint32_t now_ms)          /* once per UI frame: a frame's
     cpu_last.ui_max = cpu_last.ui_n = 0;
     cpu_last.t0 = now_ms;
 }
+#if defined(CF_UNIT) || defined(CF_EMU)
+#include "cf_diag_core.h"
+#endif
 #define SCOPE_N 512u
 static int16_t scope_buf[SCOPE_N];
 static uint32_t scope_w;
@@ -257,6 +260,9 @@ void fm1_alnk0_irq(void)                       /* via isr_alnk0 (hal/fm1_isr.S) 
             uint32_t all = fm1_ticks() - t0;
             us = shed_check(all, lag);
             wall = all;
+#if defined(CF_UNIT) || defined(CF_EMU)
+            cf_perf_half(us,all,lag);
+#endif
             if (aw_reset) {                             /* cpu_window took the last second */
                 aw_max_us = aw_sum_us = aw_n = aw_max_all = 0;
                 aw_reset = 0;
