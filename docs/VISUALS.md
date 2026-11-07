@@ -5,14 +5,19 @@ This feature replaces the flower/coral pictures with the approved bonfire and sw
 ## Controls and saved settings
 
 - The instrument always plays in **Top Lock**, including after loading an older record or restoring a backup. The Top chord-button definitions and other musical settings are preserved.
-- Turn **ALGORITHM** on HOME to alternate **Bass ↔ Bonfire**. The selected scene appears immediately, including when starting from Chord or Keyboard view. A brief name message confirms the selection. It does not reconfigure the chord player, retrigger a held chord, or change transport.
+- Turn **ALGORITHM** on HOME to cycle **Bass → Bonfire → Scene Off** (reverse the encoder to go back). The selection appears immediately, including when starting from Chord or Keyboard view. A brief name message confirms the selection. It does not reconfigure the chord player, retrigger a held chord, or change transport.
+- **Scene Off** uses a plain background throughout HOME and the menus. It bypasses scene/background rendering, the scene canvas blit, animation ticks, note-particle/geometry updates and the visual voice-level scan. Chord names, controls and beat indicators still work. The choice is saved with settings and survives switching HOME views. Use it to compare device performance with the animations disabled; host audio comparisons do not establish hardware timing or diagnose a glitch. The brief startup intro has its existing behavior.
 - Tap HOME while already on HOME to cycle **Scene → Chord → Keyboard**. The scene and HOME view persist independently.
 - ALGORITHM retains effect ordering in FX and pattern/song selection in Sequencer. Elsewhere, its former chord-mode action selects the scene.
-- Bass is the default, including for older records without a scene flag. Bit 3 of `cf_set_t.seq_hint` selects Bonfire when set; bits 0–2 remain sequencer hints and bits 6–7 remain the existing HOME view. Bits 4–5 remain free. The settings record remains 188 bytes and backup formats do not change.
+- Bass is the default, including for older records without a scene flag. Bit 3 of `cf_set_t.seq_hint` selects Bonfire when set; bit 4 selects Scene Off and takes priority. Bits 0–2 remain sequencer hints, bit 5 remains free, and bits 6–7 remain the existing HOME view. The settings record remains 188 bytes and backup formats do not change.
 
 ## Approved visuals
 
-Bonfire has a taller, triangular flame, curling golden ribbons and rising embers. Bass keeps its original colors and silhouette, with a gentle body wave, moving fins/tail, bubbles and four distant baitfish. The baitfish drift slowly and have occasional small tail flicks. Both scenes keep the approved backgrounds and animate quietly when idle; notes and sequencer/arp onsets add visual accents. The existing Scene/Ripples/None backdrop setting still applies.
+Bonfire has a taller, triangular flame, curling golden ribbons and rising embers. Bass keeps its original colors and silhouette, with a gentle body wave, moving fins/tail, bubbles and four distant baitfish. Both scenes keep the approved backgrounds and animate quietly when idle. The existing Scene/Ripples/None backdrop setting still applies.
+
+While transport or the metronome runs, each music-clock beat now gives the bass a clear forward/upward kick, tail flick, stronger body wave and extra bubbles. The background baitfish make a smaller dart. Bonfire flares taller and wider, brightens the light around the logs and adds sparks. These beat accents use the audio engine's timestamp through the existing UI snapshot, follow internal tempo or MIDI sync, and count eighths in 6/8. They decay within 280 ms (shorter at fast tempos) and stop with transport/metronome. Click volume and master volume do not affect them.
+
+Played notes, sequencer chords and arp onsets still add their own accents: extra body/tail motion, a small forward nudge and bubbles for Bass, and flame height/sparks for Bonfire. Beat motion remains visible under a held or repeatedly triggered chord. Idle drift and flicker continue when the clock stops.
 
 ![Bonfire rendered by the firmware](images/chase-bonfire.gif)
 
@@ -39,3 +44,7 @@ Local verification on 2026-11-06:
 - Inspected actual firmware-rendered scene and boot frames. Hardware timing and appearance remain for the user's combined build and device check after merging.
 
 Run from a generated checkout with `sh tools/test_visuals.sh`. The existing `check` workflow includes it. To render the firmware previews, create an output directory and run `build/host/cf_visuals_test --shots OUTDIR`; it writes PPM frames at native display resolution.
+
+The beat-response checks cover muted-clock beats through the real engine/snapshot path, internal 4/4 and 6/8, MIDI sync, stop/restart, timestamp wrap, visible accents under a held note, background-school motion and rendering bounds. `build/host/cf_visuals_test --beat-shots OUTDIR` renders a separate 120 BPM demonstration, beginning and ending at idle, without note triggers or loudness input.
+
+Scene Off checks cover settings round trips, encoder cycling in both directions, preservation of hints and HOME views, untouched animation state and scratch canvases while disabled, direct background clearing, and resuming with the currently held chord. Independent processes compare every physical-output word and all six USB capture channels with scenes enabled, disabled, and repeatedly switched during playback.

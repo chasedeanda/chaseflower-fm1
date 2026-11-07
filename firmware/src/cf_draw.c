@@ -264,6 +264,10 @@ static void draw_knobs(void)
 /* ------------------------------------------------------------------ view --- */
 static void draw_plant(int y0)
 {
+    if (cf_scene() == CF_SCENE_OFF) {
+        fb_rect(0, y0, FB_W, FLH * 2, FL_BG);
+        return;
+    }
     fb_blit2x(0, y0, fl_px, FLW, FLH);
 }
 

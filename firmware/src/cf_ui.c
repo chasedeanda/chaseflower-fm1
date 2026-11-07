@@ -1844,6 +1844,18 @@ static void cf_feed_plant(uint32_t dt)
 {
     const cf_chord_out_t *o = &cf_sn.out;
     uint32_t i, lvl = 0, src, ser;
+    if (cf_scene() == CF_SCENE_OFF) {
+        /* No animation tick, geometry rebuild, note particles or voice scans.
+         * Resync the current chord on return, without replaying old onsets. */
+        cu_last_src = 0xFFu;
+        cu_last_onset = cf_sn.onset;
+        cu_last_arp = cf_sn.arp_steps;
+        return;
+    }
+    if (cu_last_src == 0xFFu) {
+        memset(flo.pulse_on, 0, sizeof flo.pulse_on);
+        flo.level = flo.level_in = 0;
+    }
     /* Scene selection is independent of the fixed Top Lock playing mode. */
     flora_set_species(&flo, cf_scene() == CF_SCENE_BASS ? FL_SP_CORAL : FL_SP_PLANT);
     flora_set_key(&flo, cs.chord.tonic);

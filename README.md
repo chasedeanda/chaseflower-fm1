@@ -24,8 +24,8 @@ instrument's intro runs for 2.4 seconds and any input skips it.
 
 - **Top Lock, always.** Upper keys choose a chord type; lower keys play roots. The chosen chord stays latched until
   you select another one. Your saved Top chord-button definitions are retained.
-- **Bass or Bonfire.** Turn **ALGORITHM** on HOME to change scenes without interrupting a held chord or playback.
-  Bass is the default and your choice is saved. ALGORITHM still orders effects in FX and selects patterns/songs
+- **Bass, Bonfire, or Scene Off.** Turn **ALGORITHM** on HOME to change scenes without interrupting a held chord or playback.
+  Scene Off skips scene animation and rendering for reduced UI work. Bass is the default and your choice is saved. ALGORITHM still orders effects in FX and selects patterns/songs
   in Sequencer.
 - **Four HOME views.** Tap HOME while already there to cycle **Scene → Chord → Keyboard → Diagnostics**. From
   another screen, HOME returns to your selected view.
@@ -45,6 +45,12 @@ instrument's intro runs for 2.4 seconds and any input skips it.
 **Auto Harmony (current source):** Open **GLO → Harmony** and turn **K1 On** for
 [major/minor chords and button-selected extensions](docs/AUTO-HARMONY.md). Off leaves normal playing alone.
 This simplification is not yet included in the 0.6-chase5 download.
+
+[Refreshed drum grooves and audio auditions](docs/DRUM-LOOPS.md): 38 two-bar patterns spanning lo-fi, trap, gaze,
+hip-hop, house, garage and breaks, including 12 new grooves. Available in the development source.
+
+**Auto Harmony:** Open **GLO → Harmony** and turn **K1 to Auto** to enable
+[scale-aware chords and smart modifiers](docs/AUTO-HARMONY.md). Manual remains the default.
 
 **In development:** [Phase 2 FX presets](docs/FX-PRESETS.md) add 40 ready-to-play factory chains across
 Signature, Space, Lo-fi, Motion and Punch, with recall/bypass controls and 16 optional user slots.
