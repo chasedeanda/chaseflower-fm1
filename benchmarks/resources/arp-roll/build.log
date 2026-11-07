@@ -1,0 +1,54 @@
+In file included from firmware/src/coralflower.c:182:
+In file included from firmware/src/cf_settings.c:61:
+firmware/src/cf_fx_store.c:31:23: warning: suggest braces around initialization of subobject [-Wmissing-braces]
+    fxp_preset_t p = {0};
+                      ^
+                      {}
+In file included from firmware/src/coralflower.c:185:
+In file included from firmware/src/cf_screens.c:94:
+firmware/src/cf_lab_screen.c:54:39: warning: suggest braces around initialization of subobject [-Wmissing-braces]
+    for(int k=0;k<4;k++){cf_knob_t o={0};cfl_knob_info(k,&o);str_cpy(m->label[k],o.name,sizeof m->label[k]);str_cpy(m->value[k],o.val,sizeof m->value[k]);}
+                                      ^
+                                      {}
+2 warnings generated.
+size: 95 main-loop functions built for size (783 not in this build)
+HOME Inter Tight 11px: 1161 four-level bitmap bytes, 95 glyphs
+HOME Inter Tight 12px: 1411 four-level bitmap bytes, 95 glyphs
+HOME Inter Tight 14px: 1979 four-level bitmap bytes, 95 glyphs
+HOME Inter Tight 16px: 2504 four-level bitmap bytes, 95 glyphs
+HOME Inter Tight 32px: 9623 four-level bitmap bytes, 95 glyphs
+HOME Inter Tight 64px: 37427 four-level bitmap bytes, 95 glyphs
+Mascot devil: 23118 row-span bytes, 896 row-offset bytes, 60 colours
+Mascot cat: 22847 row-span bytes, 896 row-offset bytes, 60 colours
+Mascot art: 48237 linked data bytes; no runtime decode buffer
+face S: InterTight[wght].ttf@400 12px h15 base12  105 glyphs x 4  data 10425 B + table 3360 B + kern 2757 B (919 pairs) = 16552 B   digit adv 7.00px
+face M: InterTight[wght].ttf@500 15px h19 base15  105 glyphs x 4  data 13092 B + table 3360 B + kern 2976 B (992 pairs) = 19438 B   digit adv 9.00px
+face L: InterTight[wght].ttf@600 28px h35 base28  36 glyphs x 2  data 4928 B + table 576 B + kern 273 B (91 pairs) = 5812 B   digit adv 18.00px
+fonts total 41802 B  -> /Users/chase/.codex/worktrees/arp-piano-roll/FM1 Custom Firmware/build/gen/ui_fonts.h
+pixfont: UI 104 glyphs 14 rows, MICRO 72 glyphs -> /Users/chase/.codex/worktrees/arp-piano-roll/FM1 Custom Firmware/build/gen/cf_fonts.h
+2 extra bytes in post.stringData array
+2 extra bytes in post.stringData array
+icons: x_oct_up: symbol_pitch_up not in the font yet, using control_arrow_up
+icons: x_oct_dn: symbol_pitch_down not in the font yet, using control_arrow_down
+icons 12px: 125 cells, 9145 B
+icons 16px: 51 cells, 6673 B
+icons 24px: 14 cells, 4177 B
+icons total 19995 B -> /Users/chase/.codex/worktrees/arp-piano-roll/FM1 Custom Firmware/build/gen/ui_icons.h   (87 legacy names + 58 new)
+keycaps: 26 pills, data 4393 B + table 208 B; knob arcs 584 B = 5185 B -> /Users/chase/.codex/worktrees/arp-piano-roll/FM1 Custom Firmware/build/gen/ui_keycaps.h
+tables: /Users/chase/.codex/worktrees/arp-piano-roll/FM1 Custom Firmware/build/gen/felucca_tables.h
+fm6 patches: 8 -> /Users/chase/.codex/worktrees/arp-piano-roll/FM1 Custom Firmware/build/gen/felucca_fm6.h
+generated waves into /Users/chase/.codex/worktrees/arp-piano-roll/FM1 Custom Firmware/build/genwav
+samples: no CC0 samples in assets/samples-cc0 - generated material only
+samples: 1 sets, 18 zones, 68326 B ADPCM, SLICE BREAK 44100 samples (cached)
+stub: 2268 B of 3808 (59.6%), version 3, sha256 baee55ed142fe1cc
+loader: image 8416 B at 0x1c0a800, bss end 0x1c0f4ac
+loader: ota.bin 7157 B
+  ok    .ram_text: 932 insns, no calls
+  ok    image 574016 B (stub 3808 + app 570208); RAM .data+.bss 90108 B of 98304; pool 316792 B of 344064
+  ok    register access: hal/ only (src/, loader/ clean)
+size: .text 553652 B, .ram_text 3000 B, .c1_text 128 B (RAMTEXT 3128 of 24576), .data 13428 B, .bss 76668 B; XIP 570208 B of 573440 (99.4%), RAM 90096 B of 98304 (91.7%), POOL 316792 B of 344064 (92.1%), NOINIT 216 B of 15664 (1.4%)
+sector 0x4000 (the directory and the stub: constant while the stub is) sha256 0f33c838a23961d8; marker at 0x91fe0, body 570208 B
+app      /Users/chase/.codex/worktrees/arp-piano-roll/FM1 Custom Firmware/build/coralflower.bin  574016 B
+loader   /Users/chase/.codex/worktrees/arp-piano-roll/FM1 Custom Firmware/build/loader/ota.bin  7157 B
+package  /Users/chase/.codex/worktrees/arp-piano-roll/FM1 Custom Firmware/build/coralflower-0.6-arp1.fwsc  610313 B, identity FM-1_930
+release  /Users/chase/.codex/worktrees/arp-piano-roll/FM1 Custom Firmware/build/release-0.6-arp1/

@@ -11,11 +11,11 @@ Generate with `sh tools/test_arp.sh`, then `python3 tools/render_arp.py` (Pillow
 
 The local branch `codex/arp-piano-roll` integrates current main `ca52779`
 (Keyboard Learn, mascots, FX readout), plus the visual ARP and four appended modes.
-Source/build commit: `cc8e9a5d4531517665693224c74c1c9f3cf50596`.
+Source/build commit: `e30e296c9348c39185e0fb4799f201cac2020a87`.
 
 The installable development package is `build/coralflower-0.6-arp1.fwsc`.
-SHA256: `73983e746cf6d4a71db2f5e0a6610be49a7a891967cdbf55a5bc962b663641be`. Identity remains `FM-1_930`.
-It has not been pushed, published or flashed by this task.
+SHA256: `af61bdf06e6da6ebe021a6148f4589f30add4cc723f9f3973785f6c9af9d1de9`. Identity remains `FM-1_930`.
+It has not been published as a firmware release or flashed by this task.
 
 ## Linked device resources
 
@@ -23,11 +23,11 @@ It has not been pushed, published or flashed by this task.
 | --- | ---: | ---: | ---: |
 | ordinary_ram | 90,096 | 98,304 | +600 |
 | pool | 316,792 | 344,064 | +0 |
-| xip | 570,192 | 573,440 | +6,408 |
+| xip | 570,208 | 573,440 | +6,424 |
 | ram_code | 3,128 | 24,576 | +0 |
 | noinit | 216 | 15,664 | +0 |
 
-XIP headroom is **3,248 bytes**. The linked
+XIP headroom is **3,232 bytes**. The linked
 image fits, but further features must recheck this small flash margin. POOL and
 RAM code are unchanged. See [exact inputs, ELF symbols and paired report](../../benchmarks/resources/arp-roll/report.md).
 The builder's runtime-clear-range RAM check also includes alignment padding;
