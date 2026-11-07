@@ -192,9 +192,9 @@
       "group": "Songs",
       "sharedTemplate": "picker",
       "musicalMilestone": 2,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native preview alongside selected prototype; device review pending",
+      "implementationStatus": "Partial native preview: six saved ideas plus existing recording rows; SELECT focus, SEL load and explicit Save current; no bulk clear yet",
+      "deviceVerification": "Pending — host captures and device link only"
     },
     {
       "id": "IDEA_DETAILS",
@@ -202,9 +202,9 @@
       "group": "Songs",
       "sharedTemplate": "text",
       "musicalMilestone": 2,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native preview alongside selected prototype; device review pending",
+      "implementationStatus": "Partial native preview: selected-row progression Load/Duplicate/Rename/Delete; recording Load/Delete only",
+      "deviceVerification": "Pending — host captures and device link only"
     },
     {
       "id": "IDEA_LIBRARY_EMPTY",
@@ -232,9 +232,9 @@
       "group": "Songs",
       "sharedTemplate": "picker",
       "musicalMilestone": 2,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native preview alongside selected prototype; device review pending",
+      "implementationStatus": "Partial native preview: Save current captures semantic phrase and musical setup; sound-only SAVE remains on sound pages",
+      "deviceVerification": "Pending — host captures and device link only"
     },
     {
       "id": "IDEA_OVERWRITE_CONFIRM",
@@ -252,9 +252,9 @@
       "group": "Songs",
       "sharedTemplate": "text",
       "musicalMilestone": 2,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native preview alongside selected prototype; device review pending",
+      "implementationStatus": "Native preview: 24 printable characters with K1 position, K2 character and SEL commit; saved progressions only",
+      "deviceVerification": "Pending — host captures and device link only"
     },
     {
       "id": "IDEA_DELETE_CONFIRM",

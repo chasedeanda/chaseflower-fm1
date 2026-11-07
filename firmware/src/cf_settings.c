@@ -651,6 +651,8 @@ static void cfk_flush(void)
     }
 }
 
+#include "cf_library_store.c"
+
 /* every UI frame (main.c's main loop): a change, once it has rested, goes to flash; a quiet moment tidies it */
 static void settings_poll(void)
 {
@@ -674,6 +676,7 @@ static void settings_poll(void)
     cfh_poll(now, now - cfs_sound_ms >= CF_SET_SILENT_MS);
     cpb_poll(now, now - cfs_sound_ms >= CF_SET_SILENT_MS);
     cfd_poll(now, now - cfs_sound_ms >= CF_SET_SILENT_MS);
+    cfl_poll(now, now - cfs_sound_ms >= CF_SET_SILENT_MS);
     fxp_poll(now, now - cfs_sound_ms >= CF_SET_SILENT_MS);
     if (cfs_retry_ms && (int32_t)(now - cfs_retry_ms) < 0)
         return;                                   /* (a flash error, or the log full: once more a second later) */

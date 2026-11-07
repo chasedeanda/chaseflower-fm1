@@ -56,6 +56,8 @@ enum { OBJ_SETTINGS, OBJ_PROJECT0, OBJ_UPRESET0 = OBJ_PROJECT0 + 4, OBJ_FM6BANK 
        OBJ_CFTAKE2 = OBJ_CFTAKE0 + 2,
        OBJ_CFRECPREF,                         /* recorder policy at 0xEC000 / 0xED000 */
        OBJ_CFDRAFT,                           /* protected semantic draft at 0xEE000 / 0xEF000 */
+       OBJ_CFSONG0,                           /* six saved ideas, 0xF0000..0xFBFFF */
+       OBJ_CFSONG5 = OBJ_CFSONG0 + 5,
 #endif
        OBJ_COUNT
 #endif
@@ -112,6 +114,8 @@ static uint32_t st_sector(uint32_t obj, uint32_t copy)  /* flash offset of copy 
 #if defined(CF_LOOP_STORE) && !FELUCCA_CZ
     if (obj == OBJ_CFLOOP)
         return 0xB6000u + copy * ST_SECTOR;
+    if (obj >= OBJ_CFSONG0 && obj <= OBJ_CFSONG5)
+        return 0xF0000u + (obj - OBJ_CFSONG0) * 2u * ST_SECTOR + copy * ST_SECTOR;
     if (obj == OBJ_CFDRAFT) return 0xEE000u + copy * ST_SECTOR;
     if (obj == OBJ_CFRECPREF) return 0xEC000u + copy * ST_SECTOR;
     if (obj >= OBJ_CFTAKE0 && obj <= OBJ_CFTAKE2)

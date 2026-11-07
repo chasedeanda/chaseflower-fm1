@@ -98,7 +98,12 @@ static int fails, checks;
 
 /* ------------------------------------------------------------------ the objects --- */
 #define ST_TEST_MAX 2556u
-#ifdef ST_RECORDINGS
+#ifdef ST_SONGS
+#define NOBJ 6
+static const uint32_t OBJ[NOBJ]={OBJ_CFSONG0,OBJ_CFSONG0+1u,OBJ_CFSONG0+2u,OBJ_CFSONG0+3u,OBJ_CFSONG0+4u,OBJ_CFSONG5};
+static const uint32_t LEN[NOBJ]={1388u,1388u,1388u,1388u,1388u,1388u};
+static uint8_t model[NOBJ][ST_TEST_MAX];
+#elif defined(ST_RECORDINGS)
 #define NOBJ 4
 static const uint32_t OBJ[NOBJ] = {OBJ_CFTAKE0, OBJ_CFTAKE0+1u, OBJ_CFTAKE2, OBJ_CFRECPREF};
 static const uint32_t LEN[NOBJ] = {2556u,2556u,2556u,12u};
