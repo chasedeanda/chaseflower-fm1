@@ -33,14 +33,14 @@ typedef struct {
     uint8_t trk, bar, pos, n;                    /* SQ_CHORDS / BASS / LAYER; the bar; where in it it starts (1/24 of a
                                                   * beat); notes */
     uint16_t len;                                /* how long it lasts (1/24 of a beat; on over the bar lines after) */
-    uint16_t mask;                               /* the chord's pitch classes over the root (bit 0: the root) */
+    uint16_t mask;                               /* Manual pitch classes; Auto full intervals low 16 bits */
     uint8_t note[6];
     uint8_t nb, bass[2];                         /* CHORDS: the bass that sounded with it (played when BASS is empty) */
     uint8_t root;                                /* the root's pitch class (its colour, its name) */
     uint8_t rootkey;                             /* the keys that wrote it (their lights show it; a pattern that follows
                                                   * the key plays what they play now): the root key, 0xFF */
     uint8_t algo_oct;                            /* .. the algorithm (bits 0-1) and OCT + 3 (bits 2-4) they were under */
-    uint16_t btns;                               /* .. the chord buttons (cf_chord_out_t.buttons) */
+    uint16_t btns;                               /* Manual buttons; Auto CF_H_EVENT | mask[16..23] (rootkey 0xFF) */
 } sq_ev_t;
 
 typedef struct {

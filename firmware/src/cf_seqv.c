@@ -318,7 +318,7 @@ static void sq_ev_name(const sq_pat_t *p, uint32_t i, char *b)
         kint(b + str_len(b), sqv.note0[i] / 12 - 1, 0);
         return;
     }
-    cf_chord_name(sqv.root[i], sqv.mask[i], -1, &cu_spell, b);
+    cf_chord_name(sqv.root[i], cf_harmony_event_mask(sqv.mask[i], p->ev[i].btns), -1, &cu_spell, b);
 }
 
 static void draw_sq_track(void)

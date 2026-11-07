@@ -194,6 +194,7 @@ void cf_chord_init(cf_chord_t *c, const cf_chord_cfg_t *cfg)
     for (i = 0; i < sizeof(*c); i++)
         p[i] = 0;
     c->cfg = *cfg;
+    cf_harmony_defaults(&c->harmony);
     c->out.bass_pc = -1;
 }
 
@@ -207,6 +208,8 @@ void cf_chord_reset(cf_chord_t *c)
 
 static uint16_t cfc_effective(const cf_chord_t *c)
 {
+    if (c->harmony.mode == CF_H_AUTO && c->harmony.momentary)
+        return c->held;
     if (!cfc_is_lock(c->cfg.algo))
         return c->held;
     return c->held ? c->gesture : c->locked;
@@ -263,6 +266,10 @@ static int cfc_resolve(cf_chord_t *c)
     const cf_chord_cfg_t *g = &c->cfg;
     uint16_t eff = cfc_effective(c), use, off;
     int i, nb = cfc_is_top(g->algo) ? CF_TOP_NBTN : CF_SIDE_NBTN, changed;
+    int automatic = c->harmony.mode == CF_H_AUTO;
+    int eligible = automatic && cf_harmony_supported(g->scale, g->quantize);
+    if (eligible && c->nroots && cf_scale_index(g->scale,
+        cf_key_root_note(g, c->root_key[c->nroots - 1]) % 12 - g->tonic) < 0) eligible = 0;
     /* the lights show the buttons; the notes come from `play`, which follows them except while kept (cfc_root takes
      * them) */
     if (!(c->keep && c->nroots && !c->bare && (!c->hold || cfc_any_down(c))))
@@ -271,10 +278,18 @@ static int cfc_resolve(cf_chord_t *c)
     off = cfc_is_top(g->algo) ? cfc_off_mask(g) : 0u;
     /* single notes: Off held, or no chord button at all (the owner's rule, 2026-10-15: keys alone play notes, as many
      * as are held; a chord sounds only while a chord button is down, or latched in Lock) */
-    o.single = (uint8_t)((use & off) != 0 || use == 0);
-    o.buttons = (eff & off) ? eff : cfc_used(c, eff, nb);
+    o.automatic = (uint8_t)automatic;
+    o.fallback = (uint8_t)(automatic && !eligible);
+    o.conflict = 0;
+    o.single = (uint8_t)(automatic ? !eligible : (use & off) != 0 || use == 0);
+    o.buttons = automatic ? eff : (eff & off) ? eff : cfc_used(c, eff, nb);
     o.sounding = c->nroots > 0;
     o.hold = c->hold;
+    if (eligible) {
+        int root = c->nroots ? cf_key_root_note(g, c->root_key[c->nroots - 1]) % 12 : g->tonic;
+        (void)cf_harmony_mask(&c->harmony, g->scale, g->tonic, root, eff,
+                              c->stamp, &o.buttons, &o.conflict);
+    }
     if (!o.sounding) {
         o.n = 0;
     } else if (o.single) {
@@ -314,6 +329,22 @@ static int cfc_resolve(cf_chord_t *c)
         f = cf_merge_forms(held, nh);
         o.root_note = (uint8_t)cf_key_root_note(g, c->root_key[c->nroots - 1]);
         o.root_pc = (uint8_t)(o.root_note % 12);
+        if (eligible) {
+            uint16_t applied, ignored;
+            mask = cf_harmony_mask(&c->harmony, g->scale, g->tonic, o.root_pc, use,
+                                    c->stamp, &applied, &ignored);
+            /* Lights describe the selected next chord in Wait; conflict marks
+             * those choices rather than pretending they are sounding already. */
+            f.type = (uint8_t)cf_mask_type(mask);
+            f.add = 0; f.inv = c->harmony.smooth ? CF_INV_AUTO : 0;
+            f.bass = 0;
+            for (i = nh - 1; i >= 0; i--) if ((applied >> order[i]) & 1u) {
+                int slot = order[i];
+                if (c->harmony.inv[slot]) f.inv = c->harmony.inv[slot];
+                f.bass = c->harmony.bass[slot];
+                break;
+            }
+        } else {
         if (f.type == CF_TYPE_DEFAULT) {
             mask = g->quantize == CF_Q_OFF ? cf_form_mask(&(cf_form_t){CF_T_MAJ, 0, 0, 0})
                                            : cf_diatonic_mask(g->scale, g->tonic, o.root_pc, 3);
@@ -326,6 +357,7 @@ static int cfc_resolve(cf_chord_t *c)
         }
         if (g->quantize == CF_Q_FULL || (g->quantize == CF_Q_BASIC && f.type == CF_TYPE_DEFAULT && f.add))
             mask = cf_mask_snap(mask, o.root_pc, g->scale, g->tonic);
+        }
         base = o.root_note;
         inv = f.inv < 0 ? 0 : f.inv;
         if (f.inv == CF_INV_AUTO) {
@@ -339,7 +371,21 @@ static int cfc_resolve(cf_chord_t *c)
                 inv = a;
             }
         }
+        if (eligible) {
+            int8_t tones[12];
+            int ntones = cf_mask_tones(mask, tones);
+            while (base < 0) base += 12;
+            while (ntones && base + tones[ntones - 1] > 127) base -= 12;
+        }
         o.n = (uint8_t)cf_voice(base, mask, inv, o.note);
+        if (eligible) {
+            int unique = 0;
+            /* Inversion can coincide an Add2 with its ninth. A physical note
+             * must have one owner/note-off even when two degrees meet. */
+            for (i = 0; i < o.n; i++)
+                if (!unique || o.note[i] != o.note[unique - 1]) o.note[unique++] = o.note[i];
+            o.n = (uint8_t)unique;
+        }
         o.mask = mask;
         o.type = (uint8_t)cf_mask_type(mask);
         o.inv = (uint8_t)inv;
@@ -347,7 +393,9 @@ static int cfc_resolve(cf_chord_t *c)
         o.form = f;
     }
     changed = o.sounding != old->sounding || o.single != old->single || o.n != old->n ||
-              o.bass_pc != old->bass_pc || o.buttons != old->buttons || o.hold != old->hold;
+              o.bass_pc != old->bass_pc || o.buttons != old->buttons || o.hold != old->hold ||
+              o.automatic != old->automatic || o.fallback != old->fallback || o.conflict != old->conflict ||
+              o.mask != old->mask || o.root_pc != old->root_pc;
     for (i = 0; !changed && i < o.n; i++)
         changed = o.note[i] != old->note[i];
     if (changed)
@@ -373,11 +421,23 @@ void cf_chord_config(cf_chord_t *c, const cf_chord_cfg_t *cfg)
     cfc_resolve(c);
 }
 
+void cf_chord_harmony(cf_chord_t *c, const cf_harmony_t *h)
+{
+    int transition = c->harmony.mode != h->mode || c->harmony.momentary != h->momentary;
+    c->harmony = *h;
+    cf_harmony_sanitize(&c->harmony);
+    if (transition) {
+        c->held = c->gesture = c->locked = c->play = 0;
+        c->toggle = c->bare = c->prev_n = 0;
+    }
+    cfc_resolve(c);
+}
+
 static void cfc_button(cf_chord_t *c, int btn, int down)
 {
     uint16_t bit = (uint16_t)(1u << btn);
     if (down) {
-        if (cfc_is_lock(c->cfg.algo)) {
+        if (cfc_is_lock(c->cfg.algo) && !(c->harmony.mode == CF_H_AUTO && c->harmony.momentary)) {
             if (!c->held) {                   /* a new press: it replaces the latch */
                 c->toggle = (uint8_t)(c->locked == bit);
                 c->gesture = bit;
@@ -390,7 +450,7 @@ static void cfc_button(cf_chord_t *c, int btn, int down)
         c->stamp[btn] = ++c->clock;
     } else {
         c->held &= (uint16_t)~bit;
-        if (cfc_is_lock(c->cfg.algo) && !c->held) {
+        if (cfc_is_lock(c->cfg.algo) && !(c->harmony.mode == CF_H_AUTO && c->harmony.momentary) && !c->held) {
             c->locked = c->toggle ? 0 : c->gesture;
             c->gesture = 0;
             c->toggle = 0;
@@ -441,7 +501,7 @@ static void cfc_root(cf_chord_t *c, int key, int down)
         c->root_down[c->nroots] = 1;
         c->root_key[c->nroots++] = (uint8_t)key;
         c->play = cfc_effective(c);           /* (a root down: the chord takes the latch as it is now) */
-        c->bare = !c->play;                   /* (no button with it: the buttons pressed now apply at once) */
+        c->bare = !c->play && c->harmony.mode == CF_H_MANUAL;
     }
 }
 

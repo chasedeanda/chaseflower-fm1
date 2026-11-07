@@ -42,6 +42,9 @@ instrument's intro runs for 2.4 seconds and any input skips it.
 [Scenes and controls](docs/VISUALS.md) · [Sound banks and 6/8](docs/CHASE3.md) ·
 [Diagnostics](docs/DIAGNOSTICS.md) · [USB recording](docs/USB-AUDIO.md)
 
+**Next build:** [Auto harmony and smart modifiers](docs/AUTO-HARMONY.md) are available in source via
+**GLO → Harmony**. They are not included in the existing 0.6-chase4 download above.
+
 ## Install this release
 
 1. Download **`coralflower-0.6-chase4.fwsc`** from the [GitHub release](https://github.com/chasedeanda/chaseflower-fm1/releases/tag/v0.6-chase4).

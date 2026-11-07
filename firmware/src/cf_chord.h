@@ -14,6 +14,7 @@
 
 #include <stdint.h>
 #include "cf_theory.h"
+#include "cf_harmony.h"
 
 #define CF_NKEYS 27
 #define CF_NUPPER 11
@@ -56,11 +57,15 @@ typedef struct {
     cf_form_t form;             /* the merged form (for SEL and the labels) */
     uint16_t buttons;           /* the effective chord buttons (held or locked) */
     uint8_t hold;               /* HOLD is on (its key lit) */
+    uint8_t automatic;          /* Auto requested; fallback 1 when scale/quantize unsupported */
+    uint8_t fallback;
+    uint16_t conflict;          /* ignored modifier slots */
     uint32_t serial;            /* bumped whenever the chord changes */
 } cf_chord_out_t;
 
 typedef struct {
     cf_chord_cfg_t cfg;
+    cf_harmony_t harmony;       /* separate from the legacy persisted manual forms */
     uint16_t held;              /* chord buttons physically down */
     uint16_t gesture;           /* the buttons of the press under way (Lock) */
     uint16_t locked;            /* the latched set (Lock) */
@@ -88,6 +93,7 @@ void cf_chord_defaults(cf_chord_cfg_t *cfg);
 void cf_chord_init(cf_chord_t *c, const cf_chord_cfg_t *cfg);
 /* a configuration change: held keys are kept, the chord re-resolved; a change of algorithm drops the buttons */
 void cf_chord_config(cf_chord_t *c, const cf_chord_cfg_t *cfg);
+void cf_chord_harmony(cf_chord_t *c, const cf_harmony_t *h);
 /* a key went down (1) or up (0); returns 1 when the output changed. key CF_KEY_EXT + n: a root at MIDI note n */
 int cf_chord_key(cf_chord_t *c, int key, int down);
 /* every key up, every latch cleared */

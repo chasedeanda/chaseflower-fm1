@@ -571,6 +571,11 @@ static void sq_write_poll(void)
                 e.rootkey = 0xFF;                /* (a root from outside: as written, no key's light; 0.4.x reads it) */
             fm1_irq_on();
             e.btns = (uint16_t)o->buttons;
+            if (o->automatic && squ.trk != SQ_BASS) {
+                e.rootkey = 0xFF;
+                e.mask = (uint16_t)o->mask;
+                e.btns = cf_harmony_event_buttons(o->mask);
+            }
             e.algo_oct = (uint8_t)((cs.chord.algo & 3u) | (uint32_t)(cs.chord.octave + 3) << 2);
             p->tonic = cs.chord.tonic;           /* (the key it is written in: a fixed pattern names it) */
             p->scale = cs.chord.scale;

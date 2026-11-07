@@ -41,6 +41,7 @@ static void cf_send_config(void)                 /* the chord settings -> the au
     cs.chord.algo = CF_ALG_TOP_LOCK;
     fm1_irq_off();
     cfc_shadow = cs.chord;
+    cfh_shadow = ch;
     cfp_cfg.glide_always = cs.glide_always;
     cfp_cfg.vel = cs.vel;
     cfp_cfg.bass_on = cs.bass_on;
@@ -111,6 +112,8 @@ static struct {
 /* --------------------------------------------------------------- knobs --- */
 static const char *const Q_NAME[3] = {"Off", "Basic", "Full"};
 static const char *const ALG_NAME[CF_NALGS] = {"Top", "Top Lock", "Side", "Side Lock"};
+static const char *const H_STYLE[CF_H_NSTYLES] = {"Basic", "Rich", "Dreamy", "Custom"};
+#define CF_GLO_HARMONY 7u
 
 static void kfmt(char *b, uint32_t n, const char *s) { str_cpy(b, s, n); }
 static void kint(char *b, int v, const char *unit)
@@ -227,6 +230,14 @@ static void ui_knob_info(int k, cf_knob_t *o)
                 kfmt(o->val, 14, "Hold");
             }
             return;
+        }
+        if (ch.mode == CF_H_AUTO) {
+            unsigned b = cu.sel_btn;
+            if (k == 0) { kfmt(o->name, 12, "MODIFIER"); kfmt(o->val, 14, cf_modifier_name(ch.slot[b])); }
+            if (k == 1) { kfmt(o->name, 12, "CUSTOM"); kfmt(o->val, 14, cf_modifier_name(ch.custom)); o->dis = ch.style != CF_H_CUSTOM; }
+            if (k == 2) { kfmt(o->name, 12, "INV"); kfmt(o->val, 14, ch.inv[b] < 0 ? "Smooth" : ch.inv[b] == 0 ? "Style" : ch.inv[b] == 1 ? "1st" : ch.inv[b] == 2 ? "2nd" : "3rd"); }
+            if (k == 3) { kfmt(o->name, 12, "BASS"); kint(o->val, ch.bass[b] + 1, " tone"); }
+            break;
         }
         switch (k) {
         case 0: kfmt(o->name, 12, "TYPE"); kfmt(o->val, 14, cf_type_name(f->type)); break;
@@ -345,6 +356,12 @@ static void ui_knob_info(int k, cf_knob_t *o)
     case SCR_SQED: sq_knob_info(k, o); break;
     case SCR_GLO:
         switch (cu.page[SCR_GLO]) {
+        case CF_GLO_HARMONY:
+            if (k == 0) { kfmt(o->name, 12, "HARMONY"); kfmt(o->val, 14, ch.mode ? "Auto" : "Manual"); }
+            if (k == 1) { kfmt(o->name, 12, "STYLE"); kfmt(o->val, 14, H_STYLE[ch.style]); }
+            if (k == 2) { kfmt(o->name, 12, "VOICING"); kfmt(o->val, 14, ch.smooth ? "Smooth" : "Root"); }
+            if (k == 3) { kfmt(o->name, 12, "MODIFIERS"); kfmt(o->val, 14, ch.momentary || !(cs.chord.algo & 1u) ? "Moment" : "Latched"); }
+            break;
         case 6:
             if(k==0) {kfmt(o->name,12,"PAGE");kfmt(o->val,14,CF_DIAG_PAGES[cfd.page]);}
             if(k==1) {kfmt(o->name,12,"DISPLAY");kfmt(o->val,14,cfd.hold?"Hold":"Live");}
@@ -468,11 +485,22 @@ static void ui_knob_turn(int k, int d)
         }
         cu_spell_update();
         cf_send_config();
+        if (ch.mode == CF_H_AUTO && !cf_harmony_supported(cs.chord.scale, cs.chord.quantize))
+            cf_message("Auto needs a 7-note scale\nand Quantize Basic or Full");
         break;
     case SCR_SEL: {
         cf_form_t *f = sel_form();
         if (cf_is_off(&cs.chord, cu.sel_btn))
             break;
+        if (ch.mode == CF_H_AUTO) {
+            unsigned b = cu.sel_btn;
+            if (k == 0) ch.slot[b] = (uint8_t)clampi(ch.slot[b] + d, 0, CF_MOD_N - 1);
+            if (k == 1 && ch.style == CF_H_CUSTOM) ch.custom = (uint8_t)clampi(ch.custom + d, 0, CF_MOD_13);
+            if (k == 2) ch.inv[b] = (int8_t)clampi(ch.inv[b] + d, CF_INV_AUTO, 3);
+            if (k == 3) ch.bass[b] = (uint8_t)clampi(ch.bass[b] + d, 0, 5);
+            cf_send_config();
+            break;
+        }
         if (k == 0)
             f->type = (uint8_t)clampi(f->type + d, 0, CF_NTYPES - 1);
         else if (k == 1) {
@@ -576,6 +604,15 @@ static void ui_knob_turn(int k, int d)
     case SCR_SQED: sq_knob_turn(k, d); break;
     case SCR_GLO:
         switch (cu.page[SCR_GLO]) {
+        case CF_GLO_HARMONY:
+            if (k == 0) ch.mode = (uint8_t)clampi(ch.mode + d, 0, CF_H_AUTO);
+            if (k == 1) ch.style = (uint8_t)clampi(ch.style + d, 0, CF_H_NSTYLES - 1);
+            if (k == 2) ch.smooth = (uint8_t)(d > 0);
+            if (k == 3) ch.momentary = (uint8_t)(d > 0);
+            cf_send_config();
+            if (ch.mode == CF_H_AUTO && !cf_harmony_supported(cs.chord.scale, cs.chord.quantize))
+                cf_message("Auto needs a 7-note scale\nand Quantize Basic or Full");
+            break;
         case 6:
             if(k==0) cfd.page=(uint8_t)clampi(cfd.page+d,0,DP_N-1);
             if(k==1) { if(d>0 && !cfd.hold) cf_diag_sample(cfd.v,cu.now); cfd.hold=(uint8_t)(d>0); }
@@ -680,7 +717,7 @@ static void ui_say(const char *a, const char *b)
 static uint32_t screen_pages(uint32_t scr)
 {
     if (scr == SCR_GLO)
-        return 7u;                               /* + Diagnostics */
+        return 8u;                               /* + Diagnostics, Harmony */
     if (scr == SCR_ENV)
         return 3u;                               /* chord + bass, chord, bass */
     if (scr == SCR_ARP)
@@ -1472,8 +1509,12 @@ static void ui_keycap(int key, cf_keycap_t *o)
         o->btn = 1;
         if (hold)
             str_cpy(o->top, "HOLD", 8);          /* (the Off form's key: HOLD since 0.5, lit while on) */
+        else if (ch.mode == CF_H_AUTO)
+            str_cpy(o->top, cf_modifier_label(ch.slot[idx]), 8);
         else
             cf_form_label(f, o->top);
+        if (!hold && ch.mode == CF_H_AUTO && ((out->conflict >> idx) & 1u))
+            str_cpy(o->bot, "!", 8);
         /* held and in the chord: pressed; latched (Lock): lit; held but left out of the chord (a minor button with
          * a major one, cf_chord.c cfc_used): plain, so it plainly does not count */
         o->style = down && on ? KC_DOWN : on ? KC_ON : KC_BTN;

@@ -43,11 +43,12 @@ enum { CRB_INFO = 1, CRB_LIST = 65, CRB_GET, CRB_PUT, CRB_RESTART = 72, CRB_USB 
 #define CFB_EDIT 56u                                 /* 56..58: the sounds' unsaved edits (OBJ_CFEDIT0..2) */
 #define CFB_PSND 59u                                 /* 59: the patterns' own sounds (OBJ_CFPSND, 0.5) */
 #define CFB_TWK 60u                                  /* 60..67: the tweaked pattern sounds (OBJ_CFTWK0..7, 0.5) */
+#define CFB_HARM 68u                                 /* versioned Auto harmony preferences */
 static const uint8_t CRB_IDS[] = {6, 7, 8, CRB_VA, CRB_FM6S, CRB_FM6S + 1u, CFB_SET, CFB_LOOP,
                                   CFB_SEQ, CFB_SEQ + 1u, CFB_SEQ + 2u, CFB_SEQ + 3u, CFB_SEQ + 4u, CFB_SEQ + 5u,
                                   CFB_EDIT, CFB_EDIT + 1u, CFB_EDIT + 2u, CFB_PSND,
                                   CFB_TWK, CFB_TWK + 1u, CFB_TWK + 2u, CFB_TWK + 3u, CFB_TWK + 4u, CFB_TWK + 5u,
-                                  CFB_TWK + 6u, CFB_TWK + 7u};
+                                  CFB_TWK + 6u, CFB_TWK + 7u, CFB_HARM};
 _Static_assert(SQ_NCHUNK == 6u, "backup: one id per sequencer object");
 #define CRB_N ((uint32_t)sizeof CRB_IDS)
 /* an FM6 bank of earlier firmware, as fm6_bank.c fm6_bank_import takes it at boot: Felucca 1.0's (27 records, version
@@ -151,6 +152,8 @@ static uint32_t crb_obj(uint32_t id)                 /* storage.c's object of an
 {
     if (id == CFB_SET)
         return CF_SET_OBJ;
+    if (id == CFB_HARM)
+        return OBJ_CFHARM;
     if (id == CFB_LOOP)
         return OBJ_CFLOOP;
     if (id >= CFB_TWK)
@@ -204,6 +207,7 @@ static void crb_list(void)
     if (!cr_safe && !cfs_restore_lock && sq_dirty)
         sq_save_write();                             /* .. the sequencer's too (playing or not: a backup is taken now) */
     if (!cr_safe && !cfs_restore_lock) {
+        cfh_flush();
         cfk_flush();                                 /* .. and the sounds' edits, the patterns' own sounds */
         cfps_flush();
         dm_flush();                                  /* .. the drum machine's (0.6) */
@@ -257,6 +261,7 @@ static void crb_get(const uint8_t *a, uint32_t n)
 /* ------------------------------------------------------------------ PUT --- */
 static int crb_size_ok(uint32_t id, uint32_t len)   /* a begin's size for this id (0: the object erased) */
 {
+    if (id == CFB_HARM) return !len || len == sizeof(cfh_rec_t);
     if (id == 6u || id == 7u)
         return !len || len == sizeof(up_bank_t);
     if (id == 8u)
@@ -301,6 +306,13 @@ static uint32_t crb_commit(void)
     uint32_t id = crb.id, len = crb.len;
     if (crb.pos != len || st_crc32(raw, len) != crb.crc)
         return 2;
+    if (id == CFB_HARM) {
+        if (len && !cfh_valid((const cfh_rec_t *)raw)) return 2;
+        if (st_save(OBJ_CFHARM, raw, len)) return 4;
+        cfs_restore_lock = 1;
+        cf_message("Harmony restored: restart");
+        return 0;
+    }
     if (id == CFB_SET) {
         if (!cfb_set_ok((const cf_rec_t *)raw, len))
             return 2;

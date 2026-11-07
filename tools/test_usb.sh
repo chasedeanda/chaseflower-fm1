@@ -10,7 +10,7 @@ CF_USB_DIAG=build/usb-tests/diagnostics.syx build/host/cf_usb_test > build/usb-t
 tail -7 build/usb-tests/protocol.log
 # Each process starts a fresh, deterministic instrument. Capture must not change a single physical output word.
 for rate in 44100 48000; do
-for part in 0 1 2 3 4 5 6; do
+for part in 0 1 2 3 4 5 6 7; do
     for clean in 0 1; do
         for fx in 0 1; do
             name="$rate-$part-$clean-$fx"
@@ -23,4 +23,4 @@ for part in 0 1 2 3 4 5 6; do
 done
 done
 python3 tests/test_usb_tools.py
-echo 'PASS: protocol/packet/resampler/drift checks and 56 render comparisons (USB active vs idle, both rates).'
+echo 'PASS: protocol/packet/resampler/drift checks and 64 render comparisons (including Auto, USB active vs idle, both rates).'

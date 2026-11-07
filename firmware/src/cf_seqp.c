@@ -47,7 +47,7 @@ static struct {
     uint8_t dn, dnote[6], droot, dsingle, dser;   /* the CHORDS track's chord sounding, its arpeggio's too, for HOME's
                                   * flower and name (0.5, the owner: "то, что играется в секвенсоре я бы хотел, чтобы
                                   * на главной отображалось на цветочке"): notes, root, single notes, + 1 a chord */
-    uint16_t dmask;              /* .. its pitch classes over the root */
+    uint32_t dmask;              /* full intervals, including Auto extensions */
     uint8_t gn, gnote[6], gbn, gbass[2];   /* the last chord and bass struck (GLO > Play's Always glides from them) */
     uint32_t gms, gbms;          /* .. when they were let go (cf_now_ms) */
     uint8_t next;                /* the pattern that comes in when this one ends (SQ_NPAT + k: the song from place k),
@@ -399,7 +399,7 @@ static void sqp_fire(const sq_pat_t *p, uint32_t tk, uint32_t u)
             sqp_arp_on(SQ_LAYER, e);
             sqp.left[2] = off;
             sqp.lkey = e->rootkey;
-            sqp.lbtns = e->btns;
+            sqp.lbtns = e->btns & CF_H_EVENT ? 0 : e->btns;
             return;
         }
         if (tk == SQ_LAYER) {                    /* (its own part, no bass) */
@@ -434,7 +434,7 @@ static void sqp_fire(const sq_pat_t *p, uint32_t tk, uint32_t u)
             sqp.ln = e->n;
             sqp.left[2] = off;
             sqp.lkey = e->rootkey;
-            sqp.lbtns = e->btns;
+            sqp.lbtns = e->btns & CF_H_EVENT ? 0 : e->btns;
             return;
         }
         gt = sqp_arp_trk(p, SQ_CHORDS) ? 0u : sqp_glide_ticks();
@@ -458,13 +458,13 @@ static void sqp_fire(const sq_pat_t *p, uint32_t tk, uint32_t u)
             sqp.gnote[j] = e->note[j];
         sqp.left[0] = off;
         sqp.ckey = e->rootkey;
-        sqp.cbtns = e->btns;
+        sqp.cbtns = e->btns & CF_H_EVENT ? 0 : e->btns;
         sqp.dn = e->n < 6u ? e->n : 6u;          /* (HOME shows it: cf_ui.c cf_feed_plant) */
         for (j = 0; j < sqp.dn; j++)
             sqp.dnote[j] = e->note[j];
         sqp.droot = e->root;
-        sqp.dmask = e->mask;
-        sqp.dsingle = !e->btns;
+        sqp.dmask = cf_harmony_event_mask(e->mask, e->btns);
+        sqp.dsingle = e->btns & CF_H_EVENT ? e->mask == 1u : !e->btns;
         sqp.dser++;
         if (!sq_own(p, SQ_BASS) && e->nb && !((p->mute >> SQ_BASS) & 1u) && cfp_cfg.bass_on)   /* no bass steps:
                                                   * the chord's own bass (BASS muted: none; it sounded for a tick).
@@ -614,9 +614,13 @@ static void sqp_rec_chord(sqr_ev_t *e)
     for (i = 0; i < e->n; i++)
         e->note[i] = o->note[o->n - e->n + i];
     e->root = o->root_pc;
-    e->mask = (uint16_t)(o->mask & 0xFFFu);
+    e->mask = (uint16_t)(o->automatic && !o->single ? o->mask : o->mask & 0xFFFu);
     e->single = o->single;
     e->btns = o->buttons;
+    if (o->automatic) {
+        e->rkey = 0xFF;                 /* capture notes, independent of later live harmony settings */
+        e->btns = cf_harmony_event_buttons(o->mask);
+    }
     e->nb = (uint8_t)(cfp.nb < 2u ? cfp.nb : 2u);
     e->bass[0] = cfp.bass[0];
     e->bass[1] = cfp.bass[1];

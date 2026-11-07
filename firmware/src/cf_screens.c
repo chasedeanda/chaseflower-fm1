@@ -26,7 +26,7 @@ static void name_set(uint32_t root, uint32_t mask, int bass_pc, int single, uint
         cu_name_sub[0] = 0;
         return;
     }
-    cf_chord_name((int)root, (uint16_t)mask, bass_pc != (int)root ? bass_pc : -1, &cu_spell, cu_name);
+    cf_chord_name((int)root, mask, bass_pc != (int)root ? bass_pc : -1, &cu_spell, cu_name);
     cu_name_sub[0] = 0;
     if (cs.chord.quantize != CF_Q_OFF)
         cf_numeral(cs.chord.scale, cs.chord.tonic, (int)root, cu_name_sub);
@@ -484,6 +484,8 @@ static void draw_sel(void)
     fb_veil(0, Y_VIEW, FB_W, H_VIEW, FL_BG);   /* (the plant faint: the picture leads) */
     if (cf_is_off(&cs.chord, cu.sel_btn)) {
         draw_title("HOLD", "Holds notes after you let go");
+    } else if (ch.mode == CF_H_AUTO) {
+        draw_title(cf_modifier_name(ch.slot[cu.sel_btn]), "Auto modifier");
     } else {                                     /* the button as its key shows it; its chord in words */
         cf_form_label(f, lab);
         str_cpy(b, cf_type_name(f->type), sizeof b);
@@ -581,7 +583,7 @@ static void draw_edit(void)
 
 static void draw_generic(void)
 {
-    static const char *const PG_GLO[7] = {"Display", "MIDI", "Channels", "Play", "Reset", "Library", "Diagnostics"};
+    static const char *const PG_GLO[8] = {"Display", "MIDI", "Channels", "Play", "Reset", "Library", "Diagnostics", "Harmony"};
     cf_scene_render(&flo, &fl_cv);
     draw_plant(Y_VIEW);
     fb_veil(0, Y_VIEW, FB_W, H_VIEW, FL_BG);   /* (the plant faint: the picture leads) */
@@ -590,10 +592,14 @@ static void draw_generic(void)
         static const char *const H[2] = {"SELECT", "page"};
         static void (*const V[7])(int) = {view_display, view_midi, view_midi, view_play, view_reset, view_library, view_diagnostics};   /* (MIDI and
                                                                                                * Channels: one picture) */
-        uint32_t p = cu.page[SCR_GLO] % 7u;
+        uint32_t p = cu.page[SCR_GLO] % 8u;
         draw_head(PG_GLO[p]);
-        draw_pager((int)p, 7, 1, 0);
-        draw_view(V[p]);
+        draw_pager((int)p, 8, 1, 0);
+        if (p == CF_GLO_HARMONY) {
+            fb_text_c(&CF_FONT_UI, 120, Y_VIEW + 65, ch.mode ? "AUTO HARMONY" : "MANUAL HARMONY", C_ACC(0), 1);
+            fb_text_c(&CF_FONT_UI, 120, Y_VIEW + 83,
+                cf_harmony_supported(cs.chord.scale, cs.chord.quantize) ? "HOLD sustains; Lock latches" : "Auto: choose a 7-note scale", FL_INK2, 1);
+        } else draw_view(V[p]);
         draw_hints(H, 1);
         break;
     }
@@ -753,7 +759,9 @@ static void cf_ui_draw(void)
         return;
     if (cu.scr == SCR_HOME) {
         /* the layout's name, and a padlock for the Lock ones */
-        const char *an = cs.chord.algo >= CF_ALG_SIDE ? "Side" : "Top";
+        const char *an = ch.mode == CF_H_AUTO ?
+            (cf_harmony_supported(cs.chord.scale, cs.chord.quantize) && !cf_sn.out.fallback ? "AUTO" : "AUTO?") :
+            cs.chord.algo >= CF_ALG_SIDE ? "Side" : "Top";
         int lk = cs.chord.algo == CF_ALG_TOP_LOCK || cs.chord.algo == CF_ALG_SIDE_LOCK, xr = lk ? 195 : 206;
         draw_topbar("", 0);
         fb_text_r(&CF_FONT_UI, xr, Y_TOP + 1, an, FL_INK3, 1);

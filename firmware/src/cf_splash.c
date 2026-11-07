@@ -11,7 +11,9 @@ static void cf_splash_frame(uint32_t t) { cf_boot_draw(t); }
 static void cf_splash(void)
 {
     cs_defaults(&cs);
+    cf_harmony_defaults(&ch);
     cf_settings_load();                          /* (what was set before the power-off, unless SAFE MODE) */
+    cfh_load();
     cf_palette_build();
     fb_full = 1;
     if (cr_safe) {

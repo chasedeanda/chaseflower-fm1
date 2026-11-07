@@ -65,7 +65,7 @@ jobs:
              tests/cf_backup_test.c -lm
           build/host/cf_backup_test
           cc -std=c99 -Wall -Wextra -Ifirmware/src -o build/cf_chord_test tests/cf_chord_test.c firmware/src/cf_chord.c \
-             firmware/src/cf_theory.c
+             firmware/src/cf_harmony.c firmware/src/cf_theory.c
           build/cf_chord_test
           cc -std=c99 -Wall -Wextra -Ifirmware/src -o build/host/cf_theory_test tests/cf_theory_test.c firmware/src/cf_theory.c
           build/host/cf_theory_test
@@ -80,9 +80,12 @@ jobs:
       - name: ChaseFlower library, saved sounds, HOME views and 6/8 timing (host HAL)
         run: sh tools/test_chase3.sh
 
+      - name: Auto harmony, controls, persistence, MIDI and recording (host HAL)
+        run: sh tools/test_auto.sh
+
       - name: Diagnostics snapshots, HOME controls and performance report protocol (host HAL)
         run: sh tools/test_diagnostics.sh
-        
+
       - name: Scenes, Top Lock, bass boot and uninterrupted physical/USB audio (host HAL)
         run: sh tools/test_visuals.sh
 
