@@ -2,6 +2,25 @@
 
 Development source; not included in the existing 0.6-chase5 package.
 
+## LED chord guide
+
+On this main Progressions view, the key LEDs also guide your next chord:
+
+- The sounding chord's tones stay at full brightness.
+- The next chord's tones pulse gently between dim and faint once per second.
+  Shared tones stay bright, so the playing chord always takes priority.
+- Before you start, the first chord is the cue. Each matching root press moves
+  the cue forward, including repeated chords with HOLD on; the last wraps to
+  the first. Rests keep the cue ready and modifiers/redraws do not advance it.
+- Replaying the current chord waits there. Playing another chord in the idea
+  resumes from that point; an unrelated chord leaves the next cue in place.
+  Browsing, changing key/scale or leaving this view restarts the guide.
+
+Manual cues follow your playing or sequencer chords. During automatic
+accompaniment they follow the active slot and its committed chord masks,
+including extensions and repeated slots; queued edits do not move the cue early.
+Other views keep their existing LED behavior.
+
 ## Controls
 
 The development build opens directly to Progressions and excludes decorative

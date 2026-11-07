@@ -100,6 +100,7 @@ static struct {
     uint32_t last_ms;                                /* when they were let go (cf_now_ms) */
     uint32_t serial;                                 /* the chord model's serial they follow */
     uint8_t onset;                                   /* bumped at every chord onset (the screen's plant) */
+    uint32_t root_press; /* root gestures, including repeats under HOLD */
     uint32_t root_ms;                                /* when a root key last went down (cf_now_ms) */
     uint8_t slast;                                   /* single notes: the last one struck (a new one slides from it with a
                                                      * Glide time; 0: none, or a chord sounded since) */
@@ -520,8 +521,10 @@ static void cfp_key(int key, int down)
      * down (fingers are never quite together) still makes that root's chord */
     cfc.keep = cfp_cfg.retrig == CF_RT_WAIT &&
                (role != CF_ROLE_BUTTON || (uint32_t)(cf_now_ms - cfp.root_ms) >= CFP_GATHER_MS);
-    if (role == CF_ROLE_ROOT && down)
+    if (role == CF_ROLE_ROOT && down) {
         cfp.root_ms = cf_now_ms;
+        cfp.root_press++;
+    }
     if (!cf_chord_key(&cfc, key, down))
         return;
     cfp_sync(role == CF_ROLE_ROOT && down ? 0 : 1);
