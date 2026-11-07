@@ -46,6 +46,7 @@ enum { CRB_INFO = 1, CRB_LIST = 65, CRB_GET, CRB_PUT, CRB_RESTART = 72, CRB_USB 
 #define CFB_HARM 68u                                 /* versioned Auto harmony preferences */
 #define CFB_PREFS 70u                                /* browser order and favorites */
 #define CFB_FX 69u                                   /* versioned user FX preset bank */
+#define CFB_SONG 81u /* 81..86, six saved semantic Songs */
 #define CFB_DRAFT 75u
 #define CFB_RECPREF 74u
 #define CFB_TAKE 71u                                 /* independent recordings A..C; 50..55 remain archived */
@@ -54,7 +55,8 @@ static const uint8_t CRB_IDS[] = {6, 7, 8, CRB_VA, CRB_FM6S, CRB_FM6S + 1u, CFB_
                                   CFB_EDIT, CFB_EDIT + 1u, CFB_EDIT + 2u, CFB_PSND,
                                   CFB_TWK, CFB_TWK + 1u, CFB_TWK + 2u, CFB_TWK + 3u, CFB_TWK + 4u, CFB_TWK + 5u,
                                   CFB_TWK + 6u, CFB_TWK + 7u, CFB_HARM, CFB_FX, CFB_PREFS,
-                                  CFB_TAKE, CFB_TAKE + 1u, CFB_TAKE + 2u, CFB_RECPREF, CFB_DRAFT};
+                                  CFB_TAKE, CFB_TAKE + 1u, CFB_TAKE + 2u, CFB_RECPREF, CFB_DRAFT,
+                                  CFB_SONG, CFB_SONG+1u, CFB_SONG+2u, CFB_SONG+3u, CFB_SONG+4u, CFB_SONG+5u};
 _Static_assert(SQ_NCHUNK == 6u, "backup: one id per sequencer object");
 #define CRB_N ((uint32_t)sizeof CRB_IDS)
 /* an FM6 bank of earlier firmware, as fm6_bank.c fm6_bank_import takes it at boot: Felucca 1.0's (27 records, version
@@ -157,6 +159,7 @@ static int crb_index(uint32_t id)
 }
 static uint32_t crb_obj(uint32_t id)                 /* storage.c's object of an id */
 {
+    if (id>=CFB_SONG && id<CFB_SONG+CSL_CAPACITY)return OBJ_CFSONG0+id-CFB_SONG;
     if (id == CFB_DRAFT) return OBJ_CFDRAFT;
     if (id == CFB_RECPREF) return OBJ_CFRECPREF;
     if (id >= CFB_TAKE && id < CFB_TAKE + SQ_NPAT) return OBJ_CFTAKE0 + id - CFB_TAKE;
@@ -208,7 +211,7 @@ static int crb_fm6_old(const uint8_t *raw, uint32_t len)
 }
 /* busy: never since 0.4 (it was the looper playing or recording: a flash erase cut it). The sequencer plays from RAM;
  * a restore ends in a restart anyway */
-static int crb_busy(void) { return sq_drafting; }
+static int crb_busy(void) { return sq_drafting || csl_tx.pending; }
 
 /* ------------------------------------------------------------------ LIST / GET --- */
 static void crb_list(void)
@@ -219,6 +222,7 @@ static void crb_list(void)
     if (!cr_safe && !cfs_restore_lock && cpb_dirty && cpb_write(ST_NOERASE)) {
         crb.listed = 0; crb_b(1); crb_b(4); crb_b(0); return;
     }
+    if(csl_tx.pending){crb.listed=0;crb_b(1);crb_b(3);crb_b(0);return;}
     if(cfds.pending && !cfd_checkpoint()){crb.listed=0;crb_b(1);crb_b(3);crb_b(0);return;}
     /* Do not offer a stale FX bank if its explicit save is still deferred. */
     if (!cr_safe && !cfs_restore_lock && fxp_pending() && fxp_write(ST_NOERASE)) {
@@ -284,6 +288,7 @@ static void crb_get(const uint8_t *a, uint32_t n)
 /* ------------------------------------------------------------------ PUT --- */
 static int crb_size_ok(uint32_t id, uint32_t len)   /* a begin's size for this id (0: the object erased) */
 {
+    if (id>=CFB_SONG && id<CFB_SONG+CSL_CAPACITY)return !len || len==sizeof(csl_record_t);
     if (id == CFB_DRAFT) return !len || len==CF_SONG_WIRE;
     if (id == CFB_RECPREF) return !len || len == sizeof(sq_rec_pref_t);
     if (id >= CFB_TAKE && id < CFB_TAKE + SQ_NPAT) return !len || len == sizeof(sq_take_rec_t);
@@ -334,6 +339,12 @@ static uint32_t crb_commit(void)
     uint32_t id = crb.id, len = crb.len;
     if (crb.pos != len || st_crc32(raw, len) != crb.crc)
         return 2;
+    if(id>=CFB_SONG && id<CFB_SONG+CSL_CAPACITY) {
+        if(len && !csl_valid((const csl_record_t *)raw))return 2;
+        if(csl_tx.pending || !cfd_audio_quiet() || cf_sn.dm_on)return 3;
+        if(st_save(OBJ_CFSONG0+id-CFB_SONG,raw,len))return 4;
+        cfs_restore_lock=1;cf_message("Songs restored: restart");return 0;
+    }
     if(id==CFB_DRAFT) {
         cf_song_t song;if(len && (!cf_song_decode(&song,raw,len) || !cfd_device_valid(&song)))return 2;
         if(!cfd_audio_quiet())return 3;

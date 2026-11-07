@@ -1,0 +1,29 @@
+btn SAVE
+wait 300
+shot empty
+btn SEL
+wait 250
+shot pending
+wait 10000
+shot saved
+btn EDIT
+turn K1 2
+btn SEL
+shot rename
+btn EDIT
+btn HOME
+btn PLAY
+wait 1200
+btn SAVE
+btn SEL
+wait 500
+shot pending-playing
+btn HOME
+btn PLAY
+wait 3000
+btn SAVE
+turn SELECT 1
+btn EDIT
+turn K1 3
+btn SEL
+shot delete-cancel

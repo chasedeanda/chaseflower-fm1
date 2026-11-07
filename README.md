@@ -108,6 +108,8 @@ The release includes checksums and licence files. See [release notes](docs/relea
 and recovery details. Host and firmware-build checks pass; the combined release's hardware appearance and timing
 still need to be checked on the FM-1.
 
+**Songs library (development preview):** SAVE from Progressions, accompaniment or the editor opens [Songs](docs/SONGS-LIBRARY.md). Save and recall six editable ideas with their musical setup; rename, duplicate or delete them, and open existing recordings from the same list. Full recording-library management and physical-device validation remain pending.
+
 ## Build and verify
 
 Generate headers with Python 3, Pillow 11.1.0 and fontTools 4.66.1, then run the feature checks:

@@ -14659,9 +14659,9 @@
     "onAccent": "#092D2C"
   },
   "implementation": {
-    "sourceBase": "09403c9aecb96afed05a63f6938e17c226dd6ee7",
+    "sourceBase": "0d76e5b3370f6b7e43a41ed09089491e1f4320a0",
     "designRevision": "845325136418dd038c7ef81eaca01ec64ac5e61e",
-    "summary": "Engineering preview: every retained old screen now routes through native Instrument Teal parameter, list, grid, name/confirmation and result families, including advanced FM6/VA, Layer, effects, recordings, system, diagnostics and recovery. HOME/banks, Groove/Loop/Mix/Click and the protected sixteen-slot editor retain their existing musical owners. Finite chord/cursor/knob/bank/workspace/focus/save transitions and a real post-MASTER output-driven halo share the single On/Off setting; Off cancels visual work and settled views skip rendering. The current manual-take/latest-three policy remains intact. Chord Lab adds Now/Last/planned-slot notes and intervals, fixed-context comparisons, offline Next suggestions, explicit one-bar audition and undoable insertion. Numbered Songs, arranged recording, chord library/audition and physical verification remain pending; the user has explicitly deferred chord library/audition.",
+    "summary": "Engineering preview: every retained old screen now routes through native Instrument Teal parameter, list, grid, name/confirmation and result families, including advanced FM6/VA, Layer, effects, recordings, system, diagnostics and recovery. HOME/banks, Groove/Loop/Mix/Click and the protected sixteen-slot editor retain their existing musical owners. Finite chord/cursor/knob/bank/workspace/focus/save transitions and a real post-MASTER output-driven halo share the single On/Off setting; Off cancels visual work and settled views skip rendering. The current manual-take/latest-three policy remains intact. Chord Lab adds Now/Last/planned-slot notes and intervals, fixed-context comparisons, offline Next suggestions, explicit one-bar audition and undoable insertion. Songs now adds six saved semantic ideas and existing recording rows, protected quiet-boundary writes, complete musical snapshots, progression rename/duplicate/delete and recording load/delete. SAVE opens Songs; SELECT Save current then SEL creates a new copy. Full arranged recording, recording rename/duplicate, bulk clear and physical verification remain pending. Chord library/audition remains explicitly deferred. See docs/SONGS-LIBRARY.md for native preview controls and limits.",
     "screens": {
       "HOME_STAGE": {
         "designStatus": "Native preview alongside selected prototype; device review pending",
@@ -15473,11 +15473,31 @@
         "designStatus": "Native preview follows selected Instrument Teal primitives; physical review pending",
         "implementationStatus": "Implemented native preview: unsupported scale has no candidates or audition/insertion; Notes/Intervals remain available",
         "deviceVerification": "Pending — host-rendered captures and device link only"
+      },
+      "IDEA_LIBRARY": {
+        "designStatus": "Native preview alongside selected prototype; device review pending",
+        "implementationStatus": "Partial native preview: six saved ideas plus existing recording rows; SELECT focus, SEL load and explicit Save current; no bulk clear yet",
+        "deviceVerification": "Pending — host captures and device link only"
+      },
+      "IDEA_SAVE_OPTIONS": {
+        "designStatus": "Native preview alongside selected prototype; device review pending",
+        "implementationStatus": "Partial native preview: Save current captures semantic phrase and musical setup; sound-only SAVE remains on sound pages",
+        "deviceVerification": "Pending — host captures and device link only"
+      },
+      "IDEA_DETAILS": {
+        "designStatus": "Native preview alongside selected prototype; device review pending",
+        "implementationStatus": "Partial native preview: selected-row progression Load/Duplicate/Rename/Delete; recording Load/Delete only",
+        "deviceVerification": "Pending — host captures and device link only"
+      },
+      "IDEA_RENAME": {
+        "designStatus": "Native preview alongside selected prototype; device review pending",
+        "implementationStatus": "Native preview: 24 printable characters with K1 position, K2 character and SEL commit; saved progressions only",
+        "deviceVerification": "Pending — host captures and device link only"
       }
     },
     "foundations": {
       "semanticDraft": {
-        "implementationStatus": "Implemented model, native edit/PLAY and protected checkpoint integration; Songs/library/audition pending",
+        "implementationStatus": "Implemented semantic model, native edit/PLAY, protected checkpoint and six saved idea slots; full recording lifecycle and audition pending",
         "evidence": "native-editor/README.md",
         "hostChecks": 62449,
         "deviceVerification": "Pending"
@@ -15493,6 +15513,12 @@
         "implementationStatus": "Implemented bounded transitions and post-MASTER scalar output/activity response, unchanged speaker/USB/MIDI streams at both sample rates",
         "evidence": "native-pages/README.md",
         "deviceVerification": "Pending: LCD/CPU/input timing and motion tuning"
+      },
+      "songLibrary": {
+        "implementationStatus": "First native saved-idea slice: six atomic records, protected pending write, complete musical snapshots and existing recording rows; full #46 remains open",
+        "evidence": "../../SONGS-LIBRARY.md",
+        "deviceVerification": "Pending",
+        "hostChecks": 2128
       }
     },
     "learningEvidence": {
