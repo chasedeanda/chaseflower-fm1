@@ -6,7 +6,7 @@ typedef struct {
     char notes[CF_MAX_NOTES][12],interval[CF_MAX_NOTES][4],path[64];
     char candidate[3][20],numeral[3][8],reason[3][16],side[2][20],compare_notes[2][64];
     char label[4][12],value[4][14];
-    uint8_t tab,skin,n,focus,selection,playing,enabled,comparison,out[CF_MAX_NOTES];
+    uint8_t tab,skin,n,focus,selection,playing,enabled,comparison,out[CF_MAX_NOTES],disabled[4];
 } cfl_model_t;
 static cfl_model_t cfl_last;
 static uint8_t cfl_valid;
@@ -51,7 +51,7 @@ static void cfl_model(cfl_model_t *m)
         for(unsigned i=0;i<clu.nchoices;i++){str_cpy(m->candidate[i],clu.choice_info[i].name,sizeof m->candidate[i]);str_cpy(m->numeral[i],clu.choice_info[i].degree,sizeof m->numeral[i]);str_cpy(m->reason[i],clu.choice[i].reason,sizeof m->reason[i]);}
         str_cpy(m->hint,!clu.nchoices?"Seven-note context required":clu.fallback?"Theory-guided fallback":"Local catalogue rules",sizeof m->hint);
     }
-    for(int k=0;k<4;k++){cf_knob_t o={0};cfl_knob_info(k,&o);str_cpy(m->label[k],o.name,sizeof m->label[k]);str_cpy(m->value[k],o.val,sizeof m->value[k]);}
+    for(int k=0;k<4;k++){cf_knob_t o={0};cfl_knob_info(k,&o);str_cpy(m->label[k],o.name,sizeof m->label[k]);str_cpy(m->value[k],o.val,sizeof m->value[k]);m->disabled[k]=o.dis;}
     if(cu.pop==POP_MSG)str_cpy(m->message,cu.msg,sizeof m->message);
 }
 static void cfl_draw(void)
@@ -73,8 +73,8 @@ static void cfl_draw(void)
             cfn_text(&CFN_16,26,y,m.numeral[i],C_ACC(0));cfn_fit(&CFN_16,70,y,m.candidate[i],150,FL_INK);
             cfn_text(&CFN_12,70,y+12,m.reason[i],FL_INK2);
         }
-        cfn_fit(&CFN_12,10,185,m.hint,220,FL_INK2);
-        cfn_fit(&CFN_12,10,203,!m.enabled?"ALGO: inspect notes and intervals":m.playing?"AUDITION / SEL stop / EDIT insert":"SEL hear / EDIT insert",220,C_ACC(0));
+        cfn_fit(&CFN_11,10,178,m.hint,220,FL_INK2);
+        cfn_hint(!m.enabled?"ALGO: inspect notes and intervals":m.playing?"AUDITION / SEL stop / EDIT insert":"SEL hear / EDIT insert",C_ACC(0));
     } else if(m.tab==CFL_COMPARE) {
         cfn_fit(&CFN_12,10,80,m.comparison?"Root / Smooth (fixed context)":"Triad / selected color",220,FL_INK2);
         if(!m.enabled)cfn_fit(&CFN_16,10,121,m.comparison?"Choose another target":m.n?"Choose a color":"Play a root or choose a slot",220,FL_INK);
@@ -82,8 +82,8 @@ static void cfl_draw(void)
             int y=106+i*43;if(m.selection==i)fb_frame(8,y-18,224,40,FL_BG3);
             cfn_text(&CFN_16,14,y,i?"B":"A",C_ACC(0));cfn_fit(&CFN_16,38,y,m.side[i],182,FL_INK);cfn_fit(&CFN_12,38,y+16,m.compare_notes[i],182,FL_INK2);
         }
-        cfn_fit(&CFN_12,10,185,m.playing?"AUDITION / one bar / clock continues":"Silent until SEL / one bar",220,C_ACC(0));
-        cfn_fit(&CFN_12,10,203,m.hint,220,FL_INK2);
+        cfn_fit(&CFN_11,10,178,m.playing?"AUDITION / one bar / clock continues":"Silent until SEL / one bar",220,C_ACC(0));
+        cfn_hint(m.hint,FL_INK2);
     } else {
         cfn_fit(&CFN_32,10,99,m.chord,160,FL_INK);cfn_fit(&CFN_16,181,99,m.degree,49,C_ACC(0));
         if(!m.n){cfn_fit(&CFN_12,10,132,"Play a root or choose a slot",220,FL_INK2);}
@@ -93,17 +93,16 @@ static void cfl_draw(void)
                 cfn_text(&CFN_12,x,y,note,FL_INK);
             }
             cfn_fit(&CFN_12,10,182,m.outside[0]?"* Outside selected scale":"All tones in selected scale",220,FL_INK2);
-            cfn_fit(&CFN_12,10,203,m.hint,220,FL_INK2);
+            cfn_hint(m.hint,FL_INK2);
         } else {
             cfn_text(&CFN_32,10,136,m.notes[m.focus],FL_INK);cfn_text(&CFN_32,135,136,m.interval[m.focus],C_ACC(0));
             cfn_text(&CFN_12,135,153,"interval",FL_INK2);
             cfn_fit(&CFN_12,10,174,m.out[m.focus]?"Outside selected scale":"In selected scale",220,FL_INK2);
-            char pos[48];kint(pos,m.focus+1,"/");kint(pos+str_len(pos),m.n," voiced notes / K2 focus");cfn_fit(&CFN_12,10,203,pos,220,FL_INK2);
+            char pos[48];kint(pos,m.focus+1,"/");kint(pos+str_len(pos),m.n," voiced notes / K2 focus");cfn_hint(pos,FL_INK2);
         }
     }
-    fb_hline(10,210,220,FL_BG3);
-    for(int k=0;k<4;k++){int x=k*60;fb_clip(x+3,211,x+57,240);cfn_center(&CFN_12,x+30,223,m.label[k],FL_INK2);cfn_fit(&CFN_12,x+3,239,m.value[k],54,FL_INK);}
-    fb_unclip();
+    const uint8_t emphasis[4]={0};
+    cfn_controls(m.label,m.value,m.disabled,emphasis);
     if(m.message[0]){fb_rect(8,85,224,63,FL_BG);fb_frame(8,85,224,63,FL_BG3);cfn_fit(&CFN_12,16,113,m.message,208,FL_INK);}
     cf_present();
 }

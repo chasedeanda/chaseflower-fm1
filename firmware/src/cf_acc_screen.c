@@ -20,7 +20,11 @@ static void cf_acc_model(cf_acc_model_t *m)
     str_cpy(m->status,cf_acc_transport(),sizeof m->status);
     if(cu.pop==POP_MSG)str_cpy(m->message,cu.msg,sizeof m->message);
     else if(cu.pop==POP_SOUND_CHORD || cu.pop==POP_SOUND_BASS)str_cpy(m->message,cf_snd[cu.pop==POP_SOUND_BASS?1:0].name,sizeof m->message);
-    if(m->tab==CF_ACC_N){m->focus=cf_legacy_pick;m->focus_weight=cfn_focus(CFN_FOCUS_LEGACY|m->focus);return;}
+    if(m->tab==CF_ACC_N){
+        m->focus=cf_legacy_pick;m->focus_weight=cfn_focus(CFN_FOCUS_LEGACY|m->focus);
+        for(int k=0;k<4;k++){cf_knob_t o={0};ui_knob_info(k,&o);str_cpy(m->label[k],o.name,sizeof m->label[k]);str_cpy(m->value[k],o.val,sizeof m->value[k]);m->disabled[k]=o.dis;m->emphasis[k]=cfn_knob(k);}
+        return;
+    }
     uint32_t arrival=(int32_t)(cf_acc_page_ms-cfn_motion.page_ms)>0?cf_acc_page_ms:cfn_motion.page_ms;
     m->dx=(int8_t)(cf_tween_offset(arrival,170,8)*(cf_nav_dir<0?-1:1));
     const cf_progression_t *p=cf_progression_current();m->n=p->n;m->focus=cf_acc_focus%p->n;
@@ -67,15 +71,16 @@ static void cf_acc_draw(void)
     if(m.tab==CF_ACC_N) {
         cfn_text(&CFN_12,10,49,"K1 selects / SEL opens",FL_INK2);
         for(unsigned i=0;i<3;i++){if(m.focus==i){fb_rect(10,64+i*38,220,32,FL_BG1);fb_rect(10,64+i*38,2+m.focus_weight,32,C_ACC(0));}cfn_text(&CFN_16,20,86+i*38,CF_LEGACY_NAME[i],m.focus==i?C_ACC(0):FL_INK);}
-        cfn_text(&CFN_12,10,223,"HOME: Core / SELECT: system page",FL_INK2);
+        cfn_hint("HOME: Core / SELECT: system page",FL_INK2);
+        cfn_controls(m.label,m.value,m.disabled,m.emphasis);
     } else {
         cfn_fit(&CFN_12,10,45,m.sub,220,FL_INK2);
-        fb_clip(0,49,240,183);
+        fb_clip(0,49,240,174);
         int x=m.dx;
         if(m.tab==CF_ACC_MIX) {
             static const char *const label[]={"Chord","Bass","Drums"};
             for(unsigned i=0;i<3;i++){int y=76+i*32;cfn_text(&CFN_16,10+x,y,label[i],i==1&&!m.bass_on?FL_INK2:FL_INK);fb_rect(80+x,y-9,150,6,FL_BG1);fb_rect(80+x,y-9,150*m.level[i]/127,6,C_ACC(0));if(m.focus==i)fb_hline(10+x,y+5,220,FL_BG3);}
-            cfn_text(&CFN_12,10+x,179,m.bass_on?"Linked bass On":"Linked bass Off",FL_INK2);
+            cfn_text(&CFN_11,10+x,172,m.bass_on?"Linked bass On":"Linked bass Off",FL_INK2);
         } else {
             cfn_fit(m.tab==CF_ACC_CLICK?&CFN_64:&CFN_32,10+x,m.tab==CF_ACC_CLICK?106:83,m.main,220,FL_INK);
             cfn_fit(&CFN_12,10+x,104+(m.tab==CF_ACC_CLICK?19:0),m.detail,220,FL_INK2);
@@ -85,16 +90,15 @@ static void cf_acc_draw(void)
             }
             if(m.tab==CF_ACC_LOOP) {
                 for(unsigned i=0;i<4 && m.first+i<m.n;i++){int cx=30+i*60+x;fb_clip(i*60+x,112,(i+1)*60+x,168);if(m.focus==m.first+i){fb_frame(cx-27,114,54,41,FL_BG3);if(m.focus_weight)fb_hline(cx-26,115,52,C_ACC(0));}cfn_center(&CFN_16,cx,131,m.degree[i],C_ACC(0));cfn_center(&CFN_12,cx,148,m.rail[i],FL_INK);if(m.slot==m.first+i)fb_hline(cx-22,158,44*m.cursor_width/100,C_ACC(0));}
-                fb_clip(0,49,240,183);char b[24];kint(b,m.focus+1," focus / ");if(m.slot!=255)kint(b+str_len(b),m.slot+1," playing");else str_cpy(b+str_len(b),"stopped",sizeof b-str_len(b));cfn_text(&CFN_12,10+x,179,b,FL_INK2);
+                fb_clip(0,49,240,174);char b[24];kint(b,m.focus+1," focus / ");if(m.slot!=255)kint(b+str_len(b),m.slot+1," playing");else str_cpy(b+str_len(b),"stopped",sizeof b-str_len(b));cfn_text(&CFN_11,10+x,172,b,FL_INK2);
             }
         }
-        fb_unclip();fb_hline(10,184,220,FL_BG3);
-        cfn_fit(&CFN_12,10,197,m.pending[0]?m.pending:"ALGORITHM: Groove / Loop / Mix / Click",220,m.pending[0]?C_ACC(0):FL_INK2);
-        cfn_fit(&CFN_12,10,210,m.next,220,FL_INK2);
+        fb_unclip();
+        cfn_fit(&CFN_11,10,183,m.pending[0]?m.pending:"ALGORITHM: Groove / Loop / Mix / Click",220,m.pending[0]?C_ACC(0):FL_INK2);
+        cfn_hint(m.next,FL_INK2);
         cfn_controls(m.label,m.value,m.disabled,m.emphasis);
         fb_unclip();
     }
-    for(unsigned k=0;k<4;k++)if(m.emphasis[k])fb_hline(k*60+30-m.emphasis[k],225,2*m.emphasis[k],C_ACC(0));
     if(m.message[0]) {
         fb_rect(8,75,224,80,FL_BG);fb_frame(8,75,224,80,FL_BG3);
         char b[64];str_cpy(b,m.message,sizeof b);unsigned n=0;while(b[n] && b[n]!='\n')n++;

@@ -3,7 +3,8 @@
  */
 typedef struct {
     char name[4][28],meta[4][40],title[24],status[24],hint[44],detail[32],message[64];
-    uint8_t row,first,n,mode,choice,skin,pending,cursor;
+    char label[4][12],value[4][14];
+    uint8_t row,first,n,mode,choice,skin,pending,cursor,disabled[4];
 } csl_model_t;
 static csl_model_t csl_last;
 static uint8_t csl_screen_valid;
@@ -37,6 +38,14 @@ static void csl_model(csl_model_t *m)
     if(cslu.mode==CSL_MANAGE)str_cpy(m->detail,CSL_ACTION[cslu.action],sizeof m->detail);
     if(cslu.mode==CSL_CONFIRM)str_cpy(m->detail,cslu.choice?"Delete selected Song":"Cancel",sizeof m->detail);
     if(cslu.mode==CSL_RENAME)str_cpy(m->detail,cslu.name,sizeof m->detail);
+    memset(m->disabled,1,sizeof m->disabled);m->disabled[0]=0;
+    str_cpy(m->label[0],m->mode==CSL_LIST?"Song":m->mode==CSL_CONFIRM?"Choice":m->mode==CSL_RENAME?"Position":"Action",sizeof m->label[0]);
+    if(m->mode==CSL_LIST){kint(m->value[0],m->row+1,"/");kint(m->value[0]+str_len(m->value[0]),m->n,0);}
+    else if(m->mode==CSL_CONFIRM)str_cpy(m->value[0],m->choice?"Delete":"Cancel",sizeof m->value[0]);
+    else if(m->mode==CSL_RENAME){
+        kint(m->value[0],m->cursor+1,0);str_cpy(m->label[1],"Letter",sizeof m->label[1]);
+        m->value[1][0]=cslu.name[m->cursor];m->disabled[1]=0;
+    } else str_cpy(m->value[0],CSL_ACTION[cslu.action],sizeof m->value[0]);
     if(cu.pop==POP_MSG)str_cpy(m->message,cu.msg,sizeof m->message);
 }
 static void csl_draw(void)
@@ -46,11 +55,11 @@ static void csl_draw(void)
     csl_last=m;csl_screen_valid=1;csl_draws++;fb_unclip();fb_fill(FL_BG);
     cfn_text(&CFN_16,10,20,m.title,FL_INK);cfn_fit(&CFN_12,145,20,m.status,85,C_ACC(0));fb_hline(10,29,220,FL_BG3);
     for(unsigned i=0;i<4 && m.first+i<m.n;i++) {
-        int y=36+i*41;if(m.row==m.first+i)fb_rect(7,y,226,40,FL_BG2);
-        cfn_fit(&CFN_16,12,y+17,m.name[i],216,FL_INK);cfn_fit(&CFN_12,12,y+34,m.meta[i],216,C_ACC(0));
+        int y=34+i*37;if(m.row==m.first+i)fb_rect(7,y,226,36,FL_BG2);
+        cfn_fit(&CFN_16,12,y+16,m.name[i],216,FL_INK);cfn_fit(&CFN_11,12,y+31,m.meta[i],216,C_ACC(0));
     }
-    fb_hline(10,204,220,FL_BG3);cfn_fit(&CFN_12,10,221,m.hint,220,FL_INK2);
-    cfn_text(&CFN_12,10,238,"P Progression    R Recording",FL_INK2);
+    cfn_hint(m.hint,FL_INK2);
+    const uint8_t emphasis[4]={0};cfn_controls(m.label,m.value,m.disabled,emphasis);
     if(m.mode!=CSL_LIST || m.message[0]) {
         fb_rect(8,70,224,100,FL_BG);fb_frame(8,70,224,100,FL_BG3);
         cfn_fit(&CFN_12,16,93,m.message[0]?"Songs":(m.mode==CSL_CONFIRM || m.mode==CSL_MANAGE)?m.name[m.row-m.first]:m.title,208,FL_INK2);
