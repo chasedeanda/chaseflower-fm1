@@ -1,37 +1,34 @@
 # Chord Lab linked resources
 
-Paired real JieLi builds of unchanged main `abd37afab562555d4e8a58a66d18b488cce594f9`
-and that base plus the Chord Lab implementation. `baseline/report.json` records the
-clean base; `report.json` records the source hashes, local changes, build options and
-explicit comparison. These are linked allocations, not runtime timing measurements.
+Paired real JieLi builds of main `09403c9aecb96afed05a63f6938e17c226dd6ee7` and the
+integrated Chord Lab implementation. The checked native-pages baseline was verified
+against every current-main dependency hash before reuse. `report.json` records the
+compiled merge of Chord Lab parent `94bcf51` with main, source hashes, conflict resolution
+and explicit byte deltas. These are linked allocations, not runtime timing measurements.
 
 | Region | Main bytes | Chord Lab bytes | Change | Remaining |
 | --- | ---: | ---: | ---: | ---: |
-| Ordinary RAM | 83,064 | 86,232 | +3,168 | 12,072 |
-| POOL | 315,404 | 315,404 | 0 | 28,660 |
-| XIP | 489,360 | 500,336 | +10,976 | 73,104 |
-| RAM code | 3,092 | 3,092 | 0 | 21,484 |
-| NOINIT | 216 | 216 | 0 | 15,448 |
+| Ordinary RAM | 83,880 | 87,064 | +3,184 | 11,240 |
+| POOL | 315,404 | 315,404 | +0 | 28,660 |
+| XIP | 442,320 | 452,640 | +10,320 | 120,800 |
+| RAM code | 3,092 | 3,092 | +0 | 21,484 |
+| NOINIT | 216 | 216 | +0 | 15,448 |
 
-Both use the same compiler, default app flags, size pass, generated fonts, sdk and
-source-base revision. Audited app ELF SHA256:
-`68d616958fecbb9f912d30dd6e120778f929c1661d3cc4cf480edfcd95678963`.
+Audited app ELF SHA256:
+`664e98bfaab90d60d3fa25f85a56ec783e93035ca23b9c33ae4d645b679dcacb`.
 Baseline ELF SHA256:
-`51b84cc4180a5032b8dafa989f0f3d1bf0f2131431c3fbd447938a85f0e25e2e`.
+`a9cd32c51530c4ff850300d739b632dca7ea36127a819304776ec17ba04b413f`.
 
-Reproduce in an isolated implementation checkout with Pillow 11.1.0, fonttools
-4.66.1 and the JieLi Linux toolchain (Docker on this Mac):
+Both use the same compiler, default app flags, size pass, generated fonts and SDK.
+Reproduce with Pillow 11.1.0, fonttools 4.66.1 and the JieLi Linux toolchain:
 
 ```sh
 JIELI_TOOLCHAIN=/path/to/jieli/toolchain /path/to/python tools/audit_resources.py \
-  --build --output build/resource-audit/chord-lab
-python3 tools/audit_resources.py --inputs build/resource-audit/chord-lab \
-  --compare benchmarks/resources/chord-lab/baseline/report.json \
+  --build --compare benchmarks/resources/chord-lab/baseline/report.json \
   --output build/resource-audit/chord-lab
 ```
 
-The build, loader/package checks and ARM syntax passed. Host snapshots prove that
-an unchanged Lab view performs no new composition/hash/LCD transfer. Playback audio
-is identical while browsing/rendering versus no browsing, at both USB capture rates.
-Physical CPU/input/display timings, audio tails and USB stress on the FM-1 remain
-pending. No runtime speed or polyphony improvement is inferred from these figures.
+The device build, package checks, native-screen/motion, Lab, editor and accompaniment
+checks pass. Browsing/rendering versus no browsing preserves identical playback audio
+at both USB capture rates. Physical CPU/input/display timing, tails and USB stress
+remain pending. No hardware speed or polyphony improvement is inferred.

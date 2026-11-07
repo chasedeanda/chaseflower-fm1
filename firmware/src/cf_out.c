@@ -694,10 +694,29 @@ static void cf_audio_block(uint32_t n)
     }
 }
 
+/* ISR-owned scalar activity mailbox; no retained sample buffer or new clock. */
+static volatile uint8_t cf_visual_want=1;
+static uint16_t cf_visual_peak;
+static uint8_t cf_visual_parts,cf_visual_muted;
+static uint32_t cf_visual_ms;
+static void cf_visual_publish(uint32_t peak)
+{
+    cf_visual_peak=(uint16_t)(peak>32767?32767:peak);cf_visual_ms=cf_now_ms;
+    cf_visual_muted=song.master_q12==0;
+    cf_visual_parts=0;
+    if(trk[0].p[P_LEVEL] && (cfp.n || sqp.dn || cla.on))cf_visual_parts|=1;
+    if(trk[1].p[P_LEVEL] && (cfp.nb || sqp.nb))cf_visual_parts|=2;
+    if(trk[2].p[P_LEVEL] && sqp.ln)cf_visual_parts|=4;
+    if(trk[3].p[P_LEVEL] && sqp.lit_t[SQ_DRUMS] && cf_now_ms-sqp.lit_t[SQ_DRUMS]<150)cf_visual_parts|=8;
+}
+
 /* ---------------------------------------------------- what the UI reads --- */
 typedef struct {
     cf_lab_chord_t audition;
     uint8_t audition_on,audition_blocked;
+    uint32_t visual_ms;
+    uint16_t visual_peak;
+    uint8_t visual_parts,visual_muted;
     uint32_t ac_revision,ac_mask[CF_P_MAX];
     uint8_t ac_n,ac_root[CF_P_MAX],ac_degree[CF_P_MAX];
     int8_t ac_bass_pc[CF_P_MAX];
@@ -740,6 +759,8 @@ static void cf_snapshot(void)
     uint32_t i;
     fm1_irq_off();
     cf_sn.audition=cla.chord;cf_sn.audition_on=cla.on;cf_sn.audition_blocked=cla.blocked;
+    cf_sn.visual_ms=cf_visual_ms;cf_sn.visual_peak=cf_visual_peak;
+    cf_sn.visual_parts=cf_visual_parts;cf_sn.visual_muted=cf_visual_muted;
     cf_sn.ac_revision = cpa.revision;cf_sn.ac_n=cpa.plan.n;
     for(unsigned i=0;i<CF_P_MAX;i++) {
         cf_sn.ac_mask[i]=cpa.plan.slot[i].mask;cf_sn.ac_root[i]=cpa.plan.slot[i].root;

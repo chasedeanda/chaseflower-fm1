@@ -2,7 +2,7 @@
 
 Native firmware implementation of [learning #47](https://github.com/chasedeanda/chaseflower-fm1/issues/47)
 and [offline Next #48](https://github.com/chasedeanda/chaseflower-fm1/issues/48), based on main
-`abd37afab562555d4e8a58a66d18b488cce594f9` and design handoff
+`abd37afab562555d4e8a58a66d18b488cce594f9` (integrated with main `09403c9` before merge) and design handoff
 `845325136418dd038c7ef81eaca01ec64ac5e61e`. This is a development preview;
 physical FM-1 verification remains pending. The original working checkout was left intact.
 

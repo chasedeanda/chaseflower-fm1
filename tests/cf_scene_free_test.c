@@ -88,6 +88,7 @@ static void render(unsigned rate,const char *path)
     CHECK(cpa.on && cpg.idea==11 && flash==emu_flash_writes && patterns==cfs_fnv(&sq_st,sizeof sq_st));
     ui_button(B_PLAY);blocks(1);CHECK(!cpa.on && !sqp.n && !sqp.nb);fclose(file);
 }
+#ifndef CF_SCENE_FIXTURE_ONLY
 int main(int argc,char **argv)
 {
     emu_fw_options(NULL,1,0,1);emu_hal.ready=2;emu_fw_init(0);
@@ -95,3 +96,4 @@ int main(int argc,char **argv)
     printf("scene-free profile %d: %u checks, %u failures\n",CF_SCENES,checks,failures);
     return failures!=0;
 }
+#endif

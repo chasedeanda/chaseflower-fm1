@@ -111,13 +111,13 @@ static void cf_boot_draw(uint32_t t)
         flc_pset(&canvas, x, cf_boot_surface(x, t), FL_C(FL_R_SEA, 2));
     cf_boot_splash(&canvas, t, 690u, 77);
     cf_boot_splash(&canvas, t, 1520u, 158);
-    x = (FB_W - fb_text_w(&CF_FONT_UI, NAME, 2)) / 2;
+    x = (FB_W - cfn_width(&CFN_16, NAME)) / 2;
     for (i = 0; NAME[i]; i++) {
         int age = (int)t - 850 - i * 40;
         if (age >= 0)
-            fb_glyph(&CF_FONT_UI, (uint8_t)NAME[i], x, 180,
-                     age > 180 ? FL_INK : age > 90 ? FL_C(FL_R_SEA, 0) : FL_C(FL_R_SAGE, 2), 2);
-        x += CF_FONT_UI.g[(uint8_t)NAME[i]].adv * 2;
+            { char glyph[2]={NAME[i],0};cfn_text(&CFN_16,x,196,glyph,
+                     age > 180 ? FL_INK : age > 90 ? FL_C(FL_R_SEA, 0) : FL_C(FL_R_SAGE, 2)); }
+        x += CFN_16.g[cfn_code((uint8_t)NAME[i])-32].adv;
     }
     if (t > 1250u) {
         scene_line(&canvas, 92, 216, 148, 216, FL_S3);
