@@ -8,6 +8,7 @@ typedef struct {
     uint32_t lane[3];
     uint8_t tab,disabled[4],level[3],bass_on,steps,playhead,bar,bars,focus,first,n,slot,skin;
     int8_t dx;
+    uint8_t emphasis[4],cursor_width,focus_weight;
 } cf_acc_model_t;
 static cf_acc_model_t cf_acc_last;
 static uint8_t cf_acc_valid;
@@ -19,8 +20,9 @@ static void cf_acc_model(cf_acc_model_t *m)
     str_cpy(m->status,cf_acc_transport(),sizeof m->status);
     if(cu.pop==POP_MSG)str_cpy(m->message,cu.msg,sizeof m->message);
     else if(cu.pop==POP_SOUND_CHORD || cu.pop==POP_SOUND_BASS)str_cpy(m->message,cf_snd[cu.pop==POP_SOUND_BASS?1:0].name,sizeof m->message);
-    if(m->tab==CF_ACC_N){m->focus=cf_legacy_pick;return;}
-    m->dx=(int8_t)cf_tween_offset(cf_acc_page_ms,170,8);
+    if(m->tab==CF_ACC_N){m->focus=cf_legacy_pick;m->focus_weight=cfn_focus(0x40000u|m->focus);return;}
+    uint32_t arrival=(int32_t)(cf_acc_page_ms-cfn_motion.page_ms)>0?cf_acc_page_ms:cfn_motion.page_ms;
+    m->dx=(int8_t)(cf_tween_offset(arrival,170,8)*(cf_nav_dir<0?-1:1));
     const cf_progression_t *p=cf_progression_current();m->n=p->n;m->focus=cf_acc_focus%p->n;
     m->slot=cf_sn.ac_on?cf_sn.ac_slot:255;m->bass_on=cs.bass_on;
     m->level[0]=cs.level_chord;m->level[1]=cs.bass_level;m->level[2]=cs.level_drums;
@@ -30,6 +32,8 @@ static void cf_acc_model(cf_acc_model_t *m)
     kint(b,cs.clock_in==1?cf_sn.ext_bpm:cs.bpm,cs.clock_in==1?" EXT":" BPM");str_cpy(m->sub+str_len(m->sub),"  ",sizeof m->sub-str_len(m->sub));str_cpy(m->sub+str_len(m->sub),b,sizeof m->sub-str_len(m->sub));
     for(int k=0;k<4;k++){cf_knob_t o;memset(&o,0,sizeof o);cf_acc_knob_info(k,&o);str_cpy(m->label[k],o.name,sizeof m->label[k]);str_cpy(m->value[k],o.val,sizeof m->value[k]);m->disabled[k]=o.dis;}
     cf_acc_pending(m->pending,sizeof m->pending,m->next,sizeof m->next);
+    for(unsigned k=0;k<4;k++)m->emphasis[k]=cfn_knob(k);
+    m->cursor_width=cfn_cursor(0x20000u|m->slot);m->focus_weight=cfn_focus(0x20000u|m->focus);
     unsigned r=cf_sn.ac_on?cf_sn.ac_rhythm:cpg.rhythm;
     if(m->tab==CF_ACC_GROOVE) {
         str_cpy(m->main,cpa_rhythm_name(r),sizeof m->main);
@@ -62,7 +66,7 @@ static void cf_acc_draw(void)
     cfn_text(&CFN_16,10,20,m.title,FL_INK);cfn_text(&CFN_12,230-cfn_width(&CFN_12,m.status),20,m.status,C_ACC(0));fb_hline(10,28,220,FL_BG3);
     if(m.tab==CF_ACC_N) {
         cfn_text(&CFN_12,10,49,"K1 selects / SEL opens",FL_INK2);
-        for(unsigned i=0;i<3;i++){if(m.focus==i)fb_rect(10,64+i*38,220,32,FL_BG1);cfn_text(&CFN_16,20,86+i*38,CF_LEGACY_NAME[i],m.focus==i?C_ACC(0):FL_INK);}
+        for(unsigned i=0;i<3;i++){if(m.focus==i){fb_rect(10,64+i*38,220,32,FL_BG1);fb_rect(10,64+i*38,2+m.focus_weight,32,C_ACC(0));}cfn_text(&CFN_16,20,86+i*38,CF_LEGACY_NAME[i],m.focus==i?C_ACC(0):FL_INK);}
         cfn_text(&CFN_12,10,223,"HOME: Core / SELECT: system page",FL_INK2);
     } else {
         cfn_fit(&CFN_12,10,45,m.sub,220,FL_INK2);
@@ -87,13 +91,14 @@ static void cf_acc_draw(void)
         fb_unclip();fb_hline(10,184,220,FL_BG3);
         cfn_fit(&CFN_12,10,197,m.pending[0]?m.pending:"ALGORITHM: Groove / Loop / Mix / Click",220,m.pending[0]?C_ACC(0):FL_INK2);
         cfn_fit(&CFN_12,10,210,m.next,220,FL_INK2);
-        for(int k=0;k<4;k++){int x=k*60;fb_clip(x+3,212,x+57,240);cfn_center(&CFN_12,x+30,223,m.label[k],FL_INK2);cfn_fit(cfn_width(&CFN_16,m.value[k])<=54?&CFN_16:&CFN_12,x+3,239,m.value[k],54,m.disabled[k]?FL_INK2:FL_INK);}
+        cfn_controls(m.label,m.value,m.disabled,m.emphasis);
         fb_unclip();
     }
+    for(unsigned k=0;k<4;k++)if(m.emphasis[k])fb_hline(k*60+30-m.emphasis[k],225,2*m.emphasis[k],C_ACC(0));
     if(m.message[0]) {
         fb_rect(8,75,224,80,FL_BG);fb_frame(8,75,224,80,FL_BG3);
         char b[64];str_cpy(b,m.message,sizeof b);unsigned n=0;while(b[n] && b[n]!='\n')n++;
         char *next=b[n]?b+n+1:0;b[n]=0;cfn_fit(&CFN_12,16,109,b,208,FL_INK);if(next)cfn_fit(&CFN_12,16,130,next,208,FL_INK);
     }
-    cf_present();
+    if(!cu.pop)cf_present();
 }

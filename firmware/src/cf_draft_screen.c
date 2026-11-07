@@ -5,13 +5,18 @@ typedef struct {
     char title[20],status[20],name[28],chord[24],degree[12],notes[48],position[40],hint[48],message[64];
     char label[4][12],value[4][14],rail[4][24],numeral[4][12];
     uint8_t disabled[4],focus,slot,first,n,skin,confirm,conflict,choice,rec;
+    uint8_t emphasis[4],cursor_width,focus_weight;
+    int8_t dx,chord_dy;
 } cfd_model_t;
 static cfd_model_t cfd_last;
 static uint8_t cfd_valid;
 static unsigned cfd_draws;
+static char cfd_symbol[24];
+static uint32_t cfd_symbol_ms;
 static void cfd_model(cfd_model_t *m)
 {
     memset(m,0,sizeof *m);m->skin=cf_skin;
+    m->dx=cfn_page_dx();
     if(!cfwd.have){str_cpy(m->title,"No working draft",sizeof m->title);return;}
     m->n=cfwd.song.n;m->focus=cfdu.focus%cfwd.song.n;m->first=m->focus/4*4;
     m->slot=cf_sn.ac_on && cf_sn.ac_idea==CF_P_DRAFT && !(cf_sn.ac_waiting&&!cf_sn.ac_paused)?cf_sn.ac_slot:255;
@@ -35,6 +40,10 @@ static void cfd_model(cfd_model_t *m)
     for(int k=0;k<4;k++){cf_knob_t o;memset(&o,0,sizeof o);cfd_knob_info(k,&o);str_cpy(m->label[k],o.name,sizeof m->label[k]);str_cpy(m->value[k],o.val,sizeof m->value[k]);m->disabled[k]=o.dis;}
     str_cpy(m->hint,m->conflict?"SEL confirms / old source stays intact":m->confirm?"SEL confirms / default Cancel":cu.page[SCR_PEDIT]==CFD_PHRASE?"SEL executes action / SELECT slot":"SELECT slot / PLAY hears full draft",sizeof m->hint);
     if(cu.pop==POP_MSG)str_cpy(m->message,cu.msg,sizeof m->message);
+    for(unsigned k=0;k<4;k++)m->emphasis[k]=cfn_knob(k);
+    m->cursor_width=cfn_cursor(0x30000u|m->slot);m->focus_weight=cfn_focus(0x30000u|m->focus);
+    if(str_len(cfd_symbol)!=str_len(m->chord) || memcmp(cfd_symbol,m->chord,str_len(m->chord))){str_cpy(cfd_symbol,m->chord,sizeof cfd_symbol);cfd_symbol_ms=cf_motion?(cu.now?cu.now:1):0;}
+    m->chord_dy=cf_tween_offset(cfd_symbol_ms,120,5);
 }
 static void cfd_draw(void)
 {
@@ -44,11 +53,11 @@ static void cfd_draw(void)
     cfn_fit(&CFN_16,10,20,m.title,130,FL_INK);cfn_text(&CFN_12,230-cfn_width(&CFN_12,m.status),20,m.status,m.rec?FL_C(FL_R_ROSE,0):C_ACC(0));fb_hline(10,28,220,FL_BG3);
     cfn_fit(&CFN_12,10,45,m.name,220,FL_INK2);
     cfn_text(&CFN_12,10,65,"PLANNED",FL_INK2);cfn_text(&CFN_16,230-cfn_width(&CFN_16,m.degree),65,m.degree,C_ACC(0));
-    cfn_fit(&CFN_32,10,101,m.chord,220,FL_INK);cfn_fit(&CFN_12,10,119,m.notes,220,FL_INK2);
-    for(unsigned i=0;i<4 && m.first+i<m.n;i++){int cx=30+i*60;fb_clip(i*60,125,(i+1)*60,170);if(m.focus==m.first+i)fb_frame(cx-27,127,54,39,FL_BG3);cfn_center(&CFN_16,cx,144,m.numeral[i],C_ACC(0));cfn_center(&CFN_12,cx,160,m.rail[i],FL_INK);if(m.slot==m.first+i)fb_hline(cx-22,168,44,C_ACC(0));}
-    fb_unclip();cfn_text(&CFN_12,10,183,m.position,FL_INK2);fb_hline(10,190,220,FL_BG3);cfn_fit(&CFN_12,10,205,m.hint,220,FL_INK2);
-    for(int k=0;k<4;k++){int x=k*60;fb_clip(x+3,211,x+57,240);cfn_center(&CFN_12,x+30,223,m.label[k],FL_INK2);cfn_fit(cfn_width(&CFN_16,m.value[k])<=54?&CFN_16:&CFN_12,x+3,239,m.value[k],54,m.disabled[k]?FL_INK2:FL_INK);}
-    fb_unclip();
+    fb_clip(0,70,240,107);cfn_fit(&CFN_32,10,101+m.chord_dy,m.chord,220,FL_INK);fb_unclip();cfn_fit(&CFN_12,10,119,m.notes,220,FL_INK2);
+    for(unsigned i=0;i<4 && m.first+i<m.n;i++){int cx=30+i*60;fb_clip(i*60,125,(i+1)*60,170);if(m.focus==m.first+i){fb_frame(cx-27,127,54,39,FL_BG3);if(m.focus_weight)fb_hline(cx-26,128,52,C_ACC(0));}cfn_center(&CFN_16,cx,144,m.numeral[i],C_ACC(0));cfn_center(&CFN_12,cx,160,m.rail[i],FL_INK);if(m.slot==m.first+i)fb_hline(cx-22,168,44*m.cursor_width/100,C_ACC(0));}
+    fb_unclip();cfn_text(&CFN_12,10,183,m.position,FL_INK2);cfn_shift_panel(m.dx,31,189);fb_hline(10,190,220,FL_BG3);cfn_fit(&CFN_12,10,205,m.hint,220,FL_INK2);
+    cfn_controls(m.label,m.value,m.disabled,m.emphasis);
+    fb_unclip();for(unsigned k=0;k<4;k++)if(m.emphasis[k])fb_hline(k*60+30-m.emphasis[k],225,2*m.emphasis[k],C_ACC(0));
     if(m.conflict || m.confirm || m.message[0]) {
         fb_rect(8,70,224,95,FL_BG);fb_frame(8,70,224,95,FL_BG3);
         const char *a=m.message[0]?m.message:m.conflict?"Keep the protected draft?":"Remove this numbered slot?";
@@ -59,5 +68,5 @@ static void cfd_draw(void)
             if(next)cfn_fit(&CFN_12,16,130,next,208,FL_INK2);
         } else {cfn_fit(&CFN_12,16,104,a,208,FL_INK);cfn_fit(&CFN_16,16,137,b,208,C_ACC(0));}
     }
-    cf_present();
+    if(!cu.pop)cf_present();
 }

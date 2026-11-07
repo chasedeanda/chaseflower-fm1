@@ -144,6 +144,14 @@ static void fm1_fault(const fm1_crash_t *c)
     char b[12];
     uint32_t t0;
     fm1_audio_stop();
+#ifdef CF_UNIT
+    cf_recovery_screen("Firmware fault");
+    hexs(b,c->vec);cf_recovery_text(10,79,"Vector");cf_recovery_text(116,79,b);
+    hexs(b,c->pc);cf_recovery_text(10,103,"PC");cf_recovery_text(116,103,b);
+    hexs(b,c->emu);cf_recovery_text(10,127,"EMU");cf_recovery_text(116,127,b);
+    hexs(b,c->dbg);cf_recovery_text(10,151,"Debug");cf_recovery_text(116,151,b);
+    hexs(b,c->rets);cf_recovery_text(10,175,"Return");cf_recovery_text(116,175,b);
+#else
     lcd_fill(0, 0, 240, 240, UI_CRASH_BG);            /* fixed, outside the palettes */
     draw_text_line(0, 8, 240, &AF_M, "FELUCCA CRASH", UI_CRASH_INK, UI_CRASH_BG, 1);
     hexs(b, c->vec);
@@ -156,6 +164,7 @@ static void fm1_fault(const fm1_crash_t *c)
     draw_text_line(10, 102, 220, &AF_M, b, UI_CRASH_INK, UI_CRASH_BG, 0);
     hexs(b, c->rets);
     draw_text_line(10, 120, 220, &AF_M, b, UI_CRASH_INK, UI_CRASH_BG, 0);
+#endif
     t0 = fm1_ticks();
     while ((uint32_t)(fm1_ticks() - t0) < 4000u * 1000u * FM1_TICKS_PER_US)
         ;
