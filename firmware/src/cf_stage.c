@@ -59,6 +59,7 @@ static void cfn_shift_panel(int dx,int y0,int y1)
         if((y&15)==15)CF_PUMP();
     }
 }
+#include "cf_keyboard_learn.c"
 typedef struct {
     char chord[24],degree[12],notes[48],idea[40],sound[16],context[48],status[24],pending[48],next_setup[48];
     char rail[4][24],numeral[4][12];
@@ -68,6 +69,7 @@ typedef struct {
     uint8_t moment,build,bloom;
     uint16_t matches;
     int8_t bank_dx,chord_dy;
+    cf_learn_model_t learn;
 } cf_stage_model_t;
 static cf_stage_model_t cf_stage_last;
 static uint8_t cf_stage_valid;
@@ -134,6 +136,7 @@ static void cf_stage_model(cf_stage_model_t *m)
         cf_harmony_numeral(cs.chord.scale,cs.chord.tonic,root,m->numeral[i]);
     }
     for(int i=0;i<4;i++){cf_knob_t k;memset(&k,0,sizeof k);ui_knob_info(i,&k);str_cpy(m->label[i],k.name,sizeof m->label[i]);str_cpy(m->value[i],k.val,sizeof m->value[i]);m->disabled[i]=k.dis;}
+    if(m->bank==CF_HB_LEARN)cf_learn_model(&m->learn);
     cf_stage_energy=cfn_motion.energy;cf_stage_tick=cu.now;
     unsigned clock=(cf_sn.running || cf_sn.metro_on) && cf_sn.beats_done && cfn_motion.fresh &&
         !cf_sn.ac_lost && !cf_sn.ac_waiting && !cf_sn.ac_paused;
@@ -170,6 +173,10 @@ static void cf_stage_model(cf_stage_model_t *m)
             }
         }
     }
+    if(m->bank==CF_HB_LEARN) {
+        m->bank_dx=m->chord_dy=0;m->halo=m->pulse=m->halo_ink=m->build=m->bloom=0;
+        memset(m->emphasis,0,sizeof m->emphasis);m->cursor_width=0;
+    }
 }
 static void cf_stage_chord(const char *name,int y,uint8_t ink)
 {
@@ -185,6 +192,29 @@ static void cf_stage_draw(void)
     if(cf_stage_valid && !fb_full && !memcmp(&m,&cf_stage_last,sizeof m))return;
     cf_stage_last=m;cf_stage_valid=1;cf_stage_draws++;
     fb_unclip();fb_fill(FL_BG);
+    if(m.bank==CF_HB_LEARN) {
+        cfn_text(&CFN_12,10,17,"KEYBOARD 6/6",FL_INK);
+        cfn_fit(&CFN_12,140,17,m.status,90,C_ACC(0));
+        fb_hline(10,25,220,FL_BG3);
+        cfn_fit(&CFN_12,10,43,m.context,136,FL_INK2);
+        cfn_text(&CFN_12,156,43,m.learn.automatic?"Harmony On":"Harmony Off",FL_INK2);
+        cfn_text(&CFN_12,10,64,m.hold?"HOLD":m.live?"NOW":cu_name[0]?"LAST":"READY",FL_INK2);
+        cfn_fit(&CFN_16,53,64,m.chord,177,m.live?FL_INK:FL_INK2);
+        cfn_fit(&CFN_12,10,80,m.notes,220,FL_INK2);
+        cfn_text(&CFN_12,10,95,"Chords",FL_INK2);
+        cfn_text(&CFN_12,230-cfn_width(&CFN_12,"Roots / degrees"),95,"Roots / degrees",FL_INK2);
+        cf_learn_keyboard(&m.learn);
+        cfn_fit(&CFN_16,10,192,m.learn.title,220,FL_INK);
+        cfn_fit(&CFN_12,10,208,m.learn.help,220,FL_INK2);
+        cfn_fit(&CFN_12,10,222,m.learn.detail,220,FL_INK2);
+        fb_hline(10,227,220,FL_BG3);
+        cfn_text(&CFN_12,10,239,"Knobs inactive",FL_INK2);
+        cfn_text(&CFN_12,151,239,"HOME: Core",FL_INK2);
+        if(m.pending[0]) { /* recording/queued changes remain explicit on every HOME page */
+            fb_rect(0,67,240,17,FL_BG);cfn_fit(&CFN_12,10,80,m.pending,220,C_ACC(0));
+        }
+        if(!cu.pop)cf_present();return;
+    }
     if(m.pulse){cfn_circle(120,103,m.pulse,m.halo_ink);cfn_circle(120,103,m.pulse-1,m.halo_ink>CFN_HALO_0?m.halo_ink-1:m.halo_ink);}
     if(m.bloom && m.pulse>22)cfn_circle(120,103,m.pulse-8,m.halo_ink);
     if(m.build) { /* fill density rises with bar phase, not wall-clock animation */

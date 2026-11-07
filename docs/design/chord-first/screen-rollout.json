@@ -833,6 +833,16 @@
       "deviceVerification": "Pending — native host captures and linked firmware only"
     },
     {
+      "id": "HOME_KEYBOARD",
+      "title": "Keyboard / Learn",
+      "group": "Home",
+      "sharedTemplate": "text",
+      "musicalMilestone": 1,
+      "designStatus": "Native 240x240 captures; physical review pending",
+      "implementationStatus": "Implemented sixth HOME page from main eb51a3a: full physical key map, current root/degree and Manual/Auto/HOLD assignments, press-to-explain normal playing, four inactive knobs. See docs/KEYBOARD-LEARN.md.",
+      "deviceVerification": "Pending — native host tests/captures and local JieLi link; no hardware flash"
+    },
+    {
       "id": "SYS-ROOT",
       "title": "Settings",
       "group": "Settings",

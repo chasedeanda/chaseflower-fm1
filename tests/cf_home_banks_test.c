@@ -14,7 +14,8 @@ static void navigation(void)
     cf_set_t settings=cs;unsigned queue=cf_evq_w,flash=emu_flash_writes,patterns=cfs_fnv(&sq_st,sizeof sq_st);cf_chord_out_t sounding=cf_sn.out;
     for(unsigned i=0;i<CF_HB_N*6u;i++) {
         CHECK(home_stage() && cf_home_bank==i%CF_HB_N);ui_button(B_HOME);cf_ui_draw();
-        CHECK(body==cfs_fnv(fb,FB_W*198));
+        /* Keyboard uses the whole display; the five musical banks keep their hero. */
+        if(cf_home_bank!=CF_HB_LEARN)CHECK(body==cfs_fnv(fb,FB_W*198));
         CHECK(!memcmp(&cs,&settings,sizeof cs) && cf_evq_w==queue && emu_flash_writes==flash);
         CHECK(cfs_fnv(&sq_st,sizeof sq_st)==patterns && !memcmp(&cf_sn.out,&sounding,sizeof sounding));
     }
