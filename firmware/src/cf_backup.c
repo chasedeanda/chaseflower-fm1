@@ -283,7 +283,7 @@ static int crb_size_ok(uint32_t id, uint32_t len)   /* a begin's size for this i
 {
     if (id == CFB_RECPREF) return !len || len == sizeof(sq_rec_pref_t);
     if (id >= CFB_TAKE && id < CFB_TAKE + SQ_NPAT) return !len || len == sizeof(sq_take_rec_t);
-    if (id == CFB_PREFS) return !len || len == sizeof(cpb_rec_t);
+    if (id == CFB_PREFS) return !len || len == sizeof(cpb_rec_t) || len == sizeof(cpb_legacy_rec_t);
     if (id == CFB_FX) return !len || len == sizeof(fxp_bank_t);
     if (id == CFB_HARM) return !len || len == sizeof(cfh_rec_t);
     if (id == 6u || id == 7u)
@@ -331,7 +331,7 @@ static uint32_t crb_commit(void)
     if (crb.pos != len || st_crc32(raw, len) != crb.crc)
         return 2;
     if (id == CFB_PREFS) {
-        if (len && !cpb_valid((const cpb_rec_t *)raw)) return 2;
+        if (len && !cpb_record_valid(raw,len)) return 2;
         if (st_save(OBJ_CFPREFS, raw, len)) return 4;
         cfs_restore_lock = 1;
         cf_message("Preferences restored: restart");

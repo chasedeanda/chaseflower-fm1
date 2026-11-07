@@ -214,7 +214,7 @@ int main(void)
 
     CHECK(t_find(CFB_FX) && !t_find(CFB_FX)->size, "FX bank absent on an old/blank device");
     CHECK(t_find(CFB_PREFS) && !t_find(CFB_PREFS)->size,"favorites absent on an old/blank device");
-    cf_browser_star(&cpb,72,1); cpb_dirty=1;
+    cf_browser_star(&cpb,72,1); cf_browser_star(&cpb,cf_progression_count()-1,1); cpb_dirty=1;
     CHECK(fxp_save_slot(7, "BACKUP FX"), "save an independent FX preset");
     /* ---- content: a user sound, the settings, a loop ---- */
     CHECK(cf_snd_save(CF_PART_CHORD, 1, "BACKUP TEST") == 0, "a chord sound saved as new");
@@ -318,12 +318,28 @@ int main(void)
     CHECK(sq_legacy_read(__builtin_offsetof(sq_legacy_store_t,pat)+7*sizeof(sq_pat_t),&archive.pat[7],sizeof(sq_pat_t)) &&
           archive.pat[7].dlev[3]==42,"archived H remains recoverable without occupying a live slot");
 
-    cpb_load(); CHECK(cf_browser_favorite(&cpb,72),"favorites reload after backup restore");
+    cpb_load(); CHECK(cf_browser_favorite(&cpb,72) && cf_browser_favorite(&cpb,cf_progression_count()-1),"low and high-ID favorites reload after backup restore");
     {
         obj_t *o=t_find(CFB_PREFS); cpb_rec_t bad;
-        memcpy(&bad,o->bytes,sizeof bad); bad.version++;
+        memcpy(&bad,o->bytes,sizeof bad); bad.version++; bad.check=cfs_fnv(&bad,__builtin_offsetof(cpb_rec_t,check));
         CHECK(t_put(CFB_PREFS,(const uint8_t *)&bad,sizeof bad,st_crc32(&bad,sizeof bad))==2,
               "invalid favorites record refused before flash write");
+    }
+    /* Old backup objects retain their actual layout, not a padded v3 lookalike. */
+    for(unsigned version=1;version<=2;version++) {
+        cpb_legacy_rec_t old={0};old.magic=CPB_MAGIC;old.version=version;old.mode=CPB_ALPHA;
+        old.favorites[9]=1;old.reserved[0]=2;old.reserved[1]=0;
+        old.check=cfs_fnv(&old,__builtin_offsetof(cpb_legacy_rec_t,check));
+        CHECK(sizeof old==28 && t_put(CFB_PREFS,(const uint8_t *)&old,sizeof old,st_crc32(&old,sizeof old))==0,
+              "legacy v%u browser backup accepted",version);
+        unsigned writes=emu_flash_writes;cpb_load();
+        CHECK(writes==emu_flash_writes && cf_browser_favorite(&cpb,72) && !cpb_dirty,
+              "legacy favorites migrate in RAM without writes");
+        CHECK(cf_skin==(version==1?CF_SKIN_TEAL:2) && cf_motion==(version==1),"legacy appearance preserved");
+        for(unsigned i=16;i<CPB_BYTES;i++)CHECK(!cpb.favorites[i],"new favorite IDs initially clear");
+        old.check^=1;
+        CHECK(t_put(CFB_PREFS,(const uint8_t *)&old,sizeof old,st_crc32(&old,sizeof old))==2,
+              "legacy checksum validated beyond transport CRC");
     }
     /* ---- FX payload validation through actual PUT (wire CRC alone is insufficient) ---- */
     {

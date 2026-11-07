@@ -41,7 +41,7 @@ static void cf_acc_model(cf_acc_model_t *m)
             kint(m->detail,m->bar+1,"/");kint(m->detail+str_len(m->detail),m->bars," bars / suggested ");kint(m->detail+str_len(m->detail),DM_RHY[r].bpm," BPM");
         } else str_cpy(m->detail,dm_count(cs.beats)?"Chords keep the shared clock":"No matching groove: Off or Click",sizeof m->detail);
     } else if(m->tab==CF_ACC_LOOP) {
-        str_cpy(m->main,(cf_sn.ac_on?cf_sn.ac_mode:cpg.mode)==CPA_DRUMS?"Drums only":"Chords + Drums",sizeof m->main);
+        str_cpy(m->main,(cf_sn.ac_on?cf_sn.ac_mode:cpg.mode)==CPA_DRUMS?"Drums only":"Chord + Drum",sizeof m->main);
         kint(m->detail,1,"-");kint(m->detail+str_len(m->detail),p->n," / full phrase / ");str_cpy(m->detail+str_len(m->detail),(cf_sn.ac_on?cf_sn.ac_repeat_off:cpg.repeat_off)?"Play once":"Repeat",sizeof m->detail-str_len(m->detail));
         m->first=(m->focus/4)*4;
         for(unsigned i=0;i<4 && m->first+i<p->n;i++) {

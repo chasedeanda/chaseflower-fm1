@@ -127,6 +127,15 @@ static const cf_progression_t CF_PROGRESSIONS[] = {
     {"Changes", "Bieber: verse", 123, PT(FAMILIAR), CF_SC_MAJOR, 0, 4, 3, {3,2,1}},
     {"Forever", "Bieber: chorus", 124, PT(FAMILIAR), CF_SC_MINOR, 1, 4, 4, {0,2,0,2}},
     {"Yummy", "Bieber: chorus", 125, PT(FAMILIAR), CF_SC_MAJOR, 5, 4, 4, {1,2,1,2}},
+    /* Morgan Wallen playlist sections; full sources/tuning in the research notes. */
+    {"Last Night", "Wallen: chorus", 128, PT(FAMILIAR), CF_SC_MINOR, 3, 4, 4, {5,6,0,2}},
+    {"Cover Me Up", "Wallen: chorus", 129, PT(FAMILIAR), CF_SC_MAJOR, 2, 6, 6, {1,3,5,0,3,0}},
+    {"One Thing At A Time", "Wallen: verse", 130, PT(FAMILIAR), CF_SC_MAJOR, 7, 4, 4, {3,4,0,1}},
+    {"Everything I Love", "Wallen: prechorus", 131, PT(FAMILIAR), CF_SC_MAJOR, 8, 4, 3, {5,3,0}},
+    {"I Can't Love You...", "Ella/Wallen: chorus", 132, PT(FAMILIAR), CF_SC_MINOR, 10, 4, 3, {5,6,0}},
+    {"Thought You Should", "Wallen: chorus", 133, PT(FAMILIAR), CF_SC_MAJOR, 6, 4, 3, {0,4,1}},
+    {"Cowgirls", "Wallen: chorus", 134, PT(FAMILIAR), CF_SC_MINOR, 5, 4, 4, {0,5,2,6}},
+    {"What I Want", "Wallen/Tate: chorus", 135, PT(FAMILIAR), CF_SC_DORIAN, 11, 4, 3, {0,6,3}},
 };
 #undef PT
 _Static_assert(sizeof CF_PROGRESSIONS / sizeof CF_PROGRESSIONS[0] < CF_P_NONE, "browser index fits a byte");
@@ -156,6 +165,22 @@ static const struct { uint16_t id; cf_source_chord_t chord[CF_P_MAX]; } CF_SOURC
     {123, {{0x891u,3,0,-1}, {0x489u,2,0,-1}, {0x489u,1,0,-1}}},
     /* Yummy: Gm7 Am7 Gm7 Am7 */
     {125, {{0x489u,1,0,-1}, {0x489u,2,0,-1}, {0x489u,1,0,-1}, {0x489u,2,0,-1}}},
+    /* Last Night: B Db Ebm Gb (C D Em G shapes, down a semitone) */
+    {128, {{0x91u,5,0,-1}, {0x91u,6,0,-1}, {0x89u,0,0,-1}, {0x91u,2,0,-1}}},
+    /* Cover Me Up: Em G Bm D G D */
+    {129, {{0x89u,1,0,-1}, {0x91u,3,0,-1}, {0x89u,5,0,-1}, {0x91u,0,0,-1}, {0x91u,3,0,-1}, {0x91u,0,0,-1}}},
+    /* One Thing At A Time: C D G Am7 */
+    {130, {{0x91u,3,0,-1}, {0x91u,4,0,-1}, {0x91u,0,0,-1}, {0x489u,1,0,-1}}},
+    /* Everything I Love: Fm Db Ab (Em C G shapes, capo 1) */
+    {131, {{0x89u,5,0,-1}, {0x91u,3,0,-1}, {0x91u,0,0,-1}}},
+    /* I Can't Love You Anymore (Ella Langley & Wallen): Gbmaj7 Ab Bbm */
+    {132, {{0x891u,5,0,-1}, {0x91u,6,0,-1}, {0x89u,0,0,-1}}},
+    /* Thought You Should Know: F# C#/E# G#m7 (G D/F# Am7, down a semitone) */
+    {133, {{0x91u,0,0,-1}, {0x91u,4,0,4}, {0x489u,1,0,-1}}},
+    /* Cowgirls: Fm Db Ab Eb */
+    {134, {{0x89u,0,0,-1}, {0x91u,5,0,-1}, {0x91u,2,0,-1}, {0x91u,6,0,-1}}},
+    /* What I Want (with Tate McRae): Bm A E; preserve Dorian's major IV. */
+    {135, {{0x89u,0,0,-1}, {0x91u,6,0,-1}, {0x91u,3,0,-1}}},
 };
 const cf_source_chord_t *cf_progression_source(const cf_progression_t *p)
 {

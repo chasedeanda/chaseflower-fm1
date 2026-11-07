@@ -234,7 +234,10 @@ static void cpa_realtime(unsigned status)
         cpa_groove(1); cpa_emit(); if (dmp.on) dmp_now();
     }
     if (status == 0xFBu && (cpa.paused || cpa.clock_wait)) {
+        int fresh=cpa.clock_wait && !cpa.paused;
         cpa.clock_wait=cpa.clock_lost=0;cpa.clock_ms=cf_now_ms;
-        cpa.paused = 0; cfm.running = 1; cf_grid.on = 1; cpa_emit();
+        cpa.paused = 0;
+        if(fresh){cpa_grid_start();cpa_groove(1);if(dmp.on)dmp_now();}
+        cfm.running = 1; cf_grid.on = 1; cpa_emit();
     }
 }
