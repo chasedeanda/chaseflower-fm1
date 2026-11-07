@@ -216,6 +216,7 @@ static int cf_settings_write(uint32_t how)
  * (a reverb's or a delay's tail: the owner heard holes in it where a save stopped the audio) */
 static int cfs_sounding(void)
 {
+    if(cla.on || cla_mail.request)return 1;
     uint32_t p, i;
     if (cf_sn.metro_on || cf_sn.running || cfx_quiet < FS / CTL)
         return 1;
@@ -676,7 +677,7 @@ static void settings_poll(void)
     cfh_poll(now, now - cfs_sound_ms >= CF_SET_SILENT_MS);
     cpb_poll(now, now - cfs_sound_ms >= CF_SET_SILENT_MS);
     cfd_poll(now, now - cfs_sound_ms >= CF_SET_SILENT_MS);
-    cfl_poll(now, now - cfs_sound_ms >= CF_SET_SILENT_MS);
+    csl_poll(now, now - cfs_sound_ms >= CF_SET_SILENT_MS);
     fxp_poll(now, now - cfs_sound_ms >= CF_SET_SILENT_MS);
     if (cfs_retry_ms && (int32_t)(now - cfs_retry_ms) < 0)
         return;                                   /* (a flash error, or the log full: once more a second later) */

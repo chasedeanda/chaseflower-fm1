@@ -1,7 +1,7 @@
 {
-  "sourceBase": "09403c9aecb96afed05a63f6938e17c226dd6ee7",
+  "sourceBase": "0d76e5b3370f6b7e43a41ed09089491e1f4320a0",
   "designRevision": "845325136418dd038c7ef81eaca01ec64ac5e61e",
-  "summary": "Engineering preview: every retained old screen now routes through native Instrument Teal parameter, list, grid, name/confirmation and result families, including advanced FM6/VA, Layer, effects, recordings, system, diagnostics and recovery. HOME/banks, Groove/Loop/Mix/Click and the protected sixteen-slot editor retain their existing musical owners. Finite chord/cursor/knob/bank/workspace/focus/save transitions and a real post-MASTER output-driven halo share the single On/Off setting; Off cancels visual work and settled views skip rendering. The current manual-take/latest-three policy remains intact. Songs now adds six saved semantic ideas and existing recording rows, protected quiet-boundary writes, complete musical snapshots, progression rename/duplicate/delete and recording load/delete. SAVE opens Songs; SELECT Save current then SEL creates a new copy. Full arranged recording, recording rename/duplicate, bulk clear, Learn/Next and physical verification remain pending. Chord library/audition remains explicitly deferred. See docs/SONGS-LIBRARY.md for the native preview controls and limits.",
+  "summary": "Engineering preview: every retained old screen now routes through native Instrument Teal parameter, list, grid, name/confirmation and result families, including advanced FM6/VA, Layer, effects, recordings, system, diagnostics and recovery. HOME/banks, Groove/Loop/Mix/Click and the protected sixteen-slot editor retain their existing musical owners. Finite chord/cursor/knob/bank/workspace/focus/save transitions and a real post-MASTER output-driven halo share the single On/Off setting; Off cancels visual work and settled views skip rendering. The current manual-take/latest-three policy remains intact. Chord Lab adds Now/Last/planned-slot notes and intervals, fixed-context comparisons, offline Next suggestions, explicit one-bar audition and undoable insertion. Songs now adds six saved semantic ideas and existing recording rows, protected quiet-boundary writes, complete musical snapshots, progression rename/duplicate/delete and recording load/delete. SAVE opens Songs; SELECT Save current then SEL creates a new copy. Full arranged recording, recording rename/duplicate, bulk clear and physical verification remain pending. Chord library/audition remains explicitly deferred. See docs/SONGS-LIBRARY.md for native preview controls and limits.",
   "screens": {
     "HOME_STAGE": {
       "designStatus": "Native preview alongside selected prototype; device review pending",
@@ -774,6 +774,46 @@
       "deviceVerification": "Pending \u2014 native host captures and device link only",
       "evidence": "native-pages/README.md"
     },
+    "LAB_NOTES": {
+      "designStatus": "Native preview follows selected Instrument Teal primitives; physical review pending",
+      "implementationStatus": "Implemented native preview: Now/Last and explicit planned slots, actual quality/degree, voiced MIDI register and starred outside-scale notes; silent browsing",
+      "deviceVerification": "Pending \u2014 host-rendered captures and device link only"
+    },
+    "LAB_INTERVALS": {
+      "designStatus": "Native preview follows selected Instrument Teal primitives; physical review pending",
+      "implementationStatus": "Implemented native preview: K2 voiced-note focus, chord-relative compound intervals and factual scale membership",
+      "deviceVerification": "Pending \u2014 host-rendered captures and device link only"
+    },
+    "LAB_COMPARE": {
+      "designStatus": "Native preview follows selected Instrument Teal primitives; physical review pending",
+      "implementationStatus": "Implemented native preview: fixed target/context Triad/Color and meaningful Root/Smooth; SEL-only audition; no extension disables Triad/Color",
+      "deviceVerification": "Pending \u2014 host-rendered captures and device link only"
+    },
+    "LAB_COMPARE_PLAYING": {
+      "designStatus": "Native preview follows selected Instrument Teal primitives; physical review pending",
+      "implementationStatus": "Implemented native preview: one-bar bounded owner, explicit A/B switching, current gated accompaniment restoration, live HOLD/recording/replay guards and clock-loss/stop cancellation",
+      "deviceVerification": "Pending \u2014 host-rendered captures and device link only"
+    },
+    "NEXT_SHORTLIST": {
+      "designStatus": "Native preview follows selected Instrument Teal primitives; physical review pending",
+      "implementationStatus": "Implemented native preview: three silent deterministic local-catalogue suggestions, live history/draft path, explicit insertion focus and honest theory fallback; non-seven-note scales unsupported",
+      "deviceVerification": "Pending \u2014 host-rendered captures and device link only"
+    },
+    "NEXT_AUDITION": {
+      "designStatus": "Native preview follows selected Instrument Teal primitives; physical review pending",
+      "implementationStatus": "Implemented native preview: bounded one-bar candidate audition with explicit switching and no committed-history/draft/global-modifier mutation",
+      "deviceVerification": "Pending \u2014 host-rendered captures and device link only"
+    },
+    "NEXT_INSERTED": {
+      "designStatus": "Native preview follows selected Instrument Teal primitives; physical review pending",
+      "implementationStatus": "Partial implementation: EDIT replaces the visibly selected slot using native one-step undo and opens Edit Chord; inline acknowledgement, full Songs integration pending",
+      "deviceVerification": "Pending \u2014 host-rendered captures and device link only"
+    },
+    "NEXT_UNSUPPORTED": {
+      "designStatus": "Native preview follows selected Instrument Teal primitives; physical review pending",
+      "implementationStatus": "Implemented native preview: unsupported scale has no candidates or audition/insertion; Notes/Intervals remain available",
+      "deviceVerification": "Pending \u2014 host-rendered captures and device link only"
+    },
     "IDEA_LIBRARY": {
       "designStatus": "Native preview alongside selected prototype; device review pending",
       "implementationStatus": "Partial native preview: six saved ideas plus existing recording rows; SELECT focus, SEL load and explicit Save current; no bulk clear yet",
@@ -818,7 +858,27 @@
       "implementationStatus": "First native saved-idea slice: six atomic records, protected pending write, complete musical snapshots and existing recording rows; full #46 remains open",
       "evidence": "../../SONGS-LIBRARY.md",
       "deviceVerification": "Pending",
-      "hostChecks": 2125
+      "hostChecks": 2128
     }
+  },
+  "learningEvidence": {
+    "issues": [
+      47,
+      48
+    ],
+    "tests": [
+      "sh tools/test_lab.sh",
+      "sh tools/test_editor.sh",
+      "sh tools/test_accomp.sh",
+      "sh tools/test_auto.sh",
+      "sh tools/test_usb.sh"
+    ],
+    "limits": [
+      "Physical TFT readability, latency and USB/hardware stress remain unverified.",
+      "Recording/replay must finish before audition or insertion.",
+      "Compare uses a captured target and fixed preceding voicing; identical Root/Smooth results are disabled.",
+      "Audition is monophonic in harmonic ownership: chord preview mutes scheduled chord/bass while groove and cursor continue.",
+      "Now/Last/history follow foreground semantic chord snapshots, not individual arpeggiated notes."
+    ]
   }
 }

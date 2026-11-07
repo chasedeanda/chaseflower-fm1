@@ -2,6 +2,8 @@
  * Presentation state only. No audio scheduling, buffers, callbacks or allocations.
  * Hidden workspaces do not advance effects. All targets replace their predecessor.
  */
+/* Namespace tags for presentation identities, independent of hardware addresses. */
+enum { CFN_CURSOR_HOME=1u<<16, CFN_FOCUS_LEGACY=1u<<18 };
 static struct {
     uint32_t workspace, page_ms, focus_key, focus_ms, cursor_key, cursor_ms, tick, part_ms, quiet_ms;
     uint16_t energy;

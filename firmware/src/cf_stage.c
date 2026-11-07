@@ -123,7 +123,7 @@ static void cf_stage_model(cf_stage_model_t *m)
     unsigned beat=cf_motion && cf_sn.running && !cf_sn.ac_lost && !cf_sn.ac_waiting && !cf_sn.ac_paused && cf_sn.beats_done && cf_sn.now_ms-cf_sn.beat_ms<120;
     m->halo=cf_motion && cfn_motion.active?(uint8_t)(1+cfn_motion.energy/64+(cfn_motion.parts>1?1:0)+(beat?1:0)):0;
     for(unsigned k=0;k<4;k++)m->emphasis[k]=cfn_knob(k);
-    m->cursor_width=cfn_cursor((1u<<16)|m->slot);
+    m->cursor_width=cfn_cursor(CFN_CURSOR_HOME|m->slot);
 }
 static void cf_stage_chord(const char *name,int y,uint8_t ink)
 {

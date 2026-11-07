@@ -334,7 +334,7 @@ static void browsing(void)
     cf_browser_order(&cpb,CPB_CATALOG,1); setup(0,CPA_OFF); cu.now=100;
     cf_browser_star(&cpb,0,0);
     fm1_in.buttons=1u<<panel.btn[B_SAVE]; ui_button(B_SAVE);
-    CHECK(cu.scr==SCR_SONGS && !cfl_tx.pending && !cf_browser_favorite(&cpb,0));
+    CHECK(cu.scr==SCR_SONGS && !csl_tx.pending && !cf_browser_favorite(&cpb,0));
     cu.now+=701; cpb_hold_poll();
     CHECK(cu.scr==SCR_SONGS && !cf_browser_favorite(&cpb,0));
     fm1_in.buttons=0; cpb_hold_poll(); CHECK(cu.scr==SCR_SONGS);

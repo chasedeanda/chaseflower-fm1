@@ -215,6 +215,7 @@ static void cpa_ui_record(void);
 #include "cf_accomp_ui.c"
 #include "cf_browser_ui.c"
 #include "cf_draft_ui.c"
+#include "cf_lab_ui.c"
 #include "cf_library_ui.c"
 #include "cf_variation.c"                         /* one-page variation and undo */
 
@@ -296,6 +297,7 @@ static void ui_knob_info(int k, cf_knob_t *o)
 {
     o->bar = -1;
     switch (cu.scr) {
+    case SCR_LAB: cfl_knob_info(k,o);break;
     case SCR_HOME:
         if (home_stage() && cf_home_bank_info(k, o)) break;
         if (k == 0 && (cf_scene() == CF_SCENE_PROGRESSIONS || cpa_running())) {
@@ -580,6 +582,7 @@ static void cpa_glide(int d)
 
 static void ui_knob_turn(int k, int d)
 {
+    if(cu.scr==SCR_LAB){cfl_turn(k,d);return;}
     cu.knob_ms[k] = cu.now ? cu.now : 1u;
     cu.knob_last = (uint8_t)k;
     switch (cu.scr) {
@@ -718,7 +721,7 @@ static void ui_knob_turn(int k, int d)
         cf_send_config();
         break;
     case SCR_PEDIT: cfd_turn(k,d); break;
-    case SCR_SONGS: cfl_turn(k,d); break;
+    case SCR_SONGS: csl_turn(k,d); break;
     case SCR_ACC: cf_acc_knob_turn(k,d); break;
     case SCR_SEQ: metro_knob_turn(k, d); break;
     case SCR_DRUM: dm_knob_turn(k, d); break;
@@ -880,8 +883,9 @@ static void cv_turned(int d)
 
 static void ui_select(int d)                     /* SELECT: the bass sound, or a screen's page */
 {
+    if(cu.scr==SCR_LAB){cfl_select(d);return;}
     cf_nav_dir=d<0?-1:1;
-    if(cu.scr==SCR_SONGS){cfl_select(d);return;}
+    if(cu.scr==SCR_SONGS){csl_select(d);return;}
     if(cu.scr==SCR_PEDIT){if(cfwd.have&&!cfdu.conflict&&!cfdu.confirm)cfdu.focus=wrapi(cfdu.focus+d,cfwd.song.n);return;}
     if(cu.scr==SCR_ACC){cf_acc_select(d);return;}
     if(cpb_page()) { cf_progression_select(d); return; }
@@ -980,6 +984,7 @@ static void ui_presets(int d)                    /* PRESETS: the chord sound (a 
 }
 static void ui_algo(int d)                       /* ALGORITHM: scene, effect, or workspace tab */
 {
+    if(cu.scr==SCR_LAB){cfl_tab(d);return;}
     cf_nav_dir=d<0?-1:1;
     if(cu.scr==SCR_SONGS)return;
     if(cu.scr==SCR_PEDIT){if(!cfdu.conflict&&!cfdu.confirm)cu.page[SCR_PEDIT]=wrapi(cu.page[SCR_PEDIT]+d,CFD_NTAB);return;}
@@ -1028,6 +1033,7 @@ static void ui_ctx_from_track(uint32_t trk)
 static void ui_open(uint32_t scr)
 {
     uint32_t was = cu.scr;
+    if(was==SCR_LAB)cla_request(0);
     if (sq_screen(was) && !sq_screen(scr) && scr != SCR_SEQ)
         ui_ctx_from_track(squ.trk);
     cu.scr = (uint8_t)(scr == was && scr != SCR_HOME ? SCR_HOME : scr);
@@ -1126,15 +1132,24 @@ static void ui_button(uint32_t b)
         cf_message("Reset cancelled");
         return;
     }
+    if(cu.scr==SCR_LAB) {
+        if(b==B_SCL){if(clu.tab==CFL_COMPARE || clu.tab==CFL_NEXT)cfl_audition();else {ui_open(SCR_HOME);home_boot_main=1;}return;}
+        if(b==B_EDIT){cfl_edit();return;}
+        if(b==B_PLAY){cla_request(0);cpa_ui_play();return;}
+        if(b==B_SAVE){cla_request(0);csl_open();return;}
+        cla_request(0);
+    }
+    if(b==B_SCL && cpb_home()){cfl_open();return;}
+    if(b==B_SCL && cu.scr==SCR_GLO && cu.page[SCR_GLO]==CF_GLO_HARMONY){ui_open(SCR_SEL);return;}
     if(b==B_EDIT && (cu.scr==SCR_PEDIT || cu.scr==SCR_ACC || cpb_home())) {
         if(cu.scr==SCR_PEDIT){ui_open(SCR_HOME);home_boot_main=1;}else cfd_open();return;
     }
     if(cu.scr==SCR_PEDIT && b==B_SCL){cfd_execute();return;}
-    if(b==B_SAVE && (cu.scr==SCR_PEDIT || cu.scr==SCR_ACC || cpb_home())){cfl_open();return;}
+    if(b==B_SAVE && (cu.scr==SCR_PEDIT || cu.scr==SCR_ACC || cpb_home())){csl_open();return;}
     if(cu.scr==SCR_SONGS) {
-        if(b==B_SAVE){cflu.mode=CFL_LIST;return;}
-        if(b==B_SCL){cfl_execute();return;}
-        if(b==B_EDIT){cfl_edit();return;}
+        if(b==B_SAVE){cslu.mode=CSL_LIST;return;}
+        if(b==B_SCL){csl_execute();return;}
+        if(b==B_EDIT){csl_edit();return;}
         if(b==B_REC){cf_message("HOME to start recording");return;}
         if(b==B_PLAY && !cpa_running() && !cpa_commanded && !cf_sn.sq_on){cf_message("SEL loads the selected Song");return;}
     }
@@ -1863,7 +1878,7 @@ static void cf_leds(void)
 {
     uint8_t lit[FM1_NCOL] = {0}, mid[FM1_NCOL] = {0}, dim[FM1_NCOL] = {0}, faint[FM1_NCOL] = {0};
     static const uint8_t SCR_BTN[SCR_N] = {B_HOME, B_SCL, B_ENV, B_LFO, B_EDIT, B_GLO, B_FX, B_ARP, B_SEQ, B_SAVE,
-                                           B_SEQ, B_SEQ, B_SEQ, B_SEQ, B_EDIT, B_SAVE};
+                                           B_SEQ, B_SEQ, B_SEQ, B_SEQ, B_EDIT, B_SCL, B_SAVE};
     const cf_chord_out_t *out = &cf_sn.out;
     uint32_t k, blink = (cu.now / 250u) & 1u, sq = sq_screen(cu.scr), rm = cu.scr == SCR_DRUM;
     uint16_t auto_notes = 0;
@@ -2111,7 +2126,7 @@ static void cf_ui_init(void)
     if (!cfs_loaded)                             /* (cf_splash read the settings record: they stay) */
         cs_defaults(&cs);
     cfd_load();
-    cfl_load();
+    csl_load();
     cvr_init();
     home_boot_main = !CF_SCENES;
     cf_home_bank = CF_HB_CORE; cf_home_bank_ms = 0;
@@ -2190,6 +2205,7 @@ static void cf_ui_frame(void)                    /* ui_leds: the snapshot, the p
     cf_snapshot();
     cpa_ui_poll();
     cfd_ui_poll();
+    cfl_poll();
     sq_tempo_poll();
     cf_feed_plant(dt);
     cf_leds();

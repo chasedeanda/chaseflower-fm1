@@ -5,6 +5,9 @@ Chase's personal firmware for the **M-VAVE FM-1**, built on [CoralFlower](https:
 **New UI implementation handoff:** [Start here](docs/design/chord-first/AGENT-START.md) · [Full plan](docs/design/chord-first/IMPLEMENTATION-PLAN.md) · [Instrument Teal prototype](docs/design/chord-first/instrument-teal/prototype.html) · [Player guide](docs/CHORD-FIRST-USER-GUIDE.md).
 Instrument Teal is the planned default; Motion is On (adaptive) / Off. These are implementation references, not behavior in the release below.
 
+**Chord Lab (development preview):** SEL on Progressions opens Notes, Intervals, Compare and offline Next.
+[Controls, native captures and verification](docs/CHORD-LAB.md). Physical FM-1 validation remains pending.
+
 **Release 0.6-chase7** adds a 100-idea HOME progression explorer, contextual variations with undo,
 and live FX preset auditioning. Auto Harmony, refreshed drum grooves, Bass/Bonfire visuals, Diagnostics
 and six-channel USB recording remain included.

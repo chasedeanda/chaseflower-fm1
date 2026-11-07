@@ -1,10 +1,16 @@
-In file included from firmware/src/coralflower.c:181:
+In file included from firmware/src/coralflower.c:182:
 In file included from firmware/src/cf_settings.c:61:
 firmware/src/cf_fx_store.c:31:23: warning: suggest braces around initialization of subobject [-Wmissing-braces]
     fxp_preset_t p = {0};
                       ^
                       {}
-1 warning generated.
+In file included from firmware/src/coralflower.c:185:
+In file included from firmware/src/cf_screens.c:94:
+firmware/src/cf_lab_screen.c:54:39: warning: suggest braces around initialization of subobject [-Wmissing-braces]
+    for(int k=0;k<4;k++){cf_knob_t o={0};cfl_knob_info(k,&o);str_cpy(m->label[k],o.name,sizeof m->label[k]);str_cpy(m->value[k],o.val,sizeof m->value[k]);}
+                                      ^
+                                      {}
+2 warnings generated.
 size: 95 main-loop functions built for size (783 not in this build)
 HOME Inter Tight 12px: 724 bitmap bytes, 95 glyphs
 HOME Inter Tight 16px: 1231 bitmap bytes, 95 glyphs
@@ -33,10 +39,10 @@ samples: 1 sets, 18 zones, 68326 B ADPCM, SLICE BREAK 44100 samples (cached)
 loader: image 8416 B at 0x1c0a800, bss end 0x1c0f4ac
 loader: ota.bin 7157 B
   ok    .ram_text: 932 insns, no calls
-  ok    image 453516 B (stub 3808 + app 449708); RAM .data+.bss 84652 B of 98304; pool 316792 B of 344064
+  ok    image 463660 B (stub 3808 + app 459852); RAM .data+.bss 87868 B of 98304; pool 316792 B of 344064
   ok    register access: hal/ only (src/, loader/ clean)
-size: .text 433272 B, .ram_text 3000 B, .c1_text 128 B (RAMTEXT 3128 of 24576), .data 13308 B, .bss 71340 B; XIP 449708 B of 573440 (78.4%), RAM 84648 B of 98304 (86.1%), POOL 316792 B of 344064 (92.1%), NOINIT 216 B of 15664 (1.4%)
-sector 0x4000 (the directory and the stub: constant while the stub is) sha256 0f33c838a23961d8; marker at 0x91fe0, body 449708 B
-app      /private/tmp/fm1-song-library/build/coralflower.bin  453516 B
+size: .text 443416 B, .ram_text 3000 B, .c1_text 128 B (RAMTEXT 3128 of 24576), .data 13308 B, .bss 74556 B; XIP 459852 B of 573440 (80.2%), RAM 87864 B of 98304 (89.4%), POOL 316792 B of 344064 (92.1%), NOINIT 216 B of 15664 (1.4%)
+sector 0x4000 (the directory and the stub: constant while the stub is) sha256 0f33c838a23961d8; marker at 0x91fe0, body 459852 B
+app      /private/tmp/fm1-song-library/build/coralflower.bin  463660 B
 loader   /private/tmp/fm1-song-library/build/loader/ota.bin  7157 B
 package  /private/tmp/fm1-song-library/build/coralflower.fwsc  610313 B, identity FM-1_930

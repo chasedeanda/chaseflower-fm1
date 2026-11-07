@@ -35,7 +35,6 @@
 #define CFK_NSLOT 8u
 #define CFK_NST (3u + CFK_NSLOT)
 #define CFK_OBJ(part) ((uint32_t)OBJ_CFEDIT0 + (part))
-#define CFL_CAPACITY 6u
 #define CFL_DOWN 0x80u
 #define CFL_MAGIC 0x314C4643u
 #define CFL_MAX_EV 500u
@@ -73,6 +72,9 @@
 #define CF_INV_AUTO (-1)
 #define CF_KEY_EXT 32
 #define CF_KEY_T0(k) fm1_in.note_t0[k]
+#define CF_LAB_CHOICES 3
+#define CF_LAB_H 
+#define CF_LAB_HISTORY 3
 #define CF_LIST_MAX 224u
 #define CF_LOOP_DEFAULT {0, 0, 0, 1}
 #define CF_LOOP_NBARS ((uint32_t)sizeof CF_LOOP_BARS)
@@ -208,6 +210,7 @@
 #define CR_PROF_SKIP() do { if (cr_dbg.prof_on) cr_dbg.mark = cr_prof_now(); } while (0)
 #define CR_PROF_START() do { if (cr_dbg.prof_on) cr_dbg.mark = cr_prof_now(); } while (0)
 #define CR_STAGE(n) (felucca_dbg.stage = (n))
+#define CSL_CAPACITY 6u
 #define CSL_MAGIC 0x314C5343u
 #define CTL 32
 #define CTL_LOG2 5

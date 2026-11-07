@@ -10,7 +10,7 @@ deferred. The native retained-screen migration builds on merged #65 at
 `abd37afab562555d4e8a58a66d18b488cce594f9`; see
 [native coverage, motion and evidence](native-pages/README.md). It preserves the
 current manual-take/latest-three policy. Numbered Songs, arranged recording,
-Learn and Next remain separate unfinished milestones. Recheck current main before
+Learn and Next now have a native engineering preview in `docs/CHORD-LAB.md`; physical validation and the documented remaining workflow limits are pending. Recheck current main before
 continuing; the original publication branch below is design history.
 
 ## Read first

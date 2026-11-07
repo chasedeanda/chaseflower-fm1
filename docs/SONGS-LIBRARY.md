@@ -3,7 +3,7 @@
 Development implementation for [issue #46](https://github.com/chasedeanda/chaseflower-fm1/issues/46).
 This is a firmware/emulator preview, with physical FM-1 checks still pending.
 Initial source base: `abd37afab562555d4e8a58a66d18b488cce594f9`; integrated with
-`09403c9` (native pages/motion) before final verification. Design reference:
+`09403c9` (native pages/motion) and `0d76e5b` (Chord Lab) before final verification. Design reference:
 `845325136418dd038c7ef81eaca01ec64ac5e61e`.
 
 ## Use it
@@ -94,12 +94,13 @@ The six-object storage simulation passed **6,230 power cuts**, **54,660 checks**
 and **1,500 operations** with no failures. Existing editor, HOME-bank, accompaniment,
 progression, Auto Harmony, recording, USB, backup and installer checks also passed.
 After merging the native-pages update, library/editor/recording/backup/accompaniment
-and USB suites passed again, including 874 native routes and identical Motion
+and USB suites passed again, including 877 native routes and identical Motion
 On/Off audio, six USB channels and MIDI at both sample rates.
 
-The integration preserves the upstream native page/motion renderer. Two upstream
-UI tag values are expressed as bit shifts so the register-address lint recognizes
-them as data; their values and motion behavior are unchanged.
+The integration preserves the upstream native page/motion renderer and Chord Lab.
+Songs uses CSL symbols to keep the Lab's existing CFL symbols independent. SAVE
+from Chord Lab cancels its audition and opens Songs; pending audition requests
+participate in the common quiet check. Existing semantic insertion and undo pass.
 
 [Linked report](../benchmarks/resources/song-library/report.md) and
 [dependency/build identity](../benchmarks/resources/song-library/identity.json)
@@ -107,13 +108,13 @@ record the working source and compiler options. Linked totals:
 
 | Region | Used | Remaining |
 | --- | ---: | ---: |
-| Ordinary RAM | 84,648 B | 13,656 B |
+| Ordinary RAM | 87,864 B | 10,440 B |
 | POOL | 316,792 B | 27,272 B |
-| XIP | 449,708 B | 123,732 B |
+| XIP | 459,852 B | 113,588 B |
 | RAM code | 3,128 B | 21,448 B |
 
-Against the integrated native-pages reference, this adds 768 B ordinary RAM, 1,388 B POOL,
-7,388 B XIP and 36 B RAM code. The comparison reference is recorded in the report;
+Against the integrated Chord Lab reference, this adds 800 B ordinary RAM, 1,388 B POOL,
+7,212 B XIP and 36 B RAM code. The comparison reference is recorded in the report;
 these linked headrooms do not measure runtime stack or audio timing. Physical
 edit → save → power-cycle → recall, TFT legibility, live HOLD/tails and USB recording
 under library use remain device-validation work. No hardware was flashed.

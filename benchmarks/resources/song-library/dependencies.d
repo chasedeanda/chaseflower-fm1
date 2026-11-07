@@ -30,11 +30,12 @@ coralflower.o: firmware/src/coralflower.c firmware/hal/fm1_time.h \
   firmware/src/cf_harmony.c firmware/src/cf_harmony.h \
   firmware/src/cf_chord.c firmware/src/cf_chord.h \
   firmware/src/cf_progression.c firmware/src/cf_progression.h \
-  firmware/src/cf_song.c firmware/src/cf_song.h \
-  firmware/src/cf_browser.c firmware/src/cf_browser.h \
-  firmware/src/cf_play.c firmware/src/cf_arp.c firmware/src/cf_out.c \
-  firmware/src/cr_midi.c firmware/src/cf_loop.c firmware/src/cf_seqd.c \
-  firmware/src/cf_seqp.c firmware/src/cf_drum.c firmware/src/cf_accomp.c \
+  firmware/src/cf_song.c firmware/src/cf_song.h firmware/src/cf_lab.c \
+  firmware/src/cf_lab.h firmware/src/cf_browser.c \
+  firmware/src/cf_browser.h firmware/src/cf_play.c firmware/src/cf_arp.c \
+  firmware/src/cf_out.c firmware/src/cr_midi.c firmware/src/cf_loop.c \
+  firmware/src/cf_seqd.c firmware/src/cf_seqp.c firmware/src/cf_drum.c \
+  firmware/src/cf_accomp.c firmware/src/cf_lab_audio.c \
   firmware/src/audio.c firmware/src/cf_diag_core.h firmware/src/panel.c \
   firmware/hal/fm1_flash.h firmware/hal/fm1_xip.h \
   firmware/hal/fm1_flash_ranges.h firmware/src/storage_hw.c \
@@ -54,12 +55,13 @@ coralflower.o: firmware/src/coralflower.c firmware/hal/fm1_time.h \
   firmware/src/cf_fxui.c firmware/src/cf_sequi.c \
   firmware/src/cf_record_store.c firmware/src/cf_dmui.c \
   firmware/src/cf_accomp_ui.c firmware/src/cf_browser_ui.c \
-  firmware/src/cf_draft_ui.c firmware/src/cf_library_ui.c \
-  firmware/src/cf_variation.c firmware/src/cf_home_banks.c \
-  firmware/src/cf_acc_ui.c firmware/src/cf_screens.c \
-  firmware/src/cf_views.c firmware/src/cf_motion.c \
-  firmware/src/cf_stage.c build/gen/cf_native_fonts.h \
-  firmware/src/cf_acc_screen.c firmware/src/cf_draft_screen.c \
+  firmware/src/cf_draft_ui.c firmware/src/cf_lab_ui.c \
+  firmware/src/cf_library_ui.c firmware/src/cf_variation.c \
+  firmware/src/cf_home_banks.c firmware/src/cf_acc_ui.c \
+  firmware/src/cf_screens.c firmware/src/cf_views.c \
+  firmware/src/cf_motion.c firmware/src/cf_stage.c \
+  build/gen/cf_native_fonts.h firmware/src/cf_acc_screen.c \
+  firmware/src/cf_draft_screen.c firmware/src/cf_lab_screen.c \
   firmware/src/cf_library_screen.c firmware/src/cf_seqv.c \
   firmware/src/cf_dmv.c firmware/src/cf_diag_view.c \
   firmware/src/cf_variation_view.c firmware/src/cf_native_pages.c \
