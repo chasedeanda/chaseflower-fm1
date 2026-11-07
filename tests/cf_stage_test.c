@@ -57,6 +57,13 @@ static void stage(void)
     /* The model and drawing are bounded on long altered/slash symbols. */
     static const char *names[]={"Bbmaj7","F#dim7/A","C7sus4","D#m7b5","Abadd9/Eb"};
     fb_unclip();for(unsigned i=0;i<NELEM(names);i++){fb_fill(FL_BG);cf_stage_chord(names[i],130,FL_INK);}
+    /* Native drawing must retain the shared KEY knob's sharp/flat glyphs. */
+    const char *encoded[]={"F\x80","B\x81"},*ascii[]={"F#","Bb"};
+    for(unsigned i=0;i<2;i++) {
+        fb_fill(FL_BG);cfn_text(&CFN_16,10,30,encoded[i],FL_INK);unsigned hash=cfs_fnv(fb,FB_W*FB_H);
+        fb_fill(FL_BG);cfn_text(&CFN_16,10,30,ascii[i],FL_INK);
+        CHECK(hash==cfs_fnv(fb,FB_W*FB_H) && cfn_width(&CFN_16,encoded[i])==cfn_width(&CFN_16,ascii[i]));
+    }
     /* Every retained screen still renders in Off, including factual countdowns. */
     for(unsigned screen=1;screen<SCR_N;screen++) {
         cu.scr=screen;
