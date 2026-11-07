@@ -329,14 +329,25 @@ static void browsing(void)
     memset(&cpb,0,sizeof cpb); cpb_load(); CHECK(cpb.mode==CPB_FAVORITES && cpb.n==2 && cf_browser_favorite(&cpb,72));
     for(unsigned obj=0;obj<OBJ_COUNT;obj++)if(obj!=OBJ_CFPREFS)
         for(unsigned copy=0;copy<2;copy++)CHECK(st_sector(obj,copy)!=st_sector(OBJ_CFPREFS,copy));
-    /* Short SAVE preserves sound save; long SAVE stars the visible active idea once. */
+    /* HOME SAVE opens Songs immediately, including a held press. It neither
+     * stars the factory source nor opens the separate sound-save editor. */
     cf_browser_order(&cpb,CPB_CATALOG,1); setup(0,CPA_OFF); cu.now=100;
-    fm1_in.buttons=1u<<panel.btn[B_SAVE]; ui_button(B_SAVE); cu.now+=701; cpb_hold_poll();
-    CHECK(cf_browser_favorite(&cpb,0) && cu.scr==SCR_HOME);
-    cu.now+=1000; cpb_hold_poll(); CHECK(cf_browser_favorite(&cpb,0));
-    fm1_in.buttons=0; cpb_hold_poll(); CHECK(cu.scr==SCR_HOME);
-    fm1_in.buttons=1u<<panel.btn[B_SAVE]; ui_button(B_SAVE); cu.now+=10;
-    fm1_in.buttons=0; cpb_hold_poll(); CHECK(cu.scr==SCR_SAVE);
+    cf_browser_star(&cpb,0,0);
+    fm1_in.buttons=1u<<panel.btn[B_SAVE]; ui_button(B_SAVE);
+    CHECK(cu.scr==SCR_SONGS && !cfl_tx.pending && !cf_browser_favorite(&cpb,0));
+    cu.now+=701; cpb_hold_poll();
+    CHECK(cu.scr==SCR_SONGS && !cf_browser_favorite(&cpb,0));
+    fm1_in.buttons=0; cpb_hold_poll(); CHECK(cu.scr==SCR_SONGS);
+    /* Browser tap/hold still manage the explicitly browsed favorite once. */
+    cu.scr=SCR_GLO;cu.page[SCR_GLO]=CF_GLO_BROWSE;
+    fm1_in.buttons=1u<<panel.btn[B_SAVE];ui_button(B_SAVE);cu.now+=10;
+    fm1_in.buttons=0;cpb_hold_poll();CHECK(cpb_page() && cf_browser_favorite(&cpb,0));
+    fm1_in.buttons=1u<<panel.btn[B_SAVE];ui_button(B_SAVE);cu.now+=701;cpb_hold_poll();
+    CHECK(cpb_page() && !cf_browser_favorite(&cpb,0));
+    cu.now+=1000;cpb_hold_poll();CHECK(!cf_browser_favorite(&cpb,0));
+    fm1_in.buttons=0;cpb_hold_poll();CHECK(cpb_page() && !cf_browser_favorite(&cpb,0));
+    /* Sound-only SAVE remains explicit on the sound editor. */
+    cu.scr=SCR_EDIT;cu.edit_part=0;ui_button(B_SAVE);CHECK(cu.scr==SCR_SAVE && cf_save_part()==0);
     cu.scr=SCR_HOME; fm1_in.buttons=1u<<panel.btn[B_GLO]; ui_button(B_GLO); cu.now+=701;
     cpb_hold_poll(); CHECK(cpb_page()); fm1_in.buttons=0; cpb_hold_poll();
     /* Direct jumps and shuffled browsing retain active setup until the bar. */
