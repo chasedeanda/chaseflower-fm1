@@ -31,3 +31,13 @@ btn PLAY
 wait 8000
 btn EDIT
 shot checkpoint
+btn REC
+wait 80
+shot count-in
+wait 2500
+shot recording
+hold REC down
+wait 1200
+hold REC up
+wait 100
+shot recording-cancelled

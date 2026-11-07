@@ -6,5 +6,5 @@ firmware/src/cf_fx_store.c:31:23: warning: suggest braces around initialization 
                       {}
 1 warning generated.
 size: 98 main-loop functions built for size (780 not in this build)
-size: .text 472304 B, .ram_text 2964 B, .c1_text 128 B (RAMTEXT 3092 of 24576), .data 13308 B, .bss 69740 B; XIP 488704 B of 573440 (85.2%), RAM 83048 B of 98304 (84.5%), POOL 315404 B of 344064 (91.7%), NOINIT 216 B of 15664 (1.4%)
-checks: [] ['.ram_text: 925 insns, no calls', 'image 492512 B (stub 3808 + app 488704); RAM .data+.bss 83052 B of 98304; pool 315404 B of 344064']
+size: .text 472784 B, .ram_text 2964 B, .c1_text 128 B (RAMTEXT 3092 of 24576), .data 13308 B, .bss 69756 B; XIP 489184 B of 573440 (85.3%), RAM 83064 B of 98304 (84.5%), POOL 315404 B of 344064 (91.7%), NOINIT 216 B of 15664 (1.4%)
+checks: [] ['.ram_text: 925 insns, no calls', 'image 492992 B (stub 3808 + app 489184); RAM .data+.bss 83068 B of 98304; pool 315404 B of 344064']

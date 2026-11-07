@@ -10,6 +10,7 @@ the host HAL; physical TFT, listening and input/USB margins remain pending.
 ![Voicing](voicing.png) ![Bass](bass.png)
 ![Phrase](phrase.png) ![Playing](editor-playing.png)
 ![Draft HOME](draft-home.png) ![Checkpoint](checkpoint.png)
+![Count-in](count-in.png) ![Recording](recording.png)
 
 ## Develop a phrase
 
@@ -56,14 +57,19 @@ uses the merged accompaniment behavior, including a silent expired gate on resum
 A changed phrase stays **RAM PENDING** until transport, queued musical input,
 physical keys, voices and audible effect tails are quiet. After the edit rests,
 the main loop writes the verified checkpoint; only success shows **CHECKPOINT**.
-A clean newly cloned phrase shows **FACTORY COPY**. SAVE from the editor or a
+A clean newly cloned phrase shows **FACTORY COPY**. A take started from the
+editor keeps this native workspace visible. Capture/count-in shows actual REC
+state; take replay shows REPLAY. Draft mutations remain read-only during either
+recording or fixed-take replay. PLAY explicitly returns to the draft after capture. SAVE from the editor or a
 Draft HOME requests a checkpoint using the same safety checks; it reports
 pending or write error honestly. It does not pretend to save a numbered Song.
 
 The next boot offers the protected copy as **RECOVERED**, without automatically
 playing it. EDIT on another factory source opens a conflict with **Return to
 draft** as the default. The other explicit choice discards only the old draft
-and begins a new copy. Browsing and returning HOME never replace a dirty draft.
+and begins a new copy. Count-in/capture shows the real red REC/bar indicator
+and temporarily locks draft mutations, preserving the take's timing. Recording
+feedback points to GLO → Legacy tools → Recordings. Browsing and returning HOME never replace a dirty draft.
 A failed/unknown checkpoint is kept unavailable for backup/recovery and is not
 automatically overwritten. Failed writes retain the current RAM content.
 
@@ -79,7 +85,7 @@ Older firmware skips the new object; retain a backup for later recovery.
 
 ## Evidence and remaining scope
 
-- **3,132 native-editor checks**: explicit focus and controls, unchanged originals,
+- **3,141 native-editor checks**: explicit focus and controls, unchanged originals,
   conflict/confirmation/undo, gates/ties, independent HOLD, same-clock queues,
   all 128 quarter durations in all six metres, sixteen-slot completion, all
   sixteen membership bits, final rail window and settled Motion Off caches.
@@ -92,9 +98,9 @@ Older firmware skips the new object; retain a backup for later recovery.
 - ARM syntax and real JieLi app link/check pass. The paired
   [device resource report](../../../../benchmarks/resources/native-editor/report.md)
   identifies exact committed inputs and measures static capacity, not CPU/audio
-  or input latency. Compared with merged #64 this adds **2,224 bytes ordinary
-  RAM, 15,304 bytes XIP and 40 bytes RAM code**. Headroom is 15,256 bytes ordinary
-  RAM, 28,660 bytes POOL and 84,736 bytes XIP. The accompaniment plan is 348 bytes; runtime plus its two
+  or input latency. Compared with merged #64 this adds **2,240 bytes ordinary
+  RAM, 15,784 bytes XIP and 40 bytes RAM code**. Headroom is 15,240 bytes ordinary
+  RAM, 28,660 bytes POOL and 84,256 bytes XIP. The accompaniment plan is 348 bytes; runtime plus its two
   bounded mailboxes is 1,088 bytes. POOL allocation is unchanged.
 
 Reproduce after header generation:
