@@ -564,6 +564,17 @@ static void cpa_glide(int d)
 
 }
 
+/* Shared by the Harmony settings page and the sixth HOME keyboard guide. */
+static void cf_harmony_turn(int k, int d)
+{
+    if (!d || k > 1) return;
+    if (k == 0) ch.mode = (uint8_t)clampi(ch.mode + d, 0, CF_H_AUTO);
+    else { cf_harmony_defaults(&ch); cf_message("Harmony defaults restored"); }
+    cf_send_config();
+    if (ch.mode == CF_H_AUTO && !cf_harmony_supported(cs.chord.scale, cs.chord.quantize))
+        cf_message("Auto needs a 7-note scale\nand Quantize Basic or Full");
+}
+
 #include "cf_home_banks.c"
 #include "cf_acc_ui.c"
 
@@ -726,12 +737,7 @@ static void ui_knob_turn(int k, int d)
             cvr_knob_turn(k, d);
             break;
         case CF_GLO_HARMONY:
-            if (!d || k > 1) break;
-            if (k == 0) ch.mode = (uint8_t)clampi(ch.mode + d, 0, CF_H_AUTO);
-            else { cf_harmony_defaults(&ch); cf_message("Harmony defaults restored"); }
-            cf_send_config();
-            if (ch.mode == CF_H_AUTO && !cf_harmony_supported(cs.chord.scale, cs.chord.quantize))
-                cf_message("Auto needs a 7-note scale\nand Quantize Basic or Full");
+            cf_harmony_turn(k, d);
             break;
         case 6:
             if(k==0) cfd.page=(uint8_t)clampi(cfd.page+d,0,DP_N-1);

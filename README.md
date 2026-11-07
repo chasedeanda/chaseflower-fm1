@@ -126,8 +126,9 @@ Manual/Harmony assignments.
 
 **Play a key** to hear it normally and see its full name and an explanation.
 For example, Sus2 replaces the third with a second; Add9 keeps the third and adds
-a ninth. The current chord and actual notes remain visible. **All four knobs do
-nothing on this page**; the space belongs to the guide. HOME returns to Core.
+a ninth. The current chord and actual notes remain visible. **K1 turns Harmony
+On/Off; K2 restores factory Harmony defaults** (including Off). K3/K4 are inactive.
+HOME returns to Core.
 
 [Native previews and controls](docs/KEYBOARD-LEARN.md). This source feature is not
 in the chase10 download; physical FM-1 review is pending.

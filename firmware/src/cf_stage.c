@@ -241,8 +241,7 @@ static void cf_stage_draw(void)
         cfn_fit(&CFN_12,10,208,m.learn.help,220,FL_INK2);
         cfn_fit(&CFN_12,10,222,m.learn.detail,220,FL_INK2);
         fb_hline(10,227,220,FL_BG3);
-        cfn_text(&CFN_12,10,239,"Knobs inactive",FL_INK2);
-        cfn_text(&CFN_12,151,239,"HOME: Core",FL_INK2);
+        cfn_fit(&CFN_12,10,239,"K1 Harmony / K2 Reset / HOME Core",220,FL_INK2);
         if(m.pending[0]) {
             fb_rect(0,67,240,17,FL_BG);cfn_fit(&CFN_12,10,80,m.pending,220,C_ACC(0));
         }

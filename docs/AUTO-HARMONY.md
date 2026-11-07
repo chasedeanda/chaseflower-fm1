@@ -14,6 +14,8 @@ Open **GLO → Harmony** and turn **K1 On**. Use **K1** for On/Off:
 **K2 Reset → Defaults** restores all Harmony modifier assignments, inversions and
 bass tones, and turns Harmony Off. Turn K2 either way to reset. K3 and K4 are unused.
 
+The same K1/K2 actions work on **HOME → Keyboard (6/6)** without leaving the guide.
+
 Off is the default. HOME retains Quantize, Key, Scale and Glide. Use Quantize
 Basic or Full and a seven-note scale.
 
