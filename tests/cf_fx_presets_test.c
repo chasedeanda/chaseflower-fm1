@@ -15,103 +15,71 @@ static void render(unsigned blocks)
 }
 static void controls(void)
 {
-    cf_set_t before = cs; cf_harmony_t harmony = ch;
+    cf_set_t before=cs;cf_harmony_t harmony=ch;
     CHECK(sizeof(cs)==188 && sizeof(sq_ev_t)==22);
-    cu.scr=SCR_HOME; ui_button(B_FX); CHECK(cu.scr==SCR_FX && fxpu.mode==FXP_EDIT);
-    ui_button(B_FX); CHECK(cu.scr==SCR_FX && fxpu.mode==FXP_BROWSE);
-    uint8_t sounds[sizeof cf_snd]; memcpy(sounds,cf_snd,sizeof sounds);
-    ui_select(1); CHECK(fxpu.pick==1 && !memcmp(&cs.fx,&FXP_FACTORY[1].fx,sizeof cs.fx));
+    cu.scr=SCR_HOME;ui_button(B_FX);CHECK(cu.scr==SCR_FX && fxpu.mode==FXP_BROWSE);
+    ui_algo(1);CHECK(fxpu.mode==FXP_EDIT);ui_algo(-1);CHECK(fxpu.mode==FXP_BROWSE);
+    uint8_t sounds[sizeof cf_snd];memcpy(sounds,cf_snd,sizeof sounds);
+    ui_select(1);CHECK(fxpu.pick==1 && !memcmp(&cs,&before,sizeof cs));
+    ui_button(B_SCL);CHECK(!memcmp(&cs.fx,&FXP_FACTORY[1].fx,sizeof cs.fx));
     CHECK(!memcmp(sounds,cf_snd,sizeof sounds));
-    before.fx=cs.fx; CHECK(!memcmp(&cs,&before,sizeof cs) && !memcmp(&ch,&harmony,sizeof ch));
-    CHECK(cfx_pending); render(40); CHECK(!cfx_pending && cfx_blend==32768);
+    before.fx=cs.fx;CHECK(!memcmp(&cs,&before,sizeof cs) && !memcmp(&ch,&harmony,sizeof ch));
+    CHECK(cfx_pending);render(40);CHECK(!cfx_pending && cfx_blend==32768);
     CHECK(!memcmp(&cfx_set,&cs.fx,sizeof cs.fx));
-    cf_fx_bypass(1); render(30); CHECK(cfx_bypass && !cfx_blend);
-    cf_fx_bypass(0); render(30); CHECK(!cfx_bypass && cfx_blend==32768);
-    ui_knob_turn(2,1); CHECK(memcmp(&cs.fx,&fxpu.prev,sizeof cs.fx)!=0); render(40);
-    CHECK(!memcmp(&cs.fx,&CFX_DEFAULT,sizeof cs.fx));
-    /* Selecting a new preset enables its chain, even after comparing with bypass.
-     * Previous restores the prior chain AND its bypass state. No synth patch is loaded. */
-    cf_fx_bypass(1); render(30);
-    ui_select(1); CHECK(fxpu.pick==2 && !cfx_bypass && cfx_pending);
-    render(40); CHECK(!memcmp(&cfx_set,&FXP_FACTORY[2].fx,sizeof cfx_set) && cfx_blend==32768);
-    ui_knob_turn(2,1); render(40);
-    CHECK(cfx_bypass && !cfx_blend && !memcmp(&cs.fx,&CFX_DEFAULT,sizeof cs.fx));
-    ui_knob_turn(0,1); render(40);
-    CHECK(!cfx_bypass && cfx_blend==32768 && !memcmp(&cfx_set,&FXP_FACTORY[2].fx,sizeof cfx_set));
-    CHECK(!memcmp(sounds,cf_snd,sizeof sounds));
-    /* Rapid recall keeps the final target and unrelated configuration. */
-    for(unsigned i=0;i<FXP_FACTORY_N;i++) { fxpu.pick=i; ui_knob_turn(0,1); render(1); }
-    render(40); CHECK(!cfx_pending && !memcmp(&cfx_set,&FXP_FACTORY[FXP_FACTORY_N-1].fx,sizeof cs.fx));
-    /* Catalog boundary: every factory is browsable; custom slots start after it. */
-    cf_fx_t last=cs.fx; cf_fx_bypass(1);
-    ui_select(1); CHECK(fxpu.pick==FXP_FACTORY_N && !fxp_pick());
-    CHECK(!memcmp(&last,&cs.fx,sizeof last) && cfx_bypass);
-    ui_knob_turn(0,1); CHECK(!memcmp(&last,&cs.fx,sizeof last) && cfx_bypass);
-    ui_select(1000); CHECK(fxpu.pick==FXP_FACTORY_N+FXP_SLOTS-1);
-    ui_select(-1000); CHECK(fxpu.pick==0 && fxp_pick()==&FXP_FACTORY[0]);
-    cf_fx_t previous=fxpu.prev;
-    ui_select(-1); CHECK(fxpu.pick==0 && !memcmp(&previous,&fxpu.prev,sizeof previous));
-    ui_button(B_SAVE); CHECK(fxpu.mode==FXP_MANAGE && !cu.save_hold);
-    fxpu.slot=3; fxpu.action=0; memset(fxpu.name,0,sizeof fxpu.name); strcpy(fxpu.name,"MY SPACE");
-    /* The actual held SAVE path. */
-    cu.now=100; ui_button(B_SAVE); CHECK(cu.save_hold==100);
-    fm1_in.buttons |= 1u << panel.btn[B_SAVE]; cu.now=1100; cf_save_poll();
-    fm1_in.buttons &= ~(1u << panel.btn[B_SAVE]);
+    cf_fx_bypass(1);render(30);CHECK(cfx_bypass && !cfx_blend);
+    cf_fx_bypass(0);render(30);CHECK(!cfx_bypass && cfx_blend==32768);
+    cf_fx_bypass(1);render(30);ui_select(1);
+    CHECK(fxpu.pick==2 && cfx_bypass && !cfx_pending);
+    ui_button(B_SCL);render(40);CHECK(!cfx_bypass && !memcmp(&cfx_set,&FXP_FACTORY[2].fx,sizeof cs.fx));
+    fxp_previous();render(40);CHECK(cfx_bypass && !memcmp(&cs.fx,&FXP_FACTORY[1].fx,sizeof cs.fx));
+    for(unsigned i=0;i<FXP_FACTORY_N;i++){fxpu.pick=i;ui_button(B_SCL);render(1);}
+    render(40);CHECK(!cfx_pending && !memcmp(&cfx_set,&FXP_FACTORY[FXP_FACTORY_N-1].fx,sizeof cs.fx));
+    cf_fx_t last=cs.fx;cf_fx_bypass(1);ui_select(1);
+    CHECK(fxpu.pick==FXP_FACTORY_N && !fxp_pick());
+    ui_button(B_SCL);CHECK(!memcmp(&last,&cs.fx,sizeof last) && cfx_bypass);cu.pop=0;
+    ui_select(1000);CHECK(fxpu.pick==FXP_FACTORY_N+FXP_SLOTS-1);
+    ui_select(-1000);CHECK(fxpu.pick==0 && fxp_pick()==&FXP_FACTORY[0]);
+    cf_fx_t previous=fxpu.prev;ui_select(-1);CHECK(fxpu.pick==0 && !memcmp(&previous,&fxpu.prev,sizeof previous));
+    ui_button(B_SAVE);CHECK(fxpu.mode==FXP_MANAGE && !cu.save_hold);
+    fxpu.slot=3;fxpu.action=0;memset(fxpu.name,0,sizeof fxpu.name);strcpy(fxpu.name,"MY SPACE");
+    cu.now=100;ui_button(B_SAVE);CHECK(cu.save_hold==100);
+    fm1_in.buttons|=1u<<panel.btn[B_SAVE];cu.now=1100;cf_save_poll();fm1_in.buttons&=~(1u<<panel.btn[B_SAVE]);
     CHECK(!cu.save_hold && fxpu.mode==FXP_BROWSE && fxp_bank.used==(1u<<3));
     CHECK(fxp_pending() && !strcmp(fxp_bank.slot[3].name,"MY SPACE"));
     CHECK(fxp_write(ST_NOERASE)==0 && !fxp_pending());
-    fxp_bank_t saved=fxp_bank; fxp_bank_init(&fxp_bank); fxp_load(); CHECK(!memcmp(&saved,&fxp_bank,sizeof saved));
-    fxpu.pick=FXP_FACTORY_N+3; cs.fx=CFX_DEFAULT; fxp_recall_selected(); render(40);
+    fxp_bank_t saved=fxp_bank;fxp_bank_init(&fxp_bank);fxp_load();CHECK(!memcmp(&saved,&fxp_bank,sizeof saved));
+    fxpu.pick=FXP_FACTORY_N+3;cs.fx=CFX_DEFAULT;fxp_recall_selected();render(40);
     CHECK(!memcmp(&cs.fx,&saved.slot[3].fx,sizeof cs.fx));
-    /* New never replaces an occupied user slot; no user operation edits a factory. */
-    fxp_manage_open(); fxpu.slot=3; fxpu.action=0; fxp_manage_do(); CHECK(!memcmp(&saved,&fxp_bank,sizeof saved));
-    fxpu.action=1; cs.fx=FXP_FACTORY[1].fx; fxp_manage_do(); CHECK(memcmp(&saved,&fxp_bank,sizeof saved)!=0);
-    fxp_manage_open(); fxpu.slot=3; fxpu.action=2; fxp_manage_do(); CHECK(!fxp_bank.used);
-    fxpu.mode=FXP_BROWSE; ui_button(B_FX); CHECK(cu.scr==SCR_HOME);
-    cu.scr=SCR_FX; fxpu.mode=FXP_MANAGE; cu.save_hold=10; ui_select(1); CHECK(!cu.save_hold);
-    cr_safe=1; CHECK(!fxp_save_slot(0,"SAFE")); cr_safe=0;
-    cfs_restore_lock=1; CHECK(!fxp_save_slot(0,"RESTORE")); cfs_restore_lock=0;
+    fxp_manage_open();fxpu.slot=3;fxpu.action=0;fxp_manage_do();CHECK(!memcmp(&saved,&fxp_bank,sizeof saved));
+    fxpu.action=1;cs.fx=FXP_FACTORY[1].fx;fxp_manage_do();CHECK(memcmp(&saved,&fxp_bank,sizeof saved)!=0);
+    fxp_manage_open();fxpu.slot=3;fxpu.action=2;fxp_manage_do();CHECK(!fxp_bank.used);
+    fxpu.mode=FXP_BROWSE;ui_button(B_FX);CHECK(cu.scr==SCR_HOME);
+    cu.scr=SCR_FX;fxpu.mode=FXP_MANAGE;cu.save_hold=10;ui_select(1);CHECK(!cu.save_hold);
+    cr_safe=1;CHECK(!fxp_save_slot(0,"SAFE"));cr_safe=0;
+    cfs_restore_lock=1;CHECK(!fxp_save_slot(0,"RESTORE"));cfs_restore_lock=0;
 }
 static void clear_controls(void)
 {
-    cu.scr=SCR_FX; fxpu.mode=FXP_BROWSE; fxpu.pick=0;
-    fxp_recall_selected(); render(40);
-    /* Feed the real reverb/delay, then clear while their tail is still sounding. */
-    cf_boot_go=0; cfb.on=0;
-    int32_t l[CTL],r[CTL]; unsigned tail=0;
-    for(unsigned b=0;b<400;b++) {
-        for(unsigned i=0;i<CTL;i++) l[i]=r[i]=b<64 ? 12000 : 0;
-        cf_fx_chain(l,r,CTL);
-        if(b>=336) for(unsigned i=0;i<CTL;i++) tail|=l[i]!=0 || r[i]!=0;
+    cu.scr=SCR_FX;fxpu.mode=FXP_BROWSE;fxpu.pick=9;cfx_recall();render(40);
+    cf_boot_go=0;cfb.on=0;int32_t l[CTL],r[CTL];unsigned tail=0;
+    for(unsigned b=0;b<400;b++){
+        for(unsigned i=0;i<CTL;i++)l[i]=r[i]=b<64?12000:0;
+        cf_fx_chain(l,r,CTL);if(b>=336)for(unsigned i=0;i<CTL;i++)tail|=l[i]!=0 || r[i]!=0;
     }
-    CHECK(tail);
-    cf_set_t before=cs;
-    uint8_t sounds[sizeof cf_snd]; memcpy(sounds,cf_snd,sizeof sounds);
-    unsigned queue=cf_evq_w;
-    ui_knob_turn(1,1); /* CLEAR FX */
-    CHECK(!cs.fx.on && cfx_bypass && cfx_pending);
-    before.fx.on=0;
+    CHECK(tail);cf_set_t before=cs;
+    uint8_t sounds[sizeof cf_snd];memcpy(sounds,cf_snd,sizeof sounds);unsigned queue=cf_evq_w;
+    fxp_manage_open();fxpu.action=3;fxp_manage_do();
+    CHECK(!cs.fx.on && cfx_bypass && cfx_pending);before.fx.on=0;
     CHECK(!memcmp(&before,&cs,sizeof cs) && !memcmp(sounds,cf_snd,sizeof sounds) && queue==cf_evq_w);
-    render(40); CHECK(!cfx_set.on && !cfx_pending && !cfx_blend);
-    for(unsigned i=0;i<CTL;i++) { l[i]=(int32_t)i*301-4000; r[i]=3000-(int32_t)i*173; }
-    cf_fx_chain(l,r,CTL);
-    for(unsigned i=0;i<CTL;i++) CHECK(l[i]==(int32_t)i*301-4000 && r[i]==3000-(int32_t)i*173);
-    /* Repeated clear must not overwrite the useful previous chain. */
-    ui_knob_turn(1,1); ui_knob_turn(2,1); render(40);
-    CHECK(!cfx_bypass && cfx_blend==32768 && !memcmp(&cs.fx,&FXP_FACTORY[0].fx,sizeof cs.fx));
-    ui_knob_turn(2,1); render(40); CHECK(!cs.fx.on && cfx_bypass && !cfx_blend);
-    CHECK(cf_settings_write(0)==1);
-    cs.fx=FXP_FACTORY[0].fx;
-    CHECK(cf_settings_load() && !cs.fx.on);
-    /* K1 and SELECT both leave No FX and immediately enable the chosen chain. */
-    ui_knob_turn(0,1); render(40);
-    CHECK(cs.fx.on && !cfx_bypass && cfx_blend==32768);
-    ui_knob_turn(1,1); render(40);
-    ui_select(1); render(40);
-    CHECK(!cfx_bypass && cfx_blend==32768 && !memcmp(&cs.fx,&FXP_FACTORY[1].fx,sizeof cs.fx));
-    ui_knob_turn(1,1); render(40);
-    ui_knob_turn(3,1); CHECK(fxpu.mode==FXP_EDIT);
-    ui_knob_turn(0,1); render(40);
+    render(40);CHECK(!cfx_set.on && !cfx_pending && !cfx_blend);
+    for(unsigned i=0;i<CTL;i++){l[i]=(int32_t)i*301-4000;r[i]=3000-(int32_t)i*173;}
+    cf_fx_chain(l,r,CTL);for(unsigned i=0;i<CTL;i++)CHECK(l[i]==(int32_t)i*301-4000 && r[i]==3000-(int32_t)i*173);
+    fxp_clear();fxp_manage_open();fxpu.action=4;fxp_manage_do();render(40);
+    CHECK(!cfx_bypass && cfx_blend==32768 && !memcmp(&cs.fx,&FXP_FACTORY[9].fx,sizeof cs.fx));
+    fxp_previous();render(40);CHECK(!cs.fx.on && cfx_bypass && !cfx_blend);
+    CHECK(cf_settings_write(0)==1);cs.fx=FXP_FACTORY[9].fx;CHECK(cf_settings_load() && !cs.fx.on);
+    fxpu.pick=9;ui_button(B_SCL);render(40);CHECK(cs.fx.on && !cfx_bypass && cfx_blend==32768);
+    fxp_clear();render(40);fxpu.mode=FXP_EDIT;ui_knob_turn(0,1);render(40);
     CHECK(!cfx_bypass && cfx_blend==32768 && cs.fx.on==(1u<<cfx_sel()));
 }
 static void storage(void)
@@ -173,7 +141,7 @@ static void render_presets(unsigned capture,unsigned hz,const char *path)
         if(b%500==0) {
             unsigned queue=cf_evq_w; cf_chord_out_t held=cfc.out;
             ui_select(b ? 1 : -1000); /* Same SELECT journey as the physical FX browser. */
-            CHECK(fxpu.pick==b/500 && !cfx_bypass);
+            CHECK(fxpu.pick==b/500);ui_button(B_SCL);CHECK(!cfx_bypass);
             CHECK(queue==cf_evq_w && !memcmp(&held,&cfc.out,sizeof held));
         }
         if(b%500==150) cf_fx_bypass(1);
@@ -215,7 +183,7 @@ static void shots(const char *dir)
 }
 static void catalog(void)
 {
-    CHECK(FXP_FACTORY_N>=30);
+    CHECK(FXP_FACTORY_N==13);
     for(unsigned i=0;i<FXP_FACTORY_N;i++) {
         CHECK(fxp_preset_valid(&FXP_FACTORY[i]));
         for(unsigned j=0;j<i;j++) {

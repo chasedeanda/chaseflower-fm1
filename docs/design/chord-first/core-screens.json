@@ -3904,7 +3904,7 @@
       "phase": 1,
       "kind": "params",
       "purpose": "Use the existing supported filter with its actual three musical controls.",
-      "entry": "FX opens the last effect; SELECT chooses this effect along the chain.",
+      "entry": "FX opens Macros; ALGORITHM right opens Individual, then SELECT this effect.",
       "fields": [
         {
           "label": "Effect",
@@ -3937,8 +3937,8 @@
         "Cutoff: 2.5 kHz",
         "Resonance: 20%"
       ],
-      "select": "Choose another effect along the visible chain; its parameter screen replaces this one.",
-      "algorithm": "Choose Detail / Order / Presets; Presets is phase 2.",
+      "select": "Choose an individual effect.",
+      "algorithm": "Switch Macros / Individual only; do not reorder or change audio.",
       "buttons": {
         "HOME": "Return to Progressions; keep transport and unsaved draft.",
         "PLAY": "Start the explicitly selected source or stop the running shared transport; external Receive follows the waiting/Start/Continue contract.",
@@ -3960,12 +3960,11 @@
         "Edits affect the current setup promptly and mark the song dirty; they do not silently overwrite an FX preset."
       ],
       "playerSteps": [
-        "Press FX.",
-        "Use SELECT to choose Filter.",
-        "Turn K1–K4 for the labelled controls."
+        "Press FX, then turn ALGORITHM right to Individual.",
+        "SELECT Filter.",
+        "Turn the numbered controls shown underneath the large readout."
       ],
       "related": [
-        "FX_ORDER",
         "FX_PRESETS",
         "IDEA_LIBRARY"
       ]
@@ -3977,7 +3976,7 @@
       "phase": 1,
       "kind": "params",
       "purpose": "Use the existing supported drive with its actual three musical controls.",
-      "entry": "FX opens the last effect; SELECT chooses this effect along the chain.",
+      "entry": "FX opens Macros; ALGORITHM right opens Individual, then SELECT this effect.",
       "fields": [
         {
           "label": "Effect",
@@ -4010,8 +4009,8 @@
         "Tone: 55%",
         "Level: 80%"
       ],
-      "select": "Choose another effect along the visible chain; its parameter screen replaces this one.",
-      "algorithm": "Choose Detail / Order / Presets; Presets is phase 2.",
+      "select": "Choose an individual effect.",
+      "algorithm": "Switch Macros / Individual only; do not reorder or change audio.",
       "buttons": {
         "HOME": "Return to Progressions; keep transport and unsaved draft.",
         "PLAY": "Start the explicitly selected source or stop the running shared transport; external Receive follows the waiting/Start/Continue contract.",
@@ -4033,12 +4032,11 @@
         "Edits affect the current setup promptly and mark the song dirty; they do not silently overwrite an FX preset."
       ],
       "playerSteps": [
-        "Press FX.",
-        "Use SELECT to choose Drive.",
-        "Turn K1–K4 for the labelled controls."
+        "Press FX, then turn ALGORITHM right to Individual.",
+        "SELECT Drive.",
+        "Turn the numbered controls shown underneath the large readout."
       ],
       "related": [
-        "FX_ORDER",
         "FX_PRESETS",
         "IDEA_LIBRARY"
       ]
@@ -4050,7 +4048,7 @@
       "phase": 1,
       "kind": "params",
       "purpose": "Use the existing supported chorus with its actual three musical controls.",
-      "entry": "FX opens the last effect; SELECT chooses this effect along the chain.",
+      "entry": "FX opens Macros; ALGORITHM right opens Individual, then SELECT this effect.",
       "fields": [
         {
           "label": "Effect",
@@ -4083,8 +4081,8 @@
         "Depth: 28%",
         "Mix: 18%"
       ],
-      "select": "Choose another effect along the visible chain; its parameter screen replaces this one.",
-      "algorithm": "Choose Detail / Order / Presets; Presets is phase 2.",
+      "select": "Choose an individual effect.",
+      "algorithm": "Switch Macros / Individual only; do not reorder or change audio.",
       "buttons": {
         "HOME": "Return to Progressions; keep transport and unsaved draft.",
         "PLAY": "Start the explicitly selected source or stop the running shared transport; external Receive follows the waiting/Start/Continue contract.",
@@ -4106,12 +4104,11 @@
         "Edits affect the current setup promptly and mark the song dirty; they do not silently overwrite an FX preset."
       ],
       "playerSteps": [
-        "Press FX.",
-        "Use SELECT to choose Chorus.",
-        "Turn K1–K4 for the labelled controls."
+        "Press FX, then turn ALGORITHM right to Individual.",
+        "SELECT Chorus.",
+        "Turn the numbered controls shown underneath the large readout."
       ],
       "related": [
-        "FX_ORDER",
         "FX_PRESETS",
         "IDEA_LIBRARY"
       ]
@@ -4123,7 +4120,7 @@
       "phase": 1,
       "kind": "params",
       "purpose": "Use the existing supported phaser with its actual three musical controls.",
-      "entry": "FX opens the last effect; SELECT chooses this effect along the chain.",
+      "entry": "FX opens Macros; ALGORITHM right opens Individual, then SELECT this effect.",
       "fields": [
         {
           "label": "Effect",
@@ -4156,8 +4153,8 @@
         "Depth: 22%",
         "Mix: 12%"
       ],
-      "select": "Choose another effect along the visible chain; its parameter screen replaces this one.",
-      "algorithm": "Choose Detail / Order / Presets; Presets is phase 2.",
+      "select": "Choose an individual effect.",
+      "algorithm": "Switch Macros / Individual only; do not reorder or change audio.",
       "buttons": {
         "HOME": "Return to Progressions; keep transport and unsaved draft.",
         "PLAY": "Start the explicitly selected source or stop the running shared transport; external Receive follows the waiting/Start/Continue contract.",
@@ -4179,12 +4176,11 @@
         "Edits affect the current setup promptly and mark the song dirty; they do not silently overwrite an FX preset."
       ],
       "playerSteps": [
-        "Press FX.",
-        "Use SELECT to choose Phaser.",
-        "Turn K1–K4 for the labelled controls."
+        "Press FX, then turn ALGORITHM right to Individual.",
+        "SELECT Phaser.",
+        "Turn the numbered controls shown underneath the large readout."
       ],
       "related": [
-        "FX_ORDER",
         "FX_PRESETS",
         "IDEA_LIBRARY"
       ]
@@ -4196,7 +4192,7 @@
       "phase": 1,
       "kind": "params",
       "purpose": "Use the existing supported delay with its actual three musical controls.",
-      "entry": "FX opens the last effect; SELECT chooses this effect along the chain.",
+      "entry": "FX opens Macros; ALGORITHM right opens Individual, then SELECT this effect.",
       "fields": [
         {
           "label": "Effect",
@@ -4229,8 +4225,8 @@
         "Feedback: 30%",
         "Mix: 18%"
       ],
-      "select": "Choose another effect along the visible chain; its parameter screen replaces this one.",
-      "algorithm": "Choose Detail / Order / Presets; Presets is phase 2.",
+      "select": "Choose an individual effect.",
+      "algorithm": "Switch Macros / Individual only; do not reorder or change audio.",
       "buttons": {
         "HOME": "Return to Progressions; keep transport and unsaved draft.",
         "PLAY": "Start the explicitly selected source or stop the running shared transport; external Receive follows the waiting/Start/Continue contract.",
@@ -4252,12 +4248,11 @@
         "Edits affect the current setup promptly and mark the song dirty; they do not silently overwrite an FX preset."
       ],
       "playerSteps": [
-        "Press FX.",
-        "Use SELECT to choose Delay.",
-        "Turn K1–K4 for the labelled controls."
+        "Press FX, then turn ALGORITHM right to Individual.",
+        "SELECT Delay.",
+        "Turn the numbered controls shown underneath the large readout."
       ],
       "related": [
-        "FX_ORDER",
         "FX_PRESETS",
         "IDEA_LIBRARY"
       ]
@@ -4269,7 +4264,7 @@
       "phase": 1,
       "kind": "params",
       "purpose": "Use the existing supported reverb with its actual three musical controls.",
-      "entry": "FX opens the last effect; SELECT chooses this effect along the chain.",
+      "entry": "FX opens Macros; ALGORITHM right opens Individual, then SELECT this effect.",
       "fields": [
         {
           "label": "Effect",
@@ -4302,8 +4297,8 @@
         "Decay: 62%",
         "Mix: 24%"
       ],
-      "select": "Choose another effect along the visible chain; its parameter screen replaces this one.",
-      "algorithm": "Choose Detail / Order / Presets; Presets is phase 2.",
+      "select": "Choose an individual effect.",
+      "algorithm": "Switch Macros / Individual only; do not reorder or change audio.",
       "buttons": {
         "HOME": "Return to Progressions; keep transport and unsaved draft.",
         "PLAY": "Start the explicitly selected source or stop the running shared transport; external Receive follows the waiting/Start/Continue contract.",
@@ -4325,117 +4320,56 @@
         "Edits affect the current setup promptly and mark the song dirty; they do not silently overwrite an FX preset."
       ],
       "playerSteps": [
-        "Press FX.",
-        "Use SELECT to choose Reverb.",
-        "Turn K1–K4 for the labelled controls."
+        "Press FX, then turn ALGORITHM right to Individual.",
+        "SELECT Reverb.",
+        "Turn the numbered controls shown underneath the large readout."
       ],
       "related": [
-        "FX_ORDER",
         "FX_PRESETS",
         "IDEA_LIBRARY"
       ]
     },
     {
-      "id": "FX_ORDER",
-      "group": "Effects",
-      "title": "Effect Order",
-      "phase": 1,
-      "kind": "timeline",
-      "purpose": "Retain reorderable six-effect routing under a consistent tab-navigation rule.",
-      "entry": "FX, ALGORITHM to Order.",
-      "fields": [
-        {
-          "label": "Chain",
-          "value": "Filter → Drive → Chorus → Phaser → Delay → Reverb"
-        },
-        {
-          "label": "Selected",
-          "value": "Delay · position 5"
-        }
-      ],
-      "knobs": [
-        "Move selected effect: one position per detent",
-        "Selected effect: Off / On",
-        "—",
-        "—"
-      ],
-      "select": "Select an effect in the chain.",
-      "algorithm": "Choose Detail / Order / Presets; Presets is phase 2.",
-      "buttons": {
-        "HOME": "Return to Progressions; keep transport and unsaved draft.",
-        "PLAY": "Start the explicitly selected source or stop the running shared transport; external Receive follows the waiting/Start/Continue contract.",
-        "REC": "From Progressions: stopped → one-bar count-in; running → arm next bar. During capture → finish at next bar. Every capture creates a new Song copy.",
-        "EDIT": "Open the explicit progression-slot focus; otherwise a unique match, otherwise slot 1.",
-        "SEL": "Open the selected effect's Detail screen.",
-        "SAVE": "Open Songs library; preserve the loaded source, draft and transport.",
-        "SEQ": "Open Accompaniment on Groove.",
-        "ARP": "Open Motion on Arpeggio.",
-        "ENV": "Open Envelope.",
-        "LFO": "Open Bass on Sound.",
-        "FX": "Return HOME.",
-        "GLO": "Open System; Sound → Presets / Advanced remain explicit destinations."
-      },
-      "exit": "FX/HOME or Detail/Presets tab.",
-      "states": [
-        "ALGORITHM changes tabs, rather than secretly moving an effect as in the old firmware.",
-        "K1 is the explicit reorder control; SELECT remains selected effect.",
-        "Reordering updates the current song and is included in its save."
-      ],
-      "playerSteps": [
-        "Choose Order with ALGORITHM.",
-        "Select an effect, then turn K1 to move it."
-      ],
-      "related": [
-        "FX_FILTER",
-        "FX_DRIVE",
-        "FX_CHORUS",
-        "FX_PHASER",
-        "FX_DELAY",
-        "FX_REVERB",
-        "FX_PRESETS"
-      ]
-    },
-    {
       "id": "FX_PRESETS",
       "group": "Effects",
-      "title": "Effect Presets",
-      "phase": 2,
-      "kind": "picker",
-      "purpose": "Recall a complete configuration of the existing six effects without treating it as a whole song.",
-      "entry": "FX, ALGORITHM to Presets.",
+      "title": "Effects — Macros",
+      "phase": 1,
+      "kind": "params",
+      "purpose": "Browse thirteen distinct factory recipes and shape them with four macros above one combined response readout.",
+      "entry": "Press FX.",
       "fields": [
         {
-          "label": "Preset",
-          "value": "Current chain"
+          "label": "Loaded",
+          "value": "Deep Space"
+        },
+        {
+          "label": "Browse",
+          "value": "Deep Space · 10 / 13"
         },
         {
           "label": "State",
-          "value": "Edited"
+          "value": "Loaded / Edited / Custom"
         },
         {
-          "label": "Scope",
-          "value": "Six supported effects and order"
-        },
-        {
-          "label": "Action",
-          "value": "Recall"
+          "label": "Readout",
+          "value": "One combined response field"
         }
       ],
       "knobs": [
-        "Preset: current / factory / user FX configurations",
-        "—",
-        "—",
-        "Action: Recall / Save As New"
+        "Space: reverb decay and mix",
+        "Echo: delay feedback and mix",
+        "Motion: chorus/phaser depth and mix",
+        "Warmth: filter cutoff, drive, tone and output compensation"
       ],
-      "select": "Browse names without changing sound; SEL explicitly recalls the highlighted effect preset.",
-      "algorithm": "Choose Detail / Order / Presets; Presets is phase 2.",
+      "select": "Browse without changing sound; SEL loads the highlighted factory or saved user chain.",
+      "algorithm": "Switch Macros / Individual only. There is no Order tab.",
       "buttons": {
         "HOME": "Return to Progressions; keep transport and unsaved draft.",
         "PLAY": "Start the explicitly selected source or stop the running shared transport; external Receive follows the waiting/Start/Continue contract.",
         "REC": "From Progressions: stopped → one-bar count-in; running → arm next bar. During capture → finish at next bar. Every capture creates a new Song copy.",
         "EDIT": "Open the explicit progression-slot focus; otherwise a unique match, otherwise slot 1.",
-        "SEL": "Recall applies the highlighted chain and stores Undo; Save As New opens FX_SAVE.",
-        "SAVE": "Open Songs library; preserve the loaded source, draft and transport.",
+        "SEL": "Load the highlighted chain on Macros; no recall action on Individual.",
+        "SAVE": "Open the existing FX-only user-slot management; hold SAVE one second to commit the visible action.",
         "SEQ": "Open Accompaniment on Groove.",
         "ARP": "Open Motion on Arpeggio.",
         "ENV": "Open Envelope.",
@@ -4445,18 +4379,18 @@
       },
       "exit": "FX/HOME or another FX tab.",
       "states": [
-        "Factory configurations use only Filter, Drive, Chorus, Phaser, Delay and Reverb.",
-        "Recall leaves harmony, key, groove, tempo and sound patches intact.",
-        "Save As New must show FX preset as the target; its exact shared naming/confirmation controls match SOUND_SAVE.",
-        "Capacity/write errors preserve the edited current chain."
+        "Numbered knob assignments stay visible. SELECT alone browses; SEL explicitly loads.",
+        "One shared drawing combines tail bars, repeat marks and modulation waves. Filter/drive use the same large field.",
+        "Motion uses current post-MASTER activity and respects Motion On/Off; it settles at silence.",
+        "The approved thirteen replace the similar forty factory chains. Sixteen existing user slots and wire formats remain intact.",
+        "Individual edits re-anchor macros to the actual chain; view changes do not recall a recipe."
       ],
       "playerSteps": [
-        "Browse an FX configuration.",
-        "Press SEL to recall it.",
-        "Save the whole song separately when ready."
+        "Press FX; SELECT a preset, then SEL to load.",
+        "Shape Space / Echo / Motion / Warmth.",
+        "Turn ALGORITHM right for Individual; turn left to return."
       ],
       "related": [
-        "FX_ORDER",
         "FX_REVERB",
         "IDEA_LIBRARY",
         "SOUND_SAVE",
@@ -4464,13 +4398,57 @@
       ],
       "items": [
         {
-          "label": "Current chain",
-          "value": "Edited six-effect setup",
+          "label": "Clean",
+          "value": "Unprocessed reference"
+        },
+        {
+          "label": "Velvet",
+          "value": "Dark, rounded and close"
+        },
+        {
+          "label": "Bite",
+          "value": "Audible grit and forward harmonics"
+        },
+        {
+          "label": "Slap",
+          "value": "A short, separate double behind each attack"
+        },
+        {
+          "label": "Ping Pong",
+          "value": "Clearly separated repeats across the stereo field"
+        },
+        {
+          "label": "Wide Drift",
+          "value": "Slow chorus movement with no ambient wash"
+        },
+        {
+          "label": "Phase Sweep",
+          "value": "Pronounced moving notches and a hollow sweep"
+        },
+        {
+          "label": "Radio",
+          "value": "Narrow midrange focus and a boxy edge"
+        },
+        {
+          "label": "Silver Plate",
+          "value": "Bright dense reflections; crisp attacks remain audible"
+        },
+        {
+          "label": "Deep Space",
+          "value": "Long diffuse hall with soft echoes and chorus",
           "selected": true
         },
         {
-          "label": "Init",
-          "value": "All six effects bypassed"
+          "label": "Orbit",
+          "value": "Liquid sweeping ambience: deep phaser and slow chorus into a bright long plate, without echoes"
+        },
+        {
+          "label": "Phone LP",
+          "value": "Exaggerated muffled handset: resonant low-pass near 400 Hz, stronger drive and the darkest speaker tone; dry and close"
+        },
+        {
+          "label": "Phone HP",
+          "value": "Exaggerated thin raspy handset: resonant high-pass near 1.6 kHz, maximum drive and a brighter speaker tone; dry and close"
         }
       ]
     },
@@ -6567,9 +6545,9 @@
           "result": "K1 is On, K2 Type, K3 Decay, K4 Mix."
         },
         {
-          "screen": "FX_ORDER",
-          "action": "ALGORITHM to Order; SELECT an effect and K1 to move it.",
-          "result": "Routing changes explicitly; ALGORITHM remains tab navigation."
+          "screen": "FX_PRESETS",
+          "action": "Turn ALGORITHM left to Macros.",
+          "result": "Individual edits remain audible; the four macro knobs start from those values."
         },
         {
           "screen": "HOME_STAGE",
@@ -6586,8 +6564,8 @@
       "steps": [
         {
           "screen": "FX_PRESETS",
-          "action": "Choose Presets tab; browse and press SEL to recall.",
-          "result": "Only supported effect chain parameters/order/bypass change; Undo is available."
+          "action": "Press FX; SELECT browses and SEL explicitly loads.",
+          "result": "Only the effects change; harmony, sounds and transport remain intact."
         },
         {
           "screen": "FX_SAVE",

@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: GPL-3.0-only
- * FX -> editor, FX again -> browser, FX again -> HOME. SELECT auditions each
- * preset immediately. SAVE opens management; a further one-second hold commits. */
+ * FX opens Macros; ALGORITHM opens Individual. SELECT only browses; SEL recalls.
+ * SAVE retains explicit user management; a further one-second hold commits. */
 #include "cf_fx_factory.c"
 enum { FXP_EDIT, FXP_BROWSE, FXP_MANAGE };
 static struct {
@@ -38,7 +38,7 @@ static void fxp_select(int d)
     uint8_t pick = (uint8_t)clampi(fxpu.pick + d, 0, FXP_FACTORY_N + FXP_SLOTS - 1);
     if (pick == fxpu.pick) return;
     fxpu.pick = pick;
-    fxp_recall(0); /* Keep the browser visible while turning; empty slots leave audio alone. */
+    /* Browsing is presentation-only; SEL explicitly recalls. */
 }
 static void fxp_previous(void)
 {
@@ -77,6 +77,10 @@ static void fxp_manage_do(void)
 {
     int ok;
     char name[FXP_NAME];
+    if (fxpu.action >= 3) {
+        if (fxpu.action == 3) fxp_clear(); else fxp_previous();
+        fxpu.mode = FXP_BROWSE; return;
+    }
     if (fxp_protected || cfs_restore_lock || cr_safe) { cf_message("FX bank is protected"); return; }
     if (!fxpu.action && (fxp_bank.used & (1u << fxpu.slot))) { cf_message("New: choose an empty slot"); return; }
     if (fxpu.action && !(fxp_bank.used & (1u << fxpu.slot))) { cf_message("Choose a saved user slot"); return; }
@@ -96,7 +100,7 @@ static void fxp_knob_info(int k, cf_knob_t *o)
         kfmt(o->val, 14, "Turn +");
     } else {
         static const char *const N[4] = {"SLOT", "LETTER", "CHAR", "ACTION"};
-        static const char *const A[3] = {"New", "Replace", "Delete"};
+        static const char *const A[5] = {"New", "Replace", "Delete", "No FX", "Previous"};
         kfmt(o->name, 12, N[k]);
         if (k == 0) kint(o->val, fxpu.slot + 1, "");
         else if (k == 1) kint(o->val, fxpu.cursor + 1, "");
@@ -124,6 +128,6 @@ static void fxp_knob_turn(int k, int d)
             for (unsigned j = 0; j < fxpu.cursor; j++) if (!fxpu.name[j]) fxpu.name[j] = ' ';
             fxpu.name[fxpu.cursor] = CF_NAME_CHARS[wrapi((int)i + d, sizeof CF_NAME_CHARS - 1)];
         }
-        if (k == 3) fxpu.action = (uint8_t)clampi(fxpu.action + d, 0, 2);
+        if (k == 3) fxpu.action = (uint8_t)clampi(fxpu.action + d, 0, 4);
     }
 }

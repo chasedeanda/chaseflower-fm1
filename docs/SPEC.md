@@ -133,9 +133,10 @@ EDIT mode). SELECT = page.
 ## 7. FX — effects
 
 - The effect set and its parameters: copy the stock FM-1 firmware (Filter, Reverb, Delay, Distortion,
-  Chorus, Phaser; reorderable chain).
-- SELECT = effect select, PRESETS = settings page, ALGORITHM = move the effect in the chain;
-  K1–K4 = the parameters of the effect/page.
+  Chorus, Phaser; fixed factory chain).
+- FX opens Macros: SELECT browses, SEL loads, K1–K4 shape Space / Echo / Motion / Warmth.
+  ALGORITHM switches Macros / Individual; Individual uses SELECT to choose an effect.
+  Both use one large response readout with numbered knob labels underneath.
 - Screen, its UX and layout: ours to design.
 
 ## 8. SAVE

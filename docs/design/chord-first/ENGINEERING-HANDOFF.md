@@ -6,7 +6,7 @@ Engineering preview: native HOME uses the approved Devil/Ember or Cat/Plum masco
 
 Start with the [implementation plan](IMPLEMENTATION-PLAN.md), [historical adaptive study](instrument-teal/prototype.html) and [motion specification](MOTION-SPEC.md).
 
-Design version 0.4, 2026-11-07. 207 screen/state definitions and 39 workflows share canonical JSON with the board and player guide.
+Design version 0.4, 2026-11-07. 206 screen/state definitions and 39 workflows share canonical JSON with the board and player guide.
 
 ## Product contracts
 
@@ -2703,7 +2703,7 @@ Delete only a named saved user sound through a visible confirmation.
 
 Use the existing supported filter with its actual three musical controls.
 
-**Entry:** FX opens the last effect; SELECT chooses this effect along the chain.
+**Entry:** FX opens Macros; ALGORITHM right opens Individual, then SELECT this effect.
 **Exit:** FX/HOME returns home; ALGORITHM changes FX tab.
 
 | Visible field | Reference value/state |
@@ -2717,8 +2717,8 @@ Use the existing supported filter with its actual three musical controls.
 
 | Input | Action |
 | --- | --- |
-| SELECT | Choose another effect along the visible chain; its parameter screen replaces this one. |
-| ALGORITHM | Choose Detail / Order / Presets; Presets is phase 2. |
+| SELECT | Choose an individual effect. |
+| ALGORITHM | Switch Macros / Individual only; do not reorder or change audio. |
 | K1 | On: Off / On |
 | K2 | Type: Low pass / Band pass / High pass |
 | K3 | Cutoff: 2.5 kHz |
@@ -2742,11 +2742,11 @@ Use the existing supported filter with its actual three musical controls.
 - Edits affect the current setup promptly and mark the song dirty; they do not silently overwrite an FX preset.
 
 **Player instructions:**
-1. Press FX.
-2. Use SELECT to choose Filter.
-3. Turn K1–K4 for the labelled controls.
+1. Press FX, then turn ALGORITHM right to Individual.
+2. SELECT Filter.
+3. Turn the numbered controls shown underneath the large readout.
 
-**Related:** FX_ORDER, FX_PRESETS, IDEA_LIBRARY
+**Related:** FX_PRESETS, IDEA_LIBRARY
 
 ### FX_DRIVE — Drive
 
@@ -2754,7 +2754,7 @@ Use the existing supported filter with its actual three musical controls.
 
 Use the existing supported drive with its actual three musical controls.
 
-**Entry:** FX opens the last effect; SELECT chooses this effect along the chain.
+**Entry:** FX opens Macros; ALGORITHM right opens Individual, then SELECT this effect.
 **Exit:** FX/HOME returns home; ALGORITHM changes FX tab.
 
 | Visible field | Reference value/state |
@@ -2768,8 +2768,8 @@ Use the existing supported drive with its actual three musical controls.
 
 | Input | Action |
 | --- | --- |
-| SELECT | Choose another effect along the visible chain; its parameter screen replaces this one. |
-| ALGORITHM | Choose Detail / Order / Presets; Presets is phase 2. |
+| SELECT | Choose an individual effect. |
+| ALGORITHM | Switch Macros / Individual only; do not reorder or change audio. |
 | K1 | On: Off / On |
 | K2 | Drive: 18% |
 | K3 | Tone: 55% |
@@ -2793,11 +2793,11 @@ Use the existing supported drive with its actual three musical controls.
 - Edits affect the current setup promptly and mark the song dirty; they do not silently overwrite an FX preset.
 
 **Player instructions:**
-1. Press FX.
-2. Use SELECT to choose Drive.
-3. Turn K1–K4 for the labelled controls.
+1. Press FX, then turn ALGORITHM right to Individual.
+2. SELECT Drive.
+3. Turn the numbered controls shown underneath the large readout.
 
-**Related:** FX_ORDER, FX_PRESETS, IDEA_LIBRARY
+**Related:** FX_PRESETS, IDEA_LIBRARY
 
 ### FX_CHORUS — Chorus
 
@@ -2805,7 +2805,7 @@ Use the existing supported drive with its actual three musical controls.
 
 Use the existing supported chorus with its actual three musical controls.
 
-**Entry:** FX opens the last effect; SELECT chooses this effect along the chain.
+**Entry:** FX opens Macros; ALGORITHM right opens Individual, then SELECT this effect.
 **Exit:** FX/HOME returns home; ALGORITHM changes FX tab.
 
 | Visible field | Reference value/state |
@@ -2819,8 +2819,8 @@ Use the existing supported chorus with its actual three musical controls.
 
 | Input | Action |
 | --- | --- |
-| SELECT | Choose another effect along the visible chain; its parameter screen replaces this one. |
-| ALGORITHM | Choose Detail / Order / Presets; Presets is phase 2. |
+| SELECT | Choose an individual effect. |
+| ALGORITHM | Switch Macros / Individual only; do not reorder or change audio. |
 | K1 | On: Off / On |
 | K2 | Rate: 0.35 Hz |
 | K3 | Depth: 28% |
@@ -2844,11 +2844,11 @@ Use the existing supported chorus with its actual three musical controls.
 - Edits affect the current setup promptly and mark the song dirty; they do not silently overwrite an FX preset.
 
 **Player instructions:**
-1. Press FX.
-2. Use SELECT to choose Chorus.
-3. Turn K1–K4 for the labelled controls.
+1. Press FX, then turn ALGORITHM right to Individual.
+2. SELECT Chorus.
+3. Turn the numbered controls shown underneath the large readout.
 
-**Related:** FX_ORDER, FX_PRESETS, IDEA_LIBRARY
+**Related:** FX_PRESETS, IDEA_LIBRARY
 
 ### FX_PHASER — Phaser
 
@@ -2856,7 +2856,7 @@ Use the existing supported chorus with its actual three musical controls.
 
 Use the existing supported phaser with its actual three musical controls.
 
-**Entry:** FX opens the last effect; SELECT chooses this effect along the chain.
+**Entry:** FX opens Macros; ALGORITHM right opens Individual, then SELECT this effect.
 **Exit:** FX/HOME returns home; ALGORITHM changes FX tab.
 
 | Visible field | Reference value/state |
@@ -2870,8 +2870,8 @@ Use the existing supported phaser with its actual three musical controls.
 
 | Input | Action |
 | --- | --- |
-| SELECT | Choose another effect along the visible chain; its parameter screen replaces this one. |
-| ALGORITHM | Choose Detail / Order / Presets; Presets is phase 2. |
+| SELECT | Choose an individual effect. |
+| ALGORITHM | Switch Macros / Individual only; do not reorder or change audio. |
 | K1 | On: Off / On |
 | K2 | Rate: 0.18 Hz |
 | K3 | Depth: 22% |
@@ -2895,11 +2895,11 @@ Use the existing supported phaser with its actual three musical controls.
 - Edits affect the current setup promptly and mark the song dirty; they do not silently overwrite an FX preset.
 
 **Player instructions:**
-1. Press FX.
-2. Use SELECT to choose Phaser.
-3. Turn K1–K4 for the labelled controls.
+1. Press FX, then turn ALGORITHM right to Individual.
+2. SELECT Phaser.
+3. Turn the numbered controls shown underneath the large readout.
 
-**Related:** FX_ORDER, FX_PRESETS, IDEA_LIBRARY
+**Related:** FX_PRESETS, IDEA_LIBRARY
 
 ### FX_DELAY — Delay
 
@@ -2907,7 +2907,7 @@ Use the existing supported phaser with its actual three musical controls.
 
 Use the existing supported delay with its actual three musical controls.
 
-**Entry:** FX opens the last effect; SELECT chooses this effect along the chain.
+**Entry:** FX opens Macros; ALGORITHM right opens Individual, then SELECT this effect.
 **Exit:** FX/HOME returns home; ALGORITHM changes FX tab.
 
 | Visible field | Reference value/state |
@@ -2921,8 +2921,8 @@ Use the existing supported delay with its actual three musical controls.
 
 | Input | Action |
 | --- | --- |
-| SELECT | Choose another effect along the visible chain; its parameter screen replaces this one. |
-| ALGORITHM | Choose Detail / Order / Presets; Presets is phase 2. |
+| SELECT | Choose an individual effect. |
+| ALGORITHM | Switch Macros / Individual only; do not reorder or change audio. |
 | K1 | On: Off / On |
 | K2 | Time: 420 ms |
 | K3 | Feedback: 30% |
@@ -2946,11 +2946,11 @@ Use the existing supported delay with its actual three musical controls.
 - Edits affect the current setup promptly and mark the song dirty; they do not silently overwrite an FX preset.
 
 **Player instructions:**
-1. Press FX.
-2. Use SELECT to choose Delay.
-3. Turn K1–K4 for the labelled controls.
+1. Press FX, then turn ALGORITHM right to Individual.
+2. SELECT Delay.
+3. Turn the numbered controls shown underneath the large readout.
 
-**Related:** FX_ORDER, FX_PRESETS, IDEA_LIBRARY
+**Related:** FX_PRESETS, IDEA_LIBRARY
 
 ### FX_REVERB — Reverb
 
@@ -2958,7 +2958,7 @@ Use the existing supported delay with its actual three musical controls.
 
 Use the existing supported reverb with its actual three musical controls.
 
-**Entry:** FX opens the last effect; SELECT chooses this effect along the chain.
+**Entry:** FX opens Macros; ALGORITHM right opens Individual, then SELECT this effect.
 **Exit:** FX/HOME returns home; ALGORITHM changes FX tab.
 
 | Visible field | Reference value/state |
@@ -2972,8 +2972,8 @@ Use the existing supported reverb with its actual three musical controls.
 
 | Input | Action |
 | --- | --- |
-| SELECT | Choose another effect along the visible chain; its parameter screen replaces this one. |
-| ALGORITHM | Choose Detail / Order / Presets; Presets is phase 2. |
+| SELECT | Choose an individual effect. |
+| ALGORITHM | Switch Macros / Individual only; do not reorder or change audio. |
 | K1 | On: Off / On |
 | K2 | Type: Room / Hall / Plate |
 | K3 | Decay: 62% |
@@ -2997,88 +2997,42 @@ Use the existing supported reverb with its actual three musical controls.
 - Edits affect the current setup promptly and mark the song dirty; they do not silently overwrite an FX preset.
 
 **Player instructions:**
-1. Press FX.
-2. Use SELECT to choose Reverb.
-3. Turn K1–K4 for the labelled controls.
+1. Press FX, then turn ALGORITHM right to Individual.
+2. SELECT Reverb.
+3. Turn the numbered controls shown underneath the large readout.
 
-**Related:** FX_ORDER, FX_PRESETS, IDEA_LIBRARY
+**Related:** FX_PRESETS, IDEA_LIBRARY
 
-### FX_ORDER — Effect Order
+### FX_PRESETS — Effects — Macros
 
-**Group:** Effects · **Delivery:** Play — first milestone · **Template:** timeline
+**Group:** Effects · **Delivery:** Play — first milestone · **Template:** params
 
-Retain reorderable six-effect routing under a consistent tab-navigation rule.
+Browse thirteen distinct factory recipes and shape them with four macros above one combined response readout.
 
-**Entry:** FX, ALGORITHM to Order.
-**Exit:** FX/HOME or Detail/Presets tab.
-
-| Visible field | Reference value/state |
-| --- | --- |
-| Chain | Filter → Drive → Chorus → Phaser → Delay → Reverb |
-| Selected | Delay · position 5 |
-
-| Input | Action |
-| --- | --- |
-| SELECT | Select an effect in the chain. |
-| ALGORITHM | Choose Detail / Order / Presets; Presets is phase 2. |
-| K1 | Move selected effect: one position per detent |
-| K2 | Selected effect: Off / On |
-| K3 | — |
-| K4 | — |
-| HOME | Return to Progressions; keep transport and unsaved draft. |
-| PLAY | Start the explicitly selected source or stop the running shared transport; external Receive follows the waiting/Start/Continue contract. |
-| REC | From Progressions: stopped → one-bar count-in; running → arm next bar. During capture → finish at next bar. Every capture creates a new Song copy. |
-| EDIT | Open the explicit progression-slot focus; otherwise a unique match, otherwise slot 1. |
-| SEL | Open the selected effect's Detail screen. |
-| SAVE | Open Songs library; preserve the loaded source, draft and transport. |
-| SEQ | Open Accompaniment on Groove. |
-| ARP | Open Motion on Arpeggio. |
-| ENV | Open Envelope. |
-| LFO | Open Bass on Sound. |
-| FX | Return HOME. |
-| GLO | Open System; Sound → Presets / Advanced remain explicit destinations. |
-
-**State coverage:**
-- ALGORITHM changes tabs, rather than secretly moving an effect as in the old firmware.
-- K1 is the explicit reorder control; SELECT remains selected effect.
-- Reordering updates the current song and is included in its save.
-
-**Player instructions:**
-1. Choose Order with ALGORITHM.
-2. Select an effect, then turn K1 to move it.
-
-**Related:** FX_FILTER, FX_DRIVE, FX_CHORUS, FX_PHASER, FX_DELAY, FX_REVERB, FX_PRESETS
-
-### FX_PRESETS — Effect Presets
-
-**Group:** Effects · **Delivery:** Edit and save — second milestone · **Template:** picker
-
-Recall a complete configuration of the existing six effects without treating it as a whole song.
-
-**Entry:** FX, ALGORITHM to Presets.
+**Entry:** Press FX.
 **Exit:** FX/HOME or another FX tab.
 
 | Visible field | Reference value/state |
 | --- | --- |
-| Preset | Current chain |
-| State | Edited |
-| Scope | Six supported effects and order |
-| Action | Recall |
+| Loaded | Deep Space |
+| Browse | Deep Space · 10 / 13 |
+| State | Loaded / Edited / Custom |
+| Readout | One combined response field |
 
 | Input | Action |
 | --- | --- |
-| SELECT | Browse names without changing sound; SEL explicitly recalls the highlighted effect preset. |
-| ALGORITHM | Choose Detail / Order / Presets; Presets is phase 2. |
-| K1 | Preset: current / factory / user FX configurations |
-| K2 | — |
-| K3 | — |
-| K4 | Action: Recall / Save As New |
+| SELECT | Browse without changing sound; SEL loads the highlighted factory or saved user chain. |
+| ALGORITHM | Switch Macros / Individual only. There is no Order tab. |
+| K1 | Space: reverb decay and mix |
+| K2 | Echo: delay feedback and mix |
+| K3 | Motion: chorus/phaser depth and mix |
+| K4 | Warmth: filter cutoff, drive, tone and output compensation |
 | HOME | Return to Progressions; keep transport and unsaved draft. |
 | PLAY | Start the explicitly selected source or stop the running shared transport; external Receive follows the waiting/Start/Continue contract. |
 | REC | From Progressions: stopped → one-bar count-in; running → arm next bar. During capture → finish at next bar. Every capture creates a new Song copy. |
 | EDIT | Open the explicit progression-slot focus; otherwise a unique match, otherwise slot 1. |
-| SEL | Recall applies the highlighted chain and stores Undo; Save As New opens FX_SAVE. |
-| SAVE | Open Songs library; preserve the loaded source, draft and transport. |
+| SEL | Load the highlighted chain on Macros; no recall action on Individual. |
+| SAVE | Open the existing FX-only user-slot management; hold SAVE one second to commit the visible action. |
 | SEQ | Open Accompaniment on Groove. |
 | ARP | Open Motion on Arpeggio. |
 | ENV | Open Envelope. |
@@ -3087,17 +3041,18 @@ Recall a complete configuration of the existing six effects without treating it 
 | GLO | Open System; Sound → Presets / Advanced remain explicit destinations. |
 
 **State coverage:**
-- Factory configurations use only Filter, Drive, Chorus, Phaser, Delay and Reverb.
-- Recall leaves harmony, key, groove, tempo and sound patches intact.
-- Save As New must show FX preset as the target; its exact shared naming/confirmation controls match SOUND_SAVE.
-- Capacity/write errors preserve the edited current chain.
+- Numbered knob assignments stay visible. SELECT alone browses; SEL explicitly loads.
+- One shared drawing combines tail bars, repeat marks and modulation waves. Filter/drive use the same large field.
+- Motion uses current post-MASTER activity and respects Motion On/Off; it settles at silence.
+- The approved thirteen replace the similar forty factory chains. Sixteen existing user slots and wire formats remain intact.
+- Individual edits re-anchor macros to the actual chain; view changes do not recall a recipe.
 
 **Player instructions:**
-1. Browse an FX configuration.
-2. Press SEL to recall it.
-3. Save the whole song separately when ready.
+1. Press FX; SELECT a preset, then SEL to load.
+2. Shape Space / Echo / Motion / Warmth.
+3. Turn ALGORITHM right for Individual; turn left to return.
 
-**Related:** FX_ORDER, FX_REVERB, IDEA_LIBRARY, SOUND_SAVE, FX_SAVE
+**Related:** FX_REVERB, IDEA_LIBRARY, SOUND_SAVE, FX_SAVE
 
 ### FX_SAVE — Name Effect Preset
 
@@ -9615,7 +9570,7 @@ Use only the supported six effects with clear controls.
 | Step | Screen | Physical action | Result |
 | --- | --- | --- | --- |
 | 1 | FX_REVERB | Press FX and SELECT Reverb. | K1 is On, K2 Type, K3 Decay, K4 Mix. |
-| 2 | FX_ORDER | ALGORITHM to Order; SELECT an effect and K1 to move it. | Routing changes explicitly; ALGORITHM remains tab navigation. |
+| 2 | FX_PRESETS | Turn ALGORITHM left to Macros. | Individual edits remain audible; the four macro knobs start from those values. |
 | 3 | HOME_STAGE | Return HOME. | Current chain continues; phase-2 complete-song save retains it. |
 
 ### WF_FX_PRESET — Recall or save an effect preset
@@ -9624,7 +9579,7 @@ Swap effects without changing the harmony or groove.
 
 | Step | Screen | Physical action | Result |
 | --- | --- | --- | --- |
-| 1 | FX_PRESETS | Choose Presets tab; browse and press SEL to recall. | Only supported effect chain parameters/order/bypass change; Undo is available. |
+| 1 | FX_PRESETS | Press FX; SELECT browses and SEL explicitly loads. | Only the effects change; harmony, sounds and transport remain intact. |
 | 2 | FX_SAVE | Choose Save As New, enter a name and SAVE. | Named effects-only record is saved; the whole song still uses its normal save route. |
 
 ### WF_EXTERNAL_CLOCK — Use an external clock deliberately

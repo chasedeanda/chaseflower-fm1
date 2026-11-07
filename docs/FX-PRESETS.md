@@ -1,103 +1,76 @@
-# Phase 2 — FX presets
+# Effects: macros, individual editing and factory presets
 
-Implementation branch: `codex/phase2-fx-presets`, branched from main `89d2599` and rebased onto main `38bdd14`, including chase5 release preparation and the progression browser.
-Scope: roadmap #1, storage #13, workflow #14 and initial factory concepts #15.
-Status: implemented for host verification; FM1 listening, real-time timing and physical USB validation remain release gates.
+Integration base: current main `70ed4e4` (2026-11-07). The approved thirteen-recipe
+bank replaces the forty similar factory configurations. The current Instrument
+Teal renderer, real Motion On/Off setting, smooth recall and sixteen saved user
+slots are retained. Hardware verification remains pending.
 
-## Playing and saving
+## Controls
 
-The controls were reviewed with Chase on 2026-11-06: complete-chain replacement, 16 independent user slots,
-FX first opens the existing editor and FX again opens the browser. Individual effects keep their original controls.
-Chase subsequently prioritized ready-made sounds: the factory catalog now contains 40 presets in five groups of eight.
-The browser shows the group and position (for example, `Space  9 / 40`); factory presets come before optional user slots.
+Press FX to open Macros. SELECT browses the complete factory bank, followed by
+sixteen user slots; it leaves the current sound alone. SEL explicitly loads the
+highlighted recipe. The loaded name and browse target are distinct on screen.
 
-| Page | Control | Result |
+| View | Control | Result |
 | --- | --- | --- |
-| FX editor | SELECT / ALGORITHM | Select an effect / move it in the chain, as before |
-| FX editor | K1 / K2–K4 | Enable an effect / edit its three parameters, as before |
-| FX editor | FX again | Open the FX preset browser |
-| Browser | SELECT | Immediately audition each selected factory or saved user preset; an empty slot leaves the current sound playing |
-| Browser | K1 clockwise | Reapply the selected complete chain; an empty user slot does nothing |
-| Browser | K2 clockwise | CLEAR FX: turn all six effects off and fade to No FX, including running tails |
-| Browser | K3 clockwise | Swap with the previous chain and its bypass state; available after a recall |
-| Browser | K4 clockwise | Return to the individual-effect editor |
-| Browser | FX again | Return HOME |
-| Any FX page | SAVE | Open user-slot management |
-| Management | SELECT or K1 | Select a user slot (1–16) |
-| Management | K2 / K3 | Choose a name character / change it (20 characters maximum) |
-| Management | K4 | Choose New, Replace or Delete |
-| Management | Hold SAVE for one second | Queue the chosen operation |
-| Management | Tap SAVE or FX | Cancel and return to the browser |
+| Macros | K1 Space | Reverb decay and mix |
+| Macros | K2 Echo | Delay feedback and mix; time stays with the recipe or Individual edit |
+| Macros | K3 Motion | Chorus/phaser depth and mix |
+| Macros | K4 Warmth | Filter cutoff, drive/tone and compensating drive level |
+| Macros / Individual | ALGORITHM right / left | Individual / Macros; no audible change and no order editing |
+| Individual | SELECT | Choose one of the six existing effects |
+| Individual | K1–K4 | Numbered enable/type/parameter controls shown on screen |
+| Both | SAVE | Existing user-slot management; hold SAVE one second to commit the visible action |
+| Management | K4 Action | New / Replace / Delete / No FX / Previous |
+| Management | FX | Return to Macros |
+| Both | FX or HOME | Return home |
 
-New requires an empty slot. Replace and Delete require an occupied user slot. Changing the target, name or action
-cancels a hold already in progress. The original synth SAVE screen remains available from other pages.
-Factory presets are immutable: recall one again to restore its factory configuration, or save a modified version to a user slot.
-Deleting a user preset leaves the current chain playing. Previous-chain recovery is a single runtime A/B pair;
-it survives individual FX edits but resets at startup. **K2 CLEAR FX** turns off all six effects and fades completely
-to dry, including running delay/reverb tails. The empty effect-enable mask is saved with the active settings, so
-No FX survives a restart once settings have saved. Repeated clearing keeps the useful undo chain. **K3 UNDO FX**
-restores the previous chain; turn it again to return to No FX for a quick comparison.
-Selecting or recalling a valid preset enables its effect chain. You can also enable an individual effect in the
-editor to leave No FX. Empty user slots leave the current audio alone.
+Each macro curve passes through its audible anchor. Individual edits re-anchor
+from the actual chain so the next macro detent does not restore stale factory
+values. Factory recipes use Filter → Drive → Chorus → Phaser → Delay → Reverb.
+Legacy saved custom orders are retained until a factory recall; there is no
+reorder control. The resulting chain persists in the unchanged 188-byte settings.
+Exact factory/user matches recover their name; other edited restores show Custom.
 
-A preset contains effect order, enabled flags and all 18 parameters, including the effects' supported mix/level controls.
-It does not contain synth patches, Harmony, progression, drums, ARP, tempo, recording state or MASTER volume.
-The existing settings continue to remember the active chain across startup, independently of the named user bank.
-The UI shows `Save pending: keep power on` while a bank edit waits for flash; queued edits are not yet durable.
-Opening the browser leaves the current sound playing until SELECT moves or K1 recalls. SELECT changes the actual
-filter, distortion, chorus, phaser, delay and reverb configuration; it does not change oscillators or synth patches.
-The selected name can differ from the sounding chain after an undo, individual editing, or choosing an empty slot.
+## Approved factory bank
 
-## Factory catalog
+| Preset | Character |
+| --- | --- |
+| Clean | Unprocessed reference |
+| Velvet | Dark, rounded and close |
+| Bite | Audible grit and forward harmonics |
+| Slap | A short, separate double behind each attack |
+| Ping Pong | Clearly separated repeats across the stereo field |
+| Wide Drift | Slow chorus movement with no ambient wash |
+| Phase Sweep | Pronounced moving notches and a hollow sweep |
+| Radio | Narrow midrange focus and a boxy edge |
+| Silver Plate | Bright dense reflections; crisp attacks remain audible |
+| Deep Space | Long diffuse hall with soft echoes and chorus |
+| Orbit | Liquid sweeping ambience: deep phaser and slow chorus into a bright long plate, without echoes |
+| Phone LP | Exaggerated muffled handset: resonant low-pass near 400 Hz, stronger drive and the darkest speaker tone; dry and close |
+| Phone HP | Exaggerated thin raspy handset: resonant high-pass near 1.6 kHz, maximum drive and a brighter speaker tone; dry and close |
 
-| Group | Name | Character and processing |
-| --- | --- | --- |
-| Signature | Glass Cathedral | Spacious chorus, long hall and delay |
-| Signature | Beautiful Noise | Warm low-pass, drive, chorus and plate |
-| Signature | Broken Tape | Filtered drive, chorus and worn echoes |
-| Signature | Slow Motion | Slow phaser, delay and hall |
-| Signature | Dream Pop | Clear chorus, light delay and plate |
-| Signature | Glitch Garden | Mid-focused band-pass, phaser and short delay |
-| Signature | Tight Electronic | Mild drive, short delay and short room |
-| Signature | Deep Space | Slow chorus/phaser, long delay and hall |
-| Space | Moonlit Room | Intimate room ambience |
-| Space | Velvet Hall | Softened highs and a warm hall |
-| Space | Silver Plate | Bright plate with light chorus |
-| Space | Cloud Atlas | Long hall moving through phaser and chorus |
-| Space | Distant Signals | Long, repeating echoes into hall |
-| Space | Frozen Lake | Slow chorus after delay, followed by a long plate |
-| Space | Afterglow | Chorus and hall fed into gentle saturation |
-| Space | Nebula Drift | Very slow modulation, long hall and dense echoes |
-| Lo-fi | Dusty Cassette | Darkened chorus, mild drive and short echoes |
-| Lo-fi | VHS Dreams | Filtered, modulated repeats with hall |
-| Lo-fi | Worn Postcard | Dark drive and small-room reflections |
-| Lo-fi | AM After Dark | Broad midrange filter, drive and delay |
-| Lo-fi | Velvet Saturation | Warm low-pass saturation without a reverb tail |
-| Lo-fi | Hazy Polaroid | Soft chorus, rolled-off highs and plate |
-| Lo-fi | Melted Chrome | Chorus/phaser and plate into stronger saturation |
-| Lo-fi | Old Answerphone | Telephone-like mids and short driven echoes |
-| Motion | Liquid Glass | Pure chorus, with no delay or reverb |
-| Motion | Neon Chorus | Faster, deeper chorus with a short plate |
-| Motion | Slow Orbit | Deep, slow phaser and hall |
-| Motion | Velvet Swirl | Warm chorus and phaser without echoes |
-| Motion | Prism Echoes | Delay repeats passing through two modulation stages |
-| Motion | Underwater Arcade | Resonant low-pass, fast phaser and delay |
-| Motion | Carousel Lights | Room reflections passing through faster modulation |
-| Motion | Solar Wind | Low-cut chorus/phaser, hall and long echoes |
-| Punch | Dry Heat | Focused drive without ambience |
-| Punch | Concrete Room | Punchy drive and short room reflections |
-| Punch | Garage Slap | Mild drive and a single short echo |
-| Punch | Dub Lantern | Warm, high-feedback echoes with a little room |
-| Punch | Acid Corridor | Resonant filter, drive, phaser and delay |
-| Punch | Shoegaze Bloom | Chorus, echoes and long hall into distortion |
-| Punch | Bittersweet Drive | Stronger drive softened by low-pass and plate |
-| Punch | Warehouse Exit | Drive and plate moving through phaser and delay |
+Orbit is retained. Broken Circuit is excluded. Phone LP and Phone HP use the
+exaggerated versions approved in the listening study. No shimmer pitch shifter,
+stutter buffer, bitcrusher, freeze or granular effect is implied by these recipes.
 
-All 40 use the existing six effects, with varied parameters, enabled combinations and chain placements.
-Names suggest musical character: tape transport, freeze, stutter, rhythmic gating, bitcrushing, reverse and granular
-processing are not implemented. Delay times and modulation rates are free-running rather than tempo synchronized.
-The first eight positions are preserved; Glitch Garden's filtering and several output levels were retuned after host auditioning.
-Real FM1 listening and level matching remain release gates.
+## One combined visual readout
+
+Macros has one large shared response drawing. Reverb tail bars, echo marks and
+chorus/phaser waves occupy that same field; there are no four mini-plots. Filter
+and drive recipes show a large response curve. Individual shows one large drawing
+for the chosen effect. The four numbered knob assignments remain underneath.
+
+Motion uses main's existing post-MASTER peak, mute, freshness and smoothed energy
+metadata. Tail bars breathe with that energy, echo accents advance at the selected
+delay time, and modulation waves travel at the chosen rate while sound is active.
+They settle after silence. Motion Off clears phase/activity and produces a stable
+readout while values and parameter curves still respond. This is a response diagram,
+not an oscilloscope. Hidden pages do not advance its phase. No DSP/flash work is
+performed in the renderer.
+
+Native screenshots and an Orbit playback GIF are under `previews/fx-screen`.
+Run `sh tools/test_fx.sh`, then `python3 tools/render_fx_screen.py` with Pillow.
 
 ## Persistence and compatibility
 
@@ -130,14 +103,14 @@ A zero-length bank restore clears the bank. Older backups simply lack object 69.
 
 Preset recall fades the processed output to the dry input for about 10 ms, changes configuration at a block boundary
 while fully dry, and returns over about 10 ms. Rapid recalls replace the pending target. One chain runs throughout;
-there is no second reverb/delay allocation. Delay/reverb buffers remain alive. Reordering, time changes and reverb
+there is no second reverb/delay allocation. Delay/reverb buffers remain alive. Legacy custom orders, time changes and reverb
 size changes can still reshape tails; the fade briefly reduces their audibility. Bypass fades through the same blend
 and keeps processing the chain, preserving its running state and CPU cost.
 Individual parameter editing retains the existing filter/mix smoothing and behavior.
 
 The principal added runtime storage is a 752-byte bank, a 256-byte dry scratch pair, a 25-byte pending chain and a
-small UI/previous-chain state. The 40 factory records occupy 1,840 bytes of constants, plus small group labels:
-1,472 bytes more preset data than the original eight, without additional DSP buffers. These are source-layout measurements;
+small UI/previous-chain state. The 13 factory records occupy 598 bytes of constants. Macro anchors and presentation
+state use bounded foreground storage, without additional DSP buffers. These are source-layout measurements;
 final linked device memory and real CPU headroom must be checked before release.
 
 ## Verification
@@ -158,25 +131,26 @@ Observed locally:
   This measures the fade on a controlled signal, not perceived quality across all presets.
 - Physical output is byte-identical with USB capture on/off at 44.1 and 48 kHz during preset/bypass changes.
   At 44.1 kHz the captured master also matches the physical output frame by frame.
-- Each of the 40 chains is selected through the actual FX browser's SELECT handler and exercised with bypass
+- Each of the 13 chains is browsed with SELECT and recalled with SEL and exercised with bypass
   transitions during held-note/sequencer playback at both USB rates.
-- Eighty independent level auditions: each factory on a six-note VA POLY KEYS or FM PAD chord plus bass at full MASTER,
-  held for two seconds and released for one. No PCM samples clipped. Sustained RMS was -20.72..-15.22 dBFS on VA and
-  -23.80..-14.39 dBFS on FM. The colored filters intentionally change energy; this is not perceptual loudness normalization.
+- Twenty-six independent level auditions: each factory on a six-note VA POLY KEYS or FM PAD chord plus bass at full MASTER,
+  held for two seconds and released for one. No PCM samples clipped. Sustained RMS was -20.92..-14.41 dBFS on VA and
+  -24.61..-14.34 dBFS on FM. The colored filters intentionally change energy; this is not perceptual loudness normalization.
   The fixtures reject unexpectedly quiet/loud output outside -27..-10 dBFS and saturation at the PCM boundary.
 
-The ARM-target syntax check, fresh header generation, backup/restore (147 checks), Auto Harmony, scenes,
-sound-library, diagnostics and the existing 64 USB render comparisons also pass.
+The focused macro/readout suite, native page/cache and Motion On/Off audio suites,
+current Keyboard Learn checks, and the local linked firmware build pass. Physical
+FM-1 timing, listening and USB checks remain pending.
 
-Rendered screen previews and test logs are in `build/fx-tests/`. No flashing or release package is part of this change.
-The suite also writes 80 three-second stereo WAVs and `levels.csv` to `build/fx-auditions/`. To rerender only these
+Rendered screen previews and test logs are in `build/fx-tests/`. A local linked firmware package is built; hardware flashing and verification remain pending.
+The suite also writes 26 three-second stereo WAVs and `levels.csv` to `build/fx-auditions/`. To rerender only these
 auditions after building the test executable, run `python3 tools/audition_fx_presets.py`.
 
 Before release on FM1:
 
 - Save a named configuration, change it, recall it, wait for pending storage to clear, power-cycle and recall it again.
 - Save/replace/delete during held or latched chords, ARP, sequencer and recording; ensure no note/transport changes or audio holes.
-- Record all 40 factories and repeated transitions over six-channel USB at both rates; listen for clicks, level jumps and tail changes.
+- Record all 13 factories and repeated transitions over six-channel USB at both rates; listen for clicks, level jumps and tail changes.
 - Capture diagnostics before/after for CPU peak/history, voice shedding, audio deadlines, flash holes, USB drops and stack/memory margins.
 - Audition each factory at varied input levels and dense FM/VA chords; adjust levels before approving the factory bank.
 - Test backup/restore including older files without object 69, factory reset and SAFE MODE on the device.
