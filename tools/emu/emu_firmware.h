@@ -116,6 +116,7 @@ static void cf_fx_chain(int32_t *l, int32_t *r, uint32_t n);
 #include "../../firmware/src/cf_theory.c"
 #include "../../firmware/src/cf_harmony.c"
 #include "../../firmware/src/cf_chord.c"
+#include "../../firmware/src/cf_progression.c"
 #include "../../firmware/src/cf_play.c"
 #include "../../firmware/src/cf_out.c"
 static void mix_block(int32_t *out, uint32_t n)        /* the audio ISR's block: the player first, then the mix */

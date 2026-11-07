@@ -95,6 +95,7 @@ typedef struct {
 
 static cf_set_t cs;
 static cf_harmony_t ch;                         /* separate versioned record; cf_set_t stays 188 bytes */
+static struct { uint8_t tag, idea; } cpg;         /* Suggestion browser only; never persisted */
 
 static void cs_defaults(cf_set_t *s)
 {

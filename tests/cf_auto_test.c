@@ -35,7 +35,7 @@ static void ui_and_store(void)
 {
     cf_chord_cfg_t manual=cs.chord;
     CHECK(sizeof(cf_set_t)==188 && sizeof(sq_ev_t)==22);
-    CHECK(screen_pages(SCR_GLO)==8 && CF_GLO_HARMONY==7);
+    CHECK(screen_pages(SCR_GLO)==CF_GLO_NPAGES && CF_GLO_HARMONY==7);
     cu.scr=SCR_GLO; cu.page[SCR_GLO]=6; cfd.page=DP_OVERVIEW;
     ui_knob_turn(0,1); CHECK(cfd.page==DP_TIMING && ch.mode==CF_H_MANUAL);
     CHECK(st_sector(OBJ_CFHARM,0)==0xB4000 && st_sector(OBJ_CFHARM,1)==0xB5000);

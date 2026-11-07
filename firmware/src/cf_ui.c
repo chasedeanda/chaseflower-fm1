@@ -114,6 +114,14 @@ static const char *const Q_NAME[3] = {"Off", "Basic", "Full"};
 static const char *const ALG_NAME[CF_NALGS] = {"Top", "Top Lock", "Side", "Side Lock"};
 static const char *const H_STYLE[CF_H_NSTYLES] = {"Basic", "Rich", "Dreamy", "Custom"};
 #define CF_GLO_HARMONY 7u
+#define CF_GLO_PROGRESSIONS 8u
+#define CF_GLO_NPAGES 9u
+
+static const cf_progression_t *cf_progression_current(void)
+{
+    cpg.idea = cf_progression_pick(cs.chord.scale, cpg.tag, cpg.idea, 0);
+    return cf_progression_get(cpg.idea);
+}
 
 static void kfmt(char *b, uint32_t n, const char *s) { str_cpy(b, s, n); }
 static void kint(char *b, int v, const char *unit)
@@ -356,6 +364,19 @@ static void ui_knob_info(int k, cf_knob_t *o)
     case SCR_SQED: sq_knob_info(k, o); break;
     case SCR_GLO:
         switch (cu.page[SCR_GLO]) {
+        case CF_GLO_PROGRESSIONS:
+            cf_progression_current();
+            if (k == 0) { kfmt(o->name, 12, "TAG"); kfmt(o->val, 14, cf_progression_tag(cpg.tag)); }
+            if (k == 1) {
+                kfmt(o->name, 12, "IDEA");
+                kint(o->val, (int)cf_progression_position(cs.chord.scale, cpg.tag, cpg.idea), 0);
+                str_cpy(o->val + str_len(o->val), "/", 2);
+                kint(o->val + str_len(o->val), (int)cf_progression_filtered_count(cs.chord.scale, cpg.tag), 0);
+                o->dis = cpg.idea == CF_P_NONE;
+            }
+            if (k == 2) { kfmt(o->name, 12, "KEY"); kpc(o->val, cs.chord.tonic); o->dis = cs.chord.quantize == CF_Q_OFF; }
+            if (k == 3) { kfmt(o->name, 12, "SCALE"); kfmt(o->val, 14, CF_SCALES[cs.chord.scale].shrt); o->dis = cs.chord.quantize == CF_Q_OFF; }
+            break;
         case CF_GLO_HARMONY:
             if (k == 0) { kfmt(o->name, 12, "HARMONY"); kfmt(o->val, 14, ch.mode ? "Auto" : "Manual"); }
             if (k == 1) { kfmt(o->name, 12, "STYLE"); kfmt(o->val, 14, H_STYLE[ch.style]); }
@@ -604,6 +625,21 @@ static void ui_knob_turn(int k, int d)
     case SCR_SQED: sq_knob_turn(k, d); break;
     case SCR_GLO:
         switch (cu.page[SCR_GLO]) {
+        case CF_GLO_PROGRESSIONS:
+            cf_progression_current();
+            if (k == 0) cpg.tag = (uint8_t)clampi(cpg.tag + d, 0, CF_P_NTAGS - 1);
+            if (k == 1) cpg.idea = cf_progression_pick(cs.chord.scale, cpg.tag, cpg.idea, d);
+            if (k == 2 || k == 3) {
+                if (cs.chord.quantize == CF_Q_OFF) cf_message(CF_MSG_QOFF);
+                else {
+                    if (k == 2) cs.chord.tonic = (uint8_t)wrapi(cs.chord.tonic + d, 12);
+                    if (k == 3) cs.chord.scale = (uint8_t)clampi(cs.chord.scale + d, 0, CF_NSCALES - 1);
+                    cu_spell_update();
+                    cf_send_config();
+                }
+            }
+            cf_progression_current();
+            break;
         case CF_GLO_HARMONY:
             if (k == 0) ch.mode = (uint8_t)clampi(ch.mode + d, 0, CF_H_AUTO);
             if (k == 1) ch.style = (uint8_t)clampi(ch.style + d, 0, CF_H_NSTYLES - 1);
@@ -717,7 +753,7 @@ static void ui_say(const char *a, const char *b)
 static uint32_t screen_pages(uint32_t scr)
 {
     if (scr == SCR_GLO)
-        return 8u;                               /* + Diagnostics, Harmony */
+        return CF_GLO_NPAGES;
     if (scr == SCR_ENV)
         return 3u;                               /* chord + bass, chord, bass */
     if (scr == SCR_ARP)
@@ -1871,6 +1907,8 @@ static void cf_edited(uint32_t part)
 /* ------------------------------------------------------------------ init --- */
 static void cf_ui_init(void)
 {
+    cpg.tag = CF_P_ALL;
+    cpg.idea = CF_P_NONE;
     if (!cfs_loaded)                             /* (cf_splash read the settings record: they stay) */
         cs_defaults(&cs);
     cu.scr = SCR_HOME;
