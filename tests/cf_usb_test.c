@@ -232,7 +232,7 @@ static void render(int part, int clean, int effects, int capture, const char *pa
         cf_post(CFE_SEQ, 1, 0, 0);
     } else if (part == 7) {
         cf_harmony_defaults(&cfh_shadow);
-        cfh_shadow.mode = CF_H_AUTO; cfh_shadow.style = CF_H_RICH;
+        cfh_shadow.mode = CF_H_AUTO;
         cfh_shadow.slot[0] = CF_MOD_13;
         cfp_config();
         cfp_key(1, 1); cfp_key(1, 0); cfp_key(7, 1);

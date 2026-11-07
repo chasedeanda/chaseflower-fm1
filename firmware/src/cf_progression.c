@@ -79,7 +79,7 @@ uint32_t cf_progression_mask(int scale, int tonic, int degree, const cf_harmony_
 {
     uint16_t used, conflict;
     if (!h || !cf_harmony_supported(scale, 1) || tonic < 0 || tonic > 11 || degree < 0 || degree > 6) return 0;
-    /* slots=0: the style recipe only; never touch live chord/inversion state. */
+    /* slots=0: the underlying triad only; never touch live chord/inversion state. */
     return cf_harmony_mask(h, scale, tonic, (tonic + cf_scale_step(scale, degree)) % 12,
                            0, 0, &used, &conflict);
 }

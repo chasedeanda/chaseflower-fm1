@@ -1425,7 +1425,7 @@ static void view_library(int x)
     fb_text(&CF_FONT_MICRO, x + 2, VIEW_Y + 71, "K4: ALL / FILTERS RESET AT BOOT", FL_INK2, 1);
 }
 
-/* Suggestions are read-only. Names come from the underlying Auto style, while
+/* Suggestions are read-only. Names come from the underlying Auto triads, while
  * the line below the cards names what is actually sounding (including modifiers). */
 static void view_progressions(int x)
 {
@@ -1441,8 +1441,6 @@ static void view_progressions(int x)
     str_cpy(text, raw, sizeof text);
     str_cpy(text + str_len(text), " ", sizeof text - str_len(text));
     str_cpy(text + str_len(text), CF_SCALES[cs.chord.scale].shrt, sizeof text - str_len(text));
-    str_cpy(text + str_len(text), " / ", sizeof text - str_len(text));
-    str_cpy(text + str_len(text), H_STYLE[ch.style], sizeof text - str_len(text));
     fb_signs(text, signs, sizeof signs);
     fb_text(&CF_FONT_UI, x + 2, VIEW_Y + 14, signs, FL_INK2, 1);
     if (ch.mode == CF_H_MANUAL)
@@ -1457,7 +1455,7 @@ static void view_progressions(int x)
         int root = (cs.chord.tonic + cf_scale_step(cs.chord.scale, p->degree[i])) % 12;
         int key = cf_progression_key(&cs.chord, p->degree[i]), idx;
         uint32_t mask = cf_progression_mask(cs.chord.scale, cs.chord.tonic, p->degree[i], &ch);
-        cf_numeral(cs.chord.scale, cs.chord.tonic, root, raw);
+        cf_harmony_numeral(cs.chord.scale, cs.chord.tonic, root, raw);
         fb_signs(raw, signs, sizeof signs);
         fb_text_c(&CF_FONT_UI, cx, VIEW_Y + 28, signs, C_ACC(0), 1);
         cf_chord_name(root, mask, -1, &spell, raw);

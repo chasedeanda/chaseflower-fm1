@@ -1,47 +1,46 @@
-# Phase 1: Auto harmony
+# Auto harmony
 
-Implementation for roadmap issues #5–#12, integrated with `origin/main` at
-`502ff9c` (Chase4 visuals and diagnostics). The user authorized implementation
-and an MR on November 6, 2026, with the combined device build after the other
-features merge. Device listening, performance measurements and GarageBand
-validation remain release checks; host results do not replace the Phase 0 baseline.
+Current source behavior; the existing 0.6-chase5 release package predates this
+simplification.
 
 ## Playing
 
-Open **GLO**, turn **SELECT** to **Harmony**, then turn **K1** to **Auto**.
-Manual remains the default. HOME retains Quantize, Key, Scale and Glide.
+Open **GLO → Harmony** and turn **K1 On**. This page has one setting:
 
-| Harmony knob | Choices |
-| --- | --- |
-| K1 Harmony | Manual / Auto |
-| K2 Style | Basic / Rich / Dreamy / Custom |
-| K3 Voicing | Root / Smooth (existing automatic inversion) |
-| K4 Modifiers | Left: follow the layout (Latched in Lock, Moment otherwise). Right: Moment in every layout. |
+- **Off**: normal playing, using the existing chord buttons and saved forms.
+- **On**: each root plays a complete major or minor chord. Modifier buttons add
+  the notes you select.
 
-Auto constructs triads by stacking scale thirds, using the actual scale tones.
-It supports seven-note scales with Quantize Basic or Full. In C major, playing
-I–V–vi–IV gives C–G–Am–F without a quality button. A seventh modifier gives
-Cmaj7–G7–Am7–Fmaj7. Quality overrides are intentional chromatic choices in both
-Basic and Full; Full does not undo an explicit Major/Minor/Dim override in Auto.
+Off is the default. HOME retains Quantize, Key, Scale and Glide. Use Quantize
+Basic or Full and a seven-note scale.
+
+The scale chooses each root and its major/minor quality. Every automatic triad
+has a normal fifth; Auto never chooses diminished or augmented chords by itself.
+Select **7** for a major seventh on a major chord or a minor seventh on a minor
+chord. In E major:
+
+| Played degree | Without a modifier | With 7 selected | Notes with 7 |
+| --- | --- | --- | --- |
+| 1: E | E | Emaj7 | E G♯ B D♯ |
+| 5: B | B | Bmaj7 | B D♯ F♯ A♯ |
+| 7: D♯ | D♯m | D♯m7 | D♯ F♯ A♯ C♯ |
+
+In a major key, degrees 1, 4 and 5 are major; 2, 3, 6 and 7 are minor.
+Other seven-note scales use the scale third to choose quality: a third smaller
+than four semitones gives minor, otherwise major. The chord's remaining intervals
+come from that root, so some notes can be outside the selected scale. Full
+quantization preserves those complete chords rather than snapping them back.
+
+There are no Basic/Rich/Dreamy/Custom styles or global Auto voicing/modifier
+behavior options. Old saved preferences for those options are ignored. Without
+a modifier, Auto always plays a triad; extensions come only from the buttons.
 
 Quantize Off and scales with other than seven notes use single-note fallback,
-with **AUTO?** and a scale-selection message. Auto remains selected so switching
-back to a supported scale resumes it. MIDI roots are snapped by the existing
-root mapping; an extreme register that clamps a root outside the scale also uses
-the explicit fallback. MIDI Direct remains direct note playback.
+with **AUTO?** and a scale-selection message. Auto stays On so returning to a
+supported scale resumes it. An extreme MIDI register that clamps the root outside
+the scale also uses this fallback. MIDI Direct remains direct note playback.
 
-Basic uses triads; Rich adds a diatonic seventh; Dreamy adds a diatonic seventh
-and ninth. Root/Smooth remains a separate choice for every style. Custom uses
-the extension selected with SEL K2 (None, 6, 7, 9, Add9, 11 or 13), plus the
-same voicing and per-slot inversion/bass settings. These are deterministic
-recipes; broader open voicings and elaborate Dreamy rules can follow separately.
-
-## Physical keys and persistence
-
-The root mapping is unchanged. The Chase4 UI remains fixed in Top Lock, with
-16 lower root keys and upper modifier keys. ALGORITHM retains Bonfire/Bass and
-its FX/sequencer contextual actions. The pure chord model also retains Top,
-Side (seven left-side buttons and 20 roots) and Side Lock for regression coverage.
+## Buttons
 
 Default Top assignments, left to right:
 
@@ -49,92 +48,69 @@ Default Top assignments, left to right:
 6  7  9 | Sus2 Sus4 | Add2 11 Add9 | Major Minor | HOLD
 ```
 
-Side uses the first seven slots: `6 7 9 | Sus2 Sus4 Add2 11`. All playable
-modifier slots can be reassigned in SEL, including 13, Add4, Dim, Aug and Power.
-HOLD continues to occupy whichever Top button the saved Manual Off form uses;
-it is not editable as a modifier. Side retains its existing lack of a physical
-HOLD button.
+The root mapping is unchanged. The device uses Top Lock: tap a modifier to latch
+it; tap it again to clear it. A new modifier gesture replaces the previous one;
+hold compatible buttons together to combine them. New roots inherit the selection.
+Other supported layouts retain their normal latched or momentary behavior.
 
-| Action | Result |
-| --- | --- |
-| Non-Lock layout, or Moment override | Modifiers apply while held; release returns to underlying Auto harmony, subject to retrigger timing. |
-| Lock layout, layout-following modifiers | A tap latches a selection. A new gesture replaces it. Simultaneous compatible slots combine. Tapping the sole latched slot again clears it. |
-| New root | Inherits the current held/latched modifiers. No selection means the style's underlying harmony. |
-| HOLD | Sustains roots only. A new root with none physically down replaces sustained roots. Turning HOLD off releases roots held only by HOLD. |
-| Auto/Manual or persistence change | Clears modifier selection and inversion history; preserves root-down and HOLD sustain state. Manual forms remain intact. |
+- **6** adds the major sixth.
+- **7** adds the major seventh for major/augmented chords, the minor seventh for
+  minor/diminished/power chords. A suspension keeps the underlying quality's seventh.
+- **9** includes 7 and a normal ninth. **Add9** adds the ninth alone.
+- **11** includes 7, 9 and 11. **13** includes 7, 9 and 13, without adding 11.
+- **Sus2/Sus4** replace the third with a normal second/fourth. **Add2/Add4** keep
+  the third.
+- **Major/Minor** explicitly choose quality; 7 follows that choice. Dim, Aug and
+  Power remain available only as explicitly assigned modifiers.
 
-HOLD and modifier persistence remain independent. The Moment override supplies
-temporary modifiers even if the separate scene feature fixes the unit in Top Lock.
-Existing RETRIG behavior is preserved: **Wait** queues changes after its 50 ms
+SEL K1 assigns a modifier. K3 sets that slot's inversion
+(Root/Smooth/1st/2nd/3rd); K4 sets its bass tone. K2 is unused. HOLD is not editable
+as a modifier. Turning Auto Off returns SEL to the original chord-form editor.
+
+The most recently pressed quality wins; the most recently pressed suspension
+wins. Quality and suspension can combine. Conflicting choices show `!` and are
+excluded from active lighting. HOME names the actual generated chord.
+
+HOLD still sustains roots independently of modifiers. A new root with none
+physically down replaces sustained roots; turning HOLD off releases roots held
+only by HOLD. Switching Auto On/Off clears modifier selection and inversion
+history while preserving physical roots and HOLD sustain.
+
+Existing RETRIG behavior remains: **Wait** queues modifier changes after its 50 ms
 gather window until the next root; **Slide**, **Notes** and **Chord** use their
-existing movement/attack policies. While HOLD sustains with no root physically
-down, a modifier can change that sustained chord immediately, as before.
+existing movement/attack policies. While HOLD sustains with no physical root
+held, a modifier can change that chord immediately. In Wait, modifier lighting
+describes the next chord while the name describes the sounding chord.
 
-HOME shows AUTO/AUTO?, the actual generated chord and existing HOLD indication.
-Key caps show compact modifier labels; conflicting choices show `!` and are
-excluded from active lighting. In Wait, selection lighting describes the next
-chord while the chord name continues to describe the sounding chord.
+Auto generates at most six notes, matching the sequencer's capacity. Root,
+third/suspension, seventh, altered fifth and colors take priority over the plain
+fifth. Existing synth allocation and overload protection still apply.
 
-SEL keeps its original Manual editor. In Auto: K1 assigns the modifier, K2 sets
-the Custom style extension, K3 sets that slot's inversion (Style/Smooth/1st/2nd/3rd),
-K4 sets its bass tone. SELECT still picks the slot. The last applied slot supplies
-its inversion/bass settings. Existing Manual qualities and editors remain accessible
-by switching back to Manual.
+## Recording and saved data
 
-## Modifier rules and note limits
+Auto recordings capture the actual notes and bass. They stay fixed after changing
+Auto On/Off, modifiers, key or scale, including when pattern Follow is enabled.
+Existing non-Auto Follow events keep their original behavior.
 
-- 7 adds the scale's seventh. 9 includes 7; Add9 does not.
-- 11 includes 7 and 9. 13 includes 7 and 9, without automatically adding 11.
-- Sus2/Sus4 replace the third with the actual scale second/fourth. Add2/Add4 retain it.
-- The most recently pressed quality wins; the most recently pressed suspension
-  wins. Quality and suspension can combine: Minor + Sus4 removes the third again.
-- Extensions stay diatonic even with a quality override.
-- Auto generates at most six chord notes, matching the sequencer's existing
-  six-note event capacity. Selection prioritizes root, third/suspension, seventh,
-  altered fifth and colors before the plain fifth. Ordinary synth allocation and
-  overload protection still apply; six logical notes do not guarantee six hardware
-  voices under every DSP workload. No new allocation or DSP algorithm is introduced.
+Legacy settings remain **188 bytes** and pattern events **22 bytes**. Saved
+chord forms, sounds and CFQ6 patterns retain their formats. Auto preferences use
+the existing checked/versioned **CHH1** record at **0xB4000/0xB5000**, with backup
+object **68**. Retired option bytes stay reserved to preserve record compatibility;
+they are cleared when loading. Missing/invalid data and Safe Mode default to Off.
+Old backups without object 68 leave existing Auto preferences alone.
 
-## Recording and compatibility
+Auto events retain the full interval mask using the high button-field tag and
+rootkey 0xFF. Older firmware can still play their fixed notes.
 
-Auto takes and step entry capture the six actual notes and bass. They play those
-notes even after switching Auto/Manual, changing modifier assignments or changing
-key/scale. Auto recordings intentionally remain fixed when a pattern's Follow is
-on; existing Manual Follow events retain their original behavior. Reharmonizing
-saved Auto events requires a later versioned performance-event design.
+## Verification
 
-The legacy settings record remains **188 bytes**; pattern events remain **22 bytes**.
-Manual forms, user sounds and CFQ6 pattern layout are unchanged. Auto preferences
-use a separate checked/versioned `CHH1` record in the unused CoralFlower session
-pair at **0xB4000/0xB5000**, with the existing logged A/B storage and quiet erase
-policy. Missing/invalid harmony data defaults to Manual; Safe Mode ignores it.
-Backup object **68** carries this record; both backup clients recognize it.
-Old backups without this object leave existing Auto preferences alone. On an old
-installation with no harmony record, Manual is the default.
+`sh tools/test_auto.sh` covers the exact Emaj7 → Bmaj7 → D♯m7 progression through
+physical buttons, MIDI output, displayed names, recording and note releases in
+both Basic and Full quantization. It also covers major/minor fixtures in multiple
+keys/scales, all layouts, modifier pairs, retired preference migration, the
+On/Off control, normal playback when Off, HOLD, retriggering and storage.
 
-Auto events use the previously unused high bit of the button field as a tag;
-its low byte carries interval-mask bits 16–23. The existing mask holds bits 0–15,
-and rootkey is 0xFF (fixed notes). Thus ninths/elevenths/thirteenths retain exact
-names without enlarging events or losing saved-note registers. This tag is not
-interpreted as physical button lighting. Older firmware still plays the fixed
-notes, but may show incomplete extension names/lighting.
-
-## Verification and remaining release work
-
-`sh tools/test_auto.sh` exercises independent harmony fixtures for every degree in
-C major, G major, A minor, D Dorian and G Mixolydian; both quantization settings;
-all layouts; modifier pairs across seven-note scales; conflict rules; styles;
-extreme MIDI registers; momentary/latch/HOLD/Wait; rapid changes; real UI/ISR/MIDI,
-bass, arp, glide, recording, fixed playback, settings and harmony storage.
-
-`sh tools/test_usb.sh` includes Auto thirteenth chords plus bass in both rates,
-with FX off/on and both output modes, comparing capture-active/idle physical
-output word for word. Existing Chase3, backup, storage power-cut and installer
-tests remain required. The check workflow runs the new Auto suite.
-
-Latest main was merged before submission. Diagnostics keeps GLO page 6 and
-Harmony follows as page 7; all eight pages remain accessible. After merging the
-other feature MRs, build/link the combined firmware, inspect RAM/pool/flash
-headroom, run the Phase 0 benchmark matrix and verify controls, shedding, sustained
-USB recording and listening on the FM-1. This MR does not produce or flash a
-release package and does not claim those hardware gates are complete.
+`sh tools/test_progressions.sh` checks suggestion names and uninterrupted audio.
+`sh tools/test_usb.sh` checks Auto thirteenth chords plus bass at both capture
+rates, with FX and output-mode variations. Hardware listening and performance
+checks remain necessary before a release; host checks do not replace them.

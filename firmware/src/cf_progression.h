@@ -24,7 +24,7 @@ unsigned cf_progression_filtered_count(int scale, int tag);
  * filtered list, clamping at its ends. NONE for invalid input or no matches. */
 uint8_t cf_progression_pick(int scale, int tag, unsigned current, int turn);
 unsigned cf_progression_position(int scale, int tag, unsigned index); /* 1-based, 0 absent */
-/* Underlying Auto style, without physical/latched modifiers or live state. */
+/* Underlying Auto triad, without physical/latched modifiers or live state. */
 uint32_t cf_progression_mask(int scale, int tonic, int degree, const cf_harmony_t *h);
 /* Physical root key in the central tonic octave, or -1 if unavailable. */
 int cf_progression_key(const cf_chord_cfg_t *cfg, int degree);

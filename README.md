@@ -42,8 +42,9 @@ instrument's intro runs for 2.4 seconds and any input skips it.
 [Scenes and controls](docs/VISUALS.md) · [Sound banks and 6/8](docs/CHASE3.md) ·
 [Diagnostics](docs/DIAGNOSTICS.md) · [USB recording](docs/USB-AUDIO.md)
 
-**Auto Harmony:** Open **GLO → Harmony** and turn **K1 to Auto** to enable
-[scale-aware chords and smart modifiers](docs/AUTO-HARMONY.md). Manual remains the default.
+**Auto Harmony (current source):** Open **GLO → Harmony** and turn **K1 On** for
+[major/minor chords and button-selected extensions](docs/AUTO-HARMONY.md). Off leaves normal playing alone.
+This simplification is not yet included in the 0.6-chase5 download.
 
 **In development:** [Phase 2 FX presets](docs/FX-PRESETS.md) add 40 ready-to-play factory chains across
 Signature, Space, Lo-fi, Motion and Punch, with recall/bypass controls and 16 optional user slots.

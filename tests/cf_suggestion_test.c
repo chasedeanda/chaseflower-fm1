@@ -34,14 +34,14 @@ static void controls(void)
     ui_knob_turn(1,1000); CHECK(cpg.idea == CF_P_NONE);
     ui_knob_turn(0,-CF_P_JAZZY); CHECK(cpg.idea == 8);
     ui_select(-1); ui_knob_turn(1,2); ui_select(1);
-    CHECK(ch.style == CF_H_DREAMY && cpg.idea == 8);
+    CHECK(ch.style == CF_H_BASIC && cpg.idea == 8);
     cs.chord.scale = CF_SC_LYDIAN;
     CHECK(!cf_progression_current() && cf_harmony_supported(cs.chord.scale,cs.chord.quantize));
     cs.chord.scale = CF_SC_MAJOR; cs.chord.quantize = CF_Q_OFF;
     unsigned tonic=cs.chord.tonic; ui_knob_turn(2,1); ui_knob_turn(3,1);
     CHECK(cs.chord.tonic == tonic && cs.chord.scale == CF_SC_MAJOR);
     CHECK(cf_progression_key(&cs.chord,0) == -1);
-    /* Every rendered idea/tag/style, plus empty, Manual, Quantize Off and AUTO?. */
+    /* Every rendered idea/tag and legacy style, plus Off, Quantize Off and AUTO?. */
     cf_intro_on=0; cu.pop=POP_NONE; cv_turn_ms=0;
     for (unsigned i=0;i<cf_progression_count();i++) {
         const cf_progression_t *p=cf_progression_get(i);
@@ -66,10 +66,11 @@ static void render_audio(int browse, unsigned rate, const char *path)
     FILE *out=fopen(path,"wb"); CHECK(out); if(!out) return;
     int32_t mix[CTL*2];
     cf_intro_on=0; cf_boot_go=0; cu.pop=POP_NONE;
-    ch.mode=CF_H_AUTO; ch.style=CF_H_CUSTOM; ch.custom=CF_MOD_13; ch.momentary=0;
+    cf_harmony_defaults(&ch); ch.mode=CF_H_AUTO; ch.slot[0]=CF_MOD_13;
     cu.scr=SCR_GLO; cu.page[SCR_GLO]=CF_GLO_PROGRESSIONS;
     cf_send_config();
     for(unsigned b=0;b<64;b++) audio_block(mix,CTL);
+    cf_post(CFE_KEY,1,0,1); cf_post(CFE_KEY,1,0,0); /* select 13 explicitly */
     cf_post(CFE_KEY,25,0,1); cf_post(CFE_KEY,25,0,0); /* HOLD */
     cf_post(CFE_KEY,7,0,1); cf_post(CFE_KEY,7,0,0);
     sq_fresh(&sq_st.pat[0],4); dm_fill(&sq_st.pat[0],dm_nth(4,0),0);

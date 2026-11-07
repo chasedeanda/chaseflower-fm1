@@ -34,7 +34,7 @@ static void released(void)
 static void ui_and_store(void)
 {
     cf_chord_cfg_t manual=cs.chord;
-    CHECK(sizeof(cf_set_t)==188 && sizeof(sq_ev_t)==22);
+    CHECK(sizeof(cf_set_t)==188 && sizeof(sq_ev_t)==22 && sizeof(cf_harmony_t)==38 && sizeof(cfh_rec_t)==52);
     CHECK(screen_pages(SCR_GLO)==CF_GLO_NPAGES && CF_GLO_HARMONY==7);
     cu.scr=SCR_GLO; cu.page[SCR_GLO]=6; cfd.page=DP_OVERVIEW;
     ui_knob_turn(0,1); CHECK(cfd.page==DP_TIMING && ch.mode==CF_H_MANUAL);
@@ -42,8 +42,15 @@ static void ui_and_store(void)
     for(unsigned o=0;o<OBJ_COUNT;o++) if(o!=OBJ_CFHARM)
         for(unsigned a=0;a<2;a++) for(unsigned b=0;b<2;b++) CHECK(st_sector(o,a)!=st_sector(OBJ_CFHARM,b));
     cu.scr=SCR_GLO; cu.page[SCR_GLO]=CF_GLO_HARMONY;
+    cf_knob_t knob={0}; ui_knob_info(0,&knob); CHECK(!strcmp(knob.val,"Off"));
     ui_knob_turn(0,1); audio_ms(6); CHECK(ch.mode==CF_H_AUTO && cfc.harmony.mode==CF_H_AUTO);
-    ui_knob_turn(1,1); audio_ms(6); CHECK(ch.style==CF_H_RICH);
+    ui_knob_info(0,&knob); CHECK(!strcmp(knob.val,"On"));
+    cf_harmony_t simple=ch;
+    for(int k=1;k<4;k++) {
+        memset(&knob,0,sizeof knob); ui_knob_info(k,&knob);
+        CHECK(!knob.name[0] && !knob.val[0]); ui_knob_turn(k,1);
+    }
+    CHECK(!memcmp(&simple,&ch,sizeof ch));
     cu.scr=SCR_SEL; cu.sel_btn=0; ui_knob_turn(0,CF_MOD_DIM-ch.slot[0]); audio_ms(6); CHECK(ch.slot[0]==CF_MOD_DIM);
     CHECK(!memcmp(&manual,&cs.chord,sizeof manual));
     CHECK(cfh_write(0)==0); cf_harmony_t saved=ch;
@@ -53,19 +60,67 @@ static void ui_and_store(void)
     cfh_rec.version=1; cfh_rec.h.slot[0]^=1; CHECK(!cfh_valid(&cfh_rec));
     cfh_load(); cr_safe=1; cfh_load(); CHECK(ch.mode==CF_H_MANUAL); cr_safe=0;
     cfh_load(); CHECK(ch.mode==saved.mode);
+    /* Old records still load, but no retired preference affects playback. */
+    ch.style=CF_H_DREAMY; ch.custom=CF_MOD_13; ch.smooth=ch.momentary=1;
+    CHECK(cfh_write(0)==0); cfh_load();
+    CHECK(ch.mode==CF_H_AUTO && !ch.style && !ch.custom && !ch.smooth && !ch.momentary);
     CHECK(cf_settings_write(0)==1); cs.chord.top[0].type=CF_T_POWER; CHECK(cf_settings_load());
     CHECK(!memcmp(manual.top,cs.chord.top,sizeof manual.top));
+    /* Flash migration above simulates IRQ-off erase time on the host HAL. */
+    while(emu_stall_blocks) audio_ms(3);
+    cf_harmony_defaults(&ch); ch.mode=CF_H_AUTO; config();
+}
+static void simple_harmony(void)
+{
+    static const int degrees[]={0,4,6};
+    static const int roots[]={4,11,3};
+    static const int intervals[3][4]={{0,4,7,11},{0,4,7,11},{0,3,7,10}};
+    static const char *const names[]={"Emaj7","Bmaj7","D#m7"};
+    cfp_panic(); midi_drain();
+    cf_harmony_defaults(&ch); ch.mode=CF_H_AUTO;
+    cs.chord.algo=CF_ALG_TOP_LOCK; cs.chord.tonic=4; cs.chord.scale=CF_SC_MAJOR;
+    cs.retrig=CF_RT_MOVE; trk[0].p[P_GLIDE]=0;
+    for(int quant=CF_Q_BASIC;quant<=CF_Q_FULL;quant++) {
+        cs.chord.quantize=(uint8_t)quant; config();
+        key(3,1); key(3,0); /* latch the physical 7 key */
+        for(int d=0;d<3;d++) {
+            int rootkey=cf_progression_key(&cs.chord,degrees[d]);
+            CHECK(rootkey>=0); key(rootkey,1);
+            CHECK(cfc.out.n==4 && cfc.out.root_pc==roots[d]);
+            for(int n=0;n<4;n++) {
+                int note=cfc.out.root_note+intervals[d][n];
+                CHECK(cfc.out.note[n]==note && sounding[cs.ch_chord][note]);
+            }
+            cf_snapshot(); name_update(); CHECK(!strcmp(cu_name,names[d]));
+            if(d==2) CHECK(!strcmp(cu_name_sub,"vii"));
+            sqr_ev_t take={0}; sqp_rec_chord(&take);
+            CHECK(take.n==4 && !memcmp(take.note,cfc.out.note,4));
+            key(rootkey,0); released();
+        }
+        key(3,1); key(3,0); /* clear 7 */
+    }
+    /* Off restores ordinary input behavior without changing the manual forms. */
+    cf_chord_cfg_t manual=cs.chord;
+    cu.scr=SCR_GLO; cu.page[SCR_GLO]=CF_GLO_HARMONY; ui_knob_turn(0,-1); audio_ms(6);
+    CHECK(!ch.mode && !memcmp(&manual,&cs.chord,sizeof manual));
+    cf_chord_t normal; cf_chord_init(&normal,&manual);
+    int rootkey=cf_progression_key(&manual,0);
+    cf_chord_key(&normal,rootkey,1); key(rootkey,1);
+    CHECK(!cfc.out.automatic && cfc.out.single==normal.out.single && cfc.out.mask==normal.out.mask);
+    cf_chord_key(&normal,3,1); key(3,1);
+    CHECK(cfc.out.n==normal.out.n && cfc.out.mask==normal.out.mask && !memcmp(cfc.out.note,normal.out.note,normal.out.n));
+    key(3,0); key(rootkey,0); released();
     cf_harmony_defaults(&ch); ch.mode=CF_H_AUTO; config();
 }
 static void performance(void)
 {
-    for(int retrig=0;retrig<CF_NRT;retrig++) for(int moment=0;moment<2;moment++) {
+    for(int retrig=0;retrig<CF_NRT;retrig++) {
         cfp_panic(); midi_drain();
         cs.chord.algo=CF_ALG_TOP_LOCK; cs.chord.quantize=CF_Q_BASIC; cs.chord.tonic=0; cs.chord.scale=CF_SC_MAJOR;
-        cs.retrig=(uint8_t)retrig; ch.momentary=(uint8_t)moment; ch.style=CF_H_BASIC;
+        cs.retrig=(uint8_t)retrig;
         trk[0].p[P_GLIDE]=retrig?20:0; config();
         key(7,1); CHECK(cfc.out.n==3 && cfp.n==3 && cfp.nb==1);
-        audio_ms(60); key(3,1); /* diatonic seventh */
+        audio_ms(60); key(3,1); /* quality-matched seventh */
         CHECK(cfc.out.n==(retrig==CF_RT_WAIT?3:4));
         key(9,1); CHECK(cfc.out.n==4 && cfc.out.root_pc==2);
         key(3,0); key(7,0); key(9,0); audio_ms(60); released();
@@ -85,7 +140,7 @@ static void performance(void)
 }
 static void recording(void)
 {
-    cs.retrig=CF_RT_MOVE; ch.style=CF_H_RICH; ch.momentary=0; ch.slot[0]=CF_MOD_13; config();
+    cs.retrig=CF_RT_MOVE; ch.slot[0]=CF_MOD_13; config();
     key(1,1); key(1,0); key(7,1); CHECK(cfc.out.n==6);
     sqr_ev_t take={0}; sqp_rec_chord(&take);
     CHECK(take.rkey==0xFF && (take.btns&CF_H_EVENT) && take.n==6);
@@ -105,6 +160,6 @@ static void recording(void)
 int main(void)
 {
     emu_fw_options(NULL,1,0,1); emu_hal.ready=2; emu_fw_init(0); audio_ms(1600); midi_drain();
-    ui_and_store(); performance(); recording();
+    ui_and_store(); simple_harmony(); performance(); recording();
     printf("cf_auto: %u checks, %u failures\n",checks,failures); return failures!=0;
 }
