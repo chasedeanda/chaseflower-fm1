@@ -16550,9 +16550,9 @@ html&gt;body{padding:0}&lt;/style&gt;
     &quot;onAccent&quot;: &quot;#092D2C&quot;
   },
   &quot;implementation&quot;: {
-    &quot;sourceBase&quot;: &quot;4e678049762279740f750ec3566ed1e0939c26a1&quot;,
+    &quot;sourceBase&quot;: &quot;e3333c1a41a5fd5b953f377552daff02a9701da9&quot;,
     &quot;designRevision&quot;: &quot;845325136418dd038c7ef81eaca01ec64ac5e61e&quot;,
-    &quot;summary&quot;: &quot;Engineering preview: native Instrument Teal HOME now cycles Core/Sound/Texture/Groove with HOME. Every bank shows its real control mapping; SELECT still browses progressions and PRESETS still changes chord sound. GLO &gt; Display exposes K1 theme, K2 retained HOME view, and K4 Motion On/Off. Tap GLO again to open the selected Chord/Keyboard/Diagnostics view; HOME always returns to Core. Bank-label motion is clipped to the footer and Off settles it immediately. Source cover-chord intervals and slash bass notes are preserved in the native rail. Full Songs, remaining page migration, detailed pending setup and device verification are still pending.&quot;,
+    &quot;summary&quot;: &quot;Engineering preview: native Instrument Teal HOME and Core/Sound/Texture/Groove banks now lead into shared-clock Groove/Loop/Mix/Click through SEQ. Loop has whole-phrase play once/repeat, explicit focus and an independent true cursor; Mix and Click edit real parameters. Two bounded pending lines distinguish queued idea/setup from applied state. External PLAY waits for pulses, clock loss releases scheduled ownership while preserving live HOLD and pending setup, and explicit Start/Continue resumes. Finite bank/page/chord transitions cancel with Motion Off. GLO &gt; Legacy tools retains Recordings, Metronome and Drum grid. Existing manual takes and three-recording rotation remain in force. Full semantic Songs/editor, remaining page migration, motion hardware tuning and device verification are still pending.&quot;,
     &quot;screens&quot;: {
       &quot;HOME_STAGE&quot;: {
         &quot;designStatus&quot;: &quot;Native preview alongside selected prototype; device review pending&quot;,
@@ -16561,7 +16561,7 @@ html&gt;body{padding:0}&lt;/style&gt;
       },
       &quot;HOME_PENDING&quot;: {
         &quot;designStatus&quot;: &quot;Native preview alongside selected prototype; device review pending&quot;,
-        &quot;implementationStatus&quot;: &quot;Partial implementation: queued idea/setup label; detailed pending setup remains legacy&quot;,
+        &quot;implementationStatus&quot;: &quot;Implemented native preview: queued idea plus key/mode/metre/rhythm; active edits show mode/repeat/kit/swing separately from applied setup&quot;,
         &quot;deviceVerification&quot;: &quot;Pending — host captures and device link only&quot;
       },
       &quot;DISPLAY-STYLE&quot;: {
@@ -16571,7 +16571,7 @@ html&gt;body{padding:0}&lt;/style&gt;
       },
       &quot;DISPLAY-MOTION&quot;: {
         &quot;designStatus&quot;: &quot;Native preview alongside selected prototype; device review pending&quot;,
-        &quot;implementationStatus&quot;: &quot;Partial implementation: persisted On/Off, bounded HOME activity, clipped bank-label transition and settled legacy art; cadence/tails/hardware tuning pending&quot;,
+        &quot;implementationStatus&quot;: &quot;Partial implementation: persisted On/Off, bounded HOME activity, finite clipped bank/page/chord transitions and settled caches; audio-tail metadata and hardware tuning pending&quot;,
         &quot;deviceVerification&quot;: &quot;Pending — host captures and device link only&quot;
       },
       &quot;HOME_SOUND&quot;: {
@@ -16587,6 +16587,31 @@ html&gt;body{padding:0}&lt;/style&gt;
       &quot;HOME_GROOVE&quot;: {
         &quot;designStatus&quot;: &quot;Native bank preview follows selected prototype; physical review pending&quot;,
         &quot;implementationStatus&quot;: &quot;Implemented preview: real parameters, explicit bank label, immediate ownership and clipped On/Off transition&quot;,
+        &quot;deviceVerification&quot;: &quot;Pending — native host captures and device link only&quot;
+      },
+      &quot;ACC_GROOVE&quot;: {
+        &quot;designStatus&quot;: &quot;Native preview follows selected prototype; physical review pending&quot;,
+        &quot;implementationStatus&quot;: &quot;Implemented native preview: compatible patterns, actual masks/bar/step, queued kit/swing and shared transport&quot;,
+        &quot;deviceVerification&quot;: &quot;Pending — native host captures and device link only&quot;
+      },
+      &quot;ACC_NO_GROOVE&quot;: {
+        &quot;designStatus&quot;: &quot;Native preview follows selected prototype; physical review pending&quot;,
+        &quot;implementationStatus&quot;: &quot;Implemented in Groove: compatible Off/Click choices, no fabricated pattern or cursor&quot;,
+        &quot;deviceVerification&quot;: &quot;Pending — native host captures and device link only&quot;
+      },
+      &quot;ACC_LOOP&quot;: {
+        &quot;designStatus&quot;: &quot;Native preview follows selected prototype; physical review pending&quot;,
+        &quot;implementationStatus&quot;: &quot;Implemented phase-1 native preview: full phrase read-only endpoints, shared mode, play once/repeat, explicit focus and true cursor&quot;,
+        &quot;deviceVerification&quot;: &quot;Pending — native host captures and device link only&quot;
+      },
+      &quot;ACC_MIX&quot;: {
+        &quot;designStatus&quot;: &quot;Native preview follows selected prototype; physical review pending&quot;,
+        &quot;implementationStatus&quot;: &quot;Implemented native preview: real chord/bass/drum levels and linked bass On/Off; no fake VU meters&quot;,
+        &quot;deviceVerification&quot;: &quot;Pending — native host captures and device link only&quot;
+      },
+      &quot;ACC_CLICK&quot;: {
+        &quot;designStatus&quot;: &quot;Native preview follows selected prototype; physical review pending&quot;,
+        &quot;implementationStatus&quot;: &quot;Implemented native preview: independent On/Off and remembered level, real sound and shared tempo/clock&quot;,
         &quot;deviceVerification&quot;: &quot;Pending — native host captures and device link only&quot;
       }
     }

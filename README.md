@@ -73,6 +73,13 @@ and the fish startup animation. [Scene removal and measured resources](docs/SCEN
 [Three recent recordings, newest first](docs/RECORDINGS.md) replace the eight-slot recorder and recorder Undo.
 [Measured recording RAM savings](docs/PATTERN-MEMORY.md). The published download above remains the released build.
 
+The development build now has native Instrument Teal HOME banks and a shared-clock
+**SEQ → Groove / Loop / Mix / Click** workspace (ALGORITHM changes tab). Loop
+supports the full phrase with Repeat On/Off; Click can sound alongside a groove.
+**GLO → Legacy tools → K1 → SEL** opens Recordings, Metronome or Drum grid.
+[Native captures and implementation checks](docs/design/chord-first/native-accompaniment/README.md)
+are host evidence; physical verification remains pending.
+
 ## Install this release
 
 1. Download **`coralflower-0.6-chase7.fwsc`** from the [GitHub release](https://github.com/chasedeanda/chaseflower-fm1/releases/tag/v0.6-chase7).

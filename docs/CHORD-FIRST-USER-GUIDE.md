@@ -6,7 +6,7 @@ The [implementation plan](design/chord-first/IMPLEMENTATION-PLAN.md) uses the su
 
 ## Start here
 
-> Engineering preview: native Instrument Teal HOME now cycles Core/Sound/Texture/Groove with HOME. Every bank shows its real control mapping; SELECT still browses progressions and PRESETS still changes chord sound. GLO > Display exposes K1 theme, K2 retained HOME view, and K4 Motion On/Off. Tap GLO again to open the selected Chord/Keyboard/Diagnostics view; HOME always returns to Core. Bank-label motion is clipped to the footer and Off settles it immediately. Source cover-chord intervals and slash bass notes are preserved in the native rail. Full Songs, remaining page migration, detailed pending setup and device verification are still pending.
+> Engineering preview: native Instrument Teal HOME and Core/Sound/Texture/Groove banks now lead into shared-clock Groove/Loop/Mix/Click through SEQ. Loop has whole-phrase play once/repeat, explicit focus and an independent true cursor; Mix and Click edit real parameters. Two bounded pending lines distinguish queued idea/setup from applied state. External PLAY waits for pulses, clock loss releases scheduled ownership while preserving live HOLD and pending setup, and explicit Start/Continue resumes. Finite bank/page/chord transitions cancel with Motion Off. GLO > Legacy tools retains Recordings, Metronome and Drum grid. Existing manual takes and three-recording rotation remain in force. Full semantic Songs/editor, remaining page migration, motion hardware tuning and device verification are still pending.
 
 1. Open HOME. Turn SELECT to explore the complete progression catalogue; each idea supplies its starting key, mode and time signature.
 2. Press PLAY to hear the selected progression. Press PLAY again to stop.

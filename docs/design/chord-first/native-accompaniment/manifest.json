@@ -1,0 +1,32 @@
+{
+  "kind": "Host HAL native C firmware captures; physical verification pending",
+  "sourceBase": "e3333c1a41a5fd5b953f377552daff02a9701da9",
+  "implementationRevision": "3f701073692389bc6cca9d29b546ba88febeb8d6",
+  "designRevision": "845325136418dd038c7ef81eaca01ec64ac5e61e",
+  "nativeDimensions": [
+    240,
+    240
+  ],
+  "sourceSha256": {
+    "firmware/src/cf_accomp.c": "9465387274ad3040ed17570f30134fb451ef4db074b5b9188d0502c938fb9487",
+    "firmware/src/cf_accomp_ui.c": "174e0f9f694395129078faa648e7b9c4bbab9d2aa2331c1e7aadee130c41b4a0",
+    "firmware/src/cf_acc_ui.c": "b0c7d2f26511671c00852e941da2bc34f441eee1ab05a897663cde707b82b738",
+    "firmware/src/cf_acc_screen.c": "6f0d90cbd1f08609de231b6f0991cc446d1ceb728cbdff8def01bdbde3bc9b23",
+    "firmware/src/cf_browser_store.c": "c6b52247dfaf369aae762407dd6b8e2f349b487f3071b5e69b2a41408bf389cf",
+    "firmware/src/cf_home_banks.c": "325f1586343d83894e92fae34bf06b574d767d75b9d27f096fb171794ca965de",
+    "firmware/src/cf_out.c": "16baa71bbafa800de4513c5aba3a6692700092830c969411dc41080ab34647fa",
+    "firmware/src/cf_stage.c": "f35a1663778f7fada7e4bff1cb420c9330ebda12c39799048ff32bc34b91ee86",
+    "firmware/src/cf_state.h": "12894ad40aedd1b0645b81021a04d8a2a3debdd210f20d644758f02c47116da2",
+    "firmware/src/cf_ui.c": "7db0122cd57006ed73013c04d0d4a0b470ed74f7048e5a923dc432689ec160f1"
+  },
+  "imagesSha256": {
+    "click.png": "b9306c9b73ae33462a6af655cd9b2c92a3278e8d9907d5bbb3b7a340fbdec3cd",
+    "groove-playing.png": "debbe1145cd1e7de3d61a64689b41dc056eae6d5889e81ede96ffcedb5e5f947",
+    "groove-stopped.png": "bc82946471bb1517666e6546d179efc9033d239e6c61498204c9d824b83be1a1",
+    "home-queued.png": "fff065fb18332205c181b5b29b451f4b35414f72649fbbf221fba72e7d0ecc86",
+    "loop.png": "547d9aea50682108ce6f060fa5b59b858168e5220616ea68250b10208b2b2583",
+    "mix.png": "803147bfdcf426d32d0feee8ea93b87780374ae9caf4b4b909c5d2f728943067",
+    "play-once-pending.png": "6b0548daeaf480412f4a4dcd536e18582c9226c26acf92cf104a78bcd9fc1afa",
+    "tools.png": "23e2fcaa8766802e84bbdc3678d16167d5691784897ac3e646f30ee01eb6e5dc"
+  }
+}

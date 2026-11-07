@@ -14,8 +14,8 @@ The default keeps the **latest three** completed takes. The newest is always
 take replaces the oldest. An empty or cancelled take does not push anything out.
 The ordering survives a restart without copying all three patterns around RAM.
 
-Press SEQ, then SEQ again to open **Recordings** (when the metronome's destination
-is Recordings). Turn ALGORITHM to choose 1, 2 or 3; PLAY starts/stops the selected
+Open **GLO → Legacy tools**, turn K1 to **Recordings**, then press **SEL**.
+Turn ALGORITHM to choose 1, 2 or 3; PLAY starts/stops the selected
 take. SAVE returns from a track editor to this list. The existing track editors
 remain available, but the song-arrangement tab is omitted.
 
