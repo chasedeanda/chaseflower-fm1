@@ -50,6 +50,7 @@ DESCRIPTIONS = {
     47: ('Other metres', '2/4 tom-led tamborzao-inspired rhythm.'),
     45: ('Other metres', '5/4 live-kit groove with a two-bar kick and snare variation.'),
     46: ('Other metres', '7/4 live-kit groove with a late snare pickup and tom turnaround.'),
+    63: ('Other metres', 'Soft 3/4 waltz with a brush-kit pulse and a second-bar response.'),
 }
 REFERENCES = [
     ('Noise Honey: before the colors leave…nu gaze', 'https://splice.com/sounds/packs/noise-honey/before-the-colors-leave-nu-gaze/samples'),
@@ -103,7 +104,7 @@ def main():
 <script>
 const cards=[...document.querySelectorAll('article')],audios=[...document.querySelectorAll('audio')],search=document.querySelector('input'),select=document.querySelector('select');
 function filter(){let n=0;for(const c of cards){c.hidden=!(c.dataset.search.includes(search.value.toLowerCase())&&(!select.value||c.dataset.group===select.value));if(!c.hidden)n++;else c.querySelector('audio').pause()}document.querySelector('#count').textContent=n+' grooves'}search.addEventListener('input',filter);select.addEventListener('change',filter);for(const a of audios)a.addEventListener('play',()=>audios.forEach(b=>{if(b!==a)b.pause()}));document.querySelector('button').addEventListener('click',()=>audios.forEach(a=>a.pause()));
-</script></html>'''.replace('GROUPS', groups).replace('CARDS', '\n'.join(cards)).replace('LINKS', links)
+</script></html>'''.replace('GROUPS', groups).replace('CARDS', '\n'.join(cards)).replace('LINKS', links).replace('38 grooves', f'{len(rows)} grooves')
     (out / 'index.html').write_text(page)
     # A short sampler: one phrase each, in this order, separated by 150 ms of silence.
     with wave.open(str(out / 'sampler.wav'), 'wb') as sampler:

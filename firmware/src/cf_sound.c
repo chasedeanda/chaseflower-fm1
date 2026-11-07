@@ -104,6 +104,10 @@ static int cf_ent_extra(uint32_t e, uint32_t pos)
 {
     pool_ent_t en = pool_entry(e, pos);
     if (en.fk == PF_NONE) return 0;
+#if CHASE_LIBRARY
+    /* Append later FM voices after the original FM and VA additions: saved global indices stay put. */
+    if (e == ENGI_FM6 && en.fk >= CHASE_FM_BASE + CHASE_FM_LEGACY_N) return 2;
+#endif
     return en.fk >= pool_f0(e) + pool_base_nf(e) ||
            (en.kind == PK_FACTORY && cf_named(CF_DROP, NELEM(CF_DROP), e, ENGINES[e]->presets[en.fk].name));
 }
@@ -137,7 +141,7 @@ static void cf_list_build(void)
     cf_lst.ok = 1;
     cf_lst.gen = up_gen;
     cf_lst.n[0] = cf_lst.n[1] = 0;
-    for (pass = 0; pass < 2u; pass++)
+    for (pass = 0; pass < 3u; pass++)
     for (i = 0; i < CF_NENG; i++) {
         uint32_t e = CF_ENGINES[i], np = pool_count(e);
         for (pos = 0; pos < np && pos < 256u; pos++) {

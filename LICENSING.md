@@ -42,11 +42,20 @@ ChaseFlower's changes and original synth/drum designs are GPL-3.0-only. The HOME
 contributed by **Michael Norris (@norrismw)** in [CoralFlower issue #8](https://github.com/FicusFicusov/CoralFlower/issues/8),
 as a patch to the GPL firmware. The integration retains the existing file licenses and credits the contributor.
 
-The chase3 library also contains 32 original **Aquanode / aquanodemusic** DX7 voices, published under **CC0-1.0**.
+The initial chase3 library contains 32 original **Aquanode / aquanodemusic** DX7 voices, published under **CC0-1.0**.
 Their packed voice bytes are unchanged; ChaseFlower adds browsing names, genre assignments and output trims.
 The original banks, license, pinned source revision, hashes and per-slot audit are in
 `assets/sounds/candidates/aquanode/`. The 128-sound release catalog maps each imported sound back to its original
-bank and slot in `assets/sounds/chase3-catalog.json`. No Infinite Cycles remake banks are included.
+bank and slot in `assets/sounds/chase3-catalog.json`. Two further unchanged voices, DX SAX and DX FULLFLU from
+Aquanode Presets 4, extend that catalog to 130 records in current source. No Infinite Cycles remake banks are included.
+
+The optional **M Retro** and **M FM** drum recipes adapt Kerem Kilic's original Melodee CR-78 and FM drum
+recipes, published under **GPL-3.0-only** at revision `165d177a425944f3d30b0b669255a6ed0050c3a5`.
+The source tables are `firmware/src/drum_cr78.c` and `firmware/src/drum_fm.c` in
+[Melodee](https://github.com/keremimo/melodee/tree/165d177a425944f3d30b0b669255a6ed0050c3a5/firmware/src).
+Their author credit is retained in `firmware/src/melodee_drum_rows.h`. These are adaptations for the existing
+CoralFlower drum renderer, not ports of Melodee's engines. No Sequential factory programs or recorded sample
+libraries are included. See `docs/MELODEE-DRUMS.md`.
 
 ## JieLi SDK files in the packages (Apache-2.0)
 
