@@ -54,6 +54,8 @@ typedef struct {
     char rail[4][24],numeral[4][12];
     char value[4][14],label[4][12];
     uint8_t live,hold,slot,first,count,total,skin,motion,battery,halo,rec,bank,disabled[4],emphasis[4],cursor_width;
+    uint8_t pulse,activity,activity_step;
+    uint16_t matches;
     int8_t bank_dx,chord_dy;
 } cf_stage_model_t;
 static cf_stage_model_t cf_stage_last;
@@ -93,6 +95,8 @@ static void cf_stage_model(cf_stage_model_t *m)
     }
     str_cpy(m->notes,cf_stage_notes,sizeof m->notes);
     const cf_progression_t *p=cf_progression_current();
+    if(cf_sn.out.sounding && cf_sn.out.n && !cf_sn.out.single)
+        m->matches=cf_progression_highlight(p,cs.chord.scale,cs.chord.tonic,cf_sn.out.root_pc,cf_sn.out.mask);
     if(cpg.idea==CF_P_DRAFT){str_cpy(m->idea,"Draft: ",sizeof m->idea);str_cpy(m->idea+7,p->name,sizeof m->idea-7);}else str_cpy(m->idea,p->name,sizeof m->idea);str_cpy(m->sound,cf_snd[0].name,sizeof m->sound);
     char b[16],key[4];cf_pc_name(cs.chord.tonic,&cu_spell,key);
     str_cpy(m->context,key,sizeof m->context);str_cpy(m->context+str_len(m->context)," ",sizeof m->context-str_len(m->context));
@@ -120,8 +124,16 @@ static void cf_stage_model(cf_stage_model_t *m)
     }
     for(int i=0;i<4;i++){cf_knob_t k;memset(&k,0,sizeof k);ui_knob_info(i,&k);str_cpy(m->label[i],k.name,sizeof m->label[i]);str_cpy(m->value[i],k.val,sizeof m->value[i]);m->disabled[i]=k.dis;}
     cf_stage_energy=cfn_motion.energy;cf_stage_tick=cu.now;
-    unsigned beat=cf_motion && cf_sn.running && !cf_sn.ac_lost && !cf_sn.ac_waiting && !cf_sn.ac_paused && cf_sn.beats_done && cf_sn.now_ms-cf_sn.beat_ms<120;
-    m->halo=cf_motion && cfn_motion.active?(uint8_t)(1+cfn_motion.energy/64+(cfn_motion.parts>1?1:0)+(beat?1:0)):0;
+    unsigned clock=(cf_sn.running || cf_sn.metro_on) && cf_sn.beats_done && cfn_motion.fresh &&
+        !cf_sn.ac_lost && !cf_sn.ac_waiting && !cf_sn.ac_paused;
+    unsigned phase=cf_sn.beat_acc/(FS*60u/16u);if(phase>15)phase=15;
+    m->halo=cf_motion && cfn_motion.active?(uint8_t)(1+cfn_motion.energy/64+(cfn_motion.parts>1?1:0)):0;
+    if(m->halo) {
+        unsigned pulse=clock?(phase<8?8-phase:0):cf_stage_chord_ms && (int32_t)(cf_stage_chord_ms-cf_motion_epoch)>0 && cu.now-cf_stage_chord_ms<320?8-(cu.now-cf_stage_chord_ms)/40:0;
+        m->pulse=(uint8_t)((3+cfn_motion.energy/40)*pulse/8);
+    }
+    if(cf_motion && clock){m->activity=1;m->activity_step=phase/4;}
+    else if(cf_motion && cfn_motion.active){m->activity=2;m->activity_step=cfn_motion.energy/64;}
     for(unsigned k=0;k<4;k++)m->emphasis[k]=cfn_knob(k);
     m->cursor_width=cfn_cursor(CFN_CURSOR_HOME|m->slot);
 }
@@ -139,8 +151,13 @@ static void cf_stage_draw(void)
     if(cf_stage_valid && !fb_full && !memcmp(&m,&cf_stage_last,sizeof m))return;
     cf_stage_last=m;cf_stage_valid=1;cf_stage_draws++;
     fb_unclip();fb_fill(FL_BG);
-    cfn_fit(&CFN_12,10,17,m.idea,155,FL_INK2);
-    cfn_text(&CFN_12,230-cfn_width(&CFN_12,m.status),17,m.status,C_ACC(0));
+    int status_x=210-cfn_width(&CFN_12,m.status);
+    cfn_fit(&CFN_12,10,17,m.idea,status_x-22,FL_INK2);
+    cfn_text(&CFN_12,status_x,17,m.status,C_ACC(0));
+    if(m.activity==1) {
+        static const uint8_t xy[4][2]={{224,8},{228,12},{224,16},{220,12}};
+        for(unsigned i=0;i<4;i++){int size=i==m.activity_step?3:1;fb_rect(xy[i][0]-size/2,xy[i][1]-size/2,size,size,i==m.activity_step?C_ACC(0):FL_INK2);}
+    } else if(m.activity==2){int size=3+(m.activity_step>2?2:m.activity_step);fb_rect(224-size/2,12-size/2,size,size,C_ACC(0));}
     fb_hline(10,25,220,FL_BG3);
     cfn_fit(&CFN_12,10,43,m.context,124,FL_INK2);
     cfn_fit(&CFN_12,140,43,m.sound,90,FL_INK2);
@@ -152,11 +169,16 @@ static void cf_stage_draw(void)
     str_cpy(degree+str_len(degree),m.degree,sizeof degree-str_len(degree));
     cfn_center(&CFN_16,120,queued?82:76,degree,C_ACC(0));
     if(m.halo) {
-        int px=120+82+m.halo,py=107;
-        for(int a=16;a<=1024;a+=16) {
-            int x=120+(int)(fl_fcos(a)*(82+m.halo)/16384),y=107+(int)(fl_fsin(a)*((queued?19:28)+m.halo)/16384);
-            fb_line(px,py,x,y,FL_BG3);px=x;py=y;
+        fb_clip(8,83,232,139);
+        for(unsigned ring=0;ring<2;ring++) {
+            int rx=(ring?92:78)+m.halo+m.pulse,ry=(ring?35:28)+m.pulse/2;
+            int px=120+rx,py=107;
+            for(int a=32;a<=1024;a+=32) {
+                int x=120+(int)(fl_fcos(a)*rx/16384),y=107+(int)(fl_fsin(a)*ry/16384);
+                fb_line(px,py,x,y,!ring?C_ACC(2):FL_BG3);px=x;py=y;
+            }
         }
+        fb_unclip();
     }
     fb_clip(0,83,240,138);cf_stage_chord(m.chord,130+m.chord_dy,m.live?FL_INK:FL_INK2);fb_unclip();
     cfn_fit(&CFN_12,10,148,m.notes,165,FL_INK2);
@@ -166,8 +188,10 @@ static void cf_stage_draw(void)
     for(unsigned i=0;i<m.count;i++) {
         int x=30+(int)i*60;
         fb_clip((int)i*60,157,(int)(i+1)*60,195);
-        cfn_center(&CFN_16,x,174,m.numeral[i],C_ACC(0));
-        cfn_center(&CFN_12,x,190,m.rail[i],FL_INK);
+        unsigned match=(m.matches>>(m.first+i))&1u;
+        if(match)fb_rect((int)i*60+3,159,54,33,C_ACC(0));
+        cfn_center(&CFN_16,x,174,m.numeral[i],match?56:C_ACC(0));
+        cfn_center(&CFN_12,x,190,m.rail[i],match?56:FL_INK);
         if(m.slot==m.first+i)fb_hline((int)i*60+9,193,42*m.cursor_width/100,C_ACC(0));
     }
     fb_unclip();fb_hline(10,198,220,FL_BG3);
