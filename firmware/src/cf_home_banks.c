@@ -36,6 +36,10 @@ static void cf_perform_turn(unsigned action)
 static int cf_home_bank_info(int k, cf_knob_t *o)
 {
     if (cf_home_bank == CF_HB_CORE) return 0;
+    if (cf_home_bank == CF_HB_LEARN) {
+        kfmt(o->name,12,""); kfmt(o->val,14,""); o->dis=1;
+        return 1;
+    }
     if (cf_home_bank == CF_HB_PERFORM) {
         static const char *const label[]={"FILL","DROP","BACK","TEMPO"};
         if(k==3){cpa_tempo_info(o);return 1;}
@@ -102,6 +106,7 @@ static void cf_home_groove(int k,int d)
 static int cf_home_bank_turn(int k,int d)
 {
     if (cf_home_bank==CF_HB_CORE) return 0;
+    if (cf_home_bank==CF_HB_LEARN) return 1; /* read-only guide: all four knobs are deliberately inactive */
     if (!d) return 1;
     if(cf_home_bank==CF_HB_PERFORM) {
         if(k<3)cf_perform_turn((unsigned)k+1u);else cpa_tempo(d);

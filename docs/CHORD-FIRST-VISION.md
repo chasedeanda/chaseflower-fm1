@@ -314,7 +314,7 @@ Preserve contrast and non-color position/focus cues, persist checked/versioned
 preferences safely, and measure idle/reactive display costs before shipping.
 
 From another screen or secondary scene, HOME returns to Progressions CORE.
-While already on Progressions, tap HOME to cycle CORE → SOUND → TEXTURE → GROOVE.
+While already on Progressions, tap HOME to cycle CORE → SOUND → TEXTURE → GROOVE → PERFORM → KEYBOARD.
 This recommended reuse of the existing HOME-view cycle requires physical-device
 verification. ALGORITHM retains its normal scene/tab role; SELECT remains the
 complete catalogue on HOME and chooses items in detail. OCT−/OCT+ remain musical.
@@ -333,7 +333,7 @@ This is a new navigation proposal, not a claim about the current controls.
 
 | Physical button | Destination or action |
 | --- | --- |
-| HOME | From elsewhere: Progressions CORE; on Progressions: cycle the four live banks |
+| HOME | From elsewhere: Progressions CORE; on Progressions: cycle the six HOME pages |
 | SEL | Inspect chord: Now, Next suggestions, notes/intervals, voicing comparison |
 | SEQ | Accompaniment: Groove, Loop, Arrange, Click |
 | ARP | Chord motion: existing arp first; pulse/strum later |
@@ -371,7 +371,7 @@ explicitly captured from the physical buttons into the selected slot.
    Drums Off, visible actual chord and playback position. Preserve full SELECT
    browsing, automatic key/scale/metre and the agreed simple Harmony rules.
    Do not require copying into a sequencer or recording a take first. Establish
-   the selected typographic HOME, four live banks and the supplied prototype's
+   the selected typographic HOME, six HOME pages and the supplied prototype's
    adaptive On / settled Off motion alongside this useful flow.
 2. **Edit and save musical ideas.** Slot degree, chord quality/color, duration
    and voicing, plus recoverable draft/undo and complete idea save/recall.
@@ -545,3 +545,13 @@ behavioral change; the proven low-level core can remain.
 - [Minnix Music's progression article](https://minnixmusic.wordpress.com/2024/09/11/the-100-chord-progressions-every-musician-must-know/):
   a broad curation starting point. Verify each formula, chord quality and song
   attribution against the actual intended behavior before adding an entry.
+
+## Keyboard / Learn — sixth HOME page (November 7)
+
+Keep Perform as page 5. Add Keyboard / Learn as **6/6**, then wrap to Core.
+Use the whole page for the physical 27-key layout, current root notes/degrees,
+actual manual or Harmony modifier assignments and HOLD, plus the last played
+key’s full name and plain-language explanation. The key still plays normally.
+All four knobs do nothing on this page: no parameter columns or hidden edits.
+Actual Now/Last chord notes and transport/recording status remain truthful.
+See [native controls and evidence](KEYBOARD-LEARN.md).

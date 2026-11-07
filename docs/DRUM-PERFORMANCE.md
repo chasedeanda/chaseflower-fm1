@@ -10,9 +10,10 @@ firmware and has not been flashed or physically verified on an FM-1.
 ## Use it from HOME
 
 Choose a compatible rhythm in **Core**, press **PLAY**, and tap **HOME** until
-**PERFORM 5/5** appears. HOME cycles **Core → Sound → Texture → Groove → Perform**;
-from another workspace it returns to Core. The large actual chord, notes, planned
-phrase, live matching and true cursor stay visible in every bank.
+**PERFORM 5/6** appears. HOME cycles **Core → Sound → Texture → Groove → Perform → Keyboard**;
+from another workspace it returns to Core. The five musical banks keep the large actual chord, notes, planned phrase, live
+matching and true cursor. Keyboard / Learn is the sixth HOME page and gives that
+space to the key guide, with all four knobs inactive.
 
 | Knob | Action | When it is heard |
 | --- | --- | --- |

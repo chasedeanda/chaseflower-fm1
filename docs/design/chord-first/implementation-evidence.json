@@ -838,6 +838,11 @@
       "designStatus": "Native preview follows Instrument Teal; device review pending",
       "implementationStatus": "Implemented in development source: fifth HOME bank; next-bar one-bar fills, drum drops and returns; Motion Off, live-only recorder scope. See docs/DRUM-PERFORMANCE.md.",
       "deviceVerification": "Pending — native host captures and linked firmware only"
+    },
+    "HOME_KEYBOARD": {
+      "designStatus": "Native 240x240 captures; physical review pending",
+      "implementationStatus": "Implemented sixth HOME page from main eb51a3a: full physical key map, current root/degree and Manual/Auto/HOLD assignments, press-to-explain normal playing, four inactive knobs. See docs/KEYBOARD-LEARN.md.",
+      "deviceVerification": "Pending — native host tests/captures and local JieLi link; no hardware flash"
     }
   },
   "foundations": {

@@ -72,7 +72,7 @@ unmigrated advanced controls behind a broken route.
 
 | Area | Screen/workflow to implement | Completion evidence |
 | --- | --- | --- |
-| Progressions / Play | Hero chord, actual degree/quality and notes, planned degree/name rail, true cursor, pending setup, five live banks | PLAY immediately starts the selected progression; key, scale, tempo, sound and compatible premade groove remain reachable |
+| Progressions / Play | Hero chord, actual degree/quality and notes, planned degree/name rail, true cursor, pending setup, six HOME pages | PLAY immediately starts the selected progression; key, scale, tempo, sound and compatible premade groove remain reachable |
 | Progression catalogue | Entire existing catalogue, immediate starting key/mode/metre, ordered browsing and long-phrase windowing | No new tag/key/scale filter hides entries; no Apply step; repeated chords do not confuse position |
 | Chord library | Readable chord/degree rows; explicit audition and insertion from the editor | Correct notes and interval labels; true diatonic reference distinguished from deliberate quality-following sevenths |
 | Progression editor | Numbered slots, degree/quality/color/length, voicing/bass detail, insert/remove, undo and working draft | Edits affect the intended slot, survive save/recall and never silently discard unsaved work |
@@ -102,7 +102,7 @@ These studies do not delay the playback/editor/learning/suggestion milestones.
 | Input | Required behavior |
 | --- | --- |
 | HOME from another screen | Return to Progressions **Core** |
-| HOME while on Progressions | Cycle **Core → Sound → Texture → Groove → Perform → Core**; use the existing HOME-view gesture rather than adding a hardware button |
+| HOME while on Progressions | Cycle **Core → Sound → Texture → Groove → Perform → Keyboard → Core**; use the existing HOME-view gesture rather than adding a hardware button |
 | SELECT on Progressions | Browse the complete progression catalogue; automatically use the selected idea's starting setup |
 | SELECT inside a list/editor | Move the explicit focused item/slot; repeated pitch matches do not choose edit focus |
 | PRESETS | Select the chord sound globally |
@@ -123,6 +123,7 @@ The bank mappings use retained, explicit controls:
 | Texture | Reverb mix | Delay mix | Chorus mix | Glide |
 | Groove | Kit | Drum level | Swing | Click |
 | Perform | Fill | Drop drums | Bring back | Tempo |
+| Keyboard / Learn | Inactive | Inactive | Inactive | Inactive |
 
 The supplied browser's sample bank words are appearance studies; the canonical
 mapping above is the engineering contract. Bank switching changes presentation
@@ -230,7 +231,7 @@ artifacts and current behavior are distinguishable from browser studies.
 
 - Wire selected progression PLAY to the shared chord/drum clock, premade groove
   selection, phase-preserving tempo and documented key/mode/groove boundaries.
-- Add the five live banks, their visible mappings and restrained transition.
+- Add the six HOME pages, their visible mappings and restrained transition.
 - Implement Groove/Loop/Mix/Click pages and external-clock waiting/loss/resume.
 - Publish safe bounded activity metadata and tune adaptive motion on hardware.
 
@@ -316,3 +317,12 @@ Keep the existing roadmap linked to this plan instead of creating duplicates:
 | [#49](https://github.com/chasedeanda/chaseflower-fm1/issues/49) | Persisted palettes/solid accent and two-choice adaptive motion |
 | [#50](https://github.com/chasedeanda/chaseflower-fm1/issues/50) | Resource baseline, bounded rendering and hardware timing evidence |
 | [#51](https://github.com/chasedeanda/chaseflower-fm1/issues/51) | Measured focused-build cleanup and compatibility migration |
+
+## Keyboard / Learn — sixth HOME page
+
+The cycle now ends Perform → Keyboard → Core. Keyboard uses the full display
+for the physical key map and press-to-explain detail; all four knobs are inactive.
+Keep the normal note, HOLD, transport and recorder owners. Labels come from
+current key/scale/OCT and manual/Auto assignments, not a frozen factory chart.
+Native implementation/captures and pending hardware review are recorded in
+[KEYBOARD-LEARN.md](../../KEYBOARD-LEARN.md).
