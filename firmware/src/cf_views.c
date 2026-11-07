@@ -1248,22 +1248,7 @@ static void draw_sel_pointer(void)
 /* the pattern on a little roll: sixteen steps, each note a bar as long as GATE, the second of each pair late by
  * SWING, high notes high; the step playing lit (the chord held, or the key's triad as a preview); Strum: the
  * chord's notes coming in one after another, RATE ms apart, held. LATCH: a chip while it plays on alone */
-static int cv_arp_k(int mode, int len, int i)   /* the arpeggiator's walk (cf_arp.c cfa_pick), random as a hash */
-{
-    int k;
-    switch (mode) {
-    case CF_ARP_DOWN: return len - 1 - i % len;
-    case CF_ARP_INC: k = i % (2 * len); return k < len ? k : 2 * len - 1 - k;
-    case CF_ARP_EXC:
-        if (len < 3)
-            return i % len;
-        k = i % (2 * len - 2);
-        return k < len ? k : 2 * len - 2 - k;
-    case CF_ARP_RAND: return (int)(((uint32_t)i * 2654435761u >> 13) % (uint32_t)len);
-    case CF_ARP_REPEAT: return (i / 2) % len;
-    default: return i % len;
-    }
-}
+static int cv_arp_k(int mode,int len,int i) { return (int)cf_arp_walk((unsigned)mode,(unsigned)len,(uint32_t)i); }
 static void view_arp(int x0)
 {
     const int mode = cs.arp.mode % CF_ARP_NMODES, run = cf_sn.arp_on && cf_sn.arp_n;
@@ -1273,7 +1258,7 @@ static void view_arp(int x0)
     static const char *const WHAT[CF_ARP_NMODES] = {"low to high, over and over", "high to low, over and over",
         "up and down, the ends twice", "up and down, the ends once", "a random note each step",
         "root, 3rd, 5th.. as built", "each note twice, upward", "every chord strummed up",
-        "every chord strummed down"};
+        "every chord strummed down", "outer notes walk inward", "middle notes walk outward", "low note between each tone", "high note between each tone"};
     if (run) {
         n = cf_sn.arp_n;
         for (i = 0; i < n; i++)

@@ -1,0 +1,11 @@
+{
+  "source": "ca52779c53428017be56ec96aafccbe7a8804d93",
+  "elf_sha256": "4fc5db839725d87207834572425e211f66450685d861ee514d185219879b56bf",
+  "regions": {
+    "ordinary_ram": 89496,
+    "pool": 316792,
+    "xip": 563784,
+    "ram_code": 3128,
+    "noinit": 216
+  }
+}

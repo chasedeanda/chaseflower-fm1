@@ -557,7 +557,7 @@ static void cf_apply(const cf_ev_in_t *e)
         }
         cfp_key(CF_KEY_EXT + e->a, e->v);
         break;
-    case CFE_CONFIG: cfp_config(); break;
+    case CFE_CONFIG: cfp_config(); cpa_arp_config(); break;
     case CFE_ACCOMP:
         if (e->a) cpa_start(); else cpa_stop();
         break;
@@ -689,6 +689,7 @@ static void cf_audio_block(uint32_t n)
         uint32_t pulses = cfx_in.pulses;         /* (MIDI clock in: the pulses come since the last block) */
         cfx_in.pulses = 0;
         cfx_in.active = cfp_cfg.clock_in && cfx_in.bpm && (uint32_t)(cf_now_ms - cfx_in.last_ms) < 300u;
+        cpa_arp_service();
         cfa_tick(n);                             /* (the arpeggiator: its steps, its strum) */
         sqp_arp_tick(n);                         /* (the sequencer's tracks' with ARP on) */
         sqp_pre_watch();                         /* (since REC went down, before a take begins) */
@@ -748,6 +749,7 @@ typedef struct {
     uint32_t keys_held;          /* bit k: key k is down in the chord model's view */
     uint8_t arp_on, arp_latched, arp_steps, arp_note, arp_n, arp_note_list[CF_MAX_NOTES];
     uint32_t arp_idx;            /* the arpeggiator: steps played, the last note, the chord it plays */
+    cf_arp_view_t arp_view;
     uint8_t ext_clock;           /* MIDI clock in runs the beat */
     uint16_t ext_bpm;            /* .. at this tempo */
     uint8_t sq_on, sq_song, sq_pat, sq_slot, sq_bar;   /* the sequencer: playing, the song, where (bar: in the
@@ -813,6 +815,15 @@ static void cf_snapshot(void)
     cf_sn.arp_note = cfa.last_note;
     cf_sn.arp_idx = cfa.idx;
     cf_sn.arp_n = cfa.n;
+    const cfa_t *av=&cfa_k;
+    if (!(av->on && av->n)) { if(cfa_sq[0].on && cfa_sq[0].n)av=&cfa_sq[0];else if(cfa_sq[1].on && cfa_sq[1].n)av=&cfa_sq[1]; }
+    cf_arp_view_t *v=&cf_sn.arp_view;
+    v->n=av->n;v->on=av->on;v->idx=av->idx;v->count=av->count;v->seen=av->seen;
+    v->onset_ms=av->onset_ms;v->interval_ms=av->interval_ms;v->root=av->root;v->mask=av->mask;
+    v->mode=av->mode;v->latched=av->latched;v->strum_n=av->sn;v->strum_i=av->si;
+    v->source=av==&cfa_k?0:av==&cfa_sq[1]?3:cpa.on?1:2;
+    v->oct=cfp_cfg.arp.oct;v->rate=cfp_cfg.arp.rate;v->gate=cfp_cfg.arp.gate;v->swing=cfp_cfg.arp.swing;
+    memcpy(v->trace,av->trace,sizeof v->trace);memcpy(v->note,av->note,sizeof v->note);memcpy(v->order,av->order,sizeof v->order);memcpy(v->strum,av->snote,sizeof v->strum);
     cf_sn.ext_clock = cfx_in.active;
     cf_sn.ext_bpm = cfx_in.bpm;
     for (i = 0; i < cfa.n; i++)

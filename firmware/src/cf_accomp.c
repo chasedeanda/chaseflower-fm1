@@ -61,9 +61,18 @@ static void cpa_overlay_cfg(cf_chord_cfg_t *cfg)
     cfg->tonic = cpa.plan.tonic; cfg->scale = cpa.plan.scale;
     cfg->quantize = CF_Q_BASIC;
 }
+/* The accompaniment borrows the existing CHORDS arp owner; recordings retain
+ * their independent per-track ARP flags. No extra transport or allocation. */
+static void cpa_arp_off(void)
+{
+    cfa_t *saved=cfa_at;cfa_at=&cfa_sq[0];cfa_stop();cfa.on=0;cfa_at=saved;
+}
+static int cpa_live_chord(void)
+{ return cfp_cp==0 && (cfp.n || cfa_k.n); }
 static void cpa_release(void)
 {
     cf_perf_reset();
+    cpa_arp_off();
     cla_cancel(0);
     sqp_chord_off(); sqp_bass_off(); sqp.dn = 0;
     sqp_drum_offs();
@@ -87,14 +96,23 @@ static void cpa_emit(void)
        !memcmp(sqp.note,s->note,s->n) && !memcmp(sqp.bass,s->bass,sqp.nb)) {
         sqp.dmask=s->mask;sqp.droot=s->root;cpa_tie_from=0;return;
     }
+    if(cpa_tie_from && cfp_cfg.arp_on && cfa_sq[0].n==s->n &&
+       !memcmp(cfa_sq[0].note,s->note,s->n)) {cpa_tie_from=0;return;}
     cpa_tie_from=0;
+    cpa_arp_off();
     uint32_t gt = cfp.nb || cfa.on ? 0 : sqp_glide_ticks();
     if (cpa.plan.mode == CPA_DRUMS) {
         sqp_chord_off(); sqp_bass_off(); sqp.dn = 0; return;
     }
     sq_ev_t e = {0}; e.n = s->n;
     for (unsigned i = 0; i < s->n; i++) e.note[i] = s->note[i];
-    if (gt && (sqp.n || (cfp_cfg.glide_always && sqp.gn && cf_now_ms - sqp.gms < 4000u)))
+    if(cfp_cfg.arp_on) {
+        sqp_chord_off();
+        if(!cpa_live_chord()) {
+            cf_chord_out_t o={0};o.sounding=1;o.n=s->n;o.root_pc=s->root%12;o.root_note=s->root;o.mask=s->mask;
+            memcpy(o.note,s->note,s->n);cfa_t *saved=cfa_at;cfa_at=&cfa_sq[0];cfa.on=1;cfa_chord(&o,s->n);cfa_at=saved;
+        }
+    } else if (gt && (sqp.n || (cfp_cfg.glide_always && sqp.gn && cf_now_ms - sqp.gms < 4000u)))
         sqp_chord_glide(&e, gt, sqp.n != 0);
     else {
         sqp_chord_off();
@@ -108,6 +126,24 @@ static void cpa_emit(void)
     for (unsigned i = 0; i < s->n; i++) sqp.dnote[i] = sqp.gnote[i] = s->note[i];
     sqp.droot = s->root; sqp.dmask = s->mask; sqp.dsingle = 0; sqp.dser++;
     sqp_bass_on(s->bass, cfp_cfg.bass_on ? s->nb : 0, s->ticks, gt);
+}
+static void cpa_arp_config(void)
+{
+    if(!cpa.on)return;
+    if(cpa.paused || cpa.clock_wait){cpa_arp_off();return;}
+    if(cfa_sq[0].on!=cfp_cfg.arp_on && sqp.dn){cpa_tie_from=0;cpa_emit();}
+    else if(cfa_sq[0].on){cfa_t *saved=cfa_at;cfa_at=&cfa_sq[0];cfa_config(1);cfa_at=saved;}
+}
+static void cpa_arp_service(void)
+{
+    if(!cpa.on)return;
+    if(cpa.paused || cpa.clock_wait || cpa_live_chord() || cla_active()) {
+        if(cfa_sq[0].on)cpa_arp_off();
+        return;
+    }
+    /* Disabling ARP during a live takeover must still return to the current
+     * scheduled chord on release, rather than waiting for its next slot. */
+    if(sqp.dn && (cfp_cfg.arp_on?!cfa_sq[0].n:!sqp.n)){cpa_tie_from=0;cpa_emit();}
 }
 static void cpa_groove(int reset)
 {
@@ -189,7 +225,7 @@ static void cpa_tick1(void)
                 if(cpa_edit.plan.click_start){cfm.level=cpa_edit.plan.click_start;cpa.click_generation++;}
                 cpa.plan.click_start=cpa_edit.plan.click_start=0;
                 cpa_edit.flags &= ~CPA_GROOVE; cpa.revision++;
-                if (cpa.plan.mode == CPA_DRUMS) { sqp_chord_off(); sqp_bass_off(); sqp.dn = 0; }
+                if (cpa.plan.mode == CPA_DRUMS) { cpa_arp_off(); sqp_chord_off(); sqp_bass_off(); sqp.dn = 0; }
             }
             if (onset==1) {
                 if(cpa.plan.repeat_off && cpa.slot+1u>=cpa.plan.n) { cpa_stop(); return; }
@@ -204,7 +240,7 @@ static void cpa_tick1(void)
     }
     const cpa_slot_t *gate=&cpa.plan.slot[cpa.slot];
     if(gate->gate<100 && !gate->tie && cpa.elapsed>=(uint32_t)gate->ticks*gate->gate/100u) {
-        sqp_chord_off();sqp_bass_off();sqp.dn=0;
+        cpa_arp_off();sqp_chord_off();sqp_bass_off();sqp.dn=0;
     }
     if (dmp.on) { dmp.t = cpa.t; dmp_now(); }
     if (!(cpa.t % SQ_PPQN)) {

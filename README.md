@@ -75,6 +75,17 @@ the labels show exactly what each one will change.
 | **GLO** | System pages: Display, MIDI, Harmony, Variation, Browse, Recordings policy and Legacy tools |
 | **MASTER / OCT− / OCT+** | Output volume / playing register |
 
+### Follow the arpeggio
+
+The development ARP screen uses a large piano roll: follow the current note and
+octave while the full chord name stays visible. **ALGORITHM** or **SELECT** switches
+between **Pattern** (On/Off, Mode, Octaves, Rate) and **Timing & hold** (Gate, Swing,
+Latch, sound Glide); the roll stays on both pages. Tempo remains on HOME Core K4.
+The global ARP now also plays scheduled progression chords, with bass held beneath.
+Four added modes—**Converge, Diverge, Low pedal, High pedal**—join the original nine.
+See [controls, patterns and native previews](docs/ARP.md). This development change
+is not included in the 0.6-chase10 download above.
+
 ### The six HOME pages
 
 | Bank | K1 | K2 | K3 | K4 |

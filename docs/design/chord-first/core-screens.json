@@ -3208,7 +3208,7 @@
       "title": "Arpeggio and Strum",
       "phase": 1,
       "kind": "params",
-      "purpose": "Retain the existing useful chord-delivery modes under one shared tempo.",
+      "purpose": "Follow the live or scheduled arpeggio on a large roll while controlling note order, octave range and rate through the shared musical clock.",
       "entry": "ARP from another workspace.",
       "fields": [
         {
@@ -3234,12 +3234,12 @@
       ],
       "knobs": [
         "Arp: Off / On",
-        "Mode: Up / Down / Inclusive / Exclusive / Random / Order / Repeat / Strum Up / Strum Down",
+        "Mode: Up / Down / Inclusive / Exclusive / Random / Order / Repeat / Strum Up / Strum Down / Converge / Diverge / Low pedal / High pedal",
         "Octaves: 1–4",
         "Rate: musical division; strum spacing in ms"
       ],
-      "select": "Choose the mode; never change the catalogue song from this workspace.",
-      "algorithm": "Choose Arpeggio / Feel.",
+      "select": "Switch Pattern / Timing & hold; never change the catalogue song from this workspace.",
+      "algorithm": "Choose Arpeggio / Timing & hold.",
       "buttons": {
         "HOME": "Return to Progressions; keep transport and unsaved draft.",
         "PLAY": "Control accompaniment; Arp itself does not launch another transport.",
@@ -3254,18 +3254,22 @@
         "FX": "Open Effects on the last effect.",
         "GLO": "Open System; Sound → Presets and Sound → Advanced remain reachable there."
       },
-      "exit": "ARP/HOME returns home; ALGORITHM to Feel.",
+      "exit": "ARP/HOME returns home; ALGORITHM to Timing & hold.",
       "states": [
         "Shared musical tempo; Random is note order, not progression generation.",
         "Strum rate becomes inter-note milliseconds; one strum per chord onset.",
         "Bass stays held/linked beneath arpeggio rather than being arpeggiated.",
-        "Mode changes apply at next chord onset; rate changes retain phase where applicable.",
-        "Arp note motion does not replace the large chord's harmonic identity."
+        "Clocked mode changes apply at the next event; strum direction/octave changes apply on the next chord. Rate changes retain phase where applicable.",
+        "Arp note motion does not replace the large chord's harmonic identity.",
+        "A large native pitch/time roll remains visible on both banks; the individual event never replaces the full harmonic name and degree. See docs/ARP.md and previews/arp-roll for the implemented display.",
+        "The original nine saved IDs remain stable; append Converge, Diverge, Low pedal and High pedal.",
+        "Random consumes actual event history with unknown future columns empty. Strums show actual queued pitches and accumulating sustained notes.",
+        "Live/HOLD/Latch takes over the scheduled arp; releasing it returns to the current scheduled chord without restarting transport."
       ],
       "playerSteps": [
         "Press ARP.",
         "Enable it and choose a mode.",
-        "Set rate; use ALGORITHM for Feel."
+        "Set rate; use ALGORITHM for Timing & hold."
       ],
       "related": [
         "MOTION_FEEL",
@@ -3275,19 +3279,19 @@
     {
       "id": "MOTION_FEEL",
       "group": "Motion",
-      "title": "Motion Feel and Glide",
+      "title": "Timing & hold",
       "phase": 1,
       "kind": "params",
-      "purpose": "Keep expressive controls available after Tempo replaces Glide on HOME.",
-      "entry": "ARP, ALGORITHM to Feel.",
+      "purpose": "Adjust note length, swing, live latch and sound Glide while keeping the arpeggio visible.",
+      "entry": "ARP, ALGORITHM to Timing & hold.",
       "fields": [
         {
           "label": "Gate",
-          "value": "75%"
+          "value": "70%"
         },
         {
           "label": "ArpSwing",
-          "value": "56%"
+          "value": "50%"
         },
         {
           "label": "Latch",
@@ -3304,8 +3308,8 @@
         "Manual arp latch: Off / On",
         "Chord-sound Glide: 120 ms"
       ],
-      "select": "No secondary list; direct parameters.",
-      "algorithm": "Choose Arpeggio / Feel.",
+      "select": "Switch Pattern / Timing & hold, without changing musical parameters.",
+      "algorithm": "Choose Arpeggio / Timing & hold.",
       "buttons": {
         "HOME": "Return to Progressions; keep transport and unsaved draft.",
         "PLAY": "Start the explicitly selected playback source from its beginning, or stop the running transport and audition; preserve independent live HOLD.",
@@ -3326,7 +3330,9 @@
         "Manual arp latch sustains live takeover independently of physical roots; turning it Off releases only arp-latched ownership.",
         "HOLD and arp latch are separately labelled sustain sources; either may keep the live owner active.",
         "Glide belongs to the chord sound and linked bass, rather than automatic global harmony style.",
-        "Legato/Always behavior remains an Advanced Sound parameter."
+        "Legato/Always behavior remains an Advanced Sound parameter.",
+        "A large native pitch/time roll remains visible on both banks; the individual event never replaces the full harmonic name and degree. See docs/ARP.md and previews/arp-roll for the implemented display.",
+        "Tempo remains on HOME Core K4; this bank exposes Gate, Swing, Latch and sound Glide through the four knobs."
       ],
       "playerSteps": [
         "Set Gate and Swing.",

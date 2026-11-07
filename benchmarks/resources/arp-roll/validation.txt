@@ -1,0 +1,68 @@
+tests:
+boot: normal reset power-on failed 0 pending 1 counted 0 prev_stage 0 (none)
+ARP roll: 125216 checks, 0 failures
+ARP roll: 2 checks, 0 failures
+ARP roll: 2 checks, 0 failures
+ARP roll: 2 checks, 0 failures
+ARP roll: 2 checks, 0 failures
+PASS: all 13 modes, native ARP roll, latch/release, progression takeover and identical physical/USB/MIDI streams while drawing at both capture rates.
+
+native-pages:
+boot: normal reset power-on failed 0 pending 1 counted 0 prev_stage 0 (none)
+native pages and motion: 1261 checks / 590 routes, 0 failures
+native pages and motion: 5 checks / 0 routes, 0 failures
+native pages and motion: 5 checks / 0 routes, 0 failures
+native pages and motion: 5 checks / 0 routes, 0 failures
+native pages and motion: 5 checks / 0 routes, 0 failures
+PASS: Motion On/Off preserve identical physical audio, six USB channels and MIDI at both rates.
+
+auto:
+cf_harmony: 102660 checks, 0 failures
+boot: normal reset power-on failed 0 pending 1 counted 0 prev_stage 0 (none)
+cf_auto: 47420 checks, 0 failures
+
+accomp:
+boot: normal reset power-on failed 0 pending 1 counted 0 prev_stage 0 (none)
+accompaniment: 158365 checks, 0 failures; plan 348 bytes, runtime+mailboxes 1088 bytes
+accompaniment: 3 checks, 0 failures; plan 348 bytes, runtime+mailboxes 1088 bytes
+accompaniment: 3 checks, 0 failures; plan 348 bytes, runtime+mailboxes 1088 bytes
+accompaniment: 3 checks, 0 failures; plan 348 bytes, runtime+mailboxes 1088 bytes
+accompaniment: 3 checks, 0 failures; plan 348 bytes, runtime+mailboxes 1088 bytes
+PASS: accompaniment transport and identical physical output with USB capture/drawing at both rates.
+
+lab:
+Chord Lab theory/ranking: 186395 checks, 0 failures
+boot: normal reset power-on failed 0 pending 1 counted 0 prev_stage 0 (none)
+Chord Lab UI/ownership USB 44100: 78 checks, 0 failures
+boot: normal reset power-on failed 0 pending 1 counted 0 prev_stage 0 (none)
+Chord Lab UI/ownership USB 44100: 6892 checks, 0 failures
+boot: normal reset power-on failed 0 pending 1 counted 0 prev_stage 0 (none)
+Chord Lab UI/ownership USB 44100: 6892 checks, 0 failures
+boot: normal reset power-on failed 0 pending 1 counted 0 prev_stage 0 (none)
+Chord Lab UI/ownership USB 48000: 78 checks, 0 failures
+boot: normal reset power-on failed 0 pending 1 counted 0 prev_stage 0 (none)
+Chord Lab UI/ownership USB 48000: 6892 checks, 0 failures
+boot: normal reset power-on failed 0 pending 1 counted 0 prev_stage 0 (none)
+Chord Lab UI/ownership USB 48000: 6892 checks, 0 failures
+PASS: identical audio while browsing all Lab tabs at both USB capture rates.
+
+recordings:
+boot: normal reset power-on failed 0 pending 1 counted 0 prev_stage 0 (none)
+recordings: 101 checks, 0 failures
+st_log: 1500 steps (0 saves as changes, 774 whole, 688 refused: no room without an erase), 7444 power cuts (2284 cut again at the power-on), 45334 checks, 0 failed
+recording flash ranges: PASS
+PASS: recordings: reordered backup restores archives first and preserves all three takes
+PASS: recordings: Python restorer handles the same reordered backup ()
+
+keyboard:
+boot: normal reset power-on failed 0 pending 1 counted 0 prev_stage 0 (none)
+Keyboard: 143 checks, 0 failures
+
+fx:
+effects: 4035 checks, 0 failures
+PASS: 13 recipes, recall/browse/view isolation, bounded anchored macros, 188-byte settings, Motion Off and identical physical/USB audio while drawing.
+
+mascots:
+boot: normal reset power-on failed 0 pending 1 counted 0 prev_stage 0 (none)
+Mascot art, bounds, motion and migration: 12970727 checks, 0 failures
+
