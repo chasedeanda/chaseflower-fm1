@@ -14665,7 +14665,7 @@
     "screens": {
       "HOME_STAGE": {
         "designStatus": "Native preview alongside selected prototype; device review pending",
-        "implementationStatus": "Implemented native preview: four banks, labelled Draft source and active immutable plan rail; physical verification pending",
+        "implementationStatus": "Native HOME with audio-clock-safe motion, accepted-beat header indicator, actual sounding chord and live match fills independent of playback underline; physical fix verification pending",
         "deviceVerification": "Pending — host captures and device link only"
       },
       "HOME_PENDING": {
@@ -15519,6 +15519,12 @@
         "evidence": "../../SONGS-LIBRARY.md",
         "deviceVerification": "Pending",
         "hostChecks": 2128
+      },
+      "homeFeedback": {
+        "implementationStatus": "Fixed audio/UI clock-origin freshness, bounded transient peak window, visible accepted-beat rings/header indicator and live progression-card matching independent of cursor/Motion",
+        "evidence": "home-feedback/README.md",
+        "hostChecks": 180,
+        "deviceVerification": "Pending after reported missing rings on 0.6-chase8"
       }
     },
     "learningEvidence": {

@@ -23,7 +23,7 @@
       "sharedTemplate": "chord",
       "musicalMilestone": 1,
       "designStatus": "Native preview alongside selected prototype; device review pending",
-      "implementationStatus": "Implemented native preview: four banks, labelled Draft source and active immutable plan rail; physical verification pending",
+      "implementationStatus": "Native HOME with audio-clock-safe motion, accepted-beat header indicator, actual sounding chord and live match fills independent of playback underline; physical fix verification pending",
       "deviceVerification": "Pending — host captures and device link only"
     },
     {
