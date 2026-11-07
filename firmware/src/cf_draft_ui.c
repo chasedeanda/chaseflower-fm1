@@ -64,6 +64,7 @@ static void cfd_open(void)
 }
 static void cfd_select_source(void)
 {
+    if(sqk.on || cf_sn.sq_rec!=255)return;
     cfd_view_update();cf_progression_choose(CF_P_DRAFT);
     if(!cpa.on){cs.bpm=cfwd.song.bpm;cpg.mode=cfwd.song.drums_only;cpg.repeat_off=cfwd.song.repeat_off;
         unsigned r=CPA_OFF;if(cfwd.song.rhythm==65534)r=CPA_CLICK;else for(unsigned i=0;i<DM_N;i++)if(DM_RHY[i].id==cfwd.song.rhythm)r=i;
@@ -74,6 +75,7 @@ static void cfd_select_source(void)
 static void cfd_knob_info(int k,cf_knob_t *o)
 {
     if(!cfwd.have){o->dis=1;return;}
+    if(sqk.on || cf_sn.sq_rec!=255)o->dis=1;
     if(cfdu.conflict){if(!k){kfmt(o->name,12,"ACTION");kfmt(o->val,14,cfdu.choice?"Discard old":"Return draft");}return;}
     if(cfdu.confirm){if(!k){kfmt(o->name,12,"REMOVE?");kfmt(o->val,14,cfdu.choice?"Remove":"Cancel");}return;}
     const cf_song_slot_t *v=&cfwd.song.slot[cfdu.focus%cfwd.song.n];unsigned tab=cu.page[SCR_PEDIT];
@@ -102,6 +104,7 @@ static void cfd_knob_info(int k,cf_knob_t *o)
 static void cfd_turn(int k,int d)
 {
     if(!d || !cfwd.have)return;
+    if(sqk.on || cf_sn.sq_rec!=255){cf_message("Finish recording to edit");return;}
     if(cfdu.conflict || cfdu.confirm){if(!k)cfdu.choice=d>0;return;}
     cf_song_t next=cfwd.song;cf_song_slot_t *v=&next.slot[cfdu.focus%next.n];unsigned tab=cu.page[SCR_PEDIT];
     if(tab==CFD_HARMONY){if(k==0)v->degree=wrapi(v->degree+d,7);if(k==1){v->quality=wrapi(v->quality+d,CF_SONG_NQUALITY);v->mask=0;}if(k==2)v->color=wrapi(v->color+d,CF_MOD_MAJ);if(k==3&&!v->unit)v->bars=clampi(v->bars+d,1,8);}
@@ -113,6 +116,7 @@ static void cfd_turn(int k,int d)
 }
 static void cfd_execute(void)
 {
+    if(sqk.on || cf_sn.sq_rec!=255){cf_message("Finish recording to edit");return;}
     if(cfdu.conflict){if(cfdu.choice){cfd_clone(cfdu.requested);cfd_changed();}else {cfdu.conflict=0;cfd_select_source();}return;}
     if(cfdu.confirm){if(cfdu.choice){cf_song_t next=cfwd.song;if(cf_song_remove(&next,cfdu.focus)){cfdu.focus%=next.n;cfd_commit(&next);}}cfdu.confirm=0;return;}
     if(cu.page[SCR_PEDIT]!=CFD_PHRASE)return;
@@ -124,7 +128,7 @@ static void cfd_execute(void)
 /* Setup performance belongs to the selected draft; browsing never overwrites it. */
 static void cfd_ui_poll(void)
 {
-    if(!cfwd.have || cpg.idea!=CF_P_DRAFT || cfds.unavailable || cpa_setup.flags)return;
+    if(!cfwd.have || cpg.idea!=CF_P_DRAFT || cfds.unavailable || cpa_setup.flags || sqk.on || cf_sn.sq_rec!=255)return;
     cf_song_t next=cfwd.song;next.tonic=cs.chord.tonic;next.scale=cs.chord.scale;next.bpm=cs.bpm;
     unsigned r=cpg.rhythm;
     if(cf_sn.ac_on && cf_sn.ac_idea==CF_P_DRAFT){r=cf_sn.ac_rhythm;next.kit=cf_sn.ac_kit;next.swing=cf_sn.ac_swing;next.drums_only=cf_sn.ac_mode;next.repeat_off=cf_sn.ac_repeat_off;}

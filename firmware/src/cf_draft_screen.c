@@ -4,7 +4,7 @@
 typedef struct {
     char title[20],status[20],name[28],chord[24],degree[12],notes[48],position[40],hint[48],message[64];
     char label[4][12],value[4][14],rail[4][24],numeral[4][12];
-    uint8_t disabled[4],focus,slot,first,n,skin,confirm,conflict,choice;
+    uint8_t disabled[4],focus,slot,first,n,skin,confirm,conflict,choice,rec;
 } cfd_model_t;
 static cfd_model_t cfd_last;
 static uint8_t cfd_valid;
@@ -18,6 +18,8 @@ static void cfd_model(cfd_model_t *m)
     m->confirm=cfdu.confirm;m->conflict=cfdu.conflict;m->choice=cfdu.choice;
     str_cpy(m->title,m->conflict?"Draft exists":m->confirm?"Remove slot?":CFD_TAB[cu.page[SCR_PEDIT]],sizeof m->title);
     str_cpy(m->status,cfds.error?"WRITE ERROR":cfds.pending?"RAM PENDING":cfds.checkpoint==CFD_RECOVERED?"RECOVERED":cfds.checkpoint==CFD_CHECKPOINTED?"CHECKPOINT":"FACTORY COPY",sizeof m->status);
+    char rec[32];unsigned plaque=dm_plaque(rec,sizeof rec);
+    if(plaque==DMP_REC || plaque==DMP_RECIN){m->rec=1;str_cpy(m->status,rec,sizeof m->status);}
     str_cpy(m->name,cfwd.song.name,sizeof m->name);kint(m->position,m->focus+1,"/");kint(m->position+str_len(m->position),m->n," focus");
     if(m->slot!=255){str_cpy(m->position+str_len(m->position)," / ",sizeof m->position-str_len(m->position));kint(m->position+str_len(m->position),m->slot+1," playing");}
     cf_spell_t spell;cf_key_spell(cfwd.song.tonic,cfwd.song.scale,&spell);cf_chord_cfg_t cfg=cs.chord;cfg.tonic=cfwd.song.tonic;cfg.scale=cfwd.song.scale;
@@ -37,7 +39,7 @@ static void cfd_draw(void)
     cfd_model_t m;cfd_model(&m);cf_stage_valid=cf_acc_valid=0;
     if(cfd_valid && !fb_full && !memcmp(&m,&cfd_last,sizeof m))return;
     cfd_last=m;cfd_valid=1;cfd_draws++;fb_unclip();fb_fill(FL_BG);
-    cfn_fit(&CFN_16,10,20,m.title,130,FL_INK);cfn_text(&CFN_12,230-cfn_width(&CFN_12,m.status),20,m.status,C_ACC(0));fb_hline(10,28,220,FL_BG3);
+    cfn_fit(&CFN_16,10,20,m.title,130,FL_INK);cfn_text(&CFN_12,230-cfn_width(&CFN_12,m.status),20,m.status,m.rec?FL_C(FL_R_ROSE,0):C_ACC(0));fb_hline(10,28,220,FL_BG3);
     cfn_fit(&CFN_12,10,45,m.name,220,FL_INK2);
     cfn_text(&CFN_12,10,65,"PLANNED",FL_INK2);cfn_text(&CFN_16,230-cfn_width(&CFN_16,m.degree),65,m.degree,C_ACC(0));
     cfn_fit(&CFN_32,10,101,m.chord,220,FL_INK);cfn_fit(&CFN_12,10,119,m.notes,220,FL_INK2);
@@ -49,7 +51,11 @@ static void cfd_draw(void)
         fb_rect(8,70,224,95,FL_BG);fb_frame(8,70,224,95,FL_BG3);
         const char *a=m.message[0]?m.message:m.conflict?"Keep the protected draft?":"Remove this numbered slot?";
         const char *b=m.message[0]?"":m.conflict?(m.choice?"Discard draft and edit new":"Return to draft"):(m.choice?"Remove":"Cancel");
-        cfn_fit(&CFN_12,16,104,a,208,FL_INK);cfn_fit(&CFN_16,16,137,b,208,C_ACC(0));
+        if(m.message[0]) {
+            char text[64];str_cpy(text,a,sizeof text);unsigned at=0;while(text[at] && text[at]!='\n')at++;
+            char *next=text[at]?text+at+1:0;text[at]=0;cfn_fit(&CFN_12,16,104,text,208,FL_INK);
+            if(next)cfn_fit(&CFN_12,16,130,next,208,FL_INK2);
+        } else {cfn_fit(&CFN_12,16,104,a,208,FL_INK);cfn_fit(&CFN_16,16,137,b,208,C_ACC(0));}
     }
     cf_present();
 }

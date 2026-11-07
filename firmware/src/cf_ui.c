@@ -1127,7 +1127,7 @@ static void ui_button(uint32_t b)
     if((cu.scr==SCR_PEDIT || (cpb_home()&&cpg.idea==CF_P_DRAFT)) && b==B_SAVE) {
         cfd_ui_poll();if(!cfds.pending)cfd_changed();(void)cfd_checkpoint();cf_message(cfds.error?"Draft write failed":cfds.pending?"Draft checkpoint pending":"Draft checkpointed");return;
     }
-    if(cu.scr==SCR_PEDIT && b==B_PLAY && !cpa.on)cfd_select_source();
+    if(cu.scr==SCR_PEDIT && b==B_PLAY && !cpa.on && !sqk.on && cf_sn.sq_rec==255)cfd_select_source();
     if(cu.scr==SCR_GLO && cu.page[SCR_GLO]==CF_GLO_LEGACY && b==B_SCL) {
         static const uint8_t scr[]={SCR_SQ,SCR_SEQ,SCR_DRUM};ui_open(scr[cf_legacy_pick]);cu.pop=POP_NONE;return;
     }

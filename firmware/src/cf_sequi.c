@@ -1092,7 +1092,7 @@ static void sq_home_end(int drop)                /* the take ends (drop: it goes
     m[10] = '1';
     str_cpy(m + 11, " kept", sizeof m - 11u);
     if (!(cs.seq_hint & SQH_TAKE)) {             /* the first one ever: where it is, longer to read */
-        str_cpy(m + str_len(m), "\n[SEQ] to recordings", sizeof m - str_len(m));
+        str_cpy(m + str_len(m), "\nGLO > Legacy tools > Recordings", sizeof m - str_len(m));
         cf_message(m);
         cu.pop_until = cu.now + 2000u;           /* (2 s, two lines; the hints 1.5 s: "подсказки слишком долго
                                                   * висят сейчас, нужно в два-три раза быстрее", the owner, 2026-10-20) */
@@ -1108,7 +1108,7 @@ static void sq_hint_once(uint32_t bit)
     if (cs.seq_hint & bit)
         return;
     cs.seq_hint |= (uint8_t)bit;
-    cf_message(bit == SQH_HOME ? "[SEQ] [SEQ] recordings" : "[SAVE] back");
+    cf_message(bit == SQH_HOME ? "GLO > Legacy tools > Recordings" : "[SAVE] back");
     cu.pop_until = cu.now + 1500u;
     sqh_scr = cu.scr;
 }

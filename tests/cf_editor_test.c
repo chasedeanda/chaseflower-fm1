@@ -7,7 +7,7 @@ static void blocks(unsigned n){int32_t out[CTL*2];while(n--)audio_block(out,CTL)
 static void setup(unsigned idea)
 {
     cpa_stop();sqp_stop();dmp_stop();cfp_panic();cu.keys=0;cfds.pending=0;memset(&cfwd,0,sizeof cfwd);cfd_view_update();memset(&cfdu,0,sizeof cfdu);
-    cu.scr=SCR_HOME;home_boot_main=1;cu.pop=POP_NONE;cpg.idea=idea;cpg.rhythm=CPA_OFF;cpg.mode=CPA_BOTH;cpg.repeat_off=0;
+    cu.scr=SCR_HOME;cu.page[SCR_PEDIT]=CFD_HARMONY;home_boot_main=1;cu.pop=POP_NONE;cpg.idea=idea;cpg.rhythm=CPA_OFF;cpg.mode=CPA_BOTH;cpg.repeat_off=0;
     const cf_progression_t *p=cf_progression_get(idea);cs.chord.tonic=p->tonic;cs.chord.scale=p->scale;cs.chord.quantize=CF_Q_BASIC;cs.clock_in=0;cs.beats=p->beats;cs.bpm=120;cs.bass_on=1;cf_send_config();cf_send_metro();blocks(2);cf_motion=0;
 }
 static void controls(void)
@@ -72,6 +72,18 @@ static void live_ownership(void)
     unsigned writes=emu_flash_writes;CHECK(!cfd_checkpoint() && emu_flash_writes==writes);cpa_stop();CHECK(!cfd_checkpoint() && cfp.n==n);
     cfp_panic();blocks(2);
 }
+static void recording_guard(void)
+{
+    setup(0);sq_defaults();sq_unavailable=0;sqk.on=0;sqk.last=255;ui_button(B_EDIT);ui_knob_turn(1,1);cf_song_t saved=cfwd.song;
+    while(emu_stall_blocks)blocks(3);ui_button(B_REC);fm1_in.buttons=0;cf_rec_poll();blocks(12);CHECK(sqk.on && sqp.cin && !cpa.on);
+    cfd_model_t model;cfd_model(&model);CHECK(model.rec && strstr(model.status,"REC in"));
+    cu.page[SCR_PEDIT]=CFD_PHRASE;unsigned beats=cs.beats,bpm=cs.bpm;ui_knob_turn(2,1);cfdu.action=1;ui_button(B_SCL);
+    CHECK(!memcmp(&saved,&cfwd.song,sizeof saved) && cs.beats==beats);
+    cf_knob_t knob={0};cfd_knob_info(2,&knob);CHECK(knob.dis);
+    ui_button(B_PLAY);CHECK(cs.bpm==bpm && cs.beats==beats && !cpa_commanded);
+    unsigned writes=emu_flash_writes;CHECK(!cfd_checkpoint() && writes==emu_flash_writes);
+    sq_home_cancel();blocks(3);CHECK(!sqk.on && !memcmp(&saved,&cfwd.song,sizeof saved));
+}
 static void checkpoint(void)
 {
     setup(0);ui_button(B_EDIT);ui_knob_turn(1,1);unsigned writes=emu_flash_writes;ui_button(B_PLAY);blocks(2);CHECK(!cfd_checkpoint() && emu_flash_writes==writes && cfds.pending);
@@ -83,4 +95,4 @@ static void checkpoint(void)
     ui_button(B_HOME);ui_button(B_EDIT);CHECK(cu.scr!=SCR_PEDIT && cfds.unavailable && emu_flash_writes==writes);
     CHECK(st_sector(OBJ_CFDRAFT,0)==0xEE000 && st_sector(OBJ_CFDRAFT,1)==0xEF000 && ST_LMAX(OBJ_CFDRAFT)>=CF_SONG_WIRE);
 }
-int main(void){emu_fw_options(0,1,0,1);emu_hal.ready=2;emu_fw_init(0);controls();scheduler();duration_catalogue();live_ownership();checkpoint();printf("native editor: %u checks, %u failures\n",checks,failures);return failures!=0;}
+int main(void){emu_fw_options(0,1,0,1);emu_hal.ready=2;emu_fw_init(0);controls();scheduler();duration_catalogue();live_ownership();recording_guard();checkpoint();printf("native editor: %u checks, %u failures\n",checks,failures);return failures!=0;}
