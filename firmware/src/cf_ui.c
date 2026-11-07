@@ -811,7 +811,7 @@ static void ui_select(int d)                     /* SELECT: the bass sound, or a
     }
     if (cu.scr == SCR_FX && fxpu.mode) {
         cu.save_hold = 0;
-        if (fxpu.mode == FXP_BROWSE) fxpu.pick = (uint8_t)clampi(fxpu.pick + d, 0, FXP_FACTORY_N + FXP_SLOTS - 1);
+        if (fxpu.mode == FXP_BROWSE) fxp_select(d);
         else fxpu.slot = (uint8_t)clampi(fxpu.slot + d, 0, FXP_SLOTS - 1);
         return;
     }

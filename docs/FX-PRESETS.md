@@ -16,9 +16,9 @@ The browser shows the group and position (for example, `Space  9 / 40`); factory
 | FX editor | SELECT / ALGORITHM | Select an effect / move it in the chain, as before |
 | FX editor | K1 / K2–K4 | Enable an effect / edit its three parameters, as before |
 | FX editor | FX again | Open the FX preset browser |
-| Browser | SELECT | Browse 40 factory presets, followed by 16 user slots; browsing does not change the sound |
-| Browser | K1 clockwise | Recall the selected complete chain; an empty user slot does nothing |
-| Browser | K2 right / left | Bypass / enable the complete chain |
+| Browser | SELECT | Immediately audition each selected factory or saved user preset; an empty slot leaves the current sound playing |
+| Browser | K1 clockwise | Reapply the selected complete chain; an empty user slot does nothing |
+| Browser | K2 clockwise | CLEAR FX: turn all six effects off and fade to No FX, including running tails |
 | Browser | K3 clockwise | Swap with the previous chain and its bypass state; available after a recall |
 | Browser | K4 clockwise | Return to the individual-effect editor |
 | Browser | FX again | Return HOME |
@@ -33,13 +33,20 @@ New requires an empty slot. Replace and Delete require an occupied user slot. Ch
 cancels a hold already in progress. The original synth SAVE screen remains available from other pages.
 Factory presets are immutable: recall one again to restore its factory configuration, or save a modified version to a user slot.
 Deleting a user preset leaves the current chain playing. Previous-chain recovery is a single runtime A/B pair;
-it survives individual FX edits but resets at startup. Bypass is temporary and resets at startup. Recall retains the current bypass state.
+it survives individual FX edits but resets at startup. **K2 CLEAR FX** turns off all six effects and fades completely
+to dry, including running delay/reverb tails. The empty effect-enable mask is saved with the active settings, so
+No FX survives a restart once settings have saved. Repeated clearing keeps the useful undo chain. **K3 UNDO FX**
+restores the previous chain; turn it again to return to No FX for a quick comparison.
+Selecting or recalling a valid preset enables its effect chain. You can also enable an individual effect in the
+editor to leave No FX. Empty user slots leave the current audio alone.
 
 A preset contains effect order, enabled flags and all 18 parameters, including the effects' supported mix/level controls.
 It does not contain synth patches, Harmony, progression, drums, ARP, tempo, recording state or MASTER volume.
 The existing settings continue to remember the active chain across startup, independently of the named user bank.
 The UI shows `Save pending: keep power on` while a bank edit waits for flash; queued edits are not yet durable.
-The browser does not claim that a browsed name identifies the currently sounding chain.
+Opening the browser leaves the current sound playing until SELECT moves or K1 recalls. SELECT changes the actual
+filter, distortion, chorus, phaser, delay and reverb configuration; it does not change oscillators or synth patches.
+The selected name can differ from the sounding chain after an undo, individual editing, or choosing an empty slot.
 
 ## Factory catalog
 
@@ -136,7 +143,9 @@ final linked device memory and real CPU headroom must be checked before release.
 ## Verification
 
 Run `sh tools/test_fx_presets.sh` after `python3 tools/build.py --gen-only` with the repository's pinned dependencies.
-CI now runs the same FX suite. It covers validation/corruption, all factory configurations, UI holds and cancellation,
+CI now runs the same FX suite. It covers live SELECT audition, recall from bypass, previous-chain recovery,
+clear-to-dry sample identity, clear persistence and repeated-clear undo, plus empty slots and browser limits without
+loading synth patches, validation/corruption, all factory configurations, UI holds and cancellation,
 new/replace/delete, full-bank capacity, reload, SAFE MODE/restore lock, incompatible payload protection,
 nonoverlapping sectors, deferral without erase, transitions and held-note/sequencer playback with USB capture.
 
@@ -149,7 +158,8 @@ Observed locally:
   This measures the fade on a controlled signal, not perceived quality across all presets.
 - Physical output is byte-identical with USB capture on/off at 44.1 and 48 kHz during preset/bypass changes.
   At 44.1 kHz the captured master also matches the physical output frame by frame.
-- Each of the 40 chains is exercised with bypass transitions during held-note/sequencer playback at both USB rates.
+- Each of the 40 chains is selected through the actual FX browser's SELECT handler and exercised with bypass
+  transitions during held-note/sequencer playback at both USB rates.
 - Eighty independent level auditions: each factory on a six-note VA POLY KEYS or FM PAD chord plus bass at full MASTER,
   held for two seconds and released for one. No PCM samples clipped. Sustained RMS was -20.72..-15.22 dBFS on VA and
   -23.80..-14.39 dBFS on FM. The colored filters intentionally change energy; this is not perceptual loudness normalization.

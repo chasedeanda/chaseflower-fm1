@@ -174,12 +174,12 @@ static void draw_fx_presets(void)
         else kint(sub, fxpu.pick - FXP_FACTORY_N + 1, " / 16 user");
         draw_title("FX presets", sub);
         fb_text_c(&CF_FONT_UI, 120, Y_VIEW + 60, fxp_pick_name(), C_ACC(0), 1);
-        fb_text_c(&CF_FONT_UI, 120, Y_VIEW + 84, cfx_bypass ? "Chain bypassed" : "K1 recall  K3 previous", FL_INK2, 1);
+        fb_text_c(&CF_FONT_UI, 120, Y_VIEW + 84, !cs.fx.on ? "No FX" : cfx_bypass ? "Chain bypassed" : "K2 clear  K3 undo", FL_INK2, 1);
         if (fxp_pending()) fb_text_c(&CF_FONT_UI, 120, Y_VIEW + 106, "Save pending: keep power on", C_ACC(0), 1);
         else if (fxp_protected) fb_text_c(&CF_FONT_UI, 120, Y_VIEW + 106, "User bank protected", C_ACC(0), 1);
-        else fb_text_c(&CF_FONT_UI, 120, Y_VIEW + 106, "Browse, then turn K1 to recall", FL_INK3, 1);
+        else fb_text_c(&CF_FONT_UI, 120, Y_VIEW + 106, "Turn SELECT to hear presets", FL_INK3, 1);
         fb_text_c(&CF_FONT_UI, 120, Y_VIEW + 126, "SAVE manage   K4 edit", FL_INK2, 1);
-        static const char *const H[4] = {"SELECT", "browse", "SAVE", "manage"};
+        static const char *const H[4] = {"SELECT", "audition", "SAVE", "manage"};
         draw_hints(H, 2);
     } else {
         static const char *const A[3] = {"Save new FX", "Replace user FX", "Delete user FX"};
