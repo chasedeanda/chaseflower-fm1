@@ -125,6 +125,9 @@ jobs:
       - name: CORD boot themes, complete round shapes and input/Motion skip
         run: sh tools/test_cord_boot.sh
 
+      - name: CORD chime, finite fade, preference and first-key physical/USB/MIDI priority
+        run: sh tools/test_boot_sound.sh
+
       - name: Progression accompaniment transport, queues, ownership and clocks
         run: sh tools/test_accomp.sh
 

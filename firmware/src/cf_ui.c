@@ -770,8 +770,7 @@ static void ui_knob_turn(int k, int d)
             if (k == 1) home_view_select(d);
             if (k == 2) {
                 cs.boot_sound = (uint8_t)(d > 0);
-                if (cs.boot_sound)
-                    cf_boot_go = 1;              /* (heard as it is set) */
+                cf_boot_go = cs.boot_sound && !cr_safe ? 1 : 2; /* audition On; fade/cancel Off */
             }
             cf_palette_build();
             break;
@@ -2184,7 +2183,7 @@ static void cf_ui_init(void)
     if (!flo.nseg)
         flora_init(&flo, 0xC0A1F10Eu, FLW / 2, FLH + 1);   /* (the stem comes up from the bottom edge) */
 #else
-    if (cs.boot_sound && !cr_safe) cf_boot_go = 1; /* optional sound, no visual intro */
+    if (cs.boot_sound && !cr_safe) cf_boot_go = 1; /* optional CORD chime, independent of Motion */
 #endif
     cu.idle_ms = 0x7FFFFFFF;                     /* (the intro runs until the first touch) */
     fb_full = 1;                                 /* (main.c cleared the panel after the splash) */
