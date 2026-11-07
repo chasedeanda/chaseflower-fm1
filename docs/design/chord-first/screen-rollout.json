@@ -823,6 +823,16 @@
       "deviceVerification": "Pending — native host captures and device link only"
     },
     {
+      "id": "HOME_PERFORM",
+      "title": "Progressions · PERFORM",
+      "group": "Home",
+      "sharedTemplate": "chord",
+      "musicalMilestone": 1,
+      "designStatus": "Native preview follows Instrument Teal; device review pending",
+      "implementationStatus": "Implemented in development source: fifth HOME bank; next-bar one-bar fills, drum drops and returns; Motion Off, live-only recorder scope. See docs/DRUM-PERFORMANCE.md.",
+      "deviceVerification": "Pending — native host captures and linked firmware only"
+    },
+    {
       "id": "SYS-ROOT",
       "title": "Settings",
       "group": "Settings",

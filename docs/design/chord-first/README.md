@@ -4,6 +4,8 @@
 
 The [native HOME preview](native-home/README.md) records the first implementation slice. The [HOME banks follow-up](native-home-banks/README.md) records current controls, native captures, linked costs and pending device checks.
 
+The [live drum moments guide](../../DRUM-PERFORMANCE.md) adds the fifth HOME Perform bank and native downbeat-bloom captures.
+
 The selected visual reference is the supplied adaptive motion prototype, with
 **Instrument Teal as the default** and **Motion On (adaptive) / Off**.
 
@@ -18,7 +20,7 @@ The selected visual reference is the supplied adaptive motion prototype, with
 - [Player guide](../../CHORD-FIRST-USER-GUIDE.md)
 - [Product vision and retained musical decisions](../../CHORD-FIRST-VISION.md)
 
-The inventory covers **205 screen/state definitions and 37 workflows**. Its older
+The inventory covers **206 screen/state definitions and 38 workflows**. Its older
 layout sketches explain behavior and coverage; the selected adaptive prototype
 defines appearance. The supplied HTML demonstrates motion without an audio
 engine. Morph/Bloom and several sample parameters are studies, not evidence of

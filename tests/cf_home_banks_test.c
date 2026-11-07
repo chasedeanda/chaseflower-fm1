@@ -12,7 +12,7 @@ static void navigation(void)
     cf_post(CFE_KEY,25,0,1);cf_post(CFE_KEY,25,0,0);cf_post(CFE_KEY,7,0,0);blocks(2);CHECK(cf_sn.out.hold);
     cf_ui_draw();unsigned body=cfs_fnv(fb,FB_W*198);
     cf_set_t settings=cs;unsigned queue=cf_evq_w,flash=emu_flash_writes,patterns=cfs_fnv(&sq_st,sizeof sq_st);cf_chord_out_t sounding=cf_sn.out;
-    for(unsigned i=0;i<24;i++) {
+    for(unsigned i=0;i<CF_HB_N*6u;i++) {
         CHECK(home_stage() && cf_home_bank==i%CF_HB_N);ui_button(B_HOME);cf_ui_draw();
         CHECK(body==cfs_fnv(fb,FB_W*198));
         CHECK(!memcmp(&cs,&settings,sizeof cs) && cf_evq_w==queue && emu_flash_writes==flash);
@@ -70,7 +70,7 @@ static void queued(void)
     CHECK(cpa.plan.kit==nextkit && cpa.plan.swing==nextswing && !(cpa_edit.flags&CPA_GROOVE));
     /* Bank presentation alone never changes ownership, cursor, edits or transport. */
     unsigned slot=cpa.slot,flags=cpa_edit.flags,queue=cf_evq_w;cf_home_bank=0;
-    for(unsigned i=0;i<8;i++)ui_button(B_HOME);
+    for(unsigned i=0;i<CF_HB_N*2u;i++)ui_button(B_HOME);
     CHECK(cpa.on && cpa.slot==slot && cpa_edit.flags==flags && cf_evq_w==queue);
     ui_button(B_PLAY);blocks(2);CHECK(!cpa.on && !sqp.n && !sqp.nb);
 }

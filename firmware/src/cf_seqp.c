@@ -25,6 +25,8 @@
  * other's ring) */
 static const uint8_t SQ_LANE_NOTE[SQ_NLANE] = {36, 38, 39, 42, 46, 43, 47, 50, 37, 56, 49};
 
+#include "cf_perform.c"
+
 static struct {
     uint8_t on, song;            /* playing; the song (else the one pattern, round) */
     uint8_t pat, slot, bar;      /* where (bar: in the pattern, 0 .. its length - 1: nbar round it) */
@@ -350,12 +352,12 @@ static void sqp_fire(const sq_pat_t *p, uint32_t tk, uint32_t u)
     if (tk == SQ_DRUMS) {
         uint32_t l, any = 0, h = u;
         for (l = 0; l < SQ_NLANE; l++)
-            if ((p->hit[l][b] >> h) & 1u) {
+            if (cf_perf_hit(l, h, sq_dsteps(), (p->hit[l][b] >> h) & 1u)) {
                 if (sqp.dsk[l] == h + 1u && sqp.dskb[l] == (uint8_t)sqp.nbar && sqp.dskp[l] == sqp.pat) {
                     sqp.dsk[l] = 0;              /* (struck by hand a moment ago, in the take: once is enough) */
                     continue;
                 }
-                sqp_lane_kit(l, p->dkit[l], p->dlev[l]);   /* (its kit, its level) */
+                sqp_lane_kit(l, p->dkit[l], cf_perf_level(l, h, sq_dsteps(), p->dlev[l]));
                 trk_note_on(&trk[CF_PART_DRUM], SQ_LANE_NOTE[l], 100);
                 cfp_midi(0x90u, cfp_ch(CF_PART_DRUM), SQ_LANE_NOTE[l], 100);
                 sqp.doff |= (uint16_t)(1u << l);
@@ -736,8 +738,10 @@ static void sqp_tick1(void)
         }
         return;
     }
-    if (++sqp.t >= sqp_bar_ticks())
+    if (++sqp.t >= sqp_bar_ticks()) {
         sqp_next_bar();
+        cf_perf_bar(cf_perf_kit_style(sq_st.pat[sqp.pat % SQ_NPAT].kit));
+    }
     sqp_now();
 }
 
@@ -752,6 +756,7 @@ static void sqp_stop(void)
     sqp_arp_off(SQ_LAYER);
     sqp_drum_offs();
     sqp.on = 0;
+    cf_perf_reset();
     sqp.click = 0;
     sqp.cin = 0;
     sqp.next = 0xFF;
@@ -785,6 +790,7 @@ static void sqp_setup(uint32_t pat, uint32_t slot)
     uint32_t i;
     sqp_stop();
     dmp_stop();                                  /* (one thing plays: a rhythm of the drum machine stops) */
+    cf_perf_reset();
     sqp.song = pat >= SQ_NPAT;
     sqp.slot = (uint8_t)(sqp.song && sq_st.song.n ? slot % sq_st.song.n : 0u);
     sqp.pat = (uint8_t)(sqp.song ? sq_st.song.pat[sqp.slot] % SQ_NPAT : pat);
@@ -868,6 +874,7 @@ static void sqp_rec_start(uint32_t pat, uint32_t trk)
 }
 static void sqp_rec_set(uint32_t trk)            /* (the take's track; the pattern plays) */
 {
+    cf_perf_reset();                            /* performance gestures are live, not written into patterns */
     sqp.rec = (uint8_t)trk;
     sqp.click = 1;
     sqp.rserial = cfc.out.serial;                /* (what the keys hold already is not the take's) */

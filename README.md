@@ -71,7 +71,7 @@ the labels show exactly what each one will change.
 | **GLO** | System pages: Display, MIDI, Harmony, Variation, Browse, Recordings policy and Legacy tools |
 | **MASTER / OCT− / OCT+** | Output volume / playing register |
 
-### The four HOME banks
+### The five HOME banks
 
 | Bank | K1 | K2 | K3 | K4 |
 | --- | --- | --- | --- | --- |
@@ -79,11 +79,28 @@ the labels show exactly what each one will change.
 | **Sound** | Chord sound | Bass sound | Chord level | Bass level |
 | **Texture** | Reverb mix | Delay mix | Chorus mix | Glide |
 | **Groove** | Drum kit | Drum level | Swing | Click level / Off |
+| **Perform** | Fill | Drop drums | Bring back | Tempo |
 
 Switching banks leaves the music playing. SELECT still browses ideas in every bank.
 For separate chord/bass/drum levels and linked bass On/Off, use **SEQ → Mix**.
 For drums alone, use **SEQ → Loop → K1 Drums only**. **K4 Repeat Off** plays the full phrase once.
 For a metronome alongside any groove, use **SEQ → Click**: K1 On/Off, K2 level, K3 sound, K4 tempo.
+
+## Fills, drops and builds (current source)
+
+Tap **HOME** until **PERFORM 5/5** appears. While a groove is playing, turn a knob
+in either direction to trigger one action; multiple detents in a turn still queue one moment.
+
+- **K1 Fill:** queue one bar, with the current groove/kit/swing. Lo-fi uses loose
+  snare/tom movement; trap uses tighter snare/hat rolls. The groove returns automatically.
+- **K2 Drop:** drums leave at the next bar; chords and bass keep their place.
+- **K3 Back:** restore the groove on the next downbeat with an outward bloom.
+- **K4 Tempo:** keep shaping the pace; external clock retains tempo ownership.
+
+The header distinguishes **FILL NEXT / DROP NEXT / BACK NEXT** from **FILL / DRUMS OFF**.
+Fill tension and the return bloom follow the real musical events; **Motion Off**
+keeps the same actions and static status. [Controls, native previews and verification](docs/DRUM-PERFORMANCE.md).
+These source changes are not in the chase10 download. Breakdown to chords alone is later work.
 
 ## A few things to try next
 

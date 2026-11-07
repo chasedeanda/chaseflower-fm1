@@ -65,6 +65,7 @@ typedef struct {
     char value[4][14],label[4][12];
     uint8_t live,hold,slot,first,count,total,skin,motion,battery,halo,rec,bank,disabled[4],emphasis[4],cursor_width;
     uint8_t pulse,halo_ink,activity,activity_step;
+    uint8_t moment,build,bloom;
     uint16_t matches;
     int8_t bank_dx,chord_dy;
 } cf_stage_model_t;
@@ -150,6 +151,25 @@ static void cf_stage_model(cf_stage_model_t *m)
     else if(cf_motion && cfn_motion.active){m->activity=2;m->activity_step=cfn_motion.energy/64;}
     for(unsigned k=0;k<4;k++)m->emphasis[k]=cfn_knob(k);
     m->cursor_width=cfn_cursor(CFN_CURSOR_HOME|m->slot);
+    if(!m->rec && cf_perform_ready()) {
+        m->moment=cf_sn.perf_dropped?CFPERF_DROP:cf_sn.perf_fill?CFPERF_FILL:0;
+        if(cf_sn.perf_pending)str_cpy(m->status,cf_sn.perf_pending==CFPERF_FILL?"FILL NEXT":
+            cf_sn.perf_pending==CFPERF_DROP?"DROP NEXT":"BACK NEXT",sizeof m->status);
+        else if(m->moment)str_cpy(m->status,m->moment==CFPERF_FILL?"FILL":"DRUMS OFF",sizeof m->status);
+        if(cf_motion && m->halo) {
+            if(m->moment==CFPERF_FILL) {
+                unsigned bt=cf_sn.sq_bt?cf_sn.sq_bt:1;
+                unsigned t=cf_sn.dm_on?cf_sn.dm_t:cf_sn.sq_t;
+                m->build=1+(uint8_t)(t*15u/bt);
+                m->pulse=34+m->build; m->halo_ink=CFN_HALO_0+3;
+            } else if(m->moment==CFPERF_DROP && m->pulse)m->pulse=24;
+            uint32_t age=cu.now-cfn_moment_ms;
+            if(cfn_moment_ms && age<650u) {
+                m->bloom=1+(uint8_t)(age*15u/650u);
+                m->pulse=14+m->bloom*2; m->halo_ink=CFN_HALO_0+3-(m->bloom-1)/4;
+            }
+        }
+    }
 }
 static void cf_stage_chord(const char *name,int y,uint8_t ink)
 {
@@ -166,6 +186,10 @@ static void cf_stage_draw(void)
     cf_stage_last=m;cf_stage_valid=1;cf_stage_draws++;
     fb_unclip();fb_fill(FL_BG);
     if(m.pulse){cfn_circle(120,103,m.pulse,m.halo_ink);cfn_circle(120,103,m.pulse-1,m.halo_ink>CFN_HALO_0?m.halo_ink-1:m.halo_ink);}
+    if(m.bloom && m.pulse>22)cfn_circle(120,103,m.pulse-8,m.halo_ink);
+    if(m.build) { /* fill density rises with bar phase, not wall-clock animation */
+        for(unsigned i=0;i<m.build;i++)fb_rect(76+(int)i*6,151,3,2,C_ACC(0));
+    }
     int status_x=210-cfn_width(&CFN_12,m.status);
     cfn_fit(&CFN_12,10,17,m.idea,status_x-22,FL_INK2);
     cfn_text(&CFN_12,status_x,17,m.status,C_ACC(0));
@@ -199,7 +223,7 @@ static void cf_stage_draw(void)
     }
     fb_unclip();fb_hline(10,198,220,FL_BG3);
     char bank[24];str_cpy(bank,CF_HOME_BANK_NAME[m.bank],sizeof bank);
-    str_cpy(bank+str_len(bank)," ",sizeof bank-str_len(bank));kint(bank+str_len(bank),m.bank+1,"/4");
+    str_cpy(bank+str_len(bank)," ",sizeof bank-str_len(bank));kint(bank+str_len(bank),m.bank+1,"/");kint(bank+str_len(bank),CF_HB_N,0);
     fb_clip(10,199,230,211);cfn_center(&CFN_12,120+m.bank_dx,209,bank,FL_INK2);
     for(int i=0;i<4;i++) {
         int x=i*60;fb_clip(x+3,211,x+57,240);
