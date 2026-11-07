@@ -187,9 +187,9 @@ static void light_key(int k,int down)
 static void note_lights(void)
 {
     /* C, E, G and F, A, C in the default lower-key mapping, in every octave. */
-    const uint32_t cmaj=(1u<<2)|(1u<<7)|(1u<<11)|(1u<<14)|(1u<<19)|(1u<<23)|(1u<<26);
-    const uint32_t fmaj=(1u<<0)|(1u<<4)|(1u<<7)|(1u<<12)|(1u<<16)|(1u<<19)|(1u<<24);
-    const uint32_t seventh=1u<<3, hold=1u<<25, bnotes=(1u<<6)|(1u<<18);
+    const uint32_t cmaj=(1u<<7)|(1u<<19);
+    const uint32_t fmaj=(1u<<0)|(1u<<12)|(1u<<24);
+    const uint32_t seventh=1u<<3, hold=1u<<25, bnotes=0;
     cfp_panic(); midi_drain();
     cf_harmony_defaults(&ch); ch.mode=CF_H_AUTO;
     cs.chord.algo=CF_ALG_TOP_LOCK; cs.chord.tonic=0; cs.chord.scale=CF_SC_MAJOR;

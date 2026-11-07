@@ -19,11 +19,10 @@ from pathlib import Path
 p=Path('build/boot-sound'); raw=(p/'cord-chime.pcm').read_bytes()
 with wave.open(str(p/'cord-chime.wav'),'wb') as f:
     f.setnchannels(2); f.setsampwidth(2); f.setframerate(44100); f.writeframes(raw)
-# Preserve the user's chosen first-pass sound exactly.
-assert hashlib.sha256((p/'cord-chime.wav').read_bytes()).hexdigest()=='9ffb7cd9848f8696f5247381dbf4c909af6b87622c936a6c9fc5494796dbe722'
+# Louder rising-strum development variant: finite tail and output headroom.
 pcm=array.array('h',raw); peak=max(abs(v) for v in pcm); rms=math.sqrt(sum(v*v for v in pcm)/len(pcm))
-assert 500<peak<10000
-assert not any(pcm[44100*12//10*2:])
+assert 2000<peak<26000
+assert not any(pcm[44100*23//10*2:])
 print(json.dumps({'seconds':len(pcm)/88200,'peak_dbfs':round(20*math.log10(peak/32768),2),'rms_dbfs':round(20*math.log10(rms/32768),2)}))
 PY
 echo 'PASS: first keys match physical output, six USB channels and MIDI with/without a queued chime at both rates.'

@@ -1,3 +1,5 @@
+static void cf_acc_knob_info_for(unsigned tab,int k,cf_knob_t *o);
+static void cf_acc_knob_turn_for(unsigned tab,int k,int d);
 /* SPDX-License-Identifier: GPL-3.0-only
  * Presentation ownership is session-only. Parameter edits reuse existing owners.
  * Kit/swing edits publish to the same accompaniment bar queue as rhythm edits.
@@ -36,6 +38,9 @@ static void cf_perform_turn(unsigned action)
 static int cf_home_bank_info(int k, cf_knob_t *o)
 {
     if (cf_home_bank == CF_HB_CORE) return 0;
+    if(cf_home_bank==CF_HB_LOOP || cf_home_bank==CF_HB_MIX) {
+        cf_acc_knob_info_for(cf_home_bank==CF_HB_LOOP?CF_ACC_LOOP:CF_ACC_MIX,k,o);return 1;
+    }
     if (cf_home_bank == CF_HB_LEARN) {
         if (k == 0) { kfmt(o->name,12,"HARMONY"); kfmt(o->val,14,ch.mode?"On":"Off"); }
         else if (k == 1) { kfmt(o->name,12,"RESET"); kfmt(o->val,14,"Defaults"); }
@@ -108,6 +113,9 @@ static void cf_home_groove(int k,int d)
 static int cf_home_bank_turn(int k,int d)
 {
     if (cf_home_bank==CF_HB_CORE) return 0;
+    if(cf_home_bank==CF_HB_LOOP || cf_home_bank==CF_HB_MIX) {
+        cf_acc_knob_turn_for(cf_home_bank==CF_HB_LOOP?CF_ACC_LOOP:CF_ACC_MIX,k,d);return 1;
+    }
     if (cf_home_bank==CF_HB_LEARN) { cf_harmony_turn(k,d); return 1; }
     if (!d) return 1;
     if(cf_home_bank==CF_HB_PERFORM) {

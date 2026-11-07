@@ -235,7 +235,9 @@ static void cf_stage_draw(void)
     cf_stage_last=m;cf_stage_valid=1;cf_stage_draws++;
     fb_unclip();fb_fill(FL_BG);
     if(m.bank==CF_HB_LEARN) {
-        cfn_text(&CFN_12,10,17,"KEYBOARD 6/6",FL_INK);
+        char heading[24]="KEYBOARD ";kint(heading+9,m.bank+1,"/");
+        kint(heading+str_len(heading),CF_HB_N,0);
+        cfn_text(&CFN_12,10,17,heading,FL_INK);
         cfn_fit(&CFN_12,140,17,m.status,90,C_ACC(0));
         fb_hline(10,25,220,FL_BG3);
         cfn_fit(&CFN_12,10,43,m.context,136,FL_INK2);

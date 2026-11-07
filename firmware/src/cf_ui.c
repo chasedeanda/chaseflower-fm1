@@ -761,7 +761,7 @@ static void ui_knob_turn(int k, int d)
             if (k == 1) home_view_select(d);
             if (k == 2) {
                 cs.boot_sound = (uint8_t)(d > 0);
-                cf_boot_go = cs.boot_sound && !cr_safe ? 1 : 2; /* audition On; fade/cancel Off */
+                cf_boot_pending=0;cf_boot_go = cs.boot_sound && !cr_safe ? 1 : 2; /* audition On; fade/cancel Off */
             }
             cf_palette_build();
             break;
@@ -965,6 +965,16 @@ static void ui_presets(int d)                    /* PRESETS: the chord sound (a 
 }
 static void ui_algo(int d)                       /* ALGORITHM: scene, effect, or workspace tab */
 {
+#if !CF_SCENES
+    if(home_stage()) {
+        if(!d)return;
+        cf_nav_dir=d<0?-1:1;
+        cf_home_bank=(uint8_t)wrapi((int)cf_home_bank+d%CF_HB_N,CF_HB_N);
+        cf_home_bank_ms=cf_motion?(cu.now?cu.now:1u):0;
+        if(cu.pop==POP_SOUND_CHORD || cu.pop==POP_SOUND_BASS)cu.pop=POP_NONE;
+        return;
+    }
+#endif
     if(cu.scr==SCR_LAB){cfl_tab(d);return;}
     if(cu.scr==SCR_ARP){cu.page[SCR_ARP]=(uint8_t)wrapi(cu.page[SCR_ARP]+d,2);return;}
     cf_nav_dir=d<0?-1:1;
@@ -1805,29 +1815,20 @@ static uint16_t cf_progression_cue(uint16_t *playing)
         cpg_follow.valid = 0;
         cpg_follow.press = cf_sn.root_press;
         cpg_follow.seq = cf_sn.sq_dser;
-        if (o->sounding && !o->single)
-            for (unsigned i = 0; i < o->n; i++) *playing |= (uint16_t)(1u << (o->note[i] % 12));
-        if (!cf_sn.sq_dsingle)
-            for (unsigned i = 0; i < cf_sn.sq_dn; i++) *playing |= (uint16_t)(1u << (cf_sn.sq_dnote[i] % 12));
+        if(o->sounding && !o->single)*playing|=(uint16_t)(1u<<o->root_pc);
+        if(cf_sn.sq_dn && !cf_sn.sq_dsingle)*playing|=(uint16_t)(1u<<(cf_sn.sq_droot%12));
         if (!cf_sn.ac_n || cf_sn.ac_slot >= cf_sn.ac_n || cf_sn.ac_paused) return 0;
         unsigned next = cf_sn.ac_waiting ? cf_sn.ac_slot : (cf_sn.ac_slot + 1u) % cf_sn.ac_n;
         if (!cf_sn.ac_waiting && !next && cf_sn.ac_repeat_off) return 0;
-        uint16_t cue = 0;
-        for (unsigned i = 0; i < 32; i++)
-            if (cf_sn.ac_mask[next] & (1u << i))
-                cue |= (uint16_t)(1u << ((cf_sn.ac_root[next] + i) % 12));
-        return cue;
+        return (uint16_t)(1u<<(cf_sn.ac_root[next]%12));
     }
     const cf_progression_t *p = cf_progression_current();
     uint8_t src = o->sounding && o->n ? 1u : cf_sn.sq_on && cf_sn.sq_dn ? 2u : 0u;
     uint16_t matches = src == 1u ? (o->single ? 0 : cf_progression_highlight(p, cs.chord.scale,
         cs.chord.tonic, o->root_pc, o->mask)) : src == 2u ? (cf_sn.sq_dsingle ? 0 :
         cf_progression_highlight(p, cs.chord.scale, cs.chord.tonic, cf_sn.sq_droot % 12, cf_sn.sq_dmask)) : 0;
-    if ((src == 1u && !o->single) || (src == 2u && !cf_sn.sq_dsingle)) {
-        unsigned n = src == 1u ? o->n : cf_sn.sq_dn;
-        for (unsigned i = 0; i < n; i++)
-            *playing |= (uint16_t)(1u << ((src == 1u ? o->note[i] : cf_sn.sq_dnote[i]) % 12));
-    }
+    if(src==1u && !o->single)*playing=(uint16_t)(1u<<o->root_pc);
+    else if(src==2u && !cf_sn.sq_dsingle)*playing=(uint16_t)(1u<<(cf_sn.sq_droot%12));
     int reset = !cpg_follow.valid || cpg_follow.idea != cpg.idea || cpg_follow.tonic != cs.chord.tonic ||
         cpg_follow.scale != cs.chord.scale || cpg_follow.quantize != cs.chord.quantize;
     int gesture = src == 1u ? cf_sn.root_press != cpg_follow.press :
@@ -1860,12 +1861,8 @@ static uint16_t cf_progression_cue(uint16_t *playing)
     cpg_follow.matches = matches;
     cpg_follow.press = cf_sn.root_press;
     cpg_follow.seq = cf_sn.sq_dser;
-    uint32_t mask = cf_progression_slot_mask(p, cpg_follow.next, cs.chord.scale, cs.chord.tonic, &ch);
-    int root = cf_progression_root(p, cpg_follow.next, cs.chord.scale, cs.chord.tonic);
-    uint16_t cue = 0;
-    for (unsigned i = 0; i < 32; i++)
-        if (mask & (1u << i)) cue |= (uint16_t)(1u << ((root + (int)i) % 12));
-    return cue;
+    int root=cf_progression_root(p,cpg_follow.next,cs.chord.scale,cs.chord.tonic);
+    return (uint16_t)(1u<<root);
 }
 
 /* the sequencer's lights. The buttons say what works here: EDIT blinks on the tracks (open one), SAVE (back) and SEL
@@ -1954,12 +1951,9 @@ static void cf_leds(void)
     uint32_t k, blink = (cu.now / 250u) & 1u, sq = sq_screen(cu.scr), rm = cu.scr == SCR_DRUM;
     uint16_t auto_notes = 0;
     uint16_t guide_playing, guide_next = cf_progression_cue(&guide_playing);
-    /* Auto's generated tones light their mapped root keys as brightly as the modifiers.
-     * Use the sounding voicing, including HOLD and Wait's unchanged chord. */
-    if (out->automatic && !out->fallback && out->sounding)
-        for (k = 0; k < out->n; k++)
-            auto_notes |= (uint16_t)(1u << (out->note[k] % 12));
-    auto_notes |= guide_playing;
+    /* Only roots guide the hand: generated thirds/fifths must not hide the next root. */
+    if(out->automatic && !out->fallback && out->sounding && !out->single)auto_notes=(uint16_t)(1u<<out->root_pc);
+    auto_notes|=guide_playing;
     /* buttons: the open screen lit, the others dim; PLAY with the beat. The sequencer: only what works there is up
      * (HOME, SEQ, GLO here; EDIT, SAVE, SEL, PLAY, REC below); the other screens' buttons do nothing there, dark */
     for (k = 0; k < SCR_N; k++)                  /* (the rhythm machine: as the sequencer, cf_dmui.c) */
@@ -2023,7 +2017,8 @@ static void cf_leds(void)
         int idx, role = cf_key_role(cs.chord.algo, (int)k, &idx), id = (int)(14u + k);
         if (sq_key_led(k, lit, mid, dim, faint))
             continue;
-        if ((cu.keys >> k) & 1u) {
+        int next_root=role==CF_ROLE_ROOT && ((guide_next>>(cf_key_root_note(&cs.chord,(int)k)%12))&1u);
+        if (((cu.keys >> k) & 1u) && !next_root) {
             cf_led(lit, (uint32_t)id, 1);
             continue;
         }
@@ -2047,10 +2042,12 @@ static void cf_leds(void)
                 cf_led(faint, (uint32_t)id, 1);
         } else if (role == CF_ROLE_ROOT) {
             int pc = cf_key_root_note(&cs.chord, (int)k) % 12;
-            if ((auto_notes >> pc) & 1u)
+            if ((guide_next >> pc) & 1u) {
+                /* Next wins over current/held, including repeated roots. */
+                if((cu.now/250u)&1u)cf_led(lit,(uint32_t)id,1);
+                else if((auto_notes>>pc)&1u || ((cu.keys>>k)&1u))cf_led(dim,(uint32_t)id,1);
+            } else if ((auto_notes >> pc) & 1u)
                 cf_led(lit, (uint32_t)id, 1);
-            else if ((guide_next >> pc) & 1u)
-                cf_led((cu.now / 500u) & 1u ? dim : faint, (uint32_t)id, 1);
             else if (out->sounding && pc == out->root_pc)
                 cf_led(mid, (uint32_t)id, 1);
             else if (cs.lights && cs.chord.quantize != CF_Q_OFF && pc == cs.chord.tonic)
@@ -2261,7 +2258,8 @@ static void cf_ui_init(void)
 #else
     /* Start the visible intro after sound/store loading, not before hardware initialization. */
     cf_cord_begin();
-    if (cs.boot_sound && !cr_safe) cf_boot_go = 1; /* optional CORD chime, independent of Motion */
+    cf_boot_pending = cs.boot_sound && !cr_safe;
+    cf_boot_ready_ms = fm1_ms; /* let startup config/overload requests settle */
 #endif
     cu.idle_ms = 0x7FFFFFFF;                     /* (the intro runs until the first touch) */
     fb_full = 1;                                 /* (main.c cleared the panel after the splash) */
@@ -2277,6 +2275,10 @@ static void cf_ui_frame(void)                    /* ui_leds: the snapshot, the p
     cu.frame_dt = dt;
     cu.now = now;
     cu.idle_ms += dt;
+    if(cf_boot_pending && now-cf_boot_ready_ms>=180u) {
+        cf_boot_pending=0;
+        if(cs.boot_sound && !cr_safe && cu.idle_ms>=now-cf_boot_ready_ms)cf_boot_go=1;
+    }
     cu.frames++;
     cf_diag_poll(now);
     cf_snapshot();

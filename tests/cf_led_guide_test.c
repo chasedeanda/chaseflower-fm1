@@ -41,20 +41,20 @@ static void progression_lights(void)
 {
     cf_set_t settings=cs; cf_harmony_t harmony=ch;
     cfp_panic(); cs_defaults(&cs); cf_harmony_defaults(&ch); ch.mode=CF_H_AUTO;
-    cu.scr=SCR_HOME; cu.keys=0; cpg.explored=1; cf_scene_set(CF_SCENE_PROGRESSIONS); cu.now=500;
+    cu.scr=SCR_HOME; cu.keys=0; cpg.explored=1; cf_scene_set(CF_SCENE_PROGRESSIONS); cu.now=750;
     cs.chord.tonic=0; cs.chord.scale=CF_SC_MAJOR; cs.lights=0; cpg.idea=0;
     cf_send_config(); render_blocks(4); cpg_follow.valid=0; cf_leds();
-    const uint16_t cmaj=(1u<<0)|(1u<<4)|(1u<<7), gmaj=(1u<<7)|(1u<<11)|(1u<<2);
+    const uint16_t cmaj=1u<<0, gmaj=1u<<7;
     int g=cf_progression_key(&cs.chord,4), a=cf_progression_key(&cs.chord,5), f=cf_progression_key(&cs.chord,3);
-    CHECK(cpg_follow.next==0 && led_keys(fm1_led)==0);
-    CHECK(led_keys(fm1_led_dim)==tone_keys(cmaj));
-    /* C is bright; G's new tones pulse below it. Shared G stays bright. */
+    CHECK(cpg_follow.next==0 && led_keys(fm1_led)==tone_keys(cmaj));
+    CHECK(led_keys(fm1_led_dim)==0);
+    /* Only C and next root G light. G being a C-chord tone cannot hide its cue. */
     guide_key(7,1); CHECK(cpg_follow.current==0 && cpg_follow.next==1);
-    CHECK(led_keys(fm1_led)==tone_keys(cmaj));
-    CHECK(led_keys(fm1_led_dim)==tone_keys(gmaj & ~cmaj));
+    CHECK(led_keys(fm1_led)==tone_keys(cmaj|gmaj));
+    CHECK(led_keys(fm1_led_dim)==0);
     cu.now=1000; cf_leds();
     CHECK(led_keys(fm1_led)==tone_keys(cmaj));
-    CHECK((led_keys(fm1_led_faint)&tone_keys(0xFFF))==tone_keys(gmaj & ~cmaj));
+    CHECK((led_keys(fm1_led_faint)&tone_keys(0xFFF))==0);
     for(unsigned i=0;i<30;i++) cf_leds();
     CHECK(cpg_follow.current==0 && cpg_follow.next==1);
     guide_key(7,0); CHECK(cpg_follow.next==1 && led_keys(fm1_led)==0);
@@ -102,23 +102,27 @@ static void accompaniment_lights(void)
     cf_send_config(); render_blocks(4);
     cpa_plan_t plan; CHECK(cpa_prepare(&plan,54,cs.chord,CPA_OFF,CPA_BOTH));
     cpa_publish(&plan,0,1); cf_post(CFE_ACCOMP,1,0,0); render_blocks(4); cf_leds();
-    const uint16_t cpower=(1u<<0)|(1u<<7), apower=(1u<<9)|(1u<<4);
+    const uint16_t cpower=1u<<0, apower=1u<<9;
     CHECK(cf_sn.ac_on && cf_sn.ac_slot==0);
-    CHECK(led_keys(fm1_led)==tone_keys(cpower));
-    CHECK(led_keys(fm1_led_dim)==0); /* the next identical chord shares both tones */
+    CHECK(led_keys(fm1_led)==0 && led_keys(fm1_led_dim)==tone_keys(cpower));
+    /* A repeated root pulses even while it is held/current. */
+    cu.keys|=tone_keys(cpower);cf_leds();
+    CHECK(led_keys(fm1_led)==0 && led_keys(fm1_led_dim)==tone_keys(cpower));
+    cu.now=750;cf_leds();
+    CHECK(led_keys(fm1_led)==tone_keys(cpower));cu.keys=0;
     for(unsigned i=0;i<384;i++)cpa_tick1(); cf_snapshot(); cf_leds();
-    CHECK(cf_sn.ac_slot==1 && led_keys(fm1_led_dim)==tone_keys(apower));
+    CHECK(cf_sn.ac_slot==1 && led_keys(fm1_led)==tone_keys(cpower|apower));
     /* A queued idea never supplies its notes before the shared-clock boundary. */
     CHECK(cpa_prepare(&plan,0,cs.chord,CPA_OFF,CPA_BOTH)); cpa_publish(&plan,0,1);
-    cf_snapshot(); cf_leds(); CHECK(led_keys(fm1_led_dim)==tone_keys(apower));
+    cf_snapshot(); cf_leds(); CHECK(led_keys(fm1_led)==tone_keys(cpower|apower));
     /* Upper extensions are folded to pitch classes; shared G remains bright. */
     cf_sn.ac_root[2]=7; cf_sn.ac_mask[2]=0x204491u; cf_leds();
-    uint16_t extended=(1u<<11)|(1u<<2)|(1u<<5)|(1u<<9)|(1u<<4);
-    CHECK(led_keys(fm1_led_dim)==tone_keys(extended));
+    uint16_t extended=1u<<7;
+    CHECK(led_keys(fm1_led)==tone_keys(cpower|extended));
     cf_sn.ac_repeat_off=1; cf_sn.ac_slot=cf_sn.ac_n-1; cf_leds();
     CHECK(led_keys(fm1_led_dim)==0); /* play-once has no chord after the last */
     cf_sn.ac_waiting=1; cf_sn.ac_slot=0; cf_sn.sq_dn=0; cf_leds();
-    CHECK(led_keys(fm1_led)==0 && led_keys(fm1_led_dim)==tone_keys(cpower));
+    CHECK(led_keys(fm1_led)==tone_keys(cpower) && led_keys(fm1_led_dim)==0);
     cf_sn.ac_paused=1; cf_leds(); CHECK(led_keys(fm1_led_dim)==0);
     cpa_stop(); render_blocks(4);
 }

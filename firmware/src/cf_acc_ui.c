@@ -12,9 +12,9 @@ static void cf_acc_click_remember(unsigned level)
     level=level<1?1:level>100?100:level;
     if(cf_click_level!=level){cf_click_level=(uint8_t)level;cpb_dirty=1;cpb_changed=cu.now;}
 }
-static void cf_acc_knob_info(int k,cf_knob_t *o)
+static void cf_acc_knob_info_for(unsigned tab,int k,cf_knob_t *o)
 {
-    unsigned tab=cf_acc_tab(),n=cf_progression_current()->n;
+    unsigned n=cf_progression_current()->n;
     if(tab==CF_ACC_GROOVE) {
         if(k==0){kfmt(o->name,12,"RHYTHM");kfmt(o->val,14,cpa_rhythm_name(cpa_running()?cf_sn.ac_rhythm:cpg.rhythm));o->dis=sqk.on;}
         else { unsigned old=cf_home_bank;cf_home_bank=CF_HB_GROOVE;cf_home_bank_info(k==1?0:k==2?1:2,o);cf_home_bank=old; }
@@ -34,10 +34,12 @@ static void cf_acc_knob_info(int k,cf_knob_t *o)
         if(k==3)cpa_tempo_info(o);
     }
 }
-static void cf_acc_knob_turn(int k,int d)
+static void cf_acc_knob_info(int k,cf_knob_t *o)
+{cf_acc_knob_info_for(cf_acc_tab(),k,o);}
+static void cf_acc_knob_turn_for(unsigned tab,int k,int d)
 {
     if(!d)return;
-    switch(cf_acc_tab()) {
+    switch(tab) {
     case CF_ACC_GROOVE:
         if(k==0)cf_progression_rhythm(d);
         else if(k==1 || k==3)cf_home_groove(k==1?0:2,d);
@@ -59,6 +61,8 @@ static void cf_acc_knob_turn(int k,int d)
         break;
     }
 }
+static void cf_acc_knob_turn(int k,int d)
+{cf_acc_knob_turn_for(cf_acc_tab(),k,d);}
 static void cf_acc_select(int d)
 {
     if(cf_acc_tab()==CF_ACC_GROOVE)cf_progression_rhythm(d);

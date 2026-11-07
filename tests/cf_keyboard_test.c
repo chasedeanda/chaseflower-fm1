@@ -13,7 +13,7 @@ static void setup(void)
 }
 static void harmony_knobs(void)
 {
-    setup();CHECK(CF_HB_N==6 && CF_HB_PERFORM==4 && CF_HB_LEARN==5);
+    setup();CHECK(CF_HB_N==8 && CF_HB_PERFORM==4 && CF_HB_LEARN==CF_HB_N-1);
     ui_button(B_PLAY);blocks(4);CHECK(cpa.on);
     unsigned cfg=cfs_fnv(&cs,sizeof cs),sounds=cfs_fnv(trk,sizeof trk),patterns=cfs_fnv(&sq_st,sizeof sq_st);
     unsigned plan=cfs_fnv(&cpa,sizeof cpa),grooves=cfs_fnv(&dmr,sizeof dmr),queue=cf_evq_w,writes=emu_flash_writes;
@@ -42,7 +42,7 @@ static void harmony_knobs(void)
     cu.pop=POP_NONE;
     cf_ui_draw();CHECK(cf_home_bank==CF_HB_LEARN && cf_stage_last.bank==CF_HB_LEARN);
     ui_button(B_HOME);CHECK(home_stage() && cf_home_bank==CF_HB_CORE && cpa.on);
-    for(unsigned i=0;i<5;i++)ui_button(B_HOME);CHECK(cf_home_bank==CF_HB_LEARN);
+    for(unsigned i=0;i<CF_HB_N-1;i++)ui_button(B_HOME);CHECK(cf_home_bank==CF_HB_LEARN);
     ui_button(B_GLO);ui_button(B_HOME);CHECK(home_stage() && cf_home_bank==CF_HB_CORE);
     ui_button(B_PLAY);blocks(4);CHECK(!cpa.on);
 }

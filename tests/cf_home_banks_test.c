@@ -48,6 +48,32 @@ static void navigation(void)
     cu.scr=SCR_GLO;ui_knob_turn(3,1);cu.scr=SCR_HOME;cf_stage_model(&m);CHECK(!m.bank_dx);
     cf_post(CFE_KEY,25,0,1);cf_post(CFE_KEY,25,0,0);blocks(2);CHECK(!cf_sn.out.hold);
 }
+static void shared_toolbars(void)
+{
+    setup();
+    unsigned page=cu.page[SCR_ACC]=CF_ACC_CLICK,queue=cf_evq_w;
+    for(unsigned i=0;i<CF_HB_N*3;i++){ui_algo(1);CHECK(cf_home_bank==(i+1)%CF_HB_N);}
+    CHECK(CF_HB_LEARN+1==CF_HB_N);
+    ui_algo(-1);CHECK(cf_home_bank==CF_HB_LEARN && cf_nav_dir==-1);
+    ui_algo(-CF_HB_N);CHECK(cf_home_bank==CF_HB_LEARN);
+    ui_algo(0);CHECK(cf_home_bank==CF_HB_LEARN && cf_evq_w==queue);
+    for(unsigned bank=CF_HB_LOOP;bank<=CF_HB_MIX;bank++) {
+        unsigned tab=bank==CF_HB_LOOP?CF_ACC_LOOP:CF_ACC_MIX;
+        for(int k=0;k<4;k++) {
+            cf_knob_t a={0},b={0};cu.scr=SCR_HOME;cf_home_bank=bank;
+            ui_knob_info(k,&a);CHECK(cu.page[SCR_ACC]==page);
+            cu.scr=SCR_ACC;cu.page[SCR_ACC]=tab;ui_knob_info(k,&b);
+            CHECK(!strcmp(a.name,b.name) && !strcmp(a.val,b.val) && a.dis==b.dis && a.bar==b.bar);
+            cf_set_t saved=cs;typeof(cpg) idea=cpg;
+            cu.scr=SCR_HOME;ui_knob_turn(k,1);cf_set_t home_cs=cs;typeof(cpg) home_idea=cpg;
+            CHECK(cu.scr==SCR_HOME && cf_home_bank==bank && cu.page[SCR_ACC]==tab);
+            cs=saved;cpg=idea;cu.scr=SCR_ACC;ui_knob_turn(k,1);
+            CHECK(!memcmp(&cs,&home_cs,sizeof cs) && !memcmp(&cpg,&home_idea,sizeof cpg));
+            page=cu.page[SCR_ACC]=CF_ACC_CLICK;
+        }
+    }
+    home();
+}
 static void parameters(void)
 {
     setup();cf_knob_t k;
@@ -108,7 +134,7 @@ static void audio(const char *path,int cycle)
     setup();cf_motion=1;ui_button(B_PLAY);blocks(2);FILE *f=fopen(path,"wb");CHECK(f);if(!f)return;
     int32_t out[CTL*2];unsigned flash=emu_flash_writes;
     for(unsigned b=0;b<FS*4u/CTL;b++) {
-        if(cycle && !(b%37)){cu.now=b*CTL*1000u/FS;ui_button(B_HOME);cf_ui_draw();}
+        if(cycle && !(b%37)){cu.now=b*CTL*1000u/FS;if(b%74)ui_algo(1);else ui_button(B_HOME);cf_ui_draw();}
         audio_block(out,CTL);fwrite(out,sizeof out,1,f);cf_snapshot();cpa_ui_poll();
     }
     fclose(f);CHECK(flash==emu_flash_writes && cpa.on);ui_button(B_PLAY);blocks(2);CHECK(!cpa.on && !sqp.n && !sqp.nb);
@@ -116,6 +142,6 @@ static void audio(const char *path,int cycle)
 int main(int argc,char **argv)
 {
     emu_fw_options(NULL,1,0,1);emu_hal.ready=2;emu_fw_init(0);
-    if(argc==3)audio(argv[2],atoi(argv[1]));else {navigation();parameters();queued();source_rail();}
+    if(argc==3)audio(argv[2],atoi(argv[1]));else {navigation();parameters();queued();source_rail();shared_toolbars();}
     printf("HOME banks: %u checks, %u failures\n",checks,failures);return failures!=0;
 }
