@@ -89,6 +89,9 @@ jobs:
       - name: Built-in drum bank, stable IDs, sequencer copies and real audio (host HAL)
         run: sh tools/test_drum_bank.sh
 
+      - name: Drum fills, drops, downbeat returns and Motion Off
+        run: sh tools/test_perform.sh
+
       - name: FX presets, safe storage and performance controls (host HAL)
         run: sh tools/test_fx_presets.sh
 

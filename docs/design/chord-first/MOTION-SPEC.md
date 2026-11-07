@@ -449,3 +449,15 @@ a browser preview.
     CSS `.morph-fill`, `.evolve .seed`, `.evolve .second`, plus the
     `prefers-reduced-motion` rule. These observations describe this source file,
     not measured FM-1 execution.
+
+## Drum performance moments (v1 source)
+
+Fill tension follows the current bar fraction; Drop settles the drum accent while
+chords/bass activity remains honest. Back and automatic fill return issue one
+finite outward bloom on the committed downbeat. Bound outlines within the existing
+HOME hero region and use the real smoothed output activity; muted output cannot
+create synthetic excitement. Audio timestamps and UI timestamps have different
+origins: consume the event serial once, then age the effect in UI time. Off, hidden
+HOME and clock interruption consume/cancel pending visual effects without replay.
+The action/state labels still update instantly with Off. See
+[controls and verification](../../DRUM-PERFORMANCE.md).

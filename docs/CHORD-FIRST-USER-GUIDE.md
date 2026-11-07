@@ -39,7 +39,7 @@ The notes line shows actual chord tones. The phrase cue shows planned chords; it
 | K2 | Key | Edit the parameter labelled K2 on the current screen. |
 | K3 | Scale / mode | Edit the parameter labelled K3 on the current screen. |
 | K4 | Tempo | Edit the parameter labelled K4 on the current screen. Glide lives in detail. |
-| HOME | Cycle Core / Sound / Texture / Groove | From another screen return to Progressions Core; while on Progressions, cycle the four live control banks. |
+| HOME | Cycle Core / Sound / Texture / Groove / Perform | From another screen return to Progressions Core; while on Progressions, cycle the five live control banks. |
 | SEL | Inspect the sounding chord | Enter the highlighted item; follow explicit on-screen audition labels. |
 | SEQ | Accompaniment | Groove, loop, arrangement and click details. |
 | EDIT | Edit the selected progression slot | Keep the numbered edit focus separate from the sounding chord. |
@@ -268,7 +268,7 @@ The notes line shows actual chord tones. The phrase cue shows planned chords; it
 3. **Manage → Undo restores one musical gesture.** — Saved-row deletion is not disguised as musical undo. (Undo / Redo).
 4. **After restart Recover the last valid stopped checkpoint.** — Opens stopped; a never-written Pending recording is not falsely claimed recoverable. (Recover Draft Checkpoint?).
 
-### Use the four live control banks
+### Use the five live control banks
 
 **Availability:** Play — first milestone. Reach existing controls without sacrificing CORE, full catalogue browsing or musical keys.
 
@@ -276,7 +276,8 @@ The notes line shows actual chord tones. The phrase cue shows planned chords; it
 2. **Tap HOME while already on Progressions** — SOUND: Chord sound / Bass sound / Chord level / Bass level; bank selection changes no values (Progressions · SOUND).
 3. **Tap HOME again** — TEXTURE: Reverb mix / Delay mix / Chorus mix / Glide (Progressions · TEXTURE).
 4. **Tap HOME again** — GROOVE: Kit / Drum level / Swing / Click (Progressions · GROOVE).
-5. **Tap HOME again** — CORE returns. SELECT still browses all songs; PRESETS stays chord sound; OCT keys remain musical. (Progressions · CORE).
+5. **Tap HOME again** — PERFORM: Fill / Drop / Back / Tempo. Turning K1–K3 triggers a bar-queued moment; bank selection alone changes no music. (Progressions · PERFORM).
+6. **Tap HOME again** — CORE returns. SELECT still browses all songs; PRESETS stays chord sound; OCT keys remain musical. (Progressions · CORE).
 
 ### Browse, audition and replace a chord
 
@@ -286,6 +287,15 @@ The notes line shows actual chord tones. The phrase cue shows planned chords; it
 2. **Turn ALGORITHM to Library and SELECT a candidate** — The reference list browses silently; target slot, degree, notes and variant are visible. (Chord Library).
 3. **Press SEL** — A deliberate bounded audition uses the shared note-owner rules; the slot is unchanged. (Chord Library).
 4. **Press EDIT Replace** — The named slot receives the candidate, one-step undo is available and any running plan change follows its musical boundary. (Edit Chord).
+
+### Perform fills, drops and downbeat returns
+
+**Availability:** Play — first milestone. Add live dramatic moments from HOME; Breakdown is deferred.
+
+1. **Start a groove; tap HOME to Perform** — Four labelled controls stay below the actual chord and phrase. (Progressions · PERFORM).
+2. **Turn K1 once** — FILL NEXT becomes a one-bar Fill at the next bar; the groove returns automatically with a bloom. (Progressions · PERFORM).
+3. **Turn K2, keep playing, then turn K3 when ready** — Drums leave next bar; chords and bass continue. BACK NEXT restores drums on the next downbeat. (Progressions · PERFORM).
+4. **Set Motion Off in Display** — The same musical actions work; labels update with no fill animation or bloom. (Progressions · PERFORM).
 
 ### Enable simple Harmony
 
@@ -387,9 +397,10 @@ Every entry below is a planned screen or a named state/tab of a shared screen. A
 | --- | --- | --- | --- |
 | Progressions · CORE | 1 | Boot, HOME from any musical workspace, or return from a completed action. | Browse and hear the complete catalogue with a large chord hero, paired degree/name cue and four text control columns. |
 | Progressions · Next Song Queued | 1 | Turn SELECT to another song during accompaniment. | Keep the current sound truthful while a browsed song waits for the next bar. |
-| Progressions · SOUND | 1 | On Progressions tap HOME until SOUND 2/4 appears, or open this bank from Live Control Banks. | Keep the chord visible while the four physical knobs expose audited SOUND controls. |
-| Progressions · TEXTURE | 1 | On Progressions tap HOME until TEXTURE 3/4 appears, or open this bank from Live Control Banks. | Keep the chord visible while the four physical knobs expose audited TEXTURE controls. |
-| Progressions · GROOVE | 1 | On Progressions tap HOME until GROOVE 4/4 appears, or open this bank from Live Control Banks. | Keep the chord visible while the four physical knobs expose audited GROOVE controls. |
+| Progressions · SOUND | 1 | On Progressions tap HOME until SOUND 2/5 appears, or open this bank from Live Control Banks. | Keep the chord visible while the four physical knobs expose audited SOUND controls. |
+| Progressions · TEXTURE | 1 | On Progressions tap HOME until TEXTURE 3/5 appears, or open this bank from Live Control Banks. | Keep the chord visible while the four physical knobs expose audited TEXTURE controls. |
+| Progressions · GROOVE | 1 | On Progressions tap HOME until GROOVE 4/5 appears, or open this bank from Live Control Banks. | Keep the chord visible while the four physical knobs expose audited GROOVE controls. |
+| Progressions · PERFORM | 1 | On Progressions tap HOME until PERFORM 5/5 appears. | Trigger one-bar fills, drum drops and downbeat returns while the sounding chord and phrase stay visible. |
 
 ### Accompaniment
 
@@ -690,7 +701,8 @@ Every entry below is a planned screen or a named state/tab of a shared screen. A
 - Songs supports selected-row Load, Rename, Duplicate and Delete, plus counted Clear Recordings/Clear All actions. Bulk clear excludes factory templates, the protected working draft and Pending captures. A Pending capture can be discarded only through its own explicit selected action.
 - The selected visual reference is fm1_adaptive_motion_prototype.html. Instrument Teal is the factory default: background #061b1e, foreground #f2f8f4, secondary #89a7a5, separator #355054, subtle surface #113034, accent #77dacb, and on-accent text #092d2c. Studio and Editorial are optional palettes of the same typography-led interface. Preserve the large chord, paired degrees, thin separators, four text controls and the supplied prototype's restrained halo/Bloom visual vocabulary; earlier Coral Bloom, Aurora and Studio Rack are historical alternatives.
 - Motion has exactly two user choices: On (adaptive) and Off. On responds automatically to output level/volume and semantic active-instrument activity using a smoothed bounded envelope, with musical motion tied to the shared clock. There is no manual Quiet/Expressive/intensity/speed selector. Off cancels every pulse, orbit, morph travel and tween; truthful chord, value, playback and record/save data still update instantly. The supplied loudness/layer sliders are simulation inputs, not new firmware settings or evidence of eight instrument parts. Measure display, input, memory and audio/USB timing on the FM-1.
-- HOME from another screen returns to Progressions Core. Further HOME taps cycle Core/Sound/Texture/Groove without changing any parameter; SELECT still browses the complete catalogue, PRESETS still selects chord sound, ALGORITHM keeps its scene/workspace role and OCT± stays musical. Four text columns and a subtle bank indicator make each current mapping visible.
+- HOME from another screen returns to Progressions Core. Further HOME taps cycle Core/Sound/Texture/Groove/Perform without changing any parameter; SELECT still browses the complete catalogue, PRESETS still selects chord sound, ALGORITHM keeps its scene/workspace role and OCT± stays musical. Four text columns and a subtle bank indicator make each current mapping visible.
+- HOME Perform is Fill / Drop drums / Bring back / Tempo. Moments commit at bar boundaries; Fill lasts one bar and returns automatically, Drop leaves chords and bass running, Back restores groove phase with a downbeat bloom. Motion Off keeps static truth. V1 is live-only; Breakdown and separate multi-bar builds are deferred.
 
 ## Design and release reference
 

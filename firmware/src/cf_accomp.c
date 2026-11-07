@@ -63,6 +63,7 @@ static void cpa_overlay_cfg(cf_chord_cfg_t *cfg)
 }
 static void cpa_release(void)
 {
+    cf_perf_reset();
     cla_cancel(0);
     sqp_chord_off(); sqp_bass_off(); sqp.dn = 0;
     sqp_drum_offs();
@@ -136,7 +137,7 @@ static void cpa_grid_start(void)
 static void cpa_start(void)
 {
     if (!cpa_valid(&cpa_setup.plan)) return;
-    cpa_stop(); sqp_stop(); dmp_stop();
+    cpa_stop(); sqp_stop(); dmp_stop(); cf_perf_reset();
     /* stop cleared flags, but the immutable snapshot remains available. */
     cpa.plan = cpa_setup.plan; cpa_setup.flags = cpa_edit.flags = 0;
     cpa_tie_from=0;
@@ -195,7 +196,10 @@ static void cpa_tick1(void)
                 cpa.slot = (uint8_t)((cpa.slot + 1u) % cpa.plan.n); cpa.elapsed = 0;
             }
         }
-        if(bar || reset)cpa_groove(reset);
+        if(bar || reset) {
+            cpa_groove(reset);
+            if(dmp.on)cf_perf_bar(dmp_fill_style(dmp.r));
+        }
         if (onset) cpa_emit();
     }
     const cpa_slot_t *gate=&cpa.plan.slot[cpa.slot];

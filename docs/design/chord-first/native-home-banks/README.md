@@ -11,6 +11,8 @@ physical TFT captures, listening results or measured hardware timing.
 ![Core](core.png) ![Sound](sound.png)
 ![Texture](texture.png) ![Groove](groove.png)
 
+Current source extends this four-bank preview with a fifth **Perform** bank: Fill / Drop / Back / Tempo. See [drum performance controls and captures](../../../DRUM-PERFORMANCE.md).
+
 ## Controls
 
 While on Progressions, tap HOME to cycle **Core → Sound → Texture → Groove**.
