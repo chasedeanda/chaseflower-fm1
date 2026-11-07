@@ -72,7 +72,7 @@ static void cfarp_model(cfarp_model_t *m)
     }
     /* Stable pitch scale spans the complete selected octave range, not only
      * today's random history or the 16-step window. Include clipped notes. */
-    for(unsigned o=0;o<oct;o++)for(unsigned i=0;i<n;i++){unsigned pitch=note[i]+12*o;if(pitch>127)pitch=note[i];if(pitch<m->lo)m->lo=pitch;if(pitch>m->hi)m->hi=pitch;}
+    if(!m->strum)for(unsigned o=0;o<oct;o++)for(unsigned i=0;i<n;i++){unsigned pitch=note[i]+12*o;if(pitch>127)pitch=note[i];if(pitch<m->lo)m->lo=pitch;if(pitch>m->hi)m->hi=pitch;}
     if(m->run) {
         cfarp_notename(a->trace[(a->count-1)%16],m->now,sizeof m->now);
         str_cpy(m->position,m->strum?"Note ":"Step ",sizeof m->position);
@@ -125,6 +125,10 @@ static void cfarp_draw(void)
     cfn_text(&CFN_12,10,212,m.page?"Timing & hold":"Pattern",FL_INK2);
     cfn_text(&CFN_12,181,212,m.page?"2 / 2":"1 / 2",FL_INK2);
     /* Compact four-knob footer leaves the entire musical display intact. */
-    for(unsigned k=0;k<4;k++){int x=k*60;fb_clip(x+3,214,x+58,240);cfn_center(&CFN_12,x+30,225,m.label[k],FL_INK2);cfn_center(&CFN_12,x+30,237,m.value[k],m.disabled[k]?FL_INK2:FL_INK);}
+    for(unsigned k=0;k<4;k++) {
+        int x=k*60;if(k)fb_vline(x,218,21,FL_BG3);fb_clip(x+3,214,x+58,240);
+        cfn_center(&CFN_11,x+30,225,m.label[k],FL_INK2);
+        cfn_center(cfn_width(&CFN_14,m.value[k])<=54?&CFN_14:&CFN_12,x+30,238,m.value[k],m.disabled[k]?FL_INK2:FL_INK);
+    }
     fb_unclip();if(!cu.pop)cf_present();
 }

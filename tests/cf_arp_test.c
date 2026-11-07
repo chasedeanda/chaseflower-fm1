@@ -78,6 +78,8 @@ static void progression(void)
     unsigned bass=sqp.bass[0];ms(300);CHECK(sqp.bass[0]==bass && cf_sn.arp_view.count>1);
     key(9,1);CHECK(cfa_k.n && !cfa_sq[0].n && cf_sn.arp_view.source==0);
     key(9,0);CHECK(!cfa_k.n && cfa_sq[0].n && cf_sn.arp_view.source==1);
+    key(9,1);cu.scr=SCR_ARP;cu.page[SCR_ARP]=0;ui_knob_turn(0,-1);blocks(2);key(9,0);CHECK(!cfa_sq[0].n && sqp.n);
+    ui_knob_turn(0,1);blocks(2);CHECK(cfa_sq[0].n && !sqp.n);
     unsigned slot=cpa.slot;ms(2200);CHECK(cpa.on && cpa.slot!=slot && cfa_sq[0].mask==cpa.plan.slot[cpa.slot].mask);
     cu.scr=SCR_ARP;cu.page[SCR_ARP]=0;ui_knob_turn(0,-1);blocks(2);CHECK(!cfa_sq[0].on && sqp.n);
     ui_knob_turn(0,1);blocks(2);CHECK(cfa_sq[0].n && !sqp.n);

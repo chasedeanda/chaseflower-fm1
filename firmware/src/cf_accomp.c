@@ -136,9 +136,14 @@ static void cpa_arp_config(void)
 }
 static void cpa_arp_service(void)
 {
-    if(!cpa.on || !cfp_cfg.arp_on)return;
-    if(cpa.paused || cpa.clock_wait || cpa_live_chord() || cla_active()){cpa_arp_off();return;}
-    if(sqp.dn && !cfa_sq[0].n){cpa_tie_from=0;cpa_emit();}
+    if(!cpa.on)return;
+    if(cpa.paused || cpa.clock_wait || cpa_live_chord() || cla_active()) {
+        if(cfa_sq[0].on)cpa_arp_off();
+        return;
+    }
+    /* Disabling ARP during a live takeover must still return to the current
+     * scheduled chord on release, rather than waiting for its next slot. */
+    if(sqp.dn && (cfp_cfg.arp_on?!cfa_sq[0].n:!sqp.n)){cpa_tie_from=0;cpa_emit();}
 }
 static void cpa_groove(int reset)
 {

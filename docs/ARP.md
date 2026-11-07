@@ -1,8 +1,8 @@
 # Visual arpeggiator
 
-Development implementation on latest main at `f1165e6`; not part of the published
+Development implementation integrated with main at `ca52779`; not part of the published
 0.6-chase10 release. Native emulator captures use the firmware renderer, Inter
-Tight fonts and selected Instrument Teal palette, at 240 × 240 pixels.
+Tight fonts and current character palette, at 240 × 240 pixels.
 
 ![Actual native ARP screen](../previews/arp-roll/hero.png)
 
