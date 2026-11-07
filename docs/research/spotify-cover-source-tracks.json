@@ -1,0 +1,2276 @@
+{
+  "retrieved_date": "2026-11-06",
+  "source": "Six Spotify playlist URLs supplied by user",
+  "excluded_artists": [
+    "Dance Gavin Dance",
+    "Dwellings"
+  ],
+  "playlists": [
+    {
+      "id": "37i9dQZF1ELXfKO0nfaeKP",
+      "url": "https://open.spotify.com/playlist/37i9dQZF1ELXfKO0nfaeKP",
+      "source_url": "https://open.spotify.com/embed/playlist/37i9dQZF1ELXfKO0nfaeKP",
+      "name": "Your Top Songs 2020",
+      "extraction_method": "Public Spotify embed HTML __NEXT_DATA__ props.pageProps.state.data.entity.trackList; no credentials",
+      "track_count": 100,
+      "eligible_track_count": 100,
+      "tracks": [
+        {
+          "rank": 1,
+          "title": "Cut My Hair",
+          "artists": "Mounika., Cavetown",
+          "spotify_uri": "spotify:track:3DYZKxjG8SZrWpVcoUilqQ",
+          "spotify_url": "https://open.spotify.com/track/3DYZKxjG8SZrWpVcoUilqQ",
+          "excluded": false
+        },
+        {
+          "rank": 2,
+          "title": "666",
+          "artists": "Smeyeul., Galvanic, DLJ",
+          "spotify_uri": "spotify:track:0a58S0ERta0i8nAUuGoMv0",
+          "spotify_url": "https://open.spotify.com/track/0a58S0ERta0i8nAUuGoMv0",
+          "excluded": false
+        },
+        {
+          "rank": 3,
+          "title": "Juicy",
+          "artists": "Doja Cat, Tyga",
+          "spotify_uri": "spotify:track:7f5trao56t7sB7f14QDTmp",
+          "spotify_url": "https://open.spotify.com/track/7f5trao56t7sB7f14QDTmp",
+          "excluded": false
+        },
+        {
+          "rank": 4,
+          "title": "High Fashion (feat. Mustard)",
+          "artists": "Roddy Ricch, Mustard",
+          "spotify_uri": "spotify:track:07KXEDMj78x68D884wgVEm",
+          "spotify_url": "https://open.spotify.com/track/07KXEDMj78x68D884wgVEm",
+          "excluded": false
+        },
+        {
+          "rank": 5,
+          "title": "The Box",
+          "artists": "Roddy Ricch",
+          "spotify_uri": "spotify:track:0nbXyq5TXYPCO7pr3N8S4I",
+          "spotify_url": "https://open.spotify.com/track/0nbXyq5TXYPCO7pr3N8S4I",
+          "excluded": false
+        },
+        {
+          "rank": 6,
+          "title": "I.F.L.Y.",
+          "artists": "Bazzi",
+          "spotify_uri": "spotify:track:4a6q8CR2hzLk2plDkSxkfD",
+          "spotify_url": "https://open.spotify.com/track/4a6q8CR2hzLk2plDkSxkfD",
+          "excluded": false
+        },
+        {
+          "rank": 7,
+          "title": "Intentions (feat. Quavo)",
+          "artists": "Justin Bieber, Quavo",
+          "spotify_uri": "spotify:track:4umIPjkehX1r7uhmGvXiSV",
+          "spotify_url": "https://open.spotify.com/track/4umIPjkehX1r7uhmGvXiSV",
+          "excluded": false
+        },
+        {
+          "rank": 8,
+          "title": "Boyfriend",
+          "artists": "Smeyeul., Galvanic",
+          "spotify_uri": "spotify:track:4zilOSc3Hzgsr6OPPLgJF2",
+          "spotify_url": "https://open.spotify.com/track/4zilOSc3Hzgsr6OPPLgJF2",
+          "excluded": false
+        },
+        {
+          "rank": 9,
+          "title": "Start Wit Me (feat. Gunna)",
+          "artists": "Roddy Ricch, Gunna",
+          "spotify_uri": "spotify:track:7A20WnLkjtZU2d7hIB6Ziu",
+          "spotify_url": "https://open.spotify.com/track/7A20WnLkjtZU2d7hIB6Ziu",
+          "excluded": false
+        },
+        {
+          "rank": 10,
+          "title": "my ex's best friend (with blackbear)",
+          "artists": "mgk, blackbear",
+          "spotify_uri": "spotify:track:70rFIfYN7lU6iTgUIVP42w",
+          "spotify_url": "https://open.spotify.com/track/70rFIfYN7lU6iTgUIVP42w",
+          "excluded": false
+        },
+        {
+          "rank": 11,
+          "title": "Yummy",
+          "artists": "Justin Bieber",
+          "spotify_uri": "spotify:track:16wAOAZ2OkqoIDN7TpChjR",
+          "spotify_url": "https://open.spotify.com/track/16wAOAZ2OkqoIDN7TpChjR",
+          "excluded": false
+        },
+        {
+          "rank": 12,
+          "title": "Hang On",
+          "artists": "Smeyeul., Galvanic, TRACE",
+          "spotify_uri": "spotify:track:6p7ObLzKOrDPkbzG9dHe1x",
+          "spotify_url": "https://open.spotify.com/track/6p7ObLzKOrDPkbzG9dHe1x",
+          "excluded": false
+        },
+        {
+          "rank": 13,
+          "title": "Down Below",
+          "artists": "Roddy Ricch",
+          "spotify_uri": "spotify:track:4SWWe2OYC4mqf40Gc2RSdl",
+          "spotify_url": "https://open.spotify.com/track/4SWWe2OYC4mqf40Gc2RSdl",
+          "excluded": false
+        },
+        {
+          "rank": 14,
+          "title": "bloody valentine",
+          "artists": "mgk",
+          "spotify_uri": "spotify:track:1bWEngw5tAF7vWByrf5Oy5",
+          "spotify_url": "https://open.spotify.com/track/1bWEngw5tAF7vWByrf5Oy5",
+          "excluded": false
+        },
+        {
+          "rank": 15,
+          "title": "Forever (feat. Post Malone & Clever)",
+          "artists": "Justin Bieber, Post Malone, Clever",
+          "spotify_uri": "spotify:track:2ZlCGeK30BLRNSPC832pNZ",
+          "spotify_url": "https://open.spotify.com/track/2ZlCGeK30BLRNSPC832pNZ",
+          "excluded": false
+        },
+        {
+          "rank": 16,
+          "title": "Everything in Life is Yours",
+          "artists": "Galvanic, rn",
+          "spotify_uri": "spotify:track:1xzMuAXawoFfKt8EHMiCA3",
+          "spotify_url": "https://open.spotify.com/track/1xzMuAXawoFfKt8EHMiCA3",
+          "excluded": false
+        },
+        {
+          "rank": 17,
+          "title": "Walk Em Down (feat. Roddy Ricch)",
+          "artists": "NLE Choppa, Roddy Ricch",
+          "spotify_uri": "spotify:track:4cSSL3YafYjM3yjgFO1vJg",
+          "spotify_url": "https://open.spotify.com/track/4cSSL3YafYjM3yjgFO1vJg",
+          "excluded": false
+        },
+        {
+          "rank": 18,
+          "title": "Candy (feat. Trippie Redd)",
+          "artists": "mgk, Trippie Redd",
+          "spotify_uri": "spotify:track:37AGgp9VP8TVJBfEat74Bj",
+          "spotify_url": "https://open.spotify.com/track/37AGgp9VP8TVJBfEat74Bj",
+          "excluded": false
+        },
+        {
+          "rank": 19,
+          "title": "Come Around Me",
+          "artists": "Justin Bieber",
+          "spotify_uri": "spotify:track:2o9LAypwGH4ctV0i9boo6d",
+          "spotify_url": "https://open.spotify.com/track/2o9LAypwGH4ctV0i9boo6d",
+          "excluded": false
+        },
+        {
+          "rank": 20,
+          "title": "Love Me",
+          "artists": "Smeyeul., Galvanic, Haux",
+          "spotify_uri": "spotify:track:7EwI0gVJ1IO9B0VCz693Zv",
+          "spotify_url": "https://open.spotify.com/track/7EwI0gVJ1IO9B0VCz693Zv",
+          "excluded": false
+        },
+        {
+          "rank": 21,
+          "title": "Die Young",
+          "artists": "Roddy Ricch",
+          "spotify_uri": "spotify:track:3wLtYwtqvKK2ewelSVPeDK",
+          "spotify_url": "https://open.spotify.com/track/3wLtYwtqvKK2ewelSVPeDK",
+          "excluded": false
+        },
+        {
+          "rank": 22,
+          "title": "Hurt",
+          "artists": "Oliver Tree",
+          "spotify_uri": "spotify:track:6Ph8QwsRfZunN5e1GGBIqa",
+          "spotify_url": "https://open.spotify.com/track/6Ph8QwsRfZunN5e1GGBIqa",
+          "excluded": false
+        },
+        {
+          "rank": 23,
+          "title": "Available",
+          "artists": "Justin Bieber",
+          "spotify_uri": "spotify:track:1b6tPXXCV2fSNtR3SKWUQA",
+          "spotify_url": "https://open.spotify.com/track/1b6tPXXCV2fSNtR3SKWUQA",
+          "excluded": false
+        },
+        {
+          "rank": 24,
+          "title": "I Think I'm OKAY (with YUNGBLUD & Travis Barker)",
+          "artists": "mgk, YUNGBLUD, Travis Barker",
+          "spotify_uri": "spotify:track:2gTdDMpNxIRFSiu7HutMCg",
+          "spotify_url": "https://open.spotify.com/track/2gTdDMpNxIRFSiu7HutMCg",
+          "excluded": false
+        },
+        {
+          "rank": 25,
+          "title": "Ballin' (with Roddy Ricch)",
+          "artists": "Mustard, Roddy Ricch",
+          "spotify_uri": "spotify:track:3QzAOrNlsabgbMwlZt7TAY",
+          "spotify_url": "https://open.spotify.com/track/3QzAOrNlsabgbMwlZt7TAY",
+          "excluded": false
+        },
+        {
+          "rank": 26,
+          "title": "All I Wanted",
+          "artists": "Galvanic, rn",
+          "spotify_uri": "spotify:track:1GKHeJhEeBIBAqsRWpZaQJ",
+          "spotify_url": "https://open.spotify.com/track/1GKHeJhEeBIBAqsRWpZaQJ",
+          "excluded": false
+        },
+        {
+          "rank": 27,
+          "title": "Running Over (feat. Lil Dicky)",
+          "artists": "Justin Bieber, Lil Dicky",
+          "spotify_uri": "spotify:track:75nKBP8jQu681pTNCtrEnn",
+          "spotify_url": "https://open.spotify.com/track/75nKBP8jQu681pTNCtrEnn",
+          "excluded": false
+        },
+        {
+          "rank": 28,
+          "title": "Alien Boy",
+          "artists": "Oliver Tree",
+          "spotify_uri": "spotify:track:3BIIJgBJJ7NhhCv4MI6n7w",
+          "spotify_url": "https://open.spotify.com/track/3BIIJgBJJ7NhhCv4MI6n7w",
+          "excluded": false
+        },
+        {
+          "rank": 29,
+          "title": "Bacc Seat (feat. Ty Dolla $ign)",
+          "artists": "Roddy Ricch, Ty Dolla $ign",
+          "spotify_uri": "spotify:track:6In6SkveIw26thdYRhHTVX",
+          "spotify_url": "https://open.spotify.com/track/6In6SkveIw26thdYRhHTVX",
+          "excluded": false
+        },
+        {
+          "rank": 30,
+          "title": "Sick and Tired (ft. Machine Gun Kelly and Travis Barker)",
+          "artists": "iann dior, mgk, Travis Barker",
+          "spotify_uri": "spotify:track:0DILU9jjSTnCv1dcbUH3ib",
+          "spotify_url": "https://open.spotify.com/track/0DILU9jjSTnCv1dcbUH3ib",
+          "excluded": false
+        },
+        {
+          "rank": 31,
+          "title": "E.T.A.",
+          "artists": "Justin Bieber",
+          "spotify_uri": "spotify:track:6PzOPrXx8tJEqace76yrv2",
+          "spotify_url": "https://open.spotify.com/track/6PzOPrXx8tJEqace76yrv2",
+          "excluded": false
+        },
+        {
+          "rank": 32,
+          "title": "Cash Machine",
+          "artists": "Oliver Tree",
+          "spotify_uri": "spotify:track:6ie5en0vOy4GUercEUUNfJ",
+          "spotify_url": "https://open.spotify.com/track/6ie5en0vOy4GUercEUUNfJ",
+          "excluded": false
+        },
+        {
+          "rank": 33,
+          "title": "Project Dreams",
+          "artists": "Marshmello, Roddy Ricch",
+          "spotify_uri": "spotify:track:6GSkLS2y4ZnnZsuRAj975K",
+          "spotify_url": "https://open.spotify.com/track/6GSkLS2y4ZnnZsuRAj975K",
+          "excluded": false
+        },
+        {
+          "rank": 34,
+          "title": "Begging",
+          "artists": "Galvanic, Skylar McCreery",
+          "spotify_uri": "spotify:track:4MyZC0LVWSNy54w3aHLZ0H",
+          "spotify_url": "https://open.spotify.com/track/4MyZC0LVWSNy54w3aHLZ0H",
+          "excluded": false
+        },
+        {
+          "rank": 35,
+          "title": "Confirmation",
+          "artists": "Justin Bieber",
+          "spotify_uri": "spotify:track:60brXKLTC15vK0av5gIldm",
+          "spotify_url": "https://open.spotify.com/track/60brXKLTC15vK0av5gIldm",
+          "excluded": false
+        },
+        {
+          "rank": 36,
+          "title": "Jerk",
+          "artists": "Oliver Tree",
+          "spotify_uri": "spotify:track:065bY5WrLvI3NN9VCK0QLe",
+          "spotify_url": "https://open.spotify.com/track/065bY5WrLvI3NN9VCK0QLe",
+          "excluded": false
+        },
+        {
+          "rank": 37,
+          "title": "Peta (feat. Meek Mill)",
+          "artists": "Roddy Ricch, Meek Mill",
+          "spotify_uri": "spotify:track:4bl1HBZliBuYpFZjWgefE4",
+          "spotify_url": "https://open.spotify.com/track/4bl1HBZliBuYpFZjWgefE4",
+          "excluded": false
+        },
+        {
+          "rank": 38,
+          "title": "concert for aliens",
+          "artists": "mgk",
+          "spotify_uri": "spotify:track:6z7oVGcpVDRTxurZIJIkrV",
+          "spotify_url": "https://open.spotify.com/track/6z7oVGcpVDRTxurZIJIkrV",
+          "excluded": false
+        },
+        {
+          "rank": 39,
+          "title": "Second Emotion (feat. Travis Scott)",
+          "artists": "Justin Bieber, Travis Scott",
+          "spotify_uri": "spotify:track:1PnAx788sAvcI3ZxTlEyX8",
+          "spotify_url": "https://open.spotify.com/track/1PnAx788sAvcI3ZxTlEyX8",
+          "excluded": false
+        },
+        {
+          "rank": 40,
+          "title": "Let Me Down",
+          "artists": "Oliver Tree",
+          "spotify_uri": "spotify:track:0jk6J6B9ivegJc7dTg10Mp",
+          "spotify_url": "https://open.spotify.com/track/0jk6J6B9ivegJc7dTg10Mp",
+          "excluded": false
+        },
+        {
+          "rank": 41,
+          "title": "Big Stepper",
+          "artists": "Roddy Ricch",
+          "spotify_uri": "spotify:track:6x0QNM6f0C2JEjK0hFF8Ca",
+          "spotify_url": "https://open.spotify.com/track/6x0QNM6f0C2JEjK0hFF8Ca",
+          "excluded": false
+        },
+        {
+          "rank": 42,
+          "title": "Copilot",
+          "artists": "Tōth",
+          "spotify_uri": "spotify:track:2vcCHqDdGPi4zTeOfxanuO",
+          "spotify_url": "https://open.spotify.com/track/2vcCHqDdGPi4zTeOfxanuO",
+          "excluded": false
+        },
+        {
+          "rank": 43,
+          "title": "Changes",
+          "artists": "Justin Bieber",
+          "spotify_uri": "spotify:track:521Os1SMlxmsoevsqyjNmJ",
+          "spotify_url": "https://open.spotify.com/track/521Os1SMlxmsoevsqyjNmJ",
+          "excluded": false
+        },
+        {
+          "rank": 44,
+          "title": "Juicy",
+          "artists": "Doja Cat",
+          "spotify_uri": "spotify:track:4cTm3Ev9bUvy4ChJjB1nhl",
+          "spotify_url": "https://open.spotify.com/track/4cTm3Ev9bUvy4ChJjB1nhl",
+          "excluded": false
+        },
+        {
+          "rank": 45,
+          "title": "Intro",
+          "artists": "Roddy Ricch",
+          "spotify_uri": "spotify:track:7AOtINPzQ4N4JVXk7ygZZz",
+          "spotify_url": "https://open.spotify.com/track/7AOtINPzQ4N4JVXk7ygZZz",
+          "excluded": false
+        },
+        {
+          "rank": 46,
+          "title": "Miracle Man",
+          "artists": "Oliver Tree",
+          "spotify_uri": "spotify:track:2PFnwW05Wh0MYkfZxSwfuf",
+          "spotify_url": "https://open.spotify.com/track/2PFnwW05Wh0MYkfZxSwfuf",
+          "excluded": false
+        },
+        {
+          "rank": 47,
+          "title": "Yummy - Summer Walker Remix",
+          "artists": "Justin Bieber, Summer Walker",
+          "spotify_uri": "spotify:track:2FBpJGt00G0h1q0RHuqaGO",
+          "spotify_url": "https://open.spotify.com/track/2FBpJGt00G0h1q0RHuqaGO",
+          "excluded": false
+        },
+        {
+          "rank": 48,
+          "title": "The Fabulist",
+          "artists": "Galvanic",
+          "spotify_uri": "spotify:track:3m6G68Aq6AdycCDXRBJlIR",
+          "spotify_url": "https://open.spotify.com/track/3m6G68Aq6AdycCDXRBJlIR",
+          "excluded": false
+        },
+        {
+          "rank": 49,
+          "title": "Perfect Time",
+          "artists": "Roddy Ricch",
+          "spotify_uri": "spotify:track:6kiIVIbmwEw6JvIZc7UG0E",
+          "spotify_url": "https://open.spotify.com/track/6kiIVIbmwEw6JvIZc7UG0E",
+          "excluded": false
+        },
+        {
+          "rank": 50,
+          "title": "No Reason",
+          "artists": "Tōth",
+          "spotify_uri": "spotify:track:5M1TXdS2EjFDSUBIlZdvPs",
+          "spotify_url": "https://open.spotify.com/track/5M1TXdS2EjFDSUBIlZdvPs",
+          "excluded": false
+        },
+        {
+          "rank": 51,
+          "title": "That's What Love Is",
+          "artists": "Justin Bieber",
+          "spotify_uri": "spotify:track:2hLu8L8SNfCN4yKyPdX0h3",
+          "spotify_url": "https://open.spotify.com/track/2hLu8L8SNfCN4yKyPdX0h3",
+          "excluded": false
+        },
+        {
+          "rank": 52,
+          "title": "Lucky",
+          "artists": "Galvanic, Neptis",
+          "spotify_uri": "spotify:track:0dZaBFy7xV6lsOTzA0X3SP",
+          "spotify_url": "https://open.spotify.com/track/0dZaBFy7xV6lsOTzA0X3SP",
+          "excluded": false
+        },
+        {
+          "rank": 53,
+          "title": "Me, Myself & I",
+          "artists": "Oliver Tree",
+          "spotify_uri": "spotify:track:02ZxMmzmXSjOSaHnKsN5ID",
+          "spotify_url": "https://open.spotify.com/track/02ZxMmzmXSjOSaHnKsN5ID",
+          "excluded": false
+        },
+        {
+          "rank": 54,
+          "title": "Careless",
+          "artists": "Coastal",
+          "spotify_uri": "spotify:track:3v1O6lndJhBf7BXgnNs42x",
+          "spotify_url": "https://open.spotify.com/track/3v1O6lndJhBf7BXgnNs42x",
+          "excluded": false
+        },
+        {
+          "rank": 55,
+          "title": "Take It Out On Me",
+          "artists": "Justin Bieber",
+          "spotify_uri": "spotify:track:39nTNk5MfyiiRupTwn1iyC",
+          "spotify_url": "https://open.spotify.com/track/39nTNk5MfyiiRupTwn1iyC",
+          "excluded": false
+        },
+        {
+          "rank": 56,
+          "title": "Juliette",
+          "artists": "Tōth",
+          "spotify_uri": "spotify:track:3sLE6NNNk9CjXZv1zh5rm4",
+          "spotify_url": "https://open.spotify.com/track/3sLE6NNNk9CjXZv1zh5rm4",
+          "excluded": false
+        },
+        {
+          "rank": 57,
+          "title": "Tip Toe (feat. A Boogie Wit da Hoodie)",
+          "artists": "Roddy Ricch, A Boogie Wit da Hoodie",
+          "spotify_uri": "spotify:track:6ztvsy3C6hPjVg9j4x1XKJ",
+          "spotify_url": "https://open.spotify.com/track/6ztvsy3C6hPjVg9j4x1XKJ",
+          "excluded": false
+        },
+        {
+          "rank": 58,
+          "title": "Loving Lies",
+          "artists": "Galvanic, rn, Chevy",
+          "spotify_uri": "spotify:track:39fAxteU0N9QdlbKZMqm4P",
+          "spotify_url": "https://open.spotify.com/track/39fAxteU0N9QdlbKZMqm4P",
+          "excluded": false
+        },
+        {
+          "rank": 59,
+          "title": "Get Me (feat. Kehlani)",
+          "artists": "Justin Bieber, Kehlani",
+          "spotify_uri": "spotify:track:5VwwpU7KsLhgfbMEecedhJ",
+          "spotify_url": "https://open.spotify.com/track/5VwwpU7KsLhgfbMEecedhJ",
+          "excluded": false
+        },
+        {
+          "rank": 60,
+          "title": "With U",
+          "artists": "SwuM, Idealism",
+          "spotify_uri": "spotify:track:0rNpm25xLsckCS9JPAgpwP",
+          "spotify_url": "https://open.spotify.com/track/0rNpm25xLsckCS9JPAgpwP",
+          "excluded": false
+        },
+        {
+          "rank": 61,
+          "title": "Moonwalkin (feat. Lil Durk)",
+          "artists": "Roddy Ricch, Lil Durk",
+          "spotify_uri": "spotify:track:33NoCir8q4WA4HNmyrD3fu",
+          "spotify_url": "https://open.spotify.com/track/33NoCir8q4WA4HNmyrD3fu",
+          "excluded": false
+        },
+        {
+          "rank": 62,
+          "title": "Waves",
+          "artists": "Galvanic, rn",
+          "spotify_uri": "spotify:track:2tzLqIluMdT97QDGN6fShm",
+          "spotify_url": "https://open.spotify.com/track/2tzLqIluMdT97QDGN6fShm",
+          "excluded": false
+        },
+        {
+          "rank": 63,
+          "title": "Habitual",
+          "artists": "Justin Bieber",
+          "spotify_uri": "spotify:track:40qyPyljksBEqlNw5sW37T",
+          "spotify_url": "https://open.spotify.com/track/40qyPyljksBEqlNw5sW37T",
+          "excluded": false
+        },
+        {
+          "rank": 64,
+          "title": "Wumbo",
+          "artists": "Harris Cole, Otxhello, Dilip",
+          "spotify_uri": "spotify:track:6W3XJGH5WXGoFubLBr0Mf0",
+          "spotify_url": "https://open.spotify.com/track/6W3XJGH5WXGoFubLBr0Mf0",
+          "excluded": false
+        },
+        {
+          "rank": 65,
+          "title": "Peach",
+          "artists": "Glimlip, Louk, Elior",
+          "spotify_uri": "spotify:track:3GkSDGupydidufnOGZn2FE",
+          "spotify_url": "https://open.spotify.com/track/3GkSDGupydidufnOGZn2FE",
+          "excluded": false
+        },
+        {
+          "rank": 66,
+          "title": "distance",
+          "artists": "Nohidea, Dontcry",
+          "spotify_uri": "spotify:track:4dd9GGN2kHb1d28yGL578m",
+          "spotify_url": "https://open.spotify.com/track/4dd9GGN2kHb1d28yGL578m",
+          "excluded": false
+        },
+        {
+          "rank": 67,
+          "title": "All Around Me",
+          "artists": "Justin Bieber",
+          "spotify_uri": "spotify:track:5Py8zRKGkZvgHniVVtvNCN",
+          "spotify_url": "https://open.spotify.com/track/5Py8zRKGkZvgHniVVtvNCN",
+          "excluded": false
+        },
+        {
+          "rank": 68,
+          "title": "The Finish Line",
+          "artists": "Middle School, Mitchel Forman",
+          "spotify_uri": "spotify:track:0GKi4sPErVwTzruhuqoDvb",
+          "spotify_url": "https://open.spotify.com/track/0GKi4sPErVwTzruhuqoDvb",
+          "excluded": false
+        },
+        {
+          "rank": 69,
+          "title": "_Away",
+          "artists": "MARTIN $KY, Toonorth",
+          "spotify_uri": "spotify:track:5HyNrWvG43Hweze5agk4kK",
+          "spotify_url": "https://open.spotify.com/track/5HyNrWvG43Hweze5agk4kK",
+          "excluded": false
+        },
+        {
+          "rank": 70,
+          "title": "Again & Again",
+          "artists": "Oliver Tree",
+          "spotify_uri": "spotify:track:4KiTVvoDILkT9vi8JhtfZm",
+          "spotify_url": "https://open.spotify.com/track/4KiTVvoDILkT9vi8JhtfZm",
+          "excluded": false
+        },
+        {
+          "rank": 71,
+          "title": "At Least For Now",
+          "artists": "Justin Bieber",
+          "spotify_uri": "spotify:track:6VLkgf5YmLixsabdqiCVGU",
+          "spotify_url": "https://open.spotify.com/track/6VLkgf5YmLixsabdqiCVGU",
+          "excluded": false
+        },
+        {
+          "rank": 72,
+          "title": "Only Me",
+          "artists": "Galvanic, rn",
+          "spotify_uri": "spotify:track:1VlyHgbwVC2ifyOTzfSyMs",
+          "spotify_url": "https://open.spotify.com/track/1VlyHgbwVC2ifyOTzfSyMs",
+          "excluded": false
+        },
+        {
+          "rank": 73,
+          "title": "ROCKSTAR (feat. Roddy Ricch)",
+          "artists": "DaBaby, Roddy Ricch",
+          "spotify_uri": "spotify:track:7ytR5pFWmSjzHJIeQkgog4",
+          "spotify_url": "https://open.spotify.com/track/7ytR5pFWmSjzHJIeQkgog4",
+          "excluded": false
+        },
+        {
+          "rank": 74,
+          "title": "When I'm Down",
+          "artists": "Whethan, Oliver Tree",
+          "spotify_uri": "spotify:track:556l9P7WVZVyYUBjT1YFTT",
+          "spotify_url": "https://open.spotify.com/track/556l9P7WVZVyYUBjT1YFTT",
+          "excluded": false
+        },
+        {
+          "rank": 75,
+          "title": "Quiet Nights",
+          "artists": "Epektase, Pandrezz, j'san",
+          "spotify_uri": "spotify:track:6NyUKv40Lorxjlet7IltHJ",
+          "spotify_url": "https://open.spotify.com/track/6NyUKv40Lorxjlet7IltHJ",
+          "excluded": false
+        },
+        {
+          "rank": 76,
+          "title": "Picture of You",
+          "artists": "Tōth",
+          "spotify_uri": "spotify:track:0OruRmzEfjDPIabdJTi9RF",
+          "spotify_url": "https://open.spotify.com/track/0OruRmzEfjDPIabdJTi9RF",
+          "excluded": false
+        },
+        {
+          "rank": 77,
+          "title": "Every Season",
+          "artists": "Roddy Ricch",
+          "spotify_uri": "spotify:track:1ttPzkTSpQUFcEGx8bjerL",
+          "spotify_url": "https://open.spotify.com/track/1ttPzkTSpQUFcEGx8bjerL",
+          "excluded": false
+        },
+        {
+          "rank": 78,
+          "title": "1993 (feat. Little Ricky ZR3)",
+          "artists": "Oliver Tree, Little Ricky ZR3",
+          "spotify_uri": "spotify:track:0ssRH9I8P7X7tawJQiIhzE",
+          "spotify_url": "https://open.spotify.com/track/0ssRH9I8P7X7tawJQiIhzE",
+          "excluded": false
+        },
+        {
+          "rank": 79,
+          "title": "Tell Me",
+          "artists": "Smeyeul., Galvanic",
+          "spotify_uri": "spotify:track:2qJ4fIrrqndyEdcUUAQuQU",
+          "spotify_url": "https://open.spotify.com/track/2qJ4fIrrqndyEdcUUAQuQU",
+          "excluded": false
+        },
+        {
+          "rank": 80,
+          "title": "Click",
+          "artists": "Dontcry, Nokiaa",
+          "spotify_uri": "spotify:track:0cC1pTC0ySMeouWJG9Arly",
+          "spotify_url": "https://open.spotify.com/track/0cC1pTC0ySMeouWJG9Arly",
+          "excluded": false
+        },
+        {
+          "rank": 81,
+          "title": "God's Eyes",
+          "artists": "Roddy Ricch",
+          "spotify_uri": "spotify:track:7KK4d7xfH6WjUuK1kPL8E2",
+          "spotify_url": "https://open.spotify.com/track/7KK4d7xfH6WjUuK1kPL8E2",
+          "excluded": false
+        },
+        {
+          "rank": 82,
+          "title": "I'm Gone",
+          "artists": "Oliver Tree",
+          "spotify_uri": "spotify:track:6Em6BtxvTsQrXFsFVzAEym",
+          "spotify_url": "https://open.spotify.com/track/6Em6BtxvTsQrXFsFVzAEym",
+          "excluded": false
+        },
+        {
+          "rank": 83,
+          "title": "Ghost",
+          "artists": "Galvanic",
+          "spotify_uri": "spotify:track:5EhHOnKFhszn6MbaFotVf0",
+          "spotify_url": "https://open.spotify.com/track/5EhHOnKFhszn6MbaFotVf0",
+          "excluded": false
+        },
+        {
+          "rank": 84,
+          "title": "Night Sailing",
+          "artists": "twuan",
+          "spotify_uri": "spotify:track:1ibv1Pp5MQhyT7HNNw0q89",
+          "spotify_url": "https://open.spotify.com/track/1ibv1Pp5MQhyT7HNNw0q89",
+          "excluded": false
+        },
+        {
+          "rank": 85,
+          "title": "Perspective",
+          "artists": "Barnes Blvd.",
+          "spotify_uri": "spotify:track:1yrZp8B0mLT18RuZccaDBJ",
+          "spotify_url": "https://open.spotify.com/track/1yrZp8B0mLT18RuZccaDBJ",
+          "excluded": false
+        },
+        {
+          "rank": 86,
+          "title": "Down for the Count",
+          "artists": "Tōth",
+          "spotify_uri": "spotify:track:16yq5bVZYIPgdeoD5eAHNw",
+          "spotify_url": "https://open.spotify.com/track/16yq5bVZYIPgdeoD5eAHNw",
+          "excluded": false
+        },
+        {
+          "rank": 87,
+          "title": "The End",
+          "artists": "Galvanic, DLJ",
+          "spotify_uri": "spotify:track:6TUZrLfKrWKJcJvccce82y",
+          "spotify_url": "https://open.spotify.com/track/6TUZrLfKrWKJcJvccce82y",
+          "excluded": false
+        },
+        {
+          "rank": 88,
+          "title": "Mindfulness",
+          "artists": "C Y G N",
+          "spotify_uri": "spotify:track:0XTRycTWH8TR2xBEjwByNS",
+          "spotify_url": "https://open.spotify.com/track/0XTRycTWH8TR2xBEjwByNS",
+          "excluded": false
+        },
+        {
+          "rank": 89,
+          "title": "Nepenthe",
+          "artists": "goosetaf, Ian Ewing",
+          "spotify_uri": "spotify:track:4PJePX91Q5u7SqQD31R3YO",
+          "spotify_url": "https://open.spotify.com/track/4PJePX91Q5u7SqQD31R3YO",
+          "excluded": false
+        },
+        {
+          "rank": 90,
+          "title": "Back to Life",
+          "artists": "Sofasound",
+          "spotify_uri": "spotify:track:1s3YrMvvEo4BADEelWfugR",
+          "spotify_url": "https://open.spotify.com/track/1s3YrMvvEo4BADEelWfugR",
+          "excluded": false
+        },
+        {
+          "rank": 91,
+          "title": "With Me",
+          "artists": "Galvanic, rn, Eliza Roe",
+          "spotify_uri": "spotify:track:4pwSXCq3oSpurdOZYeE8nk",
+          "spotify_url": "https://open.spotify.com/track/4pwSXCq3oSpurdOZYeE8nk",
+          "excluded": false
+        },
+        {
+          "rank": 92,
+          "title": "Sex for Breakfast II",
+          "artists": "Lo'fi Boy",
+          "spotify_uri": "spotify:track:1BK5u5dCqEateAptzwHaYa",
+          "spotify_url": "https://open.spotify.com/track/1BK5u5dCqEateAptzwHaYa",
+          "excluded": false
+        },
+        {
+          "rank": 93,
+          "title": "Sunflower Serenade",
+          "artists": "Minthaze",
+          "spotify_uri": "spotify:track:4zROIOjt5mP9vSk6pCu9TG",
+          "spotify_url": "https://open.spotify.com/track/4zROIOjt5mP9vSk6pCu9TG",
+          "excluded": false
+        },
+        {
+          "rank": 94,
+          "title": "sorry",
+          "artists": "chief.",
+          "spotify_uri": "spotify:track:6gyYI35SD576xiwstBIX7Y",
+          "spotify_url": "https://open.spotify.com/track/6gyYI35SD576xiwstBIX7Y",
+          "excluded": false
+        },
+        {
+          "rank": 95,
+          "title": "All of My Time",
+          "artists": "Galvanic, Laviso",
+          "spotify_uri": "spotify:track:6LR5B8tcpZ29u8MOFjfOJI",
+          "spotify_url": "https://open.spotify.com/track/6LR5B8tcpZ29u8MOFjfOJI",
+          "excluded": false
+        },
+        {
+          "rank": 96,
+          "title": "Touch and Go",
+          "artists": "Intervals",
+          "spotify_uri": "spotify:track:3nDOvQvA8iPamdULGubIQE",
+          "spotify_url": "https://open.spotify.com/track/3nDOvQvA8iPamdULGubIQE",
+          "excluded": false
+        },
+        {
+          "rank": 97,
+          "title": "Boom Boom Room",
+          "artists": "Roddy Ricch",
+          "spotify_uri": "spotify:track:3aBL75wBGHJnskegE9jyhb",
+          "spotify_url": "https://open.spotify.com/track/3aBL75wBGHJnskegE9jyhb",
+          "excluded": false
+        },
+        {
+          "rank": 98,
+          "title": "Celebrate",
+          "artists": "Kazoops",
+          "spotify_uri": "spotify:track:10ryfvMTDVu22niXCWLm6x",
+          "spotify_url": "https://open.spotify.com/track/10ryfvMTDVu22niXCWLm6x",
+          "excluded": false
+        },
+        {
+          "rank": 99,
+          "title": "Last Song",
+          "artists": "Galvanic, Hanz, Kimani",
+          "spotify_uri": "spotify:track:4ZUz0IxBPJACFv8xJvVSjM",
+          "spotify_url": "https://open.spotify.com/track/4ZUz0IxBPJACFv8xJvVSjM",
+          "excluded": false
+        },
+        {
+          "rank": 100,
+          "title": "Night 1",
+          "artists": "Ta-ku",
+          "spotify_uri": "spotify:track:39kdh6z0m3UNDfBqLLiXcz",
+          "spotify_url": "https://open.spotify.com/track/39kdh6z0m3UNDfBqLLiXcz",
+          "excluded": false
+        }
+      ],
+      "availability_checks": [
+        {
+          "url": "https://open.spotify.com/playlist/37i9dQZF1ELXfKO0nfaeKP?si=6b9029284e4548d8",
+          "http_status": 200,
+          "size": 481019,
+          "page_status": null,
+          "entity_name": null,
+          "track_count": 0
+        },
+        {
+          "url": "https://open.spotify.com/embed/playlist/37i9dQZF1ELXfKO0nfaeKP?si=6b9029284e4548d8",
+          "http_status": 200,
+          "size": 157786,
+          "page_status": null,
+          "entity_name": "Your Top Songs 2020",
+          "track_count": 100
+        }
+      ],
+      "extraction_status": "complete_public_embed_track_list",
+      "status_note": "All 100 tracks returned in the public embed entity trackList; browser independently displayed playlist name and 100-song count."
+    },
+    {
+      "id": "37i9dQZF1EUMDoJuT8yJsl",
+      "url": "https://open.spotify.com/playlist/37i9dQZF1EUMDoJuT8yJsl",
+      "source_url": "https://open.spotify.com/embed/playlist/37i9dQZF1EUMDoJuT8yJsl",
+      "availability_checks": [
+        {
+          "url": "https://open.spotify.com/playlist/37i9dQZF1EUMDoJuT8yJsl?si=1cfdaeb5fa8b4cbd",
+          "error": "HTTP Error 400: Bad Request"
+        },
+        {
+          "url": "https://open.spotify.com/embed/playlist/37i9dQZF1EUMDoJuT8yJsl?si=1cfdaeb5fa8b4cbd",
+          "http_status": 200,
+          "size": 6296,
+          "page_status": 500,
+          "entity_name": null,
+          "track_count": 0
+        }
+      ],
+      "name": null,
+      "track_count": 0,
+      "eligible_track_count": 0,
+      "tracks": [],
+      "extraction_status": "unavailable_from_public_page",
+      "status_note": "Ordinary public page failed; embed returned an error page rather than a playlist. No title, year or track list inferred. Exact share-parameter URLs were retried as shown in availability_checks."
+    },
+    {
+      "id": "37i9dQZF1F0sijgNaJdgit",
+      "url": "https://open.spotify.com/playlist/37i9dQZF1F0sijgNaJdgit",
+      "source_url": "https://open.spotify.com/embed/playlist/37i9dQZF1F0sijgNaJdgit",
+      "availability_checks": [
+        {
+          "url": "https://open.spotify.com/playlist/37i9dQZF1F0sijgNaJdgit?si=d58941e63b3a4c8a",
+          "error": "HTTP Error 404: Not Found"
+        },
+        {
+          "url": "https://open.spotify.com/embed/playlist/37i9dQZF1F0sijgNaJdgit?si=d58941e63b3a4c8a",
+          "http_status": 200,
+          "size": 6300,
+          "page_status": 404,
+          "entity_name": null,
+          "track_count": 0
+        }
+      ],
+      "name": null,
+      "track_count": 0,
+      "eligible_track_count": 0,
+      "tracks": [],
+      "extraction_status": "unavailable_from_public_page",
+      "status_note": "Ordinary public page failed; embed returned an error page rather than a playlist. No title, year or track list inferred. Exact share-parameter URLs were retried as shown in availability_checks."
+    },
+    {
+      "id": "37i9dQZF1FacoD1kBvgwAi",
+      "url": "https://open.spotify.com/playlist/37i9dQZF1FacoD1kBvgwAi",
+      "source_url": "https://open.spotify.com/embed/playlist/37i9dQZF1FacoD1kBvgwAi",
+      "availability_checks": [
+        {
+          "url": "https://open.spotify.com/playlist/37i9dQZF1FacoD1kBvgwAi?si=f23bcc8dac784a99",
+          "error": "HTTP Error 404: Not Found"
+        },
+        {
+          "url": "https://open.spotify.com/embed/playlist/37i9dQZF1FacoD1kBvgwAi?si=f23bcc8dac784a99",
+          "http_status": 200,
+          "size": 6298,
+          "page_status": 404,
+          "entity_name": null,
+          "track_count": 0
+        }
+      ],
+      "name": null,
+      "track_count": 0,
+      "eligible_track_count": 0,
+      "tracks": [],
+      "extraction_status": "unavailable_from_public_page",
+      "status_note": "Ordinary public page failed; embed returned an error page rather than a playlist. No title, year or track list inferred. Exact share-parameter URLs were retried as shown in availability_checks."
+    },
+    {
+      "id": "37i9dQZF1FoGXKh7Adbp6f",
+      "url": "https://open.spotify.com/playlist/37i9dQZF1FoGXKh7Adbp6f",
+      "source_url": "https://open.spotify.com/embed/playlist/37i9dQZF1FoGXKh7Adbp6f",
+      "availability_checks": [
+        {
+          "url": "https://open.spotify.com/playlist/37i9dQZF1FoGXKh7Adbp6f?si=679b6e4c25304508",
+          "error": "HTTP Error 404: Not Found"
+        },
+        {
+          "url": "https://open.spotify.com/embed/playlist/37i9dQZF1FoGXKh7Adbp6f?si=679b6e4c25304508",
+          "http_status": 200,
+          "size": 6300,
+          "page_status": 404,
+          "entity_name": null,
+          "track_count": 0
+        }
+      ],
+      "name": null,
+      "track_count": 0,
+      "eligible_track_count": 0,
+      "tracks": [],
+      "extraction_status": "unavailable_from_public_page",
+      "status_note": "Ordinary public page failed; embed returned an error page rather than a playlist. No title, year or track list inferred. Exact share-parameter URLs were retried as shown in availability_checks."
+    },
+    {
+      "id": "37i9dQZEVXd3Fh0PKhHvKc",
+      "url": "https://open.spotify.com/playlist/37i9dQZEVXd3Fh0PKhHvKc",
+      "source_url": "https://open.spotify.com/embed/playlist/37i9dQZEVXd3Fh0PKhHvKc",
+      "availability_checks": [
+        {
+          "url": "https://open.spotify.com/playlist/37i9dQZEVXd3Fh0PKhHvKc?si=4ee978ff72c74e71",
+          "error": "HTTP Error 404: Not Found"
+        },
+        {
+          "url": "https://open.spotify.com/embed/playlist/37i9dQZEVXd3Fh0PKhHvKc?si=4ee978ff72c74e71",
+          "http_status": 200,
+          "size": 6300,
+          "page_status": 404,
+          "entity_name": null,
+          "track_count": 0
+        }
+      ],
+      "name": null,
+      "track_count": 0,
+      "eligible_track_count": 0,
+      "tracks": [],
+      "extraction_status": "unavailable_from_public_page",
+      "status_note": "Ordinary public page failed; embed returned an error page rather than a playlist. No title, year or track list inferred. Exact share-parameter URLs were retried as shown in availability_checks."
+    }
+  ],
+  "eligible_unique_tracks": [
+    {
+      "title": "Cut My Hair",
+      "artists": "Mounika., Cavetown",
+      "spotify_uri": "spotify:track:3DYZKxjG8SZrWpVcoUilqQ",
+      "spotify_url": "https://open.spotify.com/track/3DYZKxjG8SZrWpVcoUilqQ",
+      "occurrences": [
+        {
+          "playlist_id": "37i9dQZF1ELXfKO0nfaeKP",
+          "playlist_name": "Your Top Songs 2020",
+          "rank": 1
+        }
+      ]
+    },
+    {
+      "title": "666",
+      "artists": "Smeyeul., Galvanic, DLJ",
+      "spotify_uri": "spotify:track:0a58S0ERta0i8nAUuGoMv0",
+      "spotify_url": "https://open.spotify.com/track/0a58S0ERta0i8nAUuGoMv0",
+      "occurrences": [
+        {
+          "playlist_id": "37i9dQZF1ELXfKO0nfaeKP",
+          "playlist_name": "Your Top Songs 2020",
+          "rank": 2
+        }
+      ]
+    },
+    {
+      "title": "Juicy",
+      "artists": "Doja Cat, Tyga",
+      "spotify_uri": "spotify:track:7f5trao56t7sB7f14QDTmp",
+      "spotify_url": "https://open.spotify.com/track/7f5trao56t7sB7f14QDTmp",
+      "occurrences": [
+        {
+          "playlist_id": "37i9dQZF1ELXfKO0nfaeKP",
+          "playlist_name": "Your Top Songs 2020",
+          "rank": 3
+        }
+      ]
+    },
+    {
+      "title": "High Fashion (feat. Mustard)",
+      "artists": "Roddy Ricch, Mustard",
+      "spotify_uri": "spotify:track:07KXEDMj78x68D884wgVEm",
+      "spotify_url": "https://open.spotify.com/track/07KXEDMj78x68D884wgVEm",
+      "occurrences": [
+        {
+          "playlist_id": "37i9dQZF1ELXfKO0nfaeKP",
+          "playlist_name": "Your Top Songs 2020",
+          "rank": 4
+        }
+      ]
+    },
+    {
+      "title": "The Box",
+      "artists": "Roddy Ricch",
+      "spotify_uri": "spotify:track:0nbXyq5TXYPCO7pr3N8S4I",
+      "spotify_url": "https://open.spotify.com/track/0nbXyq5TXYPCO7pr3N8S4I",
+      "occurrences": [
+        {
+          "playlist_id": "37i9dQZF1ELXfKO0nfaeKP",
+          "playlist_name": "Your Top Songs 2020",
+          "rank": 5
+        }
+      ]
+    },
+    {
+      "title": "I.F.L.Y.",
+      "artists": "Bazzi",
+      "spotify_uri": "spotify:track:4a6q8CR2hzLk2plDkSxkfD",
+      "spotify_url": "https://open.spotify.com/track/4a6q8CR2hzLk2plDkSxkfD",
+      "occurrences": [
+        {
+          "playlist_id": "37i9dQZF1ELXfKO0nfaeKP",
+          "playlist_name": "Your Top Songs 2020",
+          "rank": 6
+        }
+      ]
+    },
+    {
+      "title": "Intentions (feat. Quavo)",
+      "artists": "Justin Bieber, Quavo",
+      "spotify_uri": "spotify:track:4umIPjkehX1r7uhmGvXiSV",
+      "spotify_url": "https://open.spotify.com/track/4umIPjkehX1r7uhmGvXiSV",
+      "occurrences": [
+        {
+          "playlist_id": "37i9dQZF1ELXfKO0nfaeKP",
+          "playlist_name": "Your Top Songs 2020",
+          "rank": 7
+        }
+      ]
+    },
+    {
+      "title": "Boyfriend",
+      "artists": "Smeyeul., Galvanic",
+      "spotify_uri": "spotify:track:4zilOSc3Hzgsr6OPPLgJF2",
+      "spotify_url": "https://open.spotify.com/track/4zilOSc3Hzgsr6OPPLgJF2",
+      "occurrences": [
+        {
+          "playlist_id": "37i9dQZF1ELXfKO0nfaeKP",
+          "playlist_name": "Your Top Songs 2020",
+          "rank": 8
+        }
+      ]
+    },
+    {
+      "title": "Start Wit Me (feat. Gunna)",
+      "artists": "Roddy Ricch, Gunna",
+      "spotify_uri": "spotify:track:7A20WnLkjtZU2d7hIB6Ziu",
+      "spotify_url": "https://open.spotify.com/track/7A20WnLkjtZU2d7hIB6Ziu",
+      "occurrences": [
+        {
+          "playlist_id": "37i9dQZF1ELXfKO0nfaeKP",
+          "playlist_name": "Your Top Songs 2020",
+          "rank": 9
+        }
+      ]
+    },
+    {
+      "title": "my ex's best friend (with blackbear)",
+      "artists": "mgk, blackbear",
+      "spotify_uri": "spotify:track:70rFIfYN7lU6iTgUIVP42w",
+      "spotify_url": "https://open.spotify.com/track/70rFIfYN7lU6iTgUIVP42w",
+      "occurrences": [
+        {
+          "playlist_id": "37i9dQZF1ELXfKO0nfaeKP",
+          "playlist_name": "Your Top Songs 2020",
+          "rank": 10
+        }
+      ]
+    },
+    {
+      "title": "Yummy",
+      "artists": "Justin Bieber",
+      "spotify_uri": "spotify:track:16wAOAZ2OkqoIDN7TpChjR",
+      "spotify_url": "https://open.spotify.com/track/16wAOAZ2OkqoIDN7TpChjR",
+      "occurrences": [
+        {
+          "playlist_id": "37i9dQZF1ELXfKO0nfaeKP",
+          "playlist_name": "Your Top Songs 2020",
+          "rank": 11
+        }
+      ]
+    },
+    {
+      "title": "Hang On",
+      "artists": "Smeyeul., Galvanic, TRACE",
+      "spotify_uri": "spotify:track:6p7ObLzKOrDPkbzG9dHe1x",
+      "spotify_url": "https://open.spotify.com/track/6p7ObLzKOrDPkbzG9dHe1x",
+      "occurrences": [
+        {
+          "playlist_id": "37i9dQZF1ELXfKO0nfaeKP",
+          "playlist_name": "Your Top Songs 2020",
+          "rank": 12
+        }
+      ]
+    },
+    {
+      "title": "Down Below",
+      "artists": "Roddy Ricch",
+      "spotify_uri": "spotify:track:4SWWe2OYC4mqf40Gc2RSdl",
+      "spotify_url": "https://open.spotify.com/track/4SWWe2OYC4mqf40Gc2RSdl",
+      "occurrences": [
+        {
+          "playlist_id": "37i9dQZF1ELXfKO0nfaeKP",
+          "playlist_name": "Your Top Songs 2020",
+          "rank": 13
+        }
+      ]
+    },
+    {
+      "title": "bloody valentine",
+      "artists": "mgk",
+      "spotify_uri": "spotify:track:1bWEngw5tAF7vWByrf5Oy5",
+      "spotify_url": "https://open.spotify.com/track/1bWEngw5tAF7vWByrf5Oy5",
+      "occurrences": [
+        {
+          "playlist_id": "37i9dQZF1ELXfKO0nfaeKP",
+          "playlist_name": "Your Top Songs 2020",
+          "rank": 14
+        }
+      ]
+    },
+    {
+      "title": "Forever (feat. Post Malone & Clever)",
+      "artists": "Justin Bieber, Post Malone, Clever",
+      "spotify_uri": "spotify:track:2ZlCGeK30BLRNSPC832pNZ",
+      "spotify_url": "https://open.spotify.com/track/2ZlCGeK30BLRNSPC832pNZ",
+      "occurrences": [
+        {
+          "playlist_id": "37i9dQZF1ELXfKO0nfaeKP",
+          "playlist_name": "Your Top Songs 2020",
+          "rank": 15
+        }
+      ]
+    },
+    {
+      "title": "Everything in Life is Yours",
+      "artists": "Galvanic, rn",
+      "spotify_uri": "spotify:track:1xzMuAXawoFfKt8EHMiCA3",
+      "spotify_url": "https://open.spotify.com/track/1xzMuAXawoFfKt8EHMiCA3",
+      "occurrences": [
+        {
+          "playlist_id": "37i9dQZF1ELXfKO0nfaeKP",
+          "playlist_name": "Your Top Songs 2020",
+          "rank": 16
+        }
+      ]
+    },
+    {
+      "title": "Walk Em Down (feat. Roddy Ricch)",
+      "artists": "NLE Choppa, Roddy Ricch",
+      "spotify_uri": "spotify:track:4cSSL3YafYjM3yjgFO1vJg",
+      "spotify_url": "https://open.spotify.com/track/4cSSL3YafYjM3yjgFO1vJg",
+      "occurrences": [
+        {
+          "playlist_id": "37i9dQZF1ELXfKO0nfaeKP",
+          "playlist_name": "Your Top Songs 2020",
+          "rank": 17
+        }
+      ]
+    },
+    {
+      "title": "Candy (feat. Trippie Redd)",
+      "artists": "mgk, Trippie Redd",
+      "spotify_uri": "spotify:track:37AGgp9VP8TVJBfEat74Bj",
+      "spotify_url": "https://open.spotify.com/track/37AGgp9VP8TVJBfEat74Bj",
+      "occurrences": [
+        {
+          "playlist_id": "37i9dQZF1ELXfKO0nfaeKP",
+          "playlist_name": "Your Top Songs 2020",
+          "rank": 18
+        }
+      ]
+    },
+    {
+      "title": "Come Around Me",
+      "artists": "Justin Bieber",
+      "spotify_uri": "spotify:track:2o9LAypwGH4ctV0i9boo6d",
+      "spotify_url": "https://open.spotify.com/track/2o9LAypwGH4ctV0i9boo6d",
+      "occurrences": [
+        {
+          "playlist_id": "37i9dQZF1ELXfKO0nfaeKP",
+          "playlist_name": "Your Top Songs 2020",
+          "rank": 19
+        }
+      ]
+    },
+    {
+      "title": "Love Me",
+      "artists": "Smeyeul., Galvanic, Haux",
+      "spotify_uri": "spotify:track:7EwI0gVJ1IO9B0VCz693Zv",
+      "spotify_url": "https://open.spotify.com/track/7EwI0gVJ1IO9B0VCz693Zv",
+      "occurrences": [
+        {
+          "playlist_id": "37i9dQZF1ELXfKO0nfaeKP",
+          "playlist_name": "Your Top Songs 2020",
+          "rank": 20
+        }
+      ]
+    },
+    {
+      "title": "Die Young",
+      "artists": "Roddy Ricch",
+      "spotify_uri": "spotify:track:3wLtYwtqvKK2ewelSVPeDK",
+      "spotify_url": "https://open.spotify.com/track/3wLtYwtqvKK2ewelSVPeDK",
+      "occurrences": [
+        {
+          "playlist_id": "37i9dQZF1ELXfKO0nfaeKP",
+          "playlist_name": "Your Top Songs 2020",
+          "rank": 21
+        }
+      ]
+    },
+    {
+      "title": "Hurt",
+      "artists": "Oliver Tree",
+      "spotify_uri": "spotify:track:6Ph8QwsRfZunN5e1GGBIqa",
+      "spotify_url": "https://open.spotify.com/track/6Ph8QwsRfZunN5e1GGBIqa",
+      "occurrences": [
+        {
+          "playlist_id": "37i9dQZF1ELXfKO0nfaeKP",
+          "playlist_name": "Your Top Songs 2020",
+          "rank": 22
+        }
+      ]
+    },
+    {
+      "title": "Available",
+      "artists": "Justin Bieber",
+      "spotify_uri": "spotify:track:1b6tPXXCV2fSNtR3SKWUQA",
+      "spotify_url": "https://open.spotify.com/track/1b6tPXXCV2fSNtR3SKWUQA",
+      "occurrences": [
+        {
+          "playlist_id": "37i9dQZF1ELXfKO0nfaeKP",
+          "playlist_name": "Your Top Songs 2020",
+          "rank": 23
+        }
+      ]
+    },
+    {
+      "title": "I Think I'm OKAY (with YUNGBLUD & Travis Barker)",
+      "artists": "mgk, YUNGBLUD, Travis Barker",
+      "spotify_uri": "spotify:track:2gTdDMpNxIRFSiu7HutMCg",
+      "spotify_url": "https://open.spotify.com/track/2gTdDMpNxIRFSiu7HutMCg",
+      "occurrences": [
+        {
+          "playlist_id": "37i9dQZF1ELXfKO0nfaeKP",
+          "playlist_name": "Your Top Songs 2020",
+          "rank": 24
+        }
+      ]
+    },
+    {
+      "title": "Ballin' (with Roddy Ricch)",
+      "artists": "Mustard, Roddy Ricch",
+      "spotify_uri": "spotify:track:3QzAOrNlsabgbMwlZt7TAY",
+      "spotify_url": "https://open.spotify.com/track/3QzAOrNlsabgbMwlZt7TAY",
+      "occurrences": [
+        {
+          "playlist_id": "37i9dQZF1ELXfKO0nfaeKP",
+          "playlist_name": "Your Top Songs 2020",
+          "rank": 25
+        }
+      ]
+    },
+    {
+      "title": "All I Wanted",
+      "artists": "Galvanic, rn",
+      "spotify_uri": "spotify:track:1GKHeJhEeBIBAqsRWpZaQJ",
+      "spotify_url": "https://open.spotify.com/track/1GKHeJhEeBIBAqsRWpZaQJ",
+      "occurrences": [
+        {
+          "playlist_id": "37i9dQZF1ELXfKO0nfaeKP",
+          "playlist_name": "Your Top Songs 2020",
+          "rank": 26
+        }
+      ]
+    },
+    {
+      "title": "Running Over (feat. Lil Dicky)",
+      "artists": "Justin Bieber, Lil Dicky",
+      "spotify_uri": "spotify:track:75nKBP8jQu681pTNCtrEnn",
+      "spotify_url": "https://open.spotify.com/track/75nKBP8jQu681pTNCtrEnn",
+      "occurrences": [
+        {
+          "playlist_id": "37i9dQZF1ELXfKO0nfaeKP",
+          "playlist_name": "Your Top Songs 2020",
+          "rank": 27
+        }
+      ]
+    },
+    {
+      "title": "Alien Boy",
+      "artists": "Oliver Tree",
+      "spotify_uri": "spotify:track:3BIIJgBJJ7NhhCv4MI6n7w",
+      "spotify_url": "https://open.spotify.com/track/3BIIJgBJJ7NhhCv4MI6n7w",
+      "occurrences": [
+        {
+          "playlist_id": "37i9dQZF1ELXfKO0nfaeKP",
+          "playlist_name": "Your Top Songs 2020",
+          "rank": 28
+        }
+      ]
+    },
+    {
+      "title": "Bacc Seat (feat. Ty Dolla $ign)",
+      "artists": "Roddy Ricch, Ty Dolla $ign",
+      "spotify_uri": "spotify:track:6In6SkveIw26thdYRhHTVX",
+      "spotify_url": "https://open.spotify.com/track/6In6SkveIw26thdYRhHTVX",
+      "occurrences": [
+        {
+          "playlist_id": "37i9dQZF1ELXfKO0nfaeKP",
+          "playlist_name": "Your Top Songs 2020",
+          "rank": 29
+        }
+      ]
+    },
+    {
+      "title": "Sick and Tired (ft. Machine Gun Kelly and Travis Barker)",
+      "artists": "iann dior, mgk, Travis Barker",
+      "spotify_uri": "spotify:track:0DILU9jjSTnCv1dcbUH3ib",
+      "spotify_url": "https://open.spotify.com/track/0DILU9jjSTnCv1dcbUH3ib",
+      "occurrences": [
+        {
+          "playlist_id": "37i9dQZF1ELXfKO0nfaeKP",
+          "playlist_name": "Your Top Songs 2020",
+          "rank": 30
+        }
+      ]
+    },
+    {
+      "title": "E.T.A.",
+      "artists": "Justin Bieber",
+      "spotify_uri": "spotify:track:6PzOPrXx8tJEqace76yrv2",
+      "spotify_url": "https://open.spotify.com/track/6PzOPrXx8tJEqace76yrv2",
+      "occurrences": [
+        {
+          "playlist_id": "37i9dQZF1ELXfKO0nfaeKP",
+          "playlist_name": "Your Top Songs 2020",
+          "rank": 31
+        }
+      ]
+    },
+    {
+      "title": "Cash Machine",
+      "artists": "Oliver Tree",
+      "spotify_uri": "spotify:track:6ie5en0vOy4GUercEUUNfJ",
+      "spotify_url": "https://open.spotify.com/track/6ie5en0vOy4GUercEUUNfJ",
+      "occurrences": [
+        {
+          "playlist_id": "37i9dQZF1ELXfKO0nfaeKP",
+          "playlist_name": "Your Top Songs 2020",
+          "rank": 32
+        }
+      ]
+    },
+    {
+      "title": "Project Dreams",
+      "artists": "Marshmello, Roddy Ricch",
+      "spotify_uri": "spotify:track:6GSkLS2y4ZnnZsuRAj975K",
+      "spotify_url": "https://open.spotify.com/track/6GSkLS2y4ZnnZsuRAj975K",
+      "occurrences": [
+        {
+          "playlist_id": "37i9dQZF1ELXfKO0nfaeKP",
+          "playlist_name": "Your Top Songs 2020",
+          "rank": 33
+        }
+      ]
+    },
+    {
+      "title": "Begging",
+      "artists": "Galvanic, Skylar McCreery",
+      "spotify_uri": "spotify:track:4MyZC0LVWSNy54w3aHLZ0H",
+      "spotify_url": "https://open.spotify.com/track/4MyZC0LVWSNy54w3aHLZ0H",
+      "occurrences": [
+        {
+          "playlist_id": "37i9dQZF1ELXfKO0nfaeKP",
+          "playlist_name": "Your Top Songs 2020",
+          "rank": 34
+        }
+      ]
+    },
+    {
+      "title": "Confirmation",
+      "artists": "Justin Bieber",
+      "spotify_uri": "spotify:track:60brXKLTC15vK0av5gIldm",
+      "spotify_url": "https://open.spotify.com/track/60brXKLTC15vK0av5gIldm",
+      "occurrences": [
+        {
+          "playlist_id": "37i9dQZF1ELXfKO0nfaeKP",
+          "playlist_name": "Your Top Songs 2020",
+          "rank": 35
+        }
+      ]
+    },
+    {
+      "title": "Jerk",
+      "artists": "Oliver Tree",
+      "spotify_uri": "spotify:track:065bY5WrLvI3NN9VCK0QLe",
+      "spotify_url": "https://open.spotify.com/track/065bY5WrLvI3NN9VCK0QLe",
+      "occurrences": [
+        {
+          "playlist_id": "37i9dQZF1ELXfKO0nfaeKP",
+          "playlist_name": "Your Top Songs 2020",
+          "rank": 36
+        }
+      ]
+    },
+    {
+      "title": "Peta (feat. Meek Mill)",
+      "artists": "Roddy Ricch, Meek Mill",
+      "spotify_uri": "spotify:track:4bl1HBZliBuYpFZjWgefE4",
+      "spotify_url": "https://open.spotify.com/track/4bl1HBZliBuYpFZjWgefE4",
+      "occurrences": [
+        {
+          "playlist_id": "37i9dQZF1ELXfKO0nfaeKP",
+          "playlist_name": "Your Top Songs 2020",
+          "rank": 37
+        }
+      ]
+    },
+    {
+      "title": "concert for aliens",
+      "artists": "mgk",
+      "spotify_uri": "spotify:track:6z7oVGcpVDRTxurZIJIkrV",
+      "spotify_url": "https://open.spotify.com/track/6z7oVGcpVDRTxurZIJIkrV",
+      "occurrences": [
+        {
+          "playlist_id": "37i9dQZF1ELXfKO0nfaeKP",
+          "playlist_name": "Your Top Songs 2020",
+          "rank": 38
+        }
+      ]
+    },
+    {
+      "title": "Second Emotion (feat. Travis Scott)",
+      "artists": "Justin Bieber, Travis Scott",
+      "spotify_uri": "spotify:track:1PnAx788sAvcI3ZxTlEyX8",
+      "spotify_url": "https://open.spotify.com/track/1PnAx788sAvcI3ZxTlEyX8",
+      "occurrences": [
+        {
+          "playlist_id": "37i9dQZF1ELXfKO0nfaeKP",
+          "playlist_name": "Your Top Songs 2020",
+          "rank": 39
+        }
+      ]
+    },
+    {
+      "title": "Let Me Down",
+      "artists": "Oliver Tree",
+      "spotify_uri": "spotify:track:0jk6J6B9ivegJc7dTg10Mp",
+      "spotify_url": "https://open.spotify.com/track/0jk6J6B9ivegJc7dTg10Mp",
+      "occurrences": [
+        {
+          "playlist_id": "37i9dQZF1ELXfKO0nfaeKP",
+          "playlist_name": "Your Top Songs 2020",
+          "rank": 40
+        }
+      ]
+    },
+    {
+      "title": "Big Stepper",
+      "artists": "Roddy Ricch",
+      "spotify_uri": "spotify:track:6x0QNM6f0C2JEjK0hFF8Ca",
+      "spotify_url": "https://open.spotify.com/track/6x0QNM6f0C2JEjK0hFF8Ca",
+      "occurrences": [
+        {
+          "playlist_id": "37i9dQZF1ELXfKO0nfaeKP",
+          "playlist_name": "Your Top Songs 2020",
+          "rank": 41
+        }
+      ]
+    },
+    {
+      "title": "Copilot",
+      "artists": "Tōth",
+      "spotify_uri": "spotify:track:2vcCHqDdGPi4zTeOfxanuO",
+      "spotify_url": "https://open.spotify.com/track/2vcCHqDdGPi4zTeOfxanuO",
+      "occurrences": [
+        {
+          "playlist_id": "37i9dQZF1ELXfKO0nfaeKP",
+          "playlist_name": "Your Top Songs 2020",
+          "rank": 42
+        }
+      ]
+    },
+    {
+      "title": "Changes",
+      "artists": "Justin Bieber",
+      "spotify_uri": "spotify:track:521Os1SMlxmsoevsqyjNmJ",
+      "spotify_url": "https://open.spotify.com/track/521Os1SMlxmsoevsqyjNmJ",
+      "occurrences": [
+        {
+          "playlist_id": "37i9dQZF1ELXfKO0nfaeKP",
+          "playlist_name": "Your Top Songs 2020",
+          "rank": 43
+        }
+      ]
+    },
+    {
+      "title": "Juicy",
+      "artists": "Doja Cat",
+      "spotify_uri": "spotify:track:4cTm3Ev9bUvy4ChJjB1nhl",
+      "spotify_url": "https://open.spotify.com/track/4cTm3Ev9bUvy4ChJjB1nhl",
+      "occurrences": [
+        {
+          "playlist_id": "37i9dQZF1ELXfKO0nfaeKP",
+          "playlist_name": "Your Top Songs 2020",
+          "rank": 44
+        }
+      ]
+    },
+    {
+      "title": "Intro",
+      "artists": "Roddy Ricch",
+      "spotify_uri": "spotify:track:7AOtINPzQ4N4JVXk7ygZZz",
+      "spotify_url": "https://open.spotify.com/track/7AOtINPzQ4N4JVXk7ygZZz",
+      "occurrences": [
+        {
+          "playlist_id": "37i9dQZF1ELXfKO0nfaeKP",
+          "playlist_name": "Your Top Songs 2020",
+          "rank": 45
+        }
+      ]
+    },
+    {
+      "title": "Miracle Man",
+      "artists": "Oliver Tree",
+      "spotify_uri": "spotify:track:2PFnwW05Wh0MYkfZxSwfuf",
+      "spotify_url": "https://open.spotify.com/track/2PFnwW05Wh0MYkfZxSwfuf",
+      "occurrences": [
+        {
+          "playlist_id": "37i9dQZF1ELXfKO0nfaeKP",
+          "playlist_name": "Your Top Songs 2020",
+          "rank": 46
+        }
+      ]
+    },
+    {
+      "title": "Yummy - Summer Walker Remix",
+      "artists": "Justin Bieber, Summer Walker",
+      "spotify_uri": "spotify:track:2FBpJGt00G0h1q0RHuqaGO",
+      "spotify_url": "https://open.spotify.com/track/2FBpJGt00G0h1q0RHuqaGO",
+      "occurrences": [
+        {
+          "playlist_id": "37i9dQZF1ELXfKO0nfaeKP",
+          "playlist_name": "Your Top Songs 2020",
+          "rank": 47
+        }
+      ]
+    },
+    {
+      "title": "The Fabulist",
+      "artists": "Galvanic",
+      "spotify_uri": "spotify:track:3m6G68Aq6AdycCDXRBJlIR",
+      "spotify_url": "https://open.spotify.com/track/3m6G68Aq6AdycCDXRBJlIR",
+      "occurrences": [
+        {
+          "playlist_id": "37i9dQZF1ELXfKO0nfaeKP",
+          "playlist_name": "Your Top Songs 2020",
+          "rank": 48
+        }
+      ]
+    },
+    {
+      "title": "Perfect Time",
+      "artists": "Roddy Ricch",
+      "spotify_uri": "spotify:track:6kiIVIbmwEw6JvIZc7UG0E",
+      "spotify_url": "https://open.spotify.com/track/6kiIVIbmwEw6JvIZc7UG0E",
+      "occurrences": [
+        {
+          "playlist_id": "37i9dQZF1ELXfKO0nfaeKP",
+          "playlist_name": "Your Top Songs 2020",
+          "rank": 49
+        }
+      ]
+    },
+    {
+      "title": "No Reason",
+      "artists": "Tōth",
+      "spotify_uri": "spotify:track:5M1TXdS2EjFDSUBIlZdvPs",
+      "spotify_url": "https://open.spotify.com/track/5M1TXdS2EjFDSUBIlZdvPs",
+      "occurrences": [
+        {
+          "playlist_id": "37i9dQZF1ELXfKO0nfaeKP",
+          "playlist_name": "Your Top Songs 2020",
+          "rank": 50
+        }
+      ]
+    },
+    {
+      "title": "That's What Love Is",
+      "artists": "Justin Bieber",
+      "spotify_uri": "spotify:track:2hLu8L8SNfCN4yKyPdX0h3",
+      "spotify_url": "https://open.spotify.com/track/2hLu8L8SNfCN4yKyPdX0h3",
+      "occurrences": [
+        {
+          "playlist_id": "37i9dQZF1ELXfKO0nfaeKP",
+          "playlist_name": "Your Top Songs 2020",
+          "rank": 51
+        }
+      ]
+    },
+    {
+      "title": "Lucky",
+      "artists": "Galvanic, Neptis",
+      "spotify_uri": "spotify:track:0dZaBFy7xV6lsOTzA0X3SP",
+      "spotify_url": "https://open.spotify.com/track/0dZaBFy7xV6lsOTzA0X3SP",
+      "occurrences": [
+        {
+          "playlist_id": "37i9dQZF1ELXfKO0nfaeKP",
+          "playlist_name": "Your Top Songs 2020",
+          "rank": 52
+        }
+      ]
+    },
+    {
+      "title": "Me, Myself & I",
+      "artists": "Oliver Tree",
+      "spotify_uri": "spotify:track:02ZxMmzmXSjOSaHnKsN5ID",
+      "spotify_url": "https://open.spotify.com/track/02ZxMmzmXSjOSaHnKsN5ID",
+      "occurrences": [
+        {
+          "playlist_id": "37i9dQZF1ELXfKO0nfaeKP",
+          "playlist_name": "Your Top Songs 2020",
+          "rank": 53
+        }
+      ]
+    },
+    {
+      "title": "Careless",
+      "artists": "Coastal",
+      "spotify_uri": "spotify:track:3v1O6lndJhBf7BXgnNs42x",
+      "spotify_url": "https://open.spotify.com/track/3v1O6lndJhBf7BXgnNs42x",
+      "occurrences": [
+        {
+          "playlist_id": "37i9dQZF1ELXfKO0nfaeKP",
+          "playlist_name": "Your Top Songs 2020",
+          "rank": 54
+        }
+      ]
+    },
+    {
+      "title": "Take It Out On Me",
+      "artists": "Justin Bieber",
+      "spotify_uri": "spotify:track:39nTNk5MfyiiRupTwn1iyC",
+      "spotify_url": "https://open.spotify.com/track/39nTNk5MfyiiRupTwn1iyC",
+      "occurrences": [
+        {
+          "playlist_id": "37i9dQZF1ELXfKO0nfaeKP",
+          "playlist_name": "Your Top Songs 2020",
+          "rank": 55
+        }
+      ]
+    },
+    {
+      "title": "Juliette",
+      "artists": "Tōth",
+      "spotify_uri": "spotify:track:3sLE6NNNk9CjXZv1zh5rm4",
+      "spotify_url": "https://open.spotify.com/track/3sLE6NNNk9CjXZv1zh5rm4",
+      "occurrences": [
+        {
+          "playlist_id": "37i9dQZF1ELXfKO0nfaeKP",
+          "playlist_name": "Your Top Songs 2020",
+          "rank": 56
+        }
+      ]
+    },
+    {
+      "title": "Tip Toe (feat. A Boogie Wit da Hoodie)",
+      "artists": "Roddy Ricch, A Boogie Wit da Hoodie",
+      "spotify_uri": "spotify:track:6ztvsy3C6hPjVg9j4x1XKJ",
+      "spotify_url": "https://open.spotify.com/track/6ztvsy3C6hPjVg9j4x1XKJ",
+      "occurrences": [
+        {
+          "playlist_id": "37i9dQZF1ELXfKO0nfaeKP",
+          "playlist_name": "Your Top Songs 2020",
+          "rank": 57
+        }
+      ]
+    },
+    {
+      "title": "Loving Lies",
+      "artists": "Galvanic, rn, Chevy",
+      "spotify_uri": "spotify:track:39fAxteU0N9QdlbKZMqm4P",
+      "spotify_url": "https://open.spotify.com/track/39fAxteU0N9QdlbKZMqm4P",
+      "occurrences": [
+        {
+          "playlist_id": "37i9dQZF1ELXfKO0nfaeKP",
+          "playlist_name": "Your Top Songs 2020",
+          "rank": 58
+        }
+      ]
+    },
+    {
+      "title": "Get Me (feat. Kehlani)",
+      "artists": "Justin Bieber, Kehlani",
+      "spotify_uri": "spotify:track:5VwwpU7KsLhgfbMEecedhJ",
+      "spotify_url": "https://open.spotify.com/track/5VwwpU7KsLhgfbMEecedhJ",
+      "occurrences": [
+        {
+          "playlist_id": "37i9dQZF1ELXfKO0nfaeKP",
+          "playlist_name": "Your Top Songs 2020",
+          "rank": 59
+        }
+      ]
+    },
+    {
+      "title": "With U",
+      "artists": "SwuM, Idealism",
+      "spotify_uri": "spotify:track:0rNpm25xLsckCS9JPAgpwP",
+      "spotify_url": "https://open.spotify.com/track/0rNpm25xLsckCS9JPAgpwP",
+      "occurrences": [
+        {
+          "playlist_id": "37i9dQZF1ELXfKO0nfaeKP",
+          "playlist_name": "Your Top Songs 2020",
+          "rank": 60
+        }
+      ]
+    },
+    {
+      "title": "Moonwalkin (feat. Lil Durk)",
+      "artists": "Roddy Ricch, Lil Durk",
+      "spotify_uri": "spotify:track:33NoCir8q4WA4HNmyrD3fu",
+      "spotify_url": "https://open.spotify.com/track/33NoCir8q4WA4HNmyrD3fu",
+      "occurrences": [
+        {
+          "playlist_id": "37i9dQZF1ELXfKO0nfaeKP",
+          "playlist_name": "Your Top Songs 2020",
+          "rank": 61
+        }
+      ]
+    },
+    {
+      "title": "Waves",
+      "artists": "Galvanic, rn",
+      "spotify_uri": "spotify:track:2tzLqIluMdT97QDGN6fShm",
+      "spotify_url": "https://open.spotify.com/track/2tzLqIluMdT97QDGN6fShm",
+      "occurrences": [
+        {
+          "playlist_id": "37i9dQZF1ELXfKO0nfaeKP",
+          "playlist_name": "Your Top Songs 2020",
+          "rank": 62
+        }
+      ]
+    },
+    {
+      "title": "Habitual",
+      "artists": "Justin Bieber",
+      "spotify_uri": "spotify:track:40qyPyljksBEqlNw5sW37T",
+      "spotify_url": "https://open.spotify.com/track/40qyPyljksBEqlNw5sW37T",
+      "occurrences": [
+        {
+          "playlist_id": "37i9dQZF1ELXfKO0nfaeKP",
+          "playlist_name": "Your Top Songs 2020",
+          "rank": 63
+        }
+      ]
+    },
+    {
+      "title": "Wumbo",
+      "artists": "Harris Cole, Otxhello, Dilip",
+      "spotify_uri": "spotify:track:6W3XJGH5WXGoFubLBr0Mf0",
+      "spotify_url": "https://open.spotify.com/track/6W3XJGH5WXGoFubLBr0Mf0",
+      "occurrences": [
+        {
+          "playlist_id": "37i9dQZF1ELXfKO0nfaeKP",
+          "playlist_name": "Your Top Songs 2020",
+          "rank": 64
+        }
+      ]
+    },
+    {
+      "title": "Peach",
+      "artists": "Glimlip, Louk, Elior",
+      "spotify_uri": "spotify:track:3GkSDGupydidufnOGZn2FE",
+      "spotify_url": "https://open.spotify.com/track/3GkSDGupydidufnOGZn2FE",
+      "occurrences": [
+        {
+          "playlist_id": "37i9dQZF1ELXfKO0nfaeKP",
+          "playlist_name": "Your Top Songs 2020",
+          "rank": 65
+        }
+      ]
+    },
+    {
+      "title": "distance",
+      "artists": "Nohidea, Dontcry",
+      "spotify_uri": "spotify:track:4dd9GGN2kHb1d28yGL578m",
+      "spotify_url": "https://open.spotify.com/track/4dd9GGN2kHb1d28yGL578m",
+      "occurrences": [
+        {
+          "playlist_id": "37i9dQZF1ELXfKO0nfaeKP",
+          "playlist_name": "Your Top Songs 2020",
+          "rank": 66
+        }
+      ]
+    },
+    {
+      "title": "All Around Me",
+      "artists": "Justin Bieber",
+      "spotify_uri": "spotify:track:5Py8zRKGkZvgHniVVtvNCN",
+      "spotify_url": "https://open.spotify.com/track/5Py8zRKGkZvgHniVVtvNCN",
+      "occurrences": [
+        {
+          "playlist_id": "37i9dQZF1ELXfKO0nfaeKP",
+          "playlist_name": "Your Top Songs 2020",
+          "rank": 67
+        }
+      ]
+    },
+    {
+      "title": "The Finish Line",
+      "artists": "Middle School, Mitchel Forman",
+      "spotify_uri": "spotify:track:0GKi4sPErVwTzruhuqoDvb",
+      "spotify_url": "https://open.spotify.com/track/0GKi4sPErVwTzruhuqoDvb",
+      "occurrences": [
+        {
+          "playlist_id": "37i9dQZF1ELXfKO0nfaeKP",
+          "playlist_name": "Your Top Songs 2020",
+          "rank": 68
+        }
+      ]
+    },
+    {
+      "title": "_Away",
+      "artists": "MARTIN $KY, Toonorth",
+      "spotify_uri": "spotify:track:5HyNrWvG43Hweze5agk4kK",
+      "spotify_url": "https://open.spotify.com/track/5HyNrWvG43Hweze5agk4kK",
+      "occurrences": [
+        {
+          "playlist_id": "37i9dQZF1ELXfKO0nfaeKP",
+          "playlist_name": "Your Top Songs 2020",
+          "rank": 69
+        }
+      ]
+    },
+    {
+      "title": "Again & Again",
+      "artists": "Oliver Tree",
+      "spotify_uri": "spotify:track:4KiTVvoDILkT9vi8JhtfZm",
+      "spotify_url": "https://open.spotify.com/track/4KiTVvoDILkT9vi8JhtfZm",
+      "occurrences": [
+        {
+          "playlist_id": "37i9dQZF1ELXfKO0nfaeKP",
+          "playlist_name": "Your Top Songs 2020",
+          "rank": 70
+        }
+      ]
+    },
+    {
+      "title": "At Least For Now",
+      "artists": "Justin Bieber",
+      "spotify_uri": "spotify:track:6VLkgf5YmLixsabdqiCVGU",
+      "spotify_url": "https://open.spotify.com/track/6VLkgf5YmLixsabdqiCVGU",
+      "occurrences": [
+        {
+          "playlist_id": "37i9dQZF1ELXfKO0nfaeKP",
+          "playlist_name": "Your Top Songs 2020",
+          "rank": 71
+        }
+      ]
+    },
+    {
+      "title": "Only Me",
+      "artists": "Galvanic, rn",
+      "spotify_uri": "spotify:track:1VlyHgbwVC2ifyOTzfSyMs",
+      "spotify_url": "https://open.spotify.com/track/1VlyHgbwVC2ifyOTzfSyMs",
+      "occurrences": [
+        {
+          "playlist_id": "37i9dQZF1ELXfKO0nfaeKP",
+          "playlist_name": "Your Top Songs 2020",
+          "rank": 72
+        }
+      ]
+    },
+    {
+      "title": "ROCKSTAR (feat. Roddy Ricch)",
+      "artists": "DaBaby, Roddy Ricch",
+      "spotify_uri": "spotify:track:7ytR5pFWmSjzHJIeQkgog4",
+      "spotify_url": "https://open.spotify.com/track/7ytR5pFWmSjzHJIeQkgog4",
+      "occurrences": [
+        {
+          "playlist_id": "37i9dQZF1ELXfKO0nfaeKP",
+          "playlist_name": "Your Top Songs 2020",
+          "rank": 73
+        }
+      ]
+    },
+    {
+      "title": "When I'm Down",
+      "artists": "Whethan, Oliver Tree",
+      "spotify_uri": "spotify:track:556l9P7WVZVyYUBjT1YFTT",
+      "spotify_url": "https://open.spotify.com/track/556l9P7WVZVyYUBjT1YFTT",
+      "occurrences": [
+        {
+          "playlist_id": "37i9dQZF1ELXfKO0nfaeKP",
+          "playlist_name": "Your Top Songs 2020",
+          "rank": 74
+        }
+      ]
+    },
+    {
+      "title": "Quiet Nights",
+      "artists": "Epektase, Pandrezz, j'san",
+      "spotify_uri": "spotify:track:6NyUKv40Lorxjlet7IltHJ",
+      "spotify_url": "https://open.spotify.com/track/6NyUKv40Lorxjlet7IltHJ",
+      "occurrences": [
+        {
+          "playlist_id": "37i9dQZF1ELXfKO0nfaeKP",
+          "playlist_name": "Your Top Songs 2020",
+          "rank": 75
+        }
+      ]
+    },
+    {
+      "title": "Picture of You",
+      "artists": "Tōth",
+      "spotify_uri": "spotify:track:0OruRmzEfjDPIabdJTi9RF",
+      "spotify_url": "https://open.spotify.com/track/0OruRmzEfjDPIabdJTi9RF",
+      "occurrences": [
+        {
+          "playlist_id": "37i9dQZF1ELXfKO0nfaeKP",
+          "playlist_name": "Your Top Songs 2020",
+          "rank": 76
+        }
+      ]
+    },
+    {
+      "title": "Every Season",
+      "artists": "Roddy Ricch",
+      "spotify_uri": "spotify:track:1ttPzkTSpQUFcEGx8bjerL",
+      "spotify_url": "https://open.spotify.com/track/1ttPzkTSpQUFcEGx8bjerL",
+      "occurrences": [
+        {
+          "playlist_id": "37i9dQZF1ELXfKO0nfaeKP",
+          "playlist_name": "Your Top Songs 2020",
+          "rank": 77
+        }
+      ]
+    },
+    {
+      "title": "1993 (feat. Little Ricky ZR3)",
+      "artists": "Oliver Tree, Little Ricky ZR3",
+      "spotify_uri": "spotify:track:0ssRH9I8P7X7tawJQiIhzE",
+      "spotify_url": "https://open.spotify.com/track/0ssRH9I8P7X7tawJQiIhzE",
+      "occurrences": [
+        {
+          "playlist_id": "37i9dQZF1ELXfKO0nfaeKP",
+          "playlist_name": "Your Top Songs 2020",
+          "rank": 78
+        }
+      ]
+    },
+    {
+      "title": "Tell Me",
+      "artists": "Smeyeul., Galvanic",
+      "spotify_uri": "spotify:track:2qJ4fIrrqndyEdcUUAQuQU",
+      "spotify_url": "https://open.spotify.com/track/2qJ4fIrrqndyEdcUUAQuQU",
+      "occurrences": [
+        {
+          "playlist_id": "37i9dQZF1ELXfKO0nfaeKP",
+          "playlist_name": "Your Top Songs 2020",
+          "rank": 79
+        }
+      ]
+    },
+    {
+      "title": "Click",
+      "artists": "Dontcry, Nokiaa",
+      "spotify_uri": "spotify:track:0cC1pTC0ySMeouWJG9Arly",
+      "spotify_url": "https://open.spotify.com/track/0cC1pTC0ySMeouWJG9Arly",
+      "occurrences": [
+        {
+          "playlist_id": "37i9dQZF1ELXfKO0nfaeKP",
+          "playlist_name": "Your Top Songs 2020",
+          "rank": 80
+        }
+      ]
+    },
+    {
+      "title": "God's Eyes",
+      "artists": "Roddy Ricch",
+      "spotify_uri": "spotify:track:7KK4d7xfH6WjUuK1kPL8E2",
+      "spotify_url": "https://open.spotify.com/track/7KK4d7xfH6WjUuK1kPL8E2",
+      "occurrences": [
+        {
+          "playlist_id": "37i9dQZF1ELXfKO0nfaeKP",
+          "playlist_name": "Your Top Songs 2020",
+          "rank": 81
+        }
+      ]
+    },
+    {
+      "title": "I'm Gone",
+      "artists": "Oliver Tree",
+      "spotify_uri": "spotify:track:6Em6BtxvTsQrXFsFVzAEym",
+      "spotify_url": "https://open.spotify.com/track/6Em6BtxvTsQrXFsFVzAEym",
+      "occurrences": [
+        {
+          "playlist_id": "37i9dQZF1ELXfKO0nfaeKP",
+          "playlist_name": "Your Top Songs 2020",
+          "rank": 82
+        }
+      ]
+    },
+    {
+      "title": "Ghost",
+      "artists": "Galvanic",
+      "spotify_uri": "spotify:track:5EhHOnKFhszn6MbaFotVf0",
+      "spotify_url": "https://open.spotify.com/track/5EhHOnKFhszn6MbaFotVf0",
+      "occurrences": [
+        {
+          "playlist_id": "37i9dQZF1ELXfKO0nfaeKP",
+          "playlist_name": "Your Top Songs 2020",
+          "rank": 83
+        }
+      ]
+    },
+    {
+      "title": "Night Sailing",
+      "artists": "twuan",
+      "spotify_uri": "spotify:track:1ibv1Pp5MQhyT7HNNw0q89",
+      "spotify_url": "https://open.spotify.com/track/1ibv1Pp5MQhyT7HNNw0q89",
+      "occurrences": [
+        {
+          "playlist_id": "37i9dQZF1ELXfKO0nfaeKP",
+          "playlist_name": "Your Top Songs 2020",
+          "rank": 84
+        }
+      ]
+    },
+    {
+      "title": "Perspective",
+      "artists": "Barnes Blvd.",
+      "spotify_uri": "spotify:track:1yrZp8B0mLT18RuZccaDBJ",
+      "spotify_url": "https://open.spotify.com/track/1yrZp8B0mLT18RuZccaDBJ",
+      "occurrences": [
+        {
+          "playlist_id": "37i9dQZF1ELXfKO0nfaeKP",
+          "playlist_name": "Your Top Songs 2020",
+          "rank": 85
+        }
+      ]
+    },
+    {
+      "title": "Down for the Count",
+      "artists": "Tōth",
+      "spotify_uri": "spotify:track:16yq5bVZYIPgdeoD5eAHNw",
+      "spotify_url": "https://open.spotify.com/track/16yq5bVZYIPgdeoD5eAHNw",
+      "occurrences": [
+        {
+          "playlist_id": "37i9dQZF1ELXfKO0nfaeKP",
+          "playlist_name": "Your Top Songs 2020",
+          "rank": 86
+        }
+      ]
+    },
+    {
+      "title": "The End",
+      "artists": "Galvanic, DLJ",
+      "spotify_uri": "spotify:track:6TUZrLfKrWKJcJvccce82y",
+      "spotify_url": "https://open.spotify.com/track/6TUZrLfKrWKJcJvccce82y",
+      "occurrences": [
+        {
+          "playlist_id": "37i9dQZF1ELXfKO0nfaeKP",
+          "playlist_name": "Your Top Songs 2020",
+          "rank": 87
+        }
+      ]
+    },
+    {
+      "title": "Mindfulness",
+      "artists": "C Y G N",
+      "spotify_uri": "spotify:track:0XTRycTWH8TR2xBEjwByNS",
+      "spotify_url": "https://open.spotify.com/track/0XTRycTWH8TR2xBEjwByNS",
+      "occurrences": [
+        {
+          "playlist_id": "37i9dQZF1ELXfKO0nfaeKP",
+          "playlist_name": "Your Top Songs 2020",
+          "rank": 88
+        }
+      ]
+    },
+    {
+      "title": "Nepenthe",
+      "artists": "goosetaf, Ian Ewing",
+      "spotify_uri": "spotify:track:4PJePX91Q5u7SqQD31R3YO",
+      "spotify_url": "https://open.spotify.com/track/4PJePX91Q5u7SqQD31R3YO",
+      "occurrences": [
+        {
+          "playlist_id": "37i9dQZF1ELXfKO0nfaeKP",
+          "playlist_name": "Your Top Songs 2020",
+          "rank": 89
+        }
+      ]
+    },
+    {
+      "title": "Back to Life",
+      "artists": "Sofasound",
+      "spotify_uri": "spotify:track:1s3YrMvvEo4BADEelWfugR",
+      "spotify_url": "https://open.spotify.com/track/1s3YrMvvEo4BADEelWfugR",
+      "occurrences": [
+        {
+          "playlist_id": "37i9dQZF1ELXfKO0nfaeKP",
+          "playlist_name": "Your Top Songs 2020",
+          "rank": 90
+        }
+      ]
+    },
+    {
+      "title": "With Me",
+      "artists": "Galvanic, rn, Eliza Roe",
+      "spotify_uri": "spotify:track:4pwSXCq3oSpurdOZYeE8nk",
+      "spotify_url": "https://open.spotify.com/track/4pwSXCq3oSpurdOZYeE8nk",
+      "occurrences": [
+        {
+          "playlist_id": "37i9dQZF1ELXfKO0nfaeKP",
+          "playlist_name": "Your Top Songs 2020",
+          "rank": 91
+        }
+      ]
+    },
+    {
+      "title": "Sex for Breakfast II",
+      "artists": "Lo'fi Boy",
+      "spotify_uri": "spotify:track:1BK5u5dCqEateAptzwHaYa",
+      "spotify_url": "https://open.spotify.com/track/1BK5u5dCqEateAptzwHaYa",
+      "occurrences": [
+        {
+          "playlist_id": "37i9dQZF1ELXfKO0nfaeKP",
+          "playlist_name": "Your Top Songs 2020",
+          "rank": 92
+        }
+      ]
+    },
+    {
+      "title": "Sunflower Serenade",
+      "artists": "Minthaze",
+      "spotify_uri": "spotify:track:4zROIOjt5mP9vSk6pCu9TG",
+      "spotify_url": "https://open.spotify.com/track/4zROIOjt5mP9vSk6pCu9TG",
+      "occurrences": [
+        {
+          "playlist_id": "37i9dQZF1ELXfKO0nfaeKP",
+          "playlist_name": "Your Top Songs 2020",
+          "rank": 93
+        }
+      ]
+    },
+    {
+      "title": "sorry",
+      "artists": "chief.",
+      "spotify_uri": "spotify:track:6gyYI35SD576xiwstBIX7Y",
+      "spotify_url": "https://open.spotify.com/track/6gyYI35SD576xiwstBIX7Y",
+      "occurrences": [
+        {
+          "playlist_id": "37i9dQZF1ELXfKO0nfaeKP",
+          "playlist_name": "Your Top Songs 2020",
+          "rank": 94
+        }
+      ]
+    },
+    {
+      "title": "All of My Time",
+      "artists": "Galvanic, Laviso",
+      "spotify_uri": "spotify:track:6LR5B8tcpZ29u8MOFjfOJI",
+      "spotify_url": "https://open.spotify.com/track/6LR5B8tcpZ29u8MOFjfOJI",
+      "occurrences": [
+        {
+          "playlist_id": "37i9dQZF1ELXfKO0nfaeKP",
+          "playlist_name": "Your Top Songs 2020",
+          "rank": 95
+        }
+      ]
+    },
+    {
+      "title": "Touch and Go",
+      "artists": "Intervals",
+      "spotify_uri": "spotify:track:3nDOvQvA8iPamdULGubIQE",
+      "spotify_url": "https://open.spotify.com/track/3nDOvQvA8iPamdULGubIQE",
+      "occurrences": [
+        {
+          "playlist_id": "37i9dQZF1ELXfKO0nfaeKP",
+          "playlist_name": "Your Top Songs 2020",
+          "rank": 96
+        }
+      ]
+    },
+    {
+      "title": "Boom Boom Room",
+      "artists": "Roddy Ricch",
+      "spotify_uri": "spotify:track:3aBL75wBGHJnskegE9jyhb",
+      "spotify_url": "https://open.spotify.com/track/3aBL75wBGHJnskegE9jyhb",
+      "occurrences": [
+        {
+          "playlist_id": "37i9dQZF1ELXfKO0nfaeKP",
+          "playlist_name": "Your Top Songs 2020",
+          "rank": 97
+        }
+      ]
+    },
+    {
+      "title": "Celebrate",
+      "artists": "Kazoops",
+      "spotify_uri": "spotify:track:10ryfvMTDVu22niXCWLm6x",
+      "spotify_url": "https://open.spotify.com/track/10ryfvMTDVu22niXCWLm6x",
+      "occurrences": [
+        {
+          "playlist_id": "37i9dQZF1ELXfKO0nfaeKP",
+          "playlist_name": "Your Top Songs 2020",
+          "rank": 98
+        }
+      ]
+    },
+    {
+      "title": "Last Song",
+      "artists": "Galvanic, Hanz, Kimani",
+      "spotify_uri": "spotify:track:4ZUz0IxBPJACFv8xJvVSjM",
+      "spotify_url": "https://open.spotify.com/track/4ZUz0IxBPJACFv8xJvVSjM",
+      "occurrences": [
+        {
+          "playlist_id": "37i9dQZF1ELXfKO0nfaeKP",
+          "playlist_name": "Your Top Songs 2020",
+          "rank": 99
+        }
+      ]
+    },
+    {
+      "title": "Night 1",
+      "artists": "Ta-ku",
+      "spotify_uri": "spotify:track:39kdh6z0m3UNDfBqLLiXcz",
+      "spotify_url": "https://open.spotify.com/track/39kdh6z0m3UNDfBqLLiXcz",
+      "occurrences": [
+        {
+          "playlist_id": "37i9dQZF1ELXfKO0nfaeKP",
+          "playlist_name": "Your Top Songs 2020",
+          "rank": 100
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "requested_playlist_count": 6,
+    "extracted_playlist_count": 1,
+    "unavailable_playlist_count": 5,
+    "extracted_tracks": 100,
+    "excluded_tracks": 0,
+    "eligible_unique_spotify_uris": 100
+  }
+}

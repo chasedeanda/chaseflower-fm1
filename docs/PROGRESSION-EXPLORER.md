@@ -9,7 +9,7 @@ Progressions is the default main HOME option. **ALGORITHM** cycles
 Bonfire remain available; Progressions and Nothing skip animation work.
 HOME still cycles the main, Chord, Keyboard and Diagnostics views.
 
-- **SELECT** browses all **100 ideas**, wrapping at both ends. Tags and the current
+- **SELECT** browses all **127 ideas**, wrapping at both ends. Tags and the current
   scale never hide an idea. Selecting sets its starting key, scale and meter.
   Hold **GLO** for Browse: **K1 jumps ten**, **K2 jumps one**, **K3 chooses
   Catalog / A–Z / Shuffle / Favorites**, **K4 stars the idea**. #73 takes seven
@@ -18,7 +18,7 @@ HOME still cycles the main, Chord, Keyboard and Diagnostics views.
 - Hold **SAVE** on Progressions for 0.7 seconds to add/remove the visible idea
   from Favorites. A short SAVE press still opens sound saving. Favorites and the
   chosen order survive power-off and are included in backups. Shuffle visits all
-  100 once per traversal; choosing Shuffle again makes a new random order.
+  127 once per traversal; choosing Shuffle again makes a new random order.
 - **PLAY** starts the selected idea at its first slot, with chords, linked bass
   (when enabled) and the selected compatible groove. PLAY again stops accompaniment,
   including after navigating to another screen; independent live HOLD remains.
@@ -52,10 +52,20 @@ Four entries use short, simplified sections of two Paramore songs:
 - **The Only Exception**: verse I–v–IV–IV and chorus loop I–v–IV–I in B Mixolydian.
   Reference: [StrumPatterns guitar arrangement](https://www.strumpatterns.com/Songs/files/Paramore_OnlyException.pdf).
 
-These are harmonic seeds. The player chooses timing, extensions and inversions;
-no melody, lyrics or complete song arrangement is stored. The other entries are
-common harmonic templates or original genre/modal prompts, rather than claimed
-transcriptions of The Story So Far, Movements, CHON, Intervals or Polyphia.
+Entries **101–127** add 27 song snippets selected from the user's combined Spotify
+top-song playlists. Repeated songs were retained as preference evidence; Dance
+Gavin Dance and Dwellings were excluded. The additions include Movements, The
+Story So Far, Belmont, Clairo, Rex Orange County, mgk, Bazzi, Justin Bieber, Oliver
+Tree and iann dior. See the [source and section notes](research/SPOTIFY-COVER-SHORTLIST.md)
+for full titles, charts, simplifications and songs held for further checking.
+
+These are harmonic seeds. The player can choose extensions and inversions;
+no melody, lyrics or complete song arrangement is stored. The new snippets use
+chart-based triad reductions. **Pluto Projector** is specifically a simplified
+cover adaptation. The additions' 4/4 setup is a suggested practice default,
+not a claim about every original recording's meter. Accompaniment uses the existing
+one-bar-per-slot default rather than original song chord durations. Earlier
+genre/modal prompts remain writing prompts rather than attributed song transcriptions.
 
 [Minnix Music's progression overview](https://minnixmusic.wordpress.com/2024/09/11/the-100-chord-progressions-every-musician-must-know/)
 and [Hooktheory's popular progressions](https://www.hooktheory.com/theorytab/popular-chord-progressions)
@@ -166,6 +176,33 @@ Locrian and other altered modes also retain normal major/minor fifths as request
 | 98 | Seven Current | Modal / Dorian | B Dorian | 7/4 | i–ii–IV–vi |
 | 99 | Minor Two | Folk / Natural minor | D Aeolian (Minor) | 2/4 | i–VII–VI–v |
 | 100 | Minor Five | Cinematic | F Aeolian (Minor) | 5/4 | i–III–VI–iv |
+| 101 | Daylily | Movements: chorus | D Ionian (Major) | 4/4 | IV–I–ii–I |
+| 102 | Full Circle | Movements: verse | E Ionian (Major) | 4/4 | IV–I–ii |
+| 103 | Kept | Movements: chorus | A Aeolian (Minor) | 4/4 | i–VI–i–III–i–VI–i |
+| 104 | Keep This Up | The Story So Far: verse | E Ionian (Major) | 4/4 | I–vi–I–vi–IV |
+| 105 | Proper Dose | The Story So Far: verse | E♭ Ionian (Major) | 4/4 | I–IV–I–IV–ii–IV |
+| 106 | Overstepping | Belmont: verse | D♭ Ionian (Major) | 4/4 | IV–vi–V |
+| 107 | Country Girl | Belmont: chorus | E Ionian (Major) | 4/4 | IV–vi–I–ii |
+| 108 | Placeholder | The Story So Far: chorus | D Ionian (Major) | 4/4 | IV–vi–IV–vi–V |
+| 109 | Bags | Clairo: verse | D♭ Ionian (Major) | 4/4 | IV–vi–V |
+| 110 | Sofia | Clairo: chorus | C Ionian (Major) | 4/4 | ii–V–I–IV |
+| 111 | Pretty Girl | Clairo: chorus | C Ionian (Major) | 4/4 | ii–I–iii–ii |
+| 112 | Not The Same | Rex Orange County: chorus | F Ionian (Major) | 4/4 | I–V–ii–vi |
+| 113 | The Shade | Rex Orange County: chorus | F Ionian (Major) | 4/4 | IV–I–IV–I |
+| 114 | Pluto Projector | Rex Orange County: simplified verse adaptation | C Ionian (Major) | 4/4 | I–iii–IV–V |
+| 115 | Bloody Valentine | mgk: chorus | A Ionian (Major) | 4/4 | IV–I–vi–vi |
+| 116 | my ex's best friend | mgk, blackbear: chorus | F Aeolian (Minor) | 4/4 | VI–i–VII |
+| 117 | I Think I'm OKAY | mgk, YUNGBLUD, Travis Barker: chorus phrase | G Ionian (Major) | 4/4 | IV–vi–V–IV–I–V |
+| 118 | I.F.L.Y. | Bazzi: simplified verse | D Ionian (Major) | 4/4 | ii–V–I–IV |
+| 119 | Intentions | Justin Bieber, Quavo: chorus | A Ionian (Major) | 4/4 | I–I–vi–IV–vi–IV |
+| 120 | Hurt | Oliver Tree: pre-chorus phrase | A Aeolian (Minor) | 4/4 | i–III–VII–VI |
+| 121 | Habitual | Justin Bieber: chorus | E Ionian (Major) | 4/4 | IV–V–I |
+| 122 | Confirmation | Justin Bieber: verse | F Aeolian (Minor) | 4/4 | i–VII–VI–III–iv–i |
+| 123 | Changes | Justin Bieber: simplified verse | C Ionian (Major) | 4/4 | IV–iii–ii |
+| 124 | Forever | Justin Bieber, Post Malone, Clever: chorus phrase | C♯ Aeolian (Minor) | 4/4 | i–III–i–III |
+| 125 | Yummy | Justin Bieber: simplified chorus | F Ionian (Major) | 4/4 | ii–iii–ii–iii |
+| 126 | Concert for Aliens | mgk: chorus | B Ionian (Major) | 4/4 | I–IV–V–vi |
+| 127 | Sick and Tired | iann dior, mgk, Travis Barker: chorus | G♯ Aeolian (Minor) | 4/4 | i–VI–III–iv |
 
 ## Compatibility and verification
 
@@ -177,8 +214,9 @@ Bonfire, bit 4 Nothing, bit 5 Bass, all clear Progressions. Hints and detailed
 HOME views keep their bits. Earlier clear/Bass records open Progressions;
 explicit Bonfire/Nothing records retain their selection.
 
-A 32-bit ARM comparison compile measured 4,108 bytes of catalog/label constants
-and approximately 600 bytes of lookup/matching code. This is a size estimate,
+A 32-bit ARM comparison compile of the original 100-entry bank measured 4,108
+bytes of catalog/label constants and approximately 600 bytes of lookup/matching
+code. This earlier estimate excludes the 27 added descriptors and labels; it is
 not a final JieLi device link or a hardware performance measurement.
 
 `sh tools/test_progressions.sh` verifies every catalog entry, all seven modes,
