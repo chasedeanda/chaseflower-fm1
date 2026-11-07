@@ -1,3 +1,6 @@
+#if !CF_SCENES
+static void cf_cord_begin(void);
+#endif
 /* SPDX-License-Identifier: GPL-3.0-only
  * CoralFlower: the UI - the keys, buttons and knobs, the screens, the key lights, the plant's food.
  * The main loop's (ui_input / ui_leds / ui_draw through cf_shim.c). Included after cf_draw.c.
@@ -2248,6 +2251,8 @@ static void cf_ui_init(void)
     if (!flo.nseg)
         flora_init(&flo, 0xC0A1F10Eu, FLW / 2, FLH + 1);   /* (the stem comes up from the bottom edge) */
 #else
+    /* Start the visible intro after sound/store loading, not before hardware initialization. */
+    cf_cord_begin();
     if (cs.boot_sound && !cr_safe) cf_boot_go = 1; /* optional CORD chime, independent of Motion */
 #endif
     cu.idle_ms = 0x7FFFFFFF;                     /* (the intro runs until the first touch) */

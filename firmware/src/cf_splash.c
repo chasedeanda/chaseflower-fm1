@@ -38,7 +38,7 @@ static void cf_splash(void)
     cf_splash_frame(0);                          /* fish starts completely off screen */
 #else
     cf_intro_t=0;cf_cord_started=fm1_ms;cf_intro_on=cf_motion;
-    cf_cord_last.valid=0;cf_cord_draw(cf_motion?160:CF_CORD_BOOT_MS);
+    cf_cord_last.valid=0;cf_cord_draw(cf_motion?0:CF_CORD_BOOT_MS);
 #endif
     cf_present();
 }

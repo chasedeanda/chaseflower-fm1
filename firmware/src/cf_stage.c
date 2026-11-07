@@ -6,8 +6,15 @@
 /* Shared knob labels encode accidentals as pixel-font glyph bytes. */
 static unsigned cfn_code(unsigned c)
 { return c==0x80?'#':c==0x81?'b':c<32 || c>126?'?':c; }
+/* Sparse large face: unsupported text falls back as a complete string. */
+static const cfn_font_t *cfn_face(const cfn_font_t *f,const char *s)
+{
+    if(f==&CFN_64)for(;*s;s++)if(!f->g[cfn_code((uint8_t)*s)-32].adv)return &CFN_32;
+    return f;
+}
 static int cfn_width(const cfn_font_t *f, const char *s)
 {
+    f=cfn_face(f,s);
     int w=0; for (;*s;s++) { unsigned c=cfn_code((uint8_t)*s); w+=f->g[c-32].adv; } return w;
 }
 static void cfn_coverage(int x,int y,unsigned coverage,uint8_t ink)
@@ -27,6 +34,7 @@ static void cfn_coverage(int x,int y,unsigned coverage,uint8_t ink)
 }
 static void cfn_text(const cfn_font_t *f,int x,int baseline,const char *s,uint8_t ink)
 {
+    f=cfn_face(f,s);
     for(;*s;s++) {
         unsigned c=cfn_code((uint8_t)*s);
         const cfn_glyph_t *g=&f->g[c-32];
@@ -200,6 +208,7 @@ static void cf_stage_model(cf_stage_model_t *m)
  * Only horizontal glyph coordinates are compressed in the bounded nameplate. */
 static void cfn_squeezed(const cfn_font_t *f,int x,int baseline,const char *s,int width,uint8_t ink)
 {
+    f=cfn_face(f,s);
     int natural=cfn_width(f,s),advance=0;
     if(natural<=width){cfn_text(f,x,baseline,s,ink);return;}
     for(;*s;s++) {

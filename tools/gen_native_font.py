@@ -14,7 +14,14 @@ for size in (11,12,14,16,32,64):
     font.set_variation_by_axes([400 if size==11 else 600 if size>=14 else 500])
     data=[]; glyphs=[]
     for code in range(32,127):
-        ch=chr(code); x,y,x1,y1=font.getbbox(ch,anchor='ls'); w,h=x1-x,y1-y
+        ch=chr(code)
+        # The 64px face serves chord roots and the Click On/Off status only.
+        # Keep conservative numeric/accidental coverage; other strings use
+        # the complete 32px face through cfn_face(), rather than blank glyphs.
+        if size==64 and ch not in ' ABCDEFGb#0123456789./-?OnfEXT':
+            glyphs.append((0,0,0,0,0,0))
+            continue
+        x,y,x1,y1=font.getbbox(ch,anchor='ls'); w,h=x1-x,y1-y
         im=Image.new('L',(max(w,1),max(h,1))); d=ImageDraw.Draw(im)
         d.text((-x,-y),ch,font=font,anchor='ls',fill=255)
         bits=[(im.getpixel((a,b))*3+127)//255 for b in range(h) for a in range(w)]
