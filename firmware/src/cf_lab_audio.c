@@ -29,6 +29,7 @@ static void cla_process(uint32_t n)
             for(unsigned i=0;i<chord.n && i<CF_MAX_NOTES;i++)if(chord.note[i]>127)valid=0;
             if(!valid || cfc.out.sounding || cfp.n || cfp.nb || sqp.on || sqp.rec!=255 ||
                 (cpa.on && (cpa.paused || cpa.clock_wait))){cla.blocked=1;cla_cancel(1);return;}
+            if(cpa.on)cpa_arp_off();
             cla_cancel(0);sqp_chord_off();sqp_bass_off();sqp.dn=0;
             cla.chord=chord;cla.on=1;cla.blocked=0;cla.acc=0;
             cla.ticks=cfm.beats*SQ_PPQN;

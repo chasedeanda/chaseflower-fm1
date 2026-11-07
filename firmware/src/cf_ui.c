@@ -100,9 +100,9 @@ static int wrapi(int v, int n) { return ((v % n) + n) % n; }
 
 /* the arpeggiator's names: a knob cell's (7 characters at most), the screen's title */
 static const char *const CF_ARP_SHORT[CF_ARP_NMODES] = {"Up", "Down", "Incl", "Excl", "Random", "Order", "Repeat",
-                                                        "Strum\x84", "Strum\x85"};
+                                                        "StrumU", "StrumD", "Convrg", "Diverge", "LowPed", "HighPed"};
 static const char *const CF_ARP_NAME[CF_ARP_NMODES] = {"Up", "Down", "Inclusive", "Exclusive", "Random", "Order",
-                                                       "Repeat", "Strum up", "Strum down"};
+                                                       "Repeat", "Strum up", "Strum down", "Converge", "Diverge", "Low pedal", "High pedal"};
 static const char *const CF_ARP_RATE[CF_ARP_NRATES] = {"1/1", "1/2", "1/4", "1/4T", "1/8", "1/8T", "1/16", "1/16T",
                                                        "1/32"};
 
@@ -424,27 +424,13 @@ static void ui_knob_info(int k, cf_knob_t *o)
                     kfmt(o->val, 14, CF_ARP_RATE[cs.arp.rate % CF_ARP_NRATES]);
                 break;
             }
-        } else {                                 /* Feel: TEMPO GATE SWING LATCH (Strum: held, no swing: dim) */
+        } else {                                 /* Timing & hold: GATE SWING LATCH GLIDE */
             int strum = CF_ARP_STRUMMING(cs.arp.mode);
             switch (k) {
-            case 0:
-                kfmt(o->name, 12, "TEMPO");
-                kint(o->val, cs.bpm, 0);
-                o->dis = cf_sn.ext_clock;        /* (MIDI clock in: the clock's tempo) */
-                break;
-            case 1:
-                kfmt(o->name, 12, "GATE");
-                kint(o->val, cs.arp.gate, "%");
-                o->bar = (int16_t)((cs.arp.gate - 20) * 255 / 80);
-                o->dis = (uint8_t)strum;
-                break;
-            case 2:
-                kfmt(o->name, 12, "SWING");
-                kint(o->val, cs.arp.swing, "%");
-                o->bar = (int16_t)((cs.arp.swing - 50) * 255 / 25);
-                o->dis = (uint8_t)strum;
-                break;
-            default: kfmt(o->name, 12, "LATCH"); kfmt(o->val, 14, cs.arp.latch ? "On" : "Off"); break;
+            case 0: kfmt(o->name,12,"GATE");kint(o->val,cs.arp.gate,"%");o->dis=(uint8_t)strum;break;
+            case 1: kfmt(o->name,12,"SWING");kint(o->val,cs.arp.swing,"%");o->dis=(uint8_t)strum;break;
+            case 2: kfmt(o->name,12,"LATCH");kfmt(o->val,14,cs.arp.latch?"On":"Off");break;
+            default:kfmt(o->name,12,"GLIDE");kint(o->val,cfe_glide_ms(trk[CF_PART_CHORD].p[P_GLIDE]),"ms");break;
             }
         }
         break;
@@ -707,16 +693,10 @@ static void ui_knob_turn(int k, int d)
             else
                 cs.arp.rate = (uint8_t)clampi(cs.arp.rate + d, 0, (int)CF_ARP_NRATES - 1);
         } else {
-            if (k == 0 && !cf_sn.ext_clock) {
-                cs.bpm = (uint16_t)clampi(cs.bpm + d, 30, 300);
-                cf_send_metro();
-            } else if (k == 1) {
-                cs.arp.gate = (uint8_t)clampi(cs.arp.gate + d * 5, 20, 100);
-            } else if (k == 2) {
-                cs.arp.swing = (uint8_t)clampi(cs.arp.swing + d, 50, 75);
-            } else if (k == 3) {
-                cs.arp.latch = (uint8_t)(d > 0);
-            }
+            if (k == 0 && !CF_ARP_STRUMMING(cs.arp.mode)) cs.arp.gate=(uint8_t)clampi(cs.arp.gate+d*5,20,100);
+            else if (k == 1 && !CF_ARP_STRUMMING(cs.arp.mode)) cs.arp.swing=(uint8_t)clampi(cs.arp.swing+d,50,75);
+            else if (k == 2) cs.arp.latch=(uint8_t)(d>0);
+            else if (k == 3) { cpa_glide(d); return; }
         }
         cf_send_config();
         break;
@@ -975,6 +955,7 @@ static void ui_presets(int d)                    /* PRESETS: the chord sound (a 
 static void ui_algo(int d)                       /* ALGORITHM: scene, effect, or workspace tab */
 {
     if(cu.scr==SCR_LAB){cfl_tab(d);return;}
+    if(cu.scr==SCR_ARP){cu.page[SCR_ARP]=(uint8_t)wrapi(cu.page[SCR_ARP]+d,2);return;}
     cf_nav_dir=d<0?-1:1;
     if(cu.scr==SCR_SONGS)return;
     if(cu.scr==SCR_PEDIT){if(!cfdu.conflict&&!cfdu.confirm)cu.page[SCR_PEDIT]=wrapi(cu.page[SCR_PEDIT]+d,CFD_NTAB);return;}

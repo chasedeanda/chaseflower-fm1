@@ -140,6 +140,9 @@ jobs:
       - name: CORD chime, finite fade, preference and first-key physical/USB/MIDI priority
         run: sh tools/test_boot_sound.sh
 
+      - name: Visual ARP, all patterns, ownership and physical/USB/MIDI isolation
+        run: sh tools/test_arp.sh
+
       - name: Progression accompaniment transport, queues, ownership and clocks
         run: sh tools/test_accomp.sh
 

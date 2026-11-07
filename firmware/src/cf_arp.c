@@ -13,9 +13,7 @@
  * silence starts the pattern on its first note, at once. Step times are exact (1/24-beat units against samples x
  * BPM, a 64-bit count: no drift). */
 
-enum { CF_ARP_UP, CF_ARP_DOWN, CF_ARP_INC, CF_ARP_EXC, CF_ARP_RAND, CF_ARP_ORDER, CF_ARP_REPEAT, CF_ARP_STRUM_UP,
-       CF_ARP_STRUM_DOWN, CF_ARP_NMODES };
-#define CF_ARP_STRUMMING(m) ((m) >= CF_ARP_STRUM_UP)
+#include "cf_arp_pattern.h"
 /* RATE: a step, in 1/24 beat (a quarter note: 24) */
 static const uint8_t CF_ARP_UNITS[] = {96, 48, 24, 16, 12, 8, 6, 4, 3};
 #define CF_ARP_NRATES ((uint32_t)sizeof CF_ARP_UNITS)
@@ -39,6 +37,9 @@ typedef struct {
     /* for the screen */
     uint8_t steps;                                   /* bumped at every note played */
     uint8_t last_note;                               /* the last note played */
+    uint8_t trace[16], root;
+    uint16_t seen;
+    uint32_t count, onset_ms, interval_ms, mask;       /* bounded visual event metadata */
     /* locked to the beat (cf_grid on): the next step's place on the grid (1/24 beats), the grid's gen it is on */
     uint32_t next24, gen;
     uint8_t locked;
@@ -74,27 +75,13 @@ static int cfa_pick(uint32_t i)
     int nt;
     if (!n)
         return -1;
-    switch (cfp_cfg.arp.mode) {
-    case CF_ARP_DOWN: k = len - 1u - i % len; break;
-    case CF_ARP_INC: k = i % (2u * len); k = k < len ? k : 2u * len - 1u - k; break;
-    case CF_ARP_EXC:
-        if (len < 3u) {
-            k = i % len;
-        } else {
-            k = i % (2u * len - 2u);
-            k = k < len ? k : 2u * len - 2u - k;
-        }
-        break;
-    case CF_ARP_RAND:                                /* (never the same note twice running, when there is a choice) */
+    if (cfp_cfg.arp.mode == CF_ARP_RAND) {
         cfa.rng = cfa.rng * 1664525u + 1013904223u;
         k = (cfa.rng >> 16) % len;
         if (len > 1u && k == cfa.rnd_last)
             k = (k + 1u + (cfa.rng >> 8) % (len - 1u)) % len;
         cfa.rnd_last = (uint8_t)k;
-        break;
-    case CF_ARP_REPEAT: k = (i / 2u) % len; break;
-    default: k = i % len; break;
-    }
+    } else k = cf_arp_walk(cfp_cfg.arp.mode, len, i);
     j = k % n;
     nt = src[j] + 12 * (int)(k / n);
     return nt > 127 ? src[j] : nt;
@@ -127,6 +114,7 @@ static void cfa_stop(void)                           /* everything the arpeggiat
     cfa_strum_off();
     cfa.n = 0;
     cfa.latched = 0;
+    cfa.count = cfa.seen = 0;
 }
 
 static void cfa_play(uint32_t note)
@@ -138,6 +126,10 @@ static void cfa_play(uint32_t note)
         cfp_on(cfa_part(), note, cfp_cfg.vel);       /* (the sequencer's: not over a note the keys hold) */
     cfa.steps++;
     cfa.last_note = (uint8_t)note;
+    unsigned at = cfa.count++ & 15u;
+    if (!at) cfa.seen = 0;
+    cfa.trace[at] = (uint8_t)note; cfa.seen |= (uint16_t)(1u << at);
+    cfa.onset_ms = cf_now_ms;
 }
 /* the grid's step places: pairs of 2 RATE units, the second SWING late (s: where it falls in the pair) */
 static uint32_t cfa_pair(void) { return 2u * CF_ARP_UNITS[cfp_cfg.arp.rate < CF_ARP_NRATES ? cfp_cfg.arp.rate : 4u]; }
@@ -175,6 +167,7 @@ static uint32_t cfa_div64(uint64_t n, uint32_t d)
 
 static void cfa_step_n(uint64_t len)
 {
+    if (cfa.mode != cfp_cfg.arp.mode) { cfa.count = cfa.seen = 0; cfa.mode = cfp_cfg.arp.mode; }
     int nt = cfa_pick(cfa.idx);
     uint32_t g = cfp_cfg.arp.gate >= 20u && cfp_cfg.arp.gate <= 100u ? cfp_cfg.arp.gate : 70u;
     cfa_note_off();
@@ -187,6 +180,7 @@ static void cfa_step_n(uint64_t len)
     {
         uint32_t st = cfa_div64(len, cfa_bpm() * 2400u);   /* (the step in samples; x GATE % without overflow) */
         cfa.gate_left = st / 100u * g + st % 100u * g / 100u;
+        cfa.interval_ms = st * 1000u / FS;
     }
     if (g >= 100u)
         cfa.gate_left += CTL;
@@ -219,6 +213,7 @@ static void cfa_strum_start(void)
             cfa.snote[i] = cfa.snote[k - 1u - i];
             cfa.snote[k - 1u - i] = t;
         }
+    cfa.count = cfa.seen = 0;
     cfa.sn = (uint8_t)k;
     cfa.si = 0;
     cfa.sdue = cf_now_ms;
@@ -240,6 +235,9 @@ static int cfa_chord(const cf_chord_out_t *o, int m)
         return 1;
     }
     fresh = !cfa.n || cfa.latched;
+    if (fresh || cfa.n != m || memcmp(cfa.note, o->note, (unsigned)m)) cfa.count = cfa.seen = 0;
+    cfa.root = o->root_pc % 12u; cfa.mask = o->mask;
+    if (!cfa.mask) for (i = 0; i < m; i++) cfa.mask |= 1u << ((o->note[i] - cfa.root + 120) % 12);
     cfa.latched = 0;
     cfa.n = (uint8_t)(m > CF_MAX_NOTES ? CF_MAX_NOTES : m);
     for (i = 0; i < cfa.n; i++)

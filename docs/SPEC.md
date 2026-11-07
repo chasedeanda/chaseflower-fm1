@@ -146,7 +146,23 @@ rest of the interface and, above all, convenient.
 
 ## 9. ARP — arpeggiator
 
-Copy the stock FM-1 arpeggiator (pages via SELECT, K1–K4 per page). Improve where it helps.
+The native ARP workspace uses a large pitch/time roll on both control banks.
+SELECT or ALGORITHM switches Pattern / Timing & hold without restarting notes.
+Pattern K1–K4: On/Off, Mode, Octaves, Rate (strum: inter-note ms).
+Timing & hold K1–K4: Gate, Swing, Latch, sound Glide. Gate/Swing are disabled for
+strums. Tempo stays on HOME Core K4; no second clock is created.
+
+The original nine modes keep their saved IDs. Append Converge, Diverge, Low pedal
+and High pedal. The global ARP applies to live and scheduled progression chords;
+recordings keep their existing per-track ARP flags. Live/HOLD/Latch take priority
+and return to the current scheduled chord without resetting transport. Stop,
+panic, phrase gate and external-clock loss release the scheduled arp owner.
+
+Only player snapshots drive the roll. Pitch includes register, bar length shows
+gate, swing shifts alternate starts, Random shows known history only, and strums
+show actual accumulating sustained notes. Disabled/waiting has no playhead.
+Motion Off cancels cursor travel while factual notes/steps still update.
+See [ARP implementation and controls](ARP.md).
 
 ## 10. SEQ — metronome
 

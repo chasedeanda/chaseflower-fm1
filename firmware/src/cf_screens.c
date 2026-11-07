@@ -946,6 +946,7 @@ static void cf_legacy_frame(void)
 }
 
 #include "cf_native_pages.c"
+#include "cf_arp_ui.c"
 typedef struct { char text[3][64];char name[3][24];uint16_t pos,n;uint8_t kind,skin,ack,focus,progress,warn; } cfn_popup_t;
 static cfn_popup_t cfn_popup_last;
 static uint32_t cfn_saved_ms,cfn_popup_focus_ms;
@@ -997,13 +998,15 @@ static void cf_ui_draw(void)
         pop.ack=cf_tween_offset(cfn_saved_ms,240,20);
     } else cfn_saved_ms=0;
     int changed=memcmp(&pop,&cfn_popup_last,sizeof pop)!=0;
-    if(changed){cf_stage_valid=cf_acc_valid=cfd_valid=cfn_page_valid=0;cfn_popup_last=pop;}
-    unsigned before=cf_stage_draws+cf_acc_draws+cfd_draws+cfn_page_draws;
+    if(changed){cf_stage_valid=cf_acc_valid=cfd_valid=cfn_page_valid=cfarp_valid=0;cfn_popup_last=pop;}
+    if(cu.scr!=SCR_ARP || cu.upd_left)cfarp_valid=0;
+    unsigned before=cf_stage_draws+cf_acc_draws+cfd_draws+cfn_page_draws+cfarp_draws;
     if(!cu.upd_left && cu.scr==SCR_PEDIT){cf_stage_valid=cf_acc_valid=cfn_page_valid=0;cfd_draw();}
     else if(!cu.upd_left && (cu.scr==SCR_ACC || (cu.scr==SCR_GLO && cu.page[SCR_GLO]==CF_GLO_LEGACY))) {cf_stage_valid=cfd_valid=cfn_page_valid=0;cf_acc_draw();}
     else if(!cu.upd_left && cu.scr==SCR_HOME && home_view()==HV_FLOWER && cf_scene()==CF_SCENE_PROGRESSIONS){cf_acc_valid=cfd_valid=cfn_page_valid=0;cf_stage_draw();}
+    else if(!cu.upd_left && cu.scr==SCR_ARP){cf_stage_valid=cf_acc_valid=cfd_valid=cfn_page_valid=0;cfarp_draw();}
     else {cf_stage_valid=cf_acc_valid=cfd_valid=0;cfn_page_draw();}
-    if(!pop.kind || (!changed && before==cf_stage_draws+cf_acc_draws+cfd_draws+cfn_page_draws))return;
+    if(!pop.kind || (!changed && before==cf_stage_draws+cf_acc_draws+cfd_draws+cfn_page_draws+cfarp_draws))return;
     fb_unclip();fb_rect(8,55,224,131,FL_BG);fb_frame(8,55,224,131,pop.warn?FL_C(FL_R_ROSE,0):FL_BG3);
     if(pop.n) {
         cfn_text(&CFN_12,16,74,pop.text[0],FL_INK2);
