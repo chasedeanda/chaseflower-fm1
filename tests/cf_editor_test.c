@@ -36,6 +36,7 @@ static void scheduler(void)
     for(unsigned i=0;i<24;i++)cpa_tick1();CHECK(cpa.slot==0 && cpa.t==48 && cpa.plan.degree[1]==cfwd.song.slot[1].degree);
     /* Groove requests remain bar-bound even when the chord boundary is mid-bar. */
     cpa_ui_rhythm(2);unsigned r=cpa.plan.rhythm;next=cfwd.song;next.slot[0].quality=CF_SONG_MINOR;cfd_commit(&next);
+    cf_snapshot();char pending[48],setup_text[48];cf_acc_pending(pending,sizeof pending,setup_text,sizeof setup_text);CHECK(strstr(pending,"Chord next / bar:")!=0);
     for(unsigned i=0;i<24;i++)cpa_tick1();CHECK(cpa.plan.rhythm==r && (cpa_edit.flags&CPA_GROOVE));
     while(cpa.t)cpa_tick1();CHECK(cpa.plan.rhythm!=r && !(cpa_edit.flags&CPA_GROOVE));
     cpa_stop();
