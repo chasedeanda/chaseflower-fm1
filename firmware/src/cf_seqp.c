@@ -309,6 +309,7 @@ static void sqp_arp_on(uint32_t tk, const sq_ev_t *e)
     for (j = 0; j < o.n; j++)
         o.note[j] = e->note[j];
     o.root_pc = e->root;
+    o.mask = cf_harmony_event_mask(e->mask, e->btns);
     cfa_at = &cfa_sq[tk == SQ_LAYER];
     cfa.on = 1;
     cfa_chord(&o, o.n);

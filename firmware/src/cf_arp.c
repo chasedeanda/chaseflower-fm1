@@ -347,6 +347,7 @@ static void cfa_config(int keys_down)
         cfa_strum_off();
         cfa.n = n;
         cfa.latched = latched;
+        cfa.count = cfa.seen = 0;
         cfa.mode = cfp_cfg.arp.mode;
         if (cfa.n && CF_ARP_STRUMMING(cfa.mode))
             cfa_strum_start();

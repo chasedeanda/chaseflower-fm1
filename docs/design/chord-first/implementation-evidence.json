@@ -109,15 +109,15 @@
       "deviceVerification": "Pending — native host captures and linked device build only"
     },
     "MOTION_ARP": {
-      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
-      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
-      "deviceVerification": "Pending — native host captures and device link only",
+      "designStatus": "Approved large-roll layout adapted to the current shared palette and type",
+      "implementationStatus": "Implemented native ARP roll, thirteen modes, Pattern / Timing & hold banks, actual Random history and strum state, shared-clock progression ARP, live takeover/resume and Motion Off. See docs/ARP.md.",
+      "deviceVerification": "Pending — native host captures, audio/USB/MIDI equality and linked device package only",
       "evidence": "native-pages/README.md"
     },
     "MOTION_FEEL": {
-      "designStatus": "Native retained-screen adaptation; selected design remains authoritative",
-      "implementationStatus": "Existing behavior rethemed through native shared families; planned additional workflow changes remain separate",
-      "deviceVerification": "Pending — native host captures and device link only",
+      "designStatus": "Approved large-roll layout adapted to the current shared palette and type",
+      "implementationStatus": "Implemented native ARP roll, thirteen modes, Pattern / Timing & hold banks, actual Random history and strum state, shared-clock progression ARP, live takeover/resume and Motion Off. See docs/ARP.md.",
+      "deviceVerification": "Pending — native host captures, audio/USB/MIDI equality and linked device package only",
       "evidence": "native-pages/README.md"
     },
     "BASS_SOUND": {

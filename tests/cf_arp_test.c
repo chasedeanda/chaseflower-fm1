@@ -65,6 +65,12 @@ static void live(const char *dir)
     setup(CF_ARP_STRUM_DOWN);cf_chord_out_t high={0};high.sounding=1;high.root_pc=0;high.root_note=120;high.mask=0x91;high.n=3;high.note[0]=120;high.note[1]=124;high.note[2]=127;
     cfp_cfg.arp.oct=4;cs.arp.oct=4;cfa_chord(&high,3);ms(300);cfarp_model(&m);CHECK(m.n==3 && m.seq[0]==127 && m.seq[2]==120);
     setup(CF_ARP_STRUM_UP);key(9,1);ms(160);cfp_cfg.arp.oct=4;cs.arp.oct=4;cf_snapshot();cfarp_model(&m);CHECK(m.n==cfa_k.sn && m.n==3);key(9,0);
+    setup(CF_ARP_UP);key(9,1);ms(380);cs.arp.mode=CF_ARP_STRUM_UP;cf_send_config();blocks(2);
+    cs.arp.mode=CF_ARP_CONVERGE;cf_send_config();blocks(2);cfarp_model(&m);
+    CHECK(cf_sn.arp_view.count==1 && cf_sn.arp_view.seen==1 && m.current==0 && m.seq[0]==cfa_k.last_note);key(9,0);
+    setup(CF_ARP_UP);sq_ev_t recorded={0};recorded.n=4;recorded.root=0;recorded.mask=0x4091;recorded.btns=CF_H_EVENT;
+    recorded.note[0]=60;recorded.note[1]=64;recorded.note[2]=67;recorded.note[3]=74;
+    sqp_arp_on(SQ_CHORDS,&recorded);blocks(2);CHECK(cf_sn.arp_view.source==2 && cf_sn.arp_view.mask==0x4091);sqp_arp_off(SQ_CHORDS);
     setup(CF_ARP_UP);cs.bpm=108;cs.arp.rate=4;cf_send_config();blocks(2);key(3,1);key(3,0);key(9,1);ms(600);capture(dir,"hero");
     if(dir)for(unsigned frame=0;frame<60;frame++){ms(50);char name[32];snprintf(name,sizeof name,"motion-%03u",frame);capture(dir,name);}
     key(9,0);

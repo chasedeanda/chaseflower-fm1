@@ -140,7 +140,7 @@ The notes line shows actual chord tones. The phrase cue shows planned chords; it
 **Availability:** Play — first milestone. Change delivery while retaining harmony and groove.
 
 1. **Press ARP; enable and choose one of the nine existing modes.** — Chord notes use arp/strum delivery on the shared tempo. (Arpeggio and Strum).
-2. **Choose Feel; set Gate/Swing and chord-sound Glide.** — Expressive controls stay available after Tempo moves to HOME. (Motion Feel and Glide).
+2. **Choose Feel; set Gate/Swing and chord-sound Glide.** — Expressive controls stay available after Tempo moves to HOME. (Timing & hold).
 3. **Return HOME and play or start the progression.** — Large harmonic identity remains stable while note activity can move. (Progressions · CORE).
 
 ### Shape bass and envelope
@@ -496,8 +496,8 @@ Every entry below is a planned screen or a named state/tab of a shared screen. A
 
 | Screen | Milestone | Open it | What it does |
 | --- | --- | --- | --- |
-| Arpeggio and Strum | 1 | ARP from another workspace. | Retain the existing useful chord-delivery modes under one shared tempo. |
-| Motion Feel and Glide | 1 | ARP, ALGORITHM to Feel. | Keep expressive controls available after Tempo replaces Glide on HOME. |
+| Arpeggio and Strum | 1 | ARP from another workspace. | Follow the live or scheduled arpeggio on a large roll while controlling note order, octave range and rate through the shared musical clock. |
+| Timing & hold | 1 | ARP, ALGORITHM to Timing & hold. | Adjust note length, swing, live latch and sound Glide while keeping the arpeggio visible. |
 
 ### Bass
 

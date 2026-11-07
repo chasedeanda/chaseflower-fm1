@@ -2209,10 +2209,10 @@ Acknowledge the exact undoable slot replacement without adding a confirmation be
 
 **Group:** Motion · **Delivery:** Play — first milestone · **Template:** params
 
-Retain the existing useful chord-delivery modes under one shared tempo.
+Follow the live or scheduled arpeggio on a large roll while controlling note order, octave range and rate through the shared musical clock.
 
 **Entry:** ARP from another workspace.
-**Exit:** ARP/HOME returns home; ALGORITHM to Feel.
+**Exit:** ARP/HOME returns home; ALGORITHM to Timing & hold.
 
 | Visible field | Reference value/state |
 | --- | --- |
@@ -2224,10 +2224,10 @@ Retain the existing useful chord-delivery modes under one shared tempo.
 
 | Input | Action |
 | --- | --- |
-| SELECT | Choose the mode; never change the catalogue song from this workspace. |
-| ALGORITHM | Choose Arpeggio / Feel. |
+| SELECT | Switch Pattern / Timing & hold; never change the catalogue song from this workspace. |
+| ALGORITHM | Choose Arpeggio / Timing & hold. |
 | K1 | Arp: Off / On |
-| K2 | Mode: Up / Down / Inclusive / Exclusive / Random / Order / Repeat / Strum Up / Strum Down |
+| K2 | Mode: Up / Down / Inclusive / Exclusive / Random / Order / Repeat / Strum Up / Strum Down / Converge / Diverge / Low pedal / High pedal |
 | K3 | Octaves: 1–4 |
 | K4 | Rate: musical division; strum spacing in ms |
 | HOME | Return to Progressions; keep transport and unsaved draft. |
@@ -2247,36 +2247,40 @@ Retain the existing useful chord-delivery modes under one shared tempo.
 - Shared musical tempo; Random is note order, not progression generation.
 - Strum rate becomes inter-note milliseconds; one strum per chord onset.
 - Bass stays held/linked beneath arpeggio rather than being arpeggiated.
-- Mode changes apply at next chord onset; rate changes retain phase where applicable.
+- Clocked mode changes apply at the next event; strum direction/octave changes apply on the next chord. Rate changes retain phase where applicable.
 - Arp note motion does not replace the large chord's harmonic identity.
+- A large native pitch/time roll remains visible on both banks; the individual event never replaces the full harmonic name and degree. See docs/ARP.md and previews/arp-roll for the implemented display.
+- The original nine saved IDs remain stable; append Converge, Diverge, Low pedal and High pedal.
+- Random consumes actual event history with unknown future columns empty. Strums show actual queued pitches and accumulating sustained notes.
+- Live/HOLD/Latch takes over the scheduled arp; releasing it returns to the current scheduled chord without restarting transport.
 
 **Player instructions:**
 1. Press ARP.
 2. Enable it and choose a mode.
-3. Set rate; use ALGORITHM for Feel.
+3. Set rate; use ALGORITHM for Timing & hold.
 
 **Related:** MOTION_FEEL, HOME_STAGE
 
-### MOTION_FEEL — Motion Feel and Glide
+### MOTION_FEEL — Timing & hold
 
 **Group:** Motion · **Delivery:** Play — first milestone · **Template:** params
 
-Keep expressive controls available after Tempo replaces Glide on HOME.
+Adjust note length, swing, live latch and sound Glide while keeping the arpeggio visible.
 
-**Entry:** ARP, ALGORITHM to Feel.
+**Entry:** ARP, ALGORITHM to Timing & hold.
 **Exit:** ARP/HOME; Advanced Sound is a separate explicit destination.
 
 | Visible field | Reference value/state |
 | --- | --- |
-| Gate | 75% |
-| ArpSwing | 56% |
+| Gate | 70% |
+| ArpSwing | 50% |
 | Latch | Off |
 | SoundGlide | 120 ms |
 
 | Input | Action |
 | --- | --- |
-| SELECT | No secondary list; direct parameters. |
-| ALGORITHM | Choose Arpeggio / Feel. |
+| SELECT | Switch Pattern / Timing & hold, without changing musical parameters. |
+| ALGORITHM | Choose Arpeggio / Timing & hold. |
 | K1 | Arp gate: 20–100% |
 | K2 | Arp swing: 50–75% |
 | K3 | Manual arp latch: Off / On |
@@ -2300,6 +2304,8 @@ Keep expressive controls available after Tempo replaces Glide on HOME.
 - HOLD and arp latch are separately labelled sustain sources; either may keep the live owner active.
 - Glide belongs to the chord sound and linked bass, rather than automatic global harmony style.
 - Legato/Always behavior remains an Advanced Sound parameter.
+- A large native pitch/time roll remains visible on both banks; the individual event never replaces the full harmonic name and degree. See docs/ARP.md and previews/arp-roll for the implemented display.
+- Tempo remains on HOME Core K4; this bank exposes Gate, Swing, Latch and sound Glide through the four knobs.
 
 **Player instructions:**
 1. Set Gate and Swing.

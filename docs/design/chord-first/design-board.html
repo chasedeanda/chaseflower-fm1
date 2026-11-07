@@ -5099,7 +5099,7 @@ html&gt;body{padding:0}&lt;/style&gt;
       &quot;title&quot;: &quot;Arpeggio and Strum&quot;,
       &quot;phase&quot;: 1,
       &quot;kind&quot;: &quot;params&quot;,
-      &quot;purpose&quot;: &quot;Retain the existing useful chord-delivery modes under one shared tempo.&quot;,
+      &quot;purpose&quot;: &quot;Follow the live or scheduled arpeggio on a large roll while controlling note order, octave range and rate through the shared musical clock.&quot;,
       &quot;entry&quot;: &quot;ARP from another workspace.&quot;,
       &quot;fields&quot;: [
         {
@@ -5125,12 +5125,12 @@ html&gt;body{padding:0}&lt;/style&gt;
       ],
       &quot;knobs&quot;: [
         &quot;Arp: Off / On&quot;,
-        &quot;Mode: Up / Down / Inclusive / Exclusive / Random / Order / Repeat / Strum Up / Strum Down&quot;,
+        &quot;Mode: Up / Down / Inclusive / Exclusive / Random / Order / Repeat / Strum Up / Strum Down / Converge / Diverge / Low pedal / High pedal&quot;,
         &quot;Octaves: 1–4&quot;,
         &quot;Rate: musical division; strum spacing in ms&quot;
       ],
-      &quot;select&quot;: &quot;Choose the mode; never change the catalogue song from this workspace.&quot;,
-      &quot;algorithm&quot;: &quot;Choose Arpeggio / Feel.&quot;,
+      &quot;select&quot;: &quot;Switch Pattern / Timing &amp; hold; never change the catalogue song from this workspace.&quot;,
+      &quot;algorithm&quot;: &quot;Choose Arpeggio / Timing &amp; hold.&quot;,
       &quot;buttons&quot;: {
         &quot;HOME&quot;: &quot;Return to Progressions; keep transport and unsaved draft.&quot;,
         &quot;PLAY&quot;: &quot;Control accompaniment; Arp itself does not launch another transport.&quot;,
@@ -5145,18 +5145,22 @@ html&gt;body{padding:0}&lt;/style&gt;
         &quot;FX&quot;: &quot;Open Effects on the last effect.&quot;,
         &quot;GLO&quot;: &quot;Open System; Sound → Presets and Sound → Advanced remain reachable there.&quot;
       },
-      &quot;exit&quot;: &quot;ARP/HOME returns home; ALGORITHM to Feel.&quot;,
+      &quot;exit&quot;: &quot;ARP/HOME returns home; ALGORITHM to Timing &amp; hold.&quot;,
       &quot;states&quot;: [
         &quot;Shared musical tempo; Random is note order, not progression generation.&quot;,
         &quot;Strum rate becomes inter-note milliseconds; one strum per chord onset.&quot;,
         &quot;Bass stays held/linked beneath arpeggio rather than being arpeggiated.&quot;,
-        &quot;Mode changes apply at next chord onset; rate changes retain phase where applicable.&quot;,
-        &quot;Arp note motion does not replace the large chord&#x27;s harmonic identity.&quot;
+        &quot;Clocked mode changes apply at the next event; strum direction/octave changes apply on the next chord. Rate changes retain phase where applicable.&quot;,
+        &quot;Arp note motion does not replace the large chord&#x27;s harmonic identity.&quot;,
+        &quot;A large native pitch/time roll remains visible on both banks; the individual event never replaces the full harmonic name and degree. See docs/ARP.md and previews/arp-roll for the implemented display.&quot;,
+        &quot;The original nine saved IDs remain stable; append Converge, Diverge, Low pedal and High pedal.&quot;,
+        &quot;Random consumes actual event history with unknown future columns empty. Strums show actual queued pitches and accumulating sustained notes.&quot;,
+        &quot;Live/HOLD/Latch takes over the scheduled arp; releasing it returns to the current scheduled chord without restarting transport.&quot;
       ],
       &quot;playerSteps&quot;: [
         &quot;Press ARP.&quot;,
         &quot;Enable it and choose a mode.&quot;,
-        &quot;Set rate; use ALGORITHM for Feel.&quot;
+        &quot;Set rate; use ALGORITHM for Timing &amp; hold.&quot;
       ],
       &quot;related&quot;: [
         &quot;MOTION_FEEL&quot;,
@@ -5166,19 +5170,19 @@ html&gt;body{padding:0}&lt;/style&gt;
     {
       &quot;id&quot;: &quot;MOTION_FEEL&quot;,
       &quot;group&quot;: &quot;Motion&quot;,
-      &quot;title&quot;: &quot;Motion Feel and Glide&quot;,
+      &quot;title&quot;: &quot;Timing &amp; hold&quot;,
       &quot;phase&quot;: 1,
       &quot;kind&quot;: &quot;params&quot;,
-      &quot;purpose&quot;: &quot;Keep expressive controls available after Tempo replaces Glide on HOME.&quot;,
-      &quot;entry&quot;: &quot;ARP, ALGORITHM to Feel.&quot;,
+      &quot;purpose&quot;: &quot;Adjust note length, swing, live latch and sound Glide while keeping the arpeggio visible.&quot;,
+      &quot;entry&quot;: &quot;ARP, ALGORITHM to Timing &amp; hold.&quot;,
       &quot;fields&quot;: [
         {
           &quot;label&quot;: &quot;Gate&quot;,
-          &quot;value&quot;: &quot;75%&quot;
+          &quot;value&quot;: &quot;70%&quot;
         },
         {
           &quot;label&quot;: &quot;ArpSwing&quot;,
-          &quot;value&quot;: &quot;56%&quot;
+          &quot;value&quot;: &quot;50%&quot;
         },
         {
           &quot;label&quot;: &quot;Latch&quot;,
@@ -5195,8 +5199,8 @@ html&gt;body{padding:0}&lt;/style&gt;
         &quot;Manual arp latch: Off / On&quot;,
         &quot;Chord-sound Glide: 120 ms&quot;
       ],
-      &quot;select&quot;: &quot;No secondary list; direct parameters.&quot;,
-      &quot;algorithm&quot;: &quot;Choose Arpeggio / Feel.&quot;,
+      &quot;select&quot;: &quot;Switch Pattern / Timing &amp; hold, without changing musical parameters.&quot;,
+      &quot;algorithm&quot;: &quot;Choose Arpeggio / Timing &amp; hold.&quot;,
       &quot;buttons&quot;: {
         &quot;HOME&quot;: &quot;Return to Progressions; keep transport and unsaved draft.&quot;,
         &quot;PLAY&quot;: &quot;Start the explicitly selected playback source from its beginning, or stop the running transport and audition; preserve independent live HOLD.&quot;,
@@ -5217,7 +5221,9 @@ html&gt;body{padding:0}&lt;/style&gt;
         &quot;Manual arp latch sustains live takeover independently of physical roots; turning it Off releases only arp-latched ownership.&quot;,
         &quot;HOLD and arp latch are separately labelled sustain sources; either may keep the live owner active.&quot;,
         &quot;Glide belongs to the chord sound and linked bass, rather than automatic global harmony style.&quot;,
-        &quot;Legato/Always behavior remains an Advanced Sound parameter.&quot;
+        &quot;Legato/Always behavior remains an Advanced Sound parameter.&quot;,
+        &quot;A large native pitch/time roll remains visible on both banks; the individual event never replaces the full harmonic name and degree. See docs/ARP.md and previews/arp-roll for the implemented display.&quot;,
+        &quot;Tempo remains on HOME Core K4; this bank exposes Gate, Swing, Latch and sound Glide through the four knobs.&quot;
       ],
       &quot;playerSteps&quot;: [
         &quot;Set Gate and Swing.&quot;,
@@ -16854,15 +16860,15 @@ html&gt;body{padding:0}&lt;/style&gt;
         &quot;deviceVerification&quot;: &quot;Pending — native host captures and linked device build only&quot;
       },
       &quot;MOTION_ARP&quot;: {
-        &quot;designStatus&quot;: &quot;Native retained-screen adaptation; selected design remains authoritative&quot;,
-        &quot;implementationStatus&quot;: &quot;Existing behavior rethemed through native shared families; planned additional workflow changes remain separate&quot;,
-        &quot;deviceVerification&quot;: &quot;Pending — native host captures and device link only&quot;,
+        &quot;designStatus&quot;: &quot;Approved large-roll layout adapted to the current shared palette and type&quot;,
+        &quot;implementationStatus&quot;: &quot;Implemented native ARP roll, thirteen modes, Pattern / Timing &amp; hold banks, actual Random history and strum state, shared-clock progression ARP, live takeover/resume and Motion Off. See docs/ARP.md.&quot;,
+        &quot;deviceVerification&quot;: &quot;Pending — native host captures, audio/USB/MIDI equality and linked device package only&quot;,
         &quot;evidence&quot;: &quot;native-pages/README.md&quot;
       },
       &quot;MOTION_FEEL&quot;: {
-        &quot;designStatus&quot;: &quot;Native retained-screen adaptation; selected design remains authoritative&quot;,
-        &quot;implementationStatus&quot;: &quot;Existing behavior rethemed through native shared families; planned additional workflow changes remain separate&quot;,
-        &quot;deviceVerification&quot;: &quot;Pending — native host captures and device link only&quot;,
+        &quot;designStatus&quot;: &quot;Approved large-roll layout adapted to the current shared palette and type&quot;,
+        &quot;implementationStatus&quot;: &quot;Implemented native ARP roll, thirteen modes, Pattern / Timing &amp; hold banks, actual Random history and strum state, shared-clock progression ARP, live takeover/resume and Motion Off. See docs/ARP.md.&quot;,
+        &quot;deviceVerification&quot;: &quot;Pending — native host captures, audio/USB/MIDI equality and linked device package only&quot;,
         &quot;evidence&quot;: &quot;native-pages/README.md&quot;
       },
       &quot;BASS_SOUND&quot;: {
