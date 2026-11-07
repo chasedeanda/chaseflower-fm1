@@ -2,6 +2,17 @@
 
 Start implementation from the published plan on **`codex/chord-first-roadmap-01a1b40b`**. This publication changes documentation and browser references only. Its refreshed source base includes `main` at `29c3ba6e8fe87c33f94c8c139157460568ce89b3`, where [progression playback PR #53](https://github.com/chasedeanda/chaseflower-fm1/pull/53) has landed. Inspect and reuse that implementation; the milestones below define completion/verification, not a request to build a second playback engine. Recheck the current integration reference before source edits because other work can advance.
 
+## Current execution priority
+
+The user has prioritized replacing every retained old screen and completing its
+motion before the remaining musical workflows. Chord audition/library is explicitly
+deferred. The native retained-screen migration builds on merged #65 at
+`abd37afab562555d4e8a58a66d18b488cce594f9`; see
+[native coverage, motion and evidence](native-pages/README.md). It preserves the
+current manual-take/latest-three policy. Numbered Songs, arranged recording,
+Learn and Next remain separate unfinished milestones. Recheck current main before
+continuing; the original publication branch below is design history.
+
 ## Read first
 
 1. [Implementation plan](IMPLEMENTATION-PLAN.md), especially milestones A/B and the protected behavior.
