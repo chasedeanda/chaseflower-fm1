@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: GPL-3.0-only
- * FX -> editor, FX again -> browser, FX again -> HOME. SELECT browses without
- * changing sound. SAVE opens management; a further one-second hold commits. */
+ * FX -> editor, FX again -> browser, FX again -> HOME. SELECT auditions each
+ * preset immediately. SAVE opens management; a further one-second hold commits. */
 #include "cf_fx_factory.c"
 enum { FXP_EDIT, FXP_BROWSE, FXP_MANAGE };
 static struct {
@@ -20,13 +20,25 @@ static const char *fxp_pick_name(void)
     const fxp_preset_t *p = fxp_pick();
     return p ? p->name : "Empty user slot";
 }
-static void fxp_recall_selected(void)
+static void fxp_recall(int announce)
 {
     const fxp_preset_t *p = fxp_pick();
-    if (!p || !fxp_preset_valid(p)) { cf_message("Empty FX slot"); return; }
+    if (!p || !fxp_preset_valid(p)) {
+        if (announce) cf_message("Empty FX slot");
+        return;
+    }
     fxpu.prev = cs.fx; fxpu.previous = 1; fxpu.prev_bypass = cfx_bypass;
     cs.fx = p->fx; cf_fx_recall(&cs.fx);
-    cf_message(p->name);
+    cf_fx_bypass(0);
+    if (announce) cf_message(p->name);
+}
+static void fxp_recall_selected(void) { fxp_recall(1); }
+static void fxp_select(int d)
+{
+    uint8_t pick = (uint8_t)clampi(fxpu.pick + d, 0, FXP_FACTORY_N + FXP_SLOTS - 1);
+    if (pick == fxpu.pick) return;
+    fxpu.pick = pick;
+    fxp_recall(0); /* Keep the browser visible while turning; empty slots leave audio alone. */
 }
 static void fxp_previous(void)
 {
@@ -37,6 +49,18 @@ static void fxp_previous(void)
     cf_fx_recall(&cs.fx); cf_fx_bypass(fxpu.prev_bypass);
     fxpu.prev = tmp; fxpu.prev_bypass = bypass;
     cf_message("Previous FX chain");
+}
+static void fxp_clear(void)
+{
+    if (cs.fx.on) {
+        fxpu.prev = cs.fx; fxpu.previous = 1; fxpu.prev_bypass = cfx_bypass;
+        cs.fx.on = 0;
+        cf_fx_recall(&cs.fx);
+    }
+    /* Fade all the way to dry, including any already-running delay/reverb tails.
+     * The saved enable mask is also empty, so the next boot starts without FX. */
+    cf_fx_bypass(1);
+    cf_message("No FX");
 }
 static void fxp_manage_open(void)
 {
@@ -67,9 +91,9 @@ static void fxp_manage_do(void)
 static void fxp_knob_info(int k, cf_knob_t *o)
 {
     if (fxpu.mode == FXP_BROWSE) {
-        static const char *const N[4] = {"RECALL", "BYPASS", "UNDO FX", "EDIT FX"};
+        static const char *const N[4] = {"RECALL", "CLEAR FX", "UNDO FX", "EDIT FX"};
         kfmt(o->name, 12, N[k]);
-        kfmt(o->val, 14, k == 1 ? (cfx_bypass ? "On" : "Off") : "Turn +");
+        kfmt(o->val, 14, "Turn +");
     } else {
         static const char *const N[4] = {"SLOT", "LETTER", "CHAR", "ACTION"};
         static const char *const A[3] = {"New", "Replace", "Delete"};
@@ -86,7 +110,7 @@ static void fxp_knob_turn(int k, int d)
     cu.save_hold = 0; /* changing a target or action cancels an in-progress hold */
     if (fxpu.mode == FXP_BROWSE) {
         if (k == 0 && d > 0) fxp_recall_selected();
-        if (k == 1) cf_fx_bypass(d > 0);
+        if (k == 1 && d > 0) fxp_clear();
         if (k == 2 && d > 0) fxp_previous();
         if (k == 3 && d > 0) fxpu.mode = FXP_EDIT;
     } else {

@@ -77,9 +77,10 @@ static void cfx_knob_turn(int knob, int d)
     uint32_t e = cfx_sel();
     uint8_t *v = cs.fx.v[e];
     int k = knob - 1;
-    if (knob == 0)
+    if (knob == 0) {
         cs.fx.on = (uint8_t)(d > 0 ? cs.fx.on | (1u << e) : cs.fx.on & ~(1u << e));
-    else if (k == 0 && (e == CFX_FILTER || e == CFX_REVERB))
+        if (d > 0) cf_fx_bypass(0);              /* enabling an effect also leaves the browser's No FX state */
+    } else if (k == 0 && (e == CFX_FILTER || e == CFX_REVERB))
         v[0] = (uint8_t)clampi(v[0] + (d > 0 ? 1 : -1), 0, 2);
     else
         v[k] = (uint8_t)clampi(v[k] + d, 0, e == CFX_FILTER && k == 1 ? 99 : 100);
