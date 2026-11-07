@@ -17,7 +17,7 @@ static void controls(void)
     uint32_t patterns = cfs_fnv(&sq_st, sizeof sq_st), queue = cf_evq_w;
     CHECK(sizeof(cf_set_t) == 188 && sizeof(sq_ev_t) == 22 && sizeof cpg == 2);
     cu.scr = SCR_GLO; cu.page[SCR_GLO] = CF_GLO_HARMONY; ui_select(1);
-    CHECK(cu.page[SCR_GLO] == CF_GLO_PROGRESSIONS && screen_pages(SCR_GLO) == 9);
+    CHECK(cu.page[SCR_GLO] == CF_GLO_PROGRESSIONS && screen_pages(SCR_GLO) == CF_GLO_NPAGES);
     CHECK(cf_progression_current() == cf_progression_get(0));
     ui_knob_turn(1,1); CHECK(cpg.idea == 1);
     ui_knob_turn(0,CF_P_EMOTIONAL); CHECK(cpg.idea == 1);

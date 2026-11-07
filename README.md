@@ -56,6 +56,9 @@ hip-hop, house, garage and breaks, including 12 new grooves. Available in the de
 Signature, Space, Lo-fi, Motion and Punch, with recall/bypass controls and 16 optional user slots.
 Hardware validation is pending; they are not in the download above.
 
+**Variations (development source):** Open **GLO → Variation**, choose a context and amount,
+turn **K3** to generate, and **K4** to undo. [Controls and scope](docs/PHASE4-PLAN.md).
+
 ## Install this release
 
 1. Download **`coralflower-0.6-chase5.fwsc`** from the [GitHub release](https://github.com/chasedeanda/chaseflower-fm1/releases/tag/v0.6-chase5).

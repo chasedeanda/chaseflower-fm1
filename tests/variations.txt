@@ -1,0 +1,24 @@
+wait 8000
+btn ARP
+btn GLO
+turn SELECT 9
+wait 2200
+shot variation-arp
+turn K2 1
+turn K3 1
+wait 2200
+shot variation-generated
+turn K4 1
+wait 2200
+shot variation-undo
+turn K1 -1
+turn K3 1
+wait 2200
+shot variation-harmony
+turn K1 3
+turn K3 1
+wait 2200
+shot variation-fx
+btn SAVE
+wait 2200
+shot variation-existing-save
