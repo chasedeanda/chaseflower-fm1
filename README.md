@@ -44,7 +44,7 @@ the pending cue tells you what is queued.
 After the one-bar count-in, **play the chords yourself** over the selected groove: upper keys choose a chord
 type/modifier, lower keys play roots. REC switches off the automatic progression chords for this manual take.
 Press REC again to finish in whole bars, or let it finish at eight bars. Hold REC to cancel the new take.
-Stop playback and let the instrument go quiet briefly so the completed recording can save.
+Use **PLAY** to stop replay, then let the instrument go quiet briefly so the completed recording can save.
 
 Your newest take is **Recording 1**. Press **HOME**, then **SAVE** for **Songs**.
 SELECT highlights its **R** recording row; **SEL** opens it and **PLAY** replays it.
