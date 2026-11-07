@@ -44,8 +44,9 @@ static void cf_send_config(void)                 /* the chord settings -> the au
     cfc_shadow = cs.chord;
     cfh_shadow = ch;
     const cf_progression_t *source_p = cf_progression_get(cpa.on ? cpa.plan.idea : cpg.idea);
-    cfsrc_shadow = cpg.explored ? cf_progression_source(source_p) : 0;
+    cfsrc_shadow = cpg.explored && source_p && (cpa.on?cpa.plan.idea:cpg.idea)!=CF_P_DRAFT ? cf_progression_source(source_p) : 0;
     cfsrc_n = source_p && cfsrc_shadow ? source_p->n : 0;
+    if((cpa.on?cpa.plan.idea:cpg.idea)==CF_P_DRAFT){cfsrc_shadow=cfc.source;cfsrc_n=cfc.source_n;}
     cfp_cfg.glide_always = cs.glide_always;
     cfp_cfg.vel = cs.vel;
     cfp_cfg.bass_on = cs.bass_on;
@@ -138,11 +139,13 @@ static const char *const CF_LEGACY_NAME[]={"Recordings","Metronome","Drum grid"}
 
 static const cf_progression_t *cf_progression_current(void)
 {
+    if(cpg.idea==CF_P_DRAFT)cfd_view_update();
     cpg.idea = cf_progression_pick(cpg.idea, 0);
     return cf_progression_get(cpg.idea);
 }
 static void cf_progression_select(int d);
 static void cf_progression_choose(unsigned next);
+static void cfd_knob_info(int,cf_knob_t *);
 
 static void kfmt(char *b, uint32_t n, const char *s) { str_cpy(b, s, n); }
 static void kint(char *b, int v, const char *unit)
@@ -211,6 +214,7 @@ static void cpa_ui_record(void);
 #include "cf_dmui.c"                             /* (the drum machine's page, 0.6) */
 #include "cf_accomp_ui.c"
 #include "cf_browser_ui.c"
+#include "cf_draft_ui.c"
 #include "cf_variation.c"                         /* one-page variation and undo */
 
 /* SELECT on Progressions: apply the idea's setup, without touching sounds,
@@ -441,6 +445,7 @@ static void ui_knob_info(int k, cf_knob_t *o)
             }
         }
         break;
+    case SCR_PEDIT: cfd_knob_info(k,o); break;
     case SCR_ACC: cf_acc_knob_info(k,o); break;
     case SCR_SEQ: metro_knob_info(k, o); break;
     case SCR_DRUM: dm_knob_info(k, o); break;
@@ -711,6 +716,7 @@ static void ui_knob_turn(int k, int d)
         }
         cf_send_config();
         break;
+    case SCR_PEDIT: cfd_turn(k,d); break;
     case SCR_ACC: cf_acc_knob_turn(k,d); break;
     case SCR_SEQ: metro_knob_turn(k, d); break;
     case SCR_DRUM: dm_knob_turn(k, d); break;
@@ -845,6 +851,7 @@ static void ui_say(const char *a, const char *b)
 
 static uint32_t screen_pages(uint32_t scr)
 {
+    if (scr == SCR_PEDIT)return CFD_NTAB;
     if (scr == SCR_ACC)return CF_ACC_N;
     if (scr == SCR_GLO)
         return CF_GLO_NPAGES;
@@ -871,6 +878,7 @@ static void cv_turned(int d)
 
 static void ui_select(int d)                     /* SELECT: the bass sound, or a screen's page */
 {
+    if(cu.scr==SCR_PEDIT){if(cfwd.have&&!cfdu.conflict&&!cfdu.confirm)cfdu.focus=wrapi(cfdu.focus+d,cfwd.song.n);return;}
     if(cu.scr==SCR_ACC){cf_acc_select(d);return;}
     if(cpb_page()) { cf_progression_select(d); return; }
     if (cu.scr == SCR_HOME && home_view() == HV_FLOWER && cf_scene() == CF_SCENE_PROGRESSIONS) {
@@ -968,6 +976,7 @@ static void ui_presets(int d)                    /* PRESETS: the chord sound (a 
 }
 static void ui_algo(int d)                       /* ALGORITHM: scene, effect, or workspace tab */
 {
+    if(cu.scr==SCR_PEDIT){if(!cfdu.conflict&&!cfdu.confirm)cu.page[SCR_PEDIT]=wrapi(cu.page[SCR_PEDIT]+d,CFD_NTAB);return;}
     if(cu.scr==SCR_ACC){cu.page[SCR_ACC]=(uint8_t)wrapi(cu.page[SCR_ACC]+d,CF_ACC_N);cf_acc_focus=0;cf_acc_page_ms=cf_motion?(cu.now?cu.now:1u):0;return;}
     if (cu.scr == SCR_FX) {
         if (fxpu.mode) return;
@@ -1111,11 +1120,19 @@ static void ui_button(uint32_t b)
         cf_message("Reset cancelled");
         return;
     }
+    if(b==B_EDIT && (cu.scr==SCR_PEDIT || cu.scr==SCR_ACC || cpb_home())) {
+        if(cu.scr==SCR_PEDIT){ui_open(SCR_HOME);home_boot_main=1;}else cfd_open();return;
+    }
+    if(cu.scr==SCR_PEDIT && b==B_SCL){cfd_execute();return;}
+    if((cu.scr==SCR_PEDIT || (cpb_home()&&cpg.idea==CF_P_DRAFT)) && b==B_SAVE) {
+        cfd_ui_poll();if(!cfds.pending)cfd_changed();(void)cfd_checkpoint();cf_message(cfds.error?"Draft write failed":cfds.pending?"Draft checkpoint pending":"Draft checkpointed");return;
+    }
+    if(cu.scr==SCR_PEDIT && b==B_PLAY && !cpa.on && !sqk.on && cf_sn.sq_rec==255)cfd_select_source();
     if(cu.scr==SCR_GLO && cu.page[SCR_GLO]==CF_GLO_LEGACY && b==B_SCL) {
         static const uint8_t scr[]={SCR_SQ,SCR_SEQ,SCR_DRUM};ui_open(scr[cf_legacy_pick]);cu.pop=POP_NONE;return;
     }
     if(cu.scr==SCR_ACC && b==B_SCL){if(cf_acc_tab()==CF_ACC_GROOVE)cf_acc_restore();return;}
-    if (b == B_PLAY && (cu.scr==SCR_ACC || cpa_running() || cpa_commanded || cpb_page() || (cu.scr == SCR_HOME && cf_scene() == CF_SCENE_PROGRESSIONS && !sqk.on && !cf_sn.sq_on))) {
+    if (b == B_PLAY && (cu.scr==SCR_PEDIT || cu.scr==SCR_ACC || cpa_running() || cpa_commanded || cpb_page() || (cu.scr == SCR_HOME && cf_scene() == CF_SCENE_PROGRESSIONS && !sqk.on && !cf_sn.sq_on))) {
         cpa_ui_play(); return;
     }
     if (cu.scr == SCR_DRUM) {                    /* the rhythm machine: the SEQUENCER's grammar (the owner on rc3: "когда в
@@ -1834,7 +1851,7 @@ static void cf_leds(void)
 {
     uint8_t lit[FM1_NCOL] = {0}, mid[FM1_NCOL] = {0}, dim[FM1_NCOL] = {0}, faint[FM1_NCOL] = {0};
     static const uint8_t SCR_BTN[SCR_N] = {B_HOME, B_SCL, B_ENV, B_LFO, B_EDIT, B_GLO, B_FX, B_ARP, B_SEQ, B_SAVE,
-                                           B_SEQ, B_SEQ, B_SEQ, B_SEQ};
+                                           B_SEQ, B_SEQ, B_SEQ, B_SEQ, B_EDIT};
     const cf_chord_out_t *out = &cf_sn.out;
     uint32_t k, blink = (cu.now / 250u) & 1u, sq = sq_screen(cu.scr), rm = cu.scr == SCR_DRUM;
     uint16_t auto_notes = 0;
@@ -2081,6 +2098,7 @@ static void cf_ui_init(void)
     cpb_load();
     if (!cfs_loaded)                             /* (cf_splash read the settings record: they stay) */
         cs_defaults(&cs);
+    cfd_load();
     cvr_init();
     home_boot_main = !CF_SCENES;
     cf_home_bank = CF_HB_CORE; cf_home_bank_ms = 0;
@@ -2158,6 +2176,7 @@ static void cf_ui_frame(void)                    /* ui_leds: the snapshot, the p
     cf_diag_poll(now);
     cf_snapshot();
     cpa_ui_poll();
+    cfd_ui_poll();
     sq_tempo_poll();
     cf_feed_plant(dt);
     cf_leds();

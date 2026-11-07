@@ -1436,7 +1436,7 @@ static void view_library(int x)
 
 /* Explorer on HOME. Metadata never filters the list; the actual sounding chord
  * is independent of the selection, including sequencer playback and HOLD. */
-static uint8_t cf_progression_live(const cf_progression_t *p, int scale)
+static uint16_t cf_progression_live(const cf_progression_t *p, int scale)
 {
     const cf_chord_out_t *o = &cf_sn.out;
     if (o->sounding && o->n)
@@ -1464,7 +1464,7 @@ static void view_progressions(int x)
     if (!cf_harmony_supported(cfg.scale, cfg.quantize)) {
         cfg.scale = p->scale; cfg.quantize = CF_Q_BASIC;
     }
-    uint8_t active = cf_progression_live(p, cfg.scale);
+    uint16_t active = cf_progression_live(p, cfg.scale);
     name_update();
     fb_rect(0, Y_VIEW, FB_W, H_VIEW, FL_BG);
     cf_key_spell(cfg.tonic, cfg.scale, &spell);

@@ -28,7 +28,7 @@ int cf_song_valid(const cf_song_t *s)
 int cf_song_clone(cf_song_t *s,const cf_progression_t *p)
 {
     if(!s || !p || !p->n || p->n>CF_SONG_MAX)return 0;
-    cf_song_t next={0};unsigned n=0;while(n<CF_SONG_NAME && p->name[n]){next.name[n]=p->name[n];n++;}
+    cf_song_t next;memset(&next,0,sizeof next);unsigned n=0;while(n<CF_SONG_NAME && p->name[n]){next.name[n]=p->name[n];n++;}
     next.source_id=p->id;next.bpm=120;next.rhythm=65535;next.tonic=p->tonic;next.scale=p->scale;next.beats=p->beats;next.n=p->n;
     const cf_source_chord_t *src=cf_progression_source(p);
     for(unsigned i=0;i<next.n;i++) {
@@ -121,7 +121,7 @@ int cf_song_decode(cf_song_t *s,const uint8_t *p,unsigned size)
     if(!s || !p || size!=CF_SONG_WIRE || p[0]!='C' || p[1]!='S' || p[2]!='G' || p[3]!='1' || p[4]!=1 || p[5] ||
        csg_r16(p+6)!=size || csg_r32(p+size-4)!=csg_hash(p,size-4))return 0;
     for(unsigned i=46;i<52;i++)if(p[i])return 0;
-    cf_song_t next={0};memcpy(next.name,p+8,CF_SONG_NAME);next.source_id=csg_r16(p+32);next.bpm=csg_r16(p+34);next.rhythm=csg_r16(p+36);
+    cf_song_t next;memset(&next,0,sizeof next);memcpy(next.name,p+8,CF_SONG_NAME);next.source_id=csg_r16(p+32);next.bpm=csg_r16(p+34);next.rhythm=csg_r16(p+36);
     next.tonic=p[38];next.scale=p[39];next.beats=p[40];next.n=p[41];next.kit=p[42];next.swing=p[43];next.drums_only=p[44];next.repeat_off=p[45];
     if(!next.n || next.n>CF_SONG_MAX)return 0;
     for(unsigned i=0;i<CF_SONG_MAX;i++) {

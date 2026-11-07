@@ -1,0 +1,44 @@
+{
+  "kind": "Host HAL native C firmware captures; physical verification pending",
+  "sourceBase": "8aa00071222dbc1ee35bb0011e63ac0b2ce794d8",
+  "implementationRevision": "6628289acaa04728ea31214ff27b892caef4a3b3",
+  "designRevision": "845325136418dd038c7ef81eaca01ec64ac5e61e",
+  "nativeDimensions": [
+    240,
+    240
+  ],
+  "sourceSha256": {
+    "firmware/src/cf_accomp.c": "33b6de23b4544faed5989117cdea046a9aab73009ac192919cd0317513cc46d8",
+    "firmware/src/cf_accomp_ui.c": "8e6744c2b5ba5ee904af45894be700d9124b86ac887692e38c66fd287e017453",
+    "firmware/src/cf_acc_ui.c": "eddfdcc14a22b31606b42d6c1d3e9edcaf9986df719ba344946d219554ef8a88",
+    "firmware/src/cf_draft_ui.c": "831af6f82184064e25f9c5ec24dea11b0d16a43e3bcaf27f2ab2b47bf530208e",
+    "firmware/src/cf_draft_screen.c": "739ff8f13a5133b52e71853f9f74c12859233a306355a922ae051ec7effd94c8",
+    "firmware/src/cf_draft_store.c": "30b26c15e40c094b3350fc21dd0eb9c2aaea4e2bde27f1c490f5c4c2234243f0",
+    "firmware/src/cf_song.c": "09614667e0410e29c535fc745ed8862401de43fef9ae7a7824f0aba03c17fd43",
+    "firmware/src/cf_song.h": "2467e7e40a9a333ba05243d6756b4503119b55b34460de11a8a30f36c455946c",
+    "firmware/src/cf_out.c": "642157a0a8614927df996f62ba0fadde146d656e8faa9d06763f7271e0d0b4ae",
+    "firmware/src/cf_progression.c": "4750363fc2ef9e7363710ed3d88312ac2714eabb3083929ad04ec24928213ad1",
+    "firmware/src/cf_progression.h": "f1418c032b9b00735e8d9d2992d6d9f809fd8cff58501a3be540ae4c71840080",
+    "firmware/src/cf_stage.c": "aee2d5c4ae4094b09d9e96a4000f742d05ec3605c39d57642503700b47c8450e",
+    "firmware/src/cf_state.h": "21aca534fdc15ed94e05de3b8c642a104619a0a1cab6d41d9562053f718c0236",
+    "firmware/src/cf_ui.c": "182cf848e0558da12a70460ac734ada58b84abc4b04f09f1d9d9a1e2a74465af",
+    "firmware/src/storage.c": "e93352b9b87f4dc7e57d63de4ad2b4bf4686d8ddd4a9a9e1548762010238a0c8",
+    "firmware/src/cf_backup.c": "b897a48fdb114bf9637a5dd2c7dd72a9bcba7510f4d993972af3ec741063268f",
+    "firmware/hal/fm1_flash_ranges.h": "6f0e3bd364bed90f7dade69dd0a9a53a1f40764d2db94f455c275d1147b5346d",
+    "firmware/src/cf_sequi.c": "da1d1d423dfc2024f3e3b0f81d5c521e129cbddde1501e8f62b54e052f307933"
+  },
+  "imagesSha256": {
+    "bass.png": "3ac9f46fc218d91963517a5a8c22b0b190fd633c70ee2d8bbc19c5d0bd037aed",
+    "checkpoint.png": "a6747133671ec8c13d8174a131739ec6ef63386b9804d80a1f6bd3db16cdb7e6",
+    "chord-edited.png": "1c5f0b2d8dea61a17d086ce5fb8338b2bd9e15a4b57bcd82bcf2121e046ad889",
+    "chord.png": "98bee64074e992bb6b46419b93e9f61eb27d69137d28913328e33b8884508689",
+    "count-in.png": "b35b1a9eb4b4a467d832fe453f9c2519f3f24109bbabee6e3fd6c3a6d185d39b",
+    "draft-home.png": "b00cb2ac58babbe52bef38615365662bb0fc43d76d83c505d70c80e7df7398e7",
+    "editor-playing.png": "9a22572b37548a40f13ffd4c973cee8d01f39e33be974d6e2d6dc3618caa7f1c",
+    "phrase.png": "3cf855f869bfc646715ff6018faf2255e1004e502eaa979fa0067a74cd078cf2",
+    "recording-cancelled.png": "2153bb9b1b96b096491e2d7e0171718a0a5fa3cfd37ad5f71a53e8a688811a8a",
+    "recording.png": "c502662264b5c4124b9cf0214357fb51c03cd20077fc2a5e6762da1e7e438ee2",
+    "timing.png": "8e22287c7ca34bceed9d6174e0fa71cc7d3d2250998a4b2cce55fcf49f3750a1",
+    "voicing.png": "6f885a57dd2b66c54489679ca5fa99f1e49d1fa5b75034d9d3f775c3bfb203ee"
+  }
+}

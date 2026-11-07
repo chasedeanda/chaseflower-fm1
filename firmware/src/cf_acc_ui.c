@@ -88,7 +88,9 @@ static void cf_acc_pending(char *name,unsigned nn,char *setup,unsigned ns)
     str_cpy(setup+str_len(setup),b,ns-str_len(setup));
     str_cpy(setup+str_len(setup),cpa_rhythm_name(cf_sn.ac_next_rhythm),ns-str_len(setup));
     if(cf_sn.ac_next==CF_P_NONE) {
-        str_cpy(name,"Next bar: ",nn);str_cpy(name+10,cf_sn.ac_next_mode==CPA_DRUMS?"Drums":"Chords+Drums",nn-10);
+        unsigned chord=cf_sn.ac_edits&(CPA_NOTES|CPA_PHRASE);
+        const char *prefix=chord?((cf_sn.ac_edits&CPA_GROOVE)?"Chord next / bar: ":"Next chord: "):"Next bar: ";unsigned at=str_len(prefix);
+        str_cpy(name,prefix,nn);str_cpy(name+at,cf_sn.ac_next_mode==CPA_DRUMS?"Drums":"Chords+Drums",nn-at);
         str_cpy(name+str_len(name),cf_sn.ac_next_repeat_off?" / once":" / loop",nn-str_len(name));
         if(cf_sn.ac_next_rhythm<DM_N) {
             str_cpy(setup+str_len(setup)," / ",ns-str_len(setup));

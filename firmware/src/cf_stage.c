@@ -81,7 +81,7 @@ static void cf_stage_model(cf_stage_model_t *m)
     }
     str_cpy(m->notes,cf_stage_notes,sizeof m->notes);
     const cf_progression_t *p=cf_progression_current();
-    str_cpy(m->idea,p->name,sizeof m->idea);str_cpy(m->sound,cf_snd[0].name,sizeof m->sound);
+    if(cpg.idea==CF_P_DRAFT){str_cpy(m->idea,"Draft: ",sizeof m->idea);str_cpy(m->idea+7,p->name,sizeof m->idea-7);}else str_cpy(m->idea,p->name,sizeof m->idea);str_cpy(m->sound,cf_snd[0].name,sizeof m->sound);
     char b[16],key[4];cf_pc_name(cs.chord.tonic,&cu_spell,key);
     str_cpy(m->context,key,sizeof m->context);str_cpy(m->context+str_len(m->context)," ",sizeof m->context-str_len(m->context));
     str_cpy(m->context+str_len(m->context),cf_progression_mode(cs.chord.scale),sizeof m->context-str_len(m->context));
@@ -96,7 +96,7 @@ static void cf_stage_model(cf_stage_model_t *m)
         str_cpy(m->status,plaque==DMP_RECIN?"COUNT IN":"REC",sizeof m->status);
     } else m->pending[0]=0;
     if(!m->rec)cf_acc_pending(m->pending,sizeof m->pending,m->next_setup,sizeof m->next_setup);
-    m->total=p->n;m->slot=cf_sn.ac_on?cf_sn.ac_slot:255;
+    m->total=p->n;m->slot=cf_sn.ac_on && !(cf_sn.ac_waiting&&!cf_sn.ac_paused)?cf_sn.ac_slot:255;
     m->first=m->slot<p->n?(m->slot/4)*4:0;m->count=p->n-m->first;if(m->count>4)m->count=4;
     for(unsigned i=0;i<m->count;i++) {
         unsigned at=m->first+i;int root=cf_progression_root(p,at,cs.chord.scale,cs.chord.tonic);

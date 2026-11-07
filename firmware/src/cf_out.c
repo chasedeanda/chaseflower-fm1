@@ -692,7 +692,9 @@ static void cf_audio_block(uint32_t n)
 
 /* ---------------------------------------------------- what the UI reads --- */
 typedef struct {
-    uint32_t ac_revision;
+    uint32_t ac_revision,ac_mask[CF_P_MAX];
+    uint8_t ac_n,ac_root[CF_P_MAX],ac_degree[CF_P_MAX];
+    int8_t ac_bass_pc[CF_P_MAX];
     uint8_t ac_waiting, ac_lost;
     uint8_t ac_kit, ac_swing, ac_repeat_off, ac_next_beats, ac_next_mode, ac_next_kit, ac_next_swing, ac_next_repeat_off;
     uint8_t ac_on, ac_paused, ac_slot, ac_idea, ac_tonic, ac_scale, ac_beats, ac_rhythm, ac_mode, ac_next, ac_edits, ac_next_tonic, ac_next_scale, ac_next_rhythm;
@@ -731,7 +733,11 @@ static void cf_snapshot(void)
 {
     uint32_t i;
     fm1_irq_off();
-    cf_sn.ac_revision = cpa.revision;
+    cf_sn.ac_revision = cpa.revision;cf_sn.ac_n=cpa.plan.n;
+    for(unsigned i=0;i<CF_P_MAX;i++) {
+        cf_sn.ac_mask[i]=cpa.plan.slot[i].mask;cf_sn.ac_root[i]=cpa.plan.slot[i].root;
+        cf_sn.ac_degree[i]=cpa.plan.degree[i];cf_sn.ac_bass_pc[i]=cpa.plan.slot[i].bass_pc;
+    }
     cf_sn.ac_waiting=cpa.clock_wait;cf_sn.ac_lost=cpa.clock_lost;
     cf_sn.ac_kit = cpa.plan.kit; cf_sn.ac_swing = cpa.plan.swing; cf_sn.ac_repeat_off=cpa.plan.repeat_off;
     cf_sn.ac_on = cpa.on; cf_sn.ac_paused = cpa.paused; cf_sn.ac_slot = cpa.slot;

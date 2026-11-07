@@ -1,0 +1,43 @@
+turn SELECT 9
+btn EDIT
+shot chord
+turn SELECT 2
+turn K1 1
+turn K2 2
+turn K3 2
+shot chord-edited
+turn ALGORITHM 1
+turn K1 1
+turn K2 -12
+turn K3 -25
+shot timing
+turn ALGORITHM 1
+turn K1 2
+turn K2 1
+shot voicing
+turn ALGORITHM 1
+turn K1 1
+shot bass
+turn ALGORITHM 1
+turn K1 1
+btn SEL
+shot phrase
+btn PLAY
+wait 500
+shot editor-playing
+btn HOME
+shot draft-home
+btn PLAY
+wait 8000
+btn EDIT
+shot checkpoint
+btn REC
+wait 80
+shot count-in
+wait 2500
+shot recording
+hold REC down
+wait 1200
+hold REC up
+wait 100
+shot recording-cancelled

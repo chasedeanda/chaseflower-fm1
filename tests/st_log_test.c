@@ -103,6 +103,11 @@ static int fails, checks;
 static const uint32_t OBJ[NOBJ] = {OBJ_CFTAKE0, OBJ_CFTAKE0+1u, OBJ_CFTAKE2, OBJ_CFRECPREF};
 static const uint32_t LEN[NOBJ] = {2556u,2556u,2556u,12u};
 static uint8_t model[NOBJ][ST_TEST_MAX];
+#elif defined(ST_DRAFT)
+#define NOBJ 2
+static const uint32_t OBJ[NOBJ]={OBJ_CFDRAFT,OBJ_PROJECT0+3u};
+static const uint32_t LEN[NOBJ]={344u,200u};
+static uint8_t model[NOBJ][ST_TEST_MAX];
 #else
 #ifdef ST_OLD
 #define NOBJ 3
