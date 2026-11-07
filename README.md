@@ -2,11 +2,11 @@
 
 Chase's personal firmware for the **M-VAVE FM-1**, built on [CoralFlower](https://github.com/FicusFicusov/CoralFlower).
 
-**Release 0.6-chase4** combines the swimming bass and bonfire visuals, bass-jump boot screen and Diagnostics
-dashboard with the ambient/lo-fi sound banks, sequencer and six-channel USB recording.
+**Release 0.6-chase5** adds Auto Harmony and smart chord modifiers to the swimming bass and bonfire visuals,
+bass-jump boot screen, Diagnostics dashboard, ambient/lo-fi sound banks, sequencer and six-channel USB recording.
 
-**[Download the firmware (.fwsc)](https://github.com/chasedeanda/chaseflower-fm1/releases/download/v0.6-chase4/coralflower-0.6-chase4.fwsc)** ·
-[Release notes](docs/releases/0.6-chase4.md) · [All releases](https://github.com/chasedeanda/chaseflower-fm1/releases)
+**[Download the firmware (.fwsc)](https://github.com/chasedeanda/chaseflower-fm1/releases/download/v0.6-chase5/coralflower-0.6-chase5.fwsc)** ·
+[Release notes](docs/releases/0.6-chase5.md) · [All releases](https://github.com/chasedeanda/chaseflower-fm1/releases)
 
 <p align="center"><img src="docs/images/chase-bass.gif" width="480" alt="Chase FM-1 HOME: a swimming bass with body motion and a small school of baitfish"></p>
 
@@ -42,25 +42,25 @@ instrument's intro runs for 2.4 seconds and any input skips it.
 [Scenes and controls](docs/VISUALS.md) · [Sound banks and 6/8](docs/CHASE3.md) ·
 [Diagnostics](docs/DIAGNOSTICS.md) · [USB recording](docs/USB-AUDIO.md)
 
-**Next build:** [Auto harmony and smart modifiers](docs/AUTO-HARMONY.md) are available in source via
-**GLO → Harmony**. They are not included in the existing 0.6-chase4 download above.
+**Auto Harmony:** Open **GLO → Harmony** and turn **K1 to Auto** to enable
+[scale-aware chords and smart modifiers](docs/AUTO-HARMONY.md). Manual remains the default.
 
 ## Install this release
 
-1. Download **`coralflower-0.6-chase4.fwsc`** from the [GitHub release](https://github.com/chasedeanda/chaseflower-fm1/releases/tag/v0.6-chase4).
+1. Download **`coralflower-0.6-chase5.fwsc`** from the [GitHub release](https://github.com/chasedeanda/chaseflower-fm1/releases/tag/v0.6-chase5).
    This is the installable file; the separate app `.bin` and GitHub source archives are not installer packages.
 2. Save a current backup of your sounds, settings and patterns. The installer can back up compatible CoralFlower,
    ChoralRoot and Felucca data. Keep the backup somewhere safe.
 3. Open the [upstream installer's custom-build section](https://ficusficusov.github.io/CoralFlower/#own) in Chrome
    or Edge on a computer. Connect the FM-1 directly with a data-capable USB cable.
 4. Expand **Another version, or a build of your own**, click **Choose a .fwsc file**, and select your download.
-   Check that **`coralflower-0.6-chase4.fwsc`** is selected before pressing Install. The installer's default is
+   Check that **`coralflower-0.6-chase5.fwsc`** is selected before pressing Install. The installer's default is
    upstream CoralFlower, so select this custom file first.
 5. Install from that custom-build section and keep the cable connected and page open until the restart.
-6. Confirm the **Chase FM-1** bass-jump startup and **`CoralFlower 0.6-chase4`** in INFO. The INFO family, package
+6. Confirm the **Chase FM-1** bass-jump startup and **`CoralFlower 0.6-chase5`** in INFO. The INFO family, package
    identity `FM-1_930` and USB names remain compatible with the existing installer and recording setup.
 
-The release includes checksums and licence files. See [release notes](docs/releases/0.6-chase4.md) for validation
+The release includes checksums and licence files. See [release notes](docs/releases/0.6-chase5.md) for validation
 and recovery details. Host and firmware-build checks pass; the combined release's hardware appearance and timing
 still need to be checked on the FM-1.
 
@@ -70,6 +70,7 @@ Generate headers with Python 3, Pillow 11.1.0 and fontTools 4.66.1, then run the
 
 ```sh
 python3 tools/build.py --gen-only
+sh tools/test_auto.sh
 sh tools/test_visuals.sh
 sh tools/test_diagnostics.sh
 sh tools/test_chase3.sh
@@ -79,7 +80,7 @@ sh tools/test_usb.sh
 Build with the JieLi Linux x86-64 toolchain (Docker on Apple Silicon):
 
 ```sh
-./build.sh --release 0.6-chase4
+./build.sh --release 0.6-chase5
 ```
 
 See [Mac build setup](docs/CHASEFLOWER.md#build-on-an-apple-silicon-mac) for the toolchain and Python environment.
