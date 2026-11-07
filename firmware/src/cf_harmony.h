@@ -18,6 +18,15 @@ typedef struct {
     int8_t inv[CF_H_SLOTS];
     uint8_t bass[CF_H_SLOTS];
 } cf_harmony_t;
+/* A source chord keeps its actual quality/colors, chromatic alteration and
+ * root-relative slash bass. This is factory data, never a saved-record field. */
+typedef struct {
+    uint32_t mask;
+    int8_t degree, alter, bass; /* bass=-1 means root position */
+} cf_source_chord_t;
+uint32_t cf_harmony_apply(const cf_harmony_t *h, uint32_t base,
+                         uint16_t slots, const uint32_t stamp[CF_H_SLOTS],
+                         uint16_t *used, uint16_t *conflict);
 void cf_harmony_defaults(cf_harmony_t *h);
 void cf_harmony_sanitize(cf_harmony_t *h);
 int cf_harmony_supported(int scale, int quantize);

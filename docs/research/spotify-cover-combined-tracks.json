@@ -15,25 +15,27 @@
   "spotify_identity_enrichment": "Positions 1–100 matched to the previously extracted public embed at the same position, title and full artist credits; all 100 matched. Remaining positions have no assigned Spotify URI.",
   "excluded_artists": [
     "Dance Gavin Dance",
-    "Dwellings"
+    "Dwellings",
+    "mgk",
+    "Machine Gun Kelly"
   ],
   "counting_policy": {
     "duplicate_weight": "Occurrence count is the number of matching rows in the supplied combined playlist. It is a preference signal requested by the user, not a listening playcount or proof of the number of distinct years.",
     "grouping": "Casefold-exact song title plus full displayed artist-credit string. No fuzzy matching, punctuation normalization, credit reordering or cross-version merging. Live, acoustic, remix and differently credited versions remain separate whenever their displayed titles or credits differ.",
     "position_meaning": "rank in tracks means the original row position in the combined playlist, not an overall listening rank.",
     "sorting": "Descending occurrence count; earliest playlist position is only a deterministic tie-breaker. Equal counts carry equal repeat weight.",
-    "exclusions": "Any row crediting Dance Gavin Dance or Dwellings remains in the complete raw occurrence list and is omitted from the eligible preference ranking.",
+    "exclusions": "Exclude every credited appearance by Dance Gavin Dance, Dwellings, mgk or Machine Gun Kelly, including features; retain all rows in the source audit.",
     "identity_limits": "Only positions 1–100 have Spotify URIs checked against public embed data. No URI is invented or copied to other positions. Grouping by displayed title and credits does not prove that all grouped rows share one Spotify recording URI.",
     "artist_counts": "Artist tables group the complete displayed artist-credit string, without splitting collaborations into individual artists. They count playlist occurrences, not plays."
   },
   "summary": {
     "declared_playlist_items": 601,
     "extracted_occurrences": 601,
-    "excluded_occurrences": 11,
-    "eligible_occurrences": 590,
+    "excluded_occurrences": 20,
+    "eligible_occurrences": 581,
     "all_casefold_exact_song_credit_groups": 514,
-    "eligible_casefold_exact_song_credit_groups": 503,
-    "excluded_casefold_exact_song_credit_groups": 11,
+    "eligible_casefold_exact_song_credit_groups": 495,
+    "excluded_casefold_exact_song_credit_groups": 19,
     "occurrences_with_verified_spotify_uri": 100,
     "complete": true
   },
@@ -132,8 +134,10 @@
       "rank": 10,
       "title": "my ex's best friend (with blackbear)",
       "artists": "mgk, blackbear",
-      "excluded": false,
-      "excluded_artist_matches": [],
+      "excluded": true,
+      "excluded_artist_matches": [
+        "mgk"
+      ],
       "spotify_uri": "spotify:track:70rFIfYN7lU6iTgUIVP42w",
       "spotify_url": "https://open.spotify.com/track/70rFIfYN7lU6iTgUIVP42w",
       "spotify_identity_source": "Public embed, matched at this playlist position by casefold-exact title and full displayed artist credits"
@@ -172,8 +176,10 @@
       "rank": 14,
       "title": "bloody valentine",
       "artists": "mgk",
-      "excluded": false,
-      "excluded_artist_matches": [],
+      "excluded": true,
+      "excluded_artist_matches": [
+        "mgk"
+      ],
       "spotify_uri": "spotify:track:1bWEngw5tAF7vWByrf5Oy5",
       "spotify_url": "https://open.spotify.com/track/1bWEngw5tAF7vWByrf5Oy5",
       "spotify_identity_source": "Public embed, matched at this playlist position by casefold-exact title and full displayed artist credits"
@@ -212,8 +218,10 @@
       "rank": 18,
       "title": "Candy (feat. Trippie Redd)",
       "artists": "mgk, Trippie Redd",
-      "excluded": false,
-      "excluded_artist_matches": [],
+      "excluded": true,
+      "excluded_artist_matches": [
+        "mgk"
+      ],
       "spotify_uri": "spotify:track:37AGgp9VP8TVJBfEat74Bj",
       "spotify_url": "https://open.spotify.com/track/37AGgp9VP8TVJBfEat74Bj",
       "spotify_identity_source": "Public embed, matched at this playlist position by casefold-exact title and full displayed artist credits"
@@ -272,8 +280,10 @@
       "rank": 24,
       "title": "I Think I'm OKAY (with YUNGBLUD & Travis Barker)",
       "artists": "mgk, YUNGBLUD, Travis Barker",
-      "excluded": false,
-      "excluded_artist_matches": [],
+      "excluded": true,
+      "excluded_artist_matches": [
+        "mgk"
+      ],
       "spotify_uri": "spotify:track:2gTdDMpNxIRFSiu7HutMCg",
       "spotify_url": "https://open.spotify.com/track/2gTdDMpNxIRFSiu7HutMCg",
       "spotify_identity_source": "Public embed, matched at this playlist position by casefold-exact title and full displayed artist credits"
@@ -332,8 +342,10 @@
       "rank": 30,
       "title": "Sick and Tired (ft. Machine Gun Kelly and Travis Barker)",
       "artists": "iann dior, mgk, Travis Barker",
-      "excluded": false,
-      "excluded_artist_matches": [],
+      "excluded": true,
+      "excluded_artist_matches": [
+        "mgk"
+      ],
       "spotify_uri": "spotify:track:0DILU9jjSTnCv1dcbUH3ib",
       "spotify_url": "https://open.spotify.com/track/0DILU9jjSTnCv1dcbUH3ib",
       "spotify_identity_source": "Public embed, matched at this playlist position by casefold-exact title and full displayed artist credits"
@@ -412,8 +424,10 @@
       "rank": 38,
       "title": "concert for aliens",
       "artists": "mgk",
-      "excluded": false,
-      "excluded_artist_matches": [],
+      "excluded": true,
+      "excluded_artist_matches": [
+        "mgk"
+      ],
       "spotify_uri": "spotify:track:6z7oVGcpVDRTxurZIJIkrV",
       "spotify_url": "https://open.spotify.com/track/6z7oVGcpVDRTxurZIJIkrV",
       "spotify_identity_source": "Public embed, matched at this playlist position by casefold-exact title and full displayed artist credits"
@@ -1077,8 +1091,10 @@
       "rank": 106,
       "title": "love race (feat. Kellin Quinn)",
       "artists": "mgk, Kellin Quinn",
-      "excluded": false,
-      "excluded_artist_matches": []
+      "excluded": true,
+      "excluded_artist_matches": [
+        "mgk"
+      ]
     },
     {
       "rank": 107,
@@ -1161,8 +1177,10 @@
       "rank": 118,
       "title": "forget me too (feat. Halsey)",
       "artists": "mgk, Halsey",
-      "excluded": false,
-      "excluded_artist_matches": []
+      "excluded": true,
+      "excluded_artist_matches": [
+        "mgk"
+      ]
     },
     {
       "rank": 119,
@@ -1322,8 +1340,10 @@
       "rank": 141,
       "title": "Sick and Tired (ft. Machine Gun Kelly and Travis Barker)",
       "artists": "iann dior, mgk, Travis Barker",
-      "excluded": false,
-      "excluded_artist_matches": []
+      "excluded": true,
+      "excluded_artist_matches": [
+        "mgk"
+      ]
     },
     {
       "rank": 142,
@@ -5092,7 +5112,7 @@
         30,
         141
       ],
-      "excluded": false,
+      "excluded": true,
       "observed_title_spellings": [
         "Sick and Tired (ft. Machine Gun Kelly and Travis Barker)"
       ],
@@ -6181,7 +6201,7 @@
       "playlist_positions": [
         10
       ],
-      "excluded": false,
+      "excluded": true,
       "observed_title_spellings": [
         "my ex's best friend (with blackbear)"
       ],
@@ -6259,7 +6279,7 @@
       "playlist_positions": [
         14
       ],
-      "excluded": false,
+      "excluded": true,
       "observed_title_spellings": [
         "bloody valentine"
       ],
@@ -6337,7 +6357,7 @@
       "playlist_positions": [
         18
       ],
-      "excluded": false,
+      "excluded": true,
       "observed_title_spellings": [
         "Candy (feat. Trippie Redd)"
       ],
@@ -6493,7 +6513,7 @@
       "playlist_positions": [
         24
       ],
-      "excluded": false,
+      "excluded": true,
       "observed_title_spellings": [
         "I Think I'm OKAY (with YUNGBLUD & Travis Barker)"
       ],
@@ -6779,7 +6799,7 @@
       "playlist_positions": [
         38
       ],
-      "excluded": false,
+      "excluded": true,
       "observed_title_spellings": [
         "concert for aliens"
       ],
@@ -8367,7 +8387,7 @@
       "playlist_positions": [
         106
       ],
-      "excluded": false,
+      "excluded": true,
       "observed_title_spellings": [
         "love race (feat. Kellin Quinn)"
       ],
@@ -8567,7 +8587,7 @@
       "playlist_positions": [
         118
       ],
-      "excluded": false,
+      "excluded": true,
       "observed_title_spellings": [
         "forget me too (feat. Halsey)"
       ],

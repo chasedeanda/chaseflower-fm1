@@ -45,6 +45,13 @@ static int cpa_valid(const cpa_plan_t *p)
     }
     return 1;
 }
+/* A queued UI config follows the committed song at a bar boundary. */
+static void cpa_overlay_source(void)
+{
+    if (!cpa.on) return;
+    const cf_progression_t *p = cf_progression_get(cpa.plan.idea);
+    cfc.source = cf_progression_source(p); cfc.source_n = cfc.source ? p->n : 0;
+}
 static void cpa_overlay_cfg(cf_chord_cfg_t *cfg)
 {
     if (!cpa.on) return;
@@ -103,6 +110,7 @@ static void cpa_commit(void)
 {
     cfm.beats = sq_beats = cpa.plan.beats;
     cf_chord_cfg_t cfg = cfc.cfg;
+    cpa_overlay_source();
     cpa_overlay_cfg(&cfg); cf_chord_config(&cfc, &cfg); cfp_sync(1);
     cpa.revision++;
 }

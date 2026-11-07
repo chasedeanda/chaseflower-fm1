@@ -60,30 +60,27 @@ static uint32_t cfh_add(uint32_t mask, int mod, int seventh)
     if (mod == CF_MOD_ADD4) mask |= 1u << 5;
     return mask;
 }
-uint32_t cf_harmony_mask(const cf_harmony_t *h, int scale, int tonic, int root,
+uint32_t cf_harmony_apply(const cf_harmony_t *h, uint32_t base,
                          uint16_t slots, const uint32_t stamp[CF_H_SLOTS],
                          uint16_t *used, uint16_t *conflict)
 {
-    int q = -1, sus = -1, idx, seventh;
+    int q = -1, sus = -1, seventh;
     uint32_t m;
     *used = *conflict = 0;
-    if (!cf_harmony_supported(scale, 1)) return 1u;
-    idx = cf_scale_index(scale, root - tonic);
-    if (idx < 0) return 1u;
     for (int i = 0; i < CF_H_SLOTS; i++) if ((slots >> i) & 1u) {
         int mod = h->slot[i];
         if (cfh_quality(mod) && (q < 0 || (int32_t)(stamp[i] - stamp[q]) >= 0)) q = i;
         if ((mod == CF_MOD_SUS2 || mod == CF_MOD_SUS4) &&
             (sus < 0 || (int32_t)(stamp[i] - stamp[sus]) >= 0)) sus = i;
     }
-    m = 1u | (1u << (cfh_minor(scale, idx) ? 3 : 4)) | (1u << 7);
+    m = base;
     if (q >= 0) {
         static const uint8_t types[] = {CF_T_MAJ, CF_T_MIN, CF_T_DIM, CF_T_AUG, CF_T_POWER};
         cf_form_t f = {types[h->slot[q] - CF_MOD_MAJ], 0, 0, 0};
         m = cf_form_mask(&f);
     }
     /* Choose the seventh before a suspension removes the third. */
-    seventh = (m & (1u << 4)) ? 11 : 10;
+    seventh = (m & (1u << 10)) ? 10 : (m & (1u << 11)) ? 11 : (m & (1u << 4)) ? 11 : 10;
     if (sus >= 0) {
         m &= ~((1u << 3) | (1u << 4));
         m |= 1u << (h->slot[sus] == CF_MOD_SUS2 ? 2 : 5);
@@ -100,6 +97,17 @@ uint32_t cf_harmony_mask(const cf_harmony_t *h, int scale, int tonic, int root,
     }
     return cf_harmony_limit(m, 6);
 }
+uint32_t cf_harmony_mask(const cf_harmony_t *h, int scale, int tonic, int root,
+                         uint16_t slots, const uint32_t stamp[CF_H_SLOTS],
+                         uint16_t *used, uint16_t *conflict)
+{
+    int idx = cf_scale_index(scale, root - tonic);
+    *used = *conflict = 0;
+    if (!cf_harmony_supported(scale, 1) || idx < 0) return 1u;
+    uint32_t base = 1u | (1u << (cfh_minor(scale, idx) ? 3 : 4)) | (1u << 7);
+    return cf_harmony_apply(h, base, slots, stamp, used, conflict);
+}
+
 void cf_harmony_numeral(int scale, int tonic, int root, char out[8])
 {
     int idx = cf_scale_index(scale, root - tonic), i, minor;

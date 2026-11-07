@@ -22,8 +22,10 @@ static void setup(unsigned idea, unsigned rhythm)
     cs.chord.quantize = CF_Q_BASIC; cs.bpm = 120; cs.clock_in = 0; cs.bass_on = 1;
     cf_send_config(); cf_send_metro(); flush();
 }
+static void source_harmony(void);
 static void catalogue(void)
 {
+    source_harmony();
     static const unsigned modes[] = {CF_SC_MAJOR,CF_SC_MINOR,CF_SC_DORIAN,CF_SC_PHRYGIAN,
                                     CF_SC_LYDIAN,CF_SC_MIXOLYDIAN,CF_SC_LOCRIAN};
     cpa_plan_t plan;
@@ -33,10 +35,10 @@ static void catalogue(void)
             cf_chord_cfg_t cfg=cs.chord; cfg.scale=modes[m]; cfg.tonic=t;
             CHECK(cpa_prepare(&plan,i,cfg,CPA_OFF,CPA_BOTH));
             for (unsigned s=0;s<plan.n;s++) {
-                CHECK(plan.slot[s].root%12==(t+cf_scale_step(modes[m],plan.degree[s]))%12);
-                CHECK(plan.slot[s].n>=3 && plan.nb==1);
-                CHECK((plan.slot[s].mask&(1u<<7)) &&
-                      !!(plan.slot[s].mask&(1u<<3)) != !!(plan.slot[s].mask&(1u<<4)));
+                CHECK(plan.slot[s].root%12==cf_progression_root(cf_progression_get(i),s,modes[m],t));
+                CHECK(plan.slot[s].n>=(cf_progression_source(cf_progression_get(i))?2:3) && plan.nb==1);
+                CHECK((cf_progression_source(cf_progression_get(i)) || (plan.slot[s].mask&(1u<<7))) &&
+                      (cf_progression_source(cf_progression_get(i)) || !!(plan.slot[s].mask&(1u<<3)) != !!(plan.slot[s].mask&(1u<<4))));
             }
         }
         ui_button(B_PLAY); flush(); CHECK(cpa.on && !sqp.on && !dmp.on && sqp.dn);
@@ -55,6 +57,113 @@ static void catalogue(void)
     CHECK(sizeof(cf_set_t)==188 && sizeof(sq_ev_t)==22 && sizeof(cf_harmony_t)==38);
     CHECK(sizeof(cpa_plan_t)<=152);
     plan.n=0; CHECK(!cpa_valid(&plan));
+}
+/* Independently specified source chords, exercised through both actual note
+ * owners. In particular a dominant G7 must not become Gmaj7, and F# half-dim
+ * must not acquire the generic Auto engine's perfect fifth. */
+static void source_harmony(void)
+{
+    enum { MAJ=0x91, MIN=0x89, MAJ7=0x891, MIN7=0x489, DOM7=0x491,
+           MIN9=0x4489, DOM13=0x204491, MAJ9=0x4891,
+           HALF_DIM=0x449, SUS7=0x4a1, MIN6=0x289, POWER=0x81 };
+    static const struct { unsigned id,n; uint8_t root[8]; uint32_t mask[8]; } expected[]={
+        {20,4,{11,11,6,4},{MAJ,MAJ,MIN6,MAJ7}},
+        {55,4,{5,5,2,2},{POWER,POWER,POWER,POWER}},
+        {56,3,{11,6,4},{MAJ,MIN6,MAJ7}},
+        {101,4,{7,2,4,2},{MAJ7,MAJ,MIN,MAJ}},
+        {110,4,{2,7,0,5},{MIN7,DOM7,MAJ7,MAJ7}},
+        {111,4,{2,0,4,2},{MIN7,MAJ7,MIN7,MIN7}},
+        {113,4,{10,5,10,5},{MAJ7,MAJ7,MAJ7,MAJ7}},
+        {114,7,{0,4,5,6,7,7,7},{MAJ,MIN7,MAJ7,HALF_DIM,DOM7,SUS7,DOM7}},
+        {118,4,{4,9,2,7},{MIN9,DOM13,MAJ9,MAJ7}},
+        {123,3,{5,4,2},{MAJ7,MIN7,MIN7}},
+        {125,4,{7,9,7,9},{MIN7,MIN7,MIN7,MIN7}},
+    };
+    for(unsigned e=0;e<sizeof expected/sizeof expected[0];e++) {
+        unsigned idea=0;
+        while(idea<cf_progression_count() && cf_progression_get(idea)->id!=expected[e].id)idea++;
+        CHECK(idea<cf_progression_count()); if(idea>=cf_progression_count())continue;
+        const cf_progression_t *p=cf_progression_get(idea);
+        CHECK(p->n==expected[e].n);
+        for(unsigned trans=0;trans<12;trans++) {
+            cf_harmony_defaults(&ch); ch.mode=CF_H_AUTO; cpg.explored=1;
+            setup(idea,CPA_OFF);
+            cs.chord.tonic=(p->tonic+trans)%12; cf_send_config(); flush();
+            for(unsigned i=0;i<p->n;i++) {
+                unsigned root=(expected[e].root[i]+trans)%12;
+                uint32_t mask=expected[e].mask[i];
+                CHECK(cf_progression_slot_mask(p,i,cs.chord.scale,cs.chord.tonic,&ch)==mask);
+                CHECK(cf_progression_root(p,i,cs.chord.scale,cs.chord.tonic)==root);
+                int key=cf_progression_slot_key(p,i,&cs.chord);
+                /* A seven-note lower-key map has no F# key in C major. PLAY
+                 * still emits that source chord; it must never substitute F. */
+                if(key>=0) {
+                    const cf_source_chord_t *source=cf_progression_source(p);
+                    int ambiguous=0;
+                    for(unsigned j=0;j<i;j++)if(cf_progression_root(p,j,cs.chord.scale,cs.chord.tonic)==root && source[j].mask!=mask)ambiguous=1;
+                    if(!ambiguous) {
+                        cf_post(CFE_KEY,key,0,1); flush();
+                        CHECK(cfc.out.root_pc==root && cfc.out.mask==mask);
+                        sqr_ev_t take={0}; sqp_rec_chord(&take);
+                        CHECK(take.n==cfc.out.n && (take.btns&CF_H_EVENT));
+                        CHECK(cf_harmony_event_mask(take.mask,take.btns)==mask);
+                        CHECK(!memcmp(take.note,cfc.out.note,take.n));
+                        cf_post(CFE_KEY,key,0,0); flush();
+                    }
+                }
+            }
+            ui_button(B_PLAY); flush(); CHECK(cpa.on);
+            for(unsigned i=0;i<p->n;i++) {
+                CHECK(sqp.droot%12==(expected[e].root[i]+trans)%12);
+                CHECK(sqp.dmask==expected[e].mask[i]);
+                uint32_t played=0;
+                for(unsigned j=0;j<sqp.n;j++)played|=1u<<((sqp.note[j]+12-sqp.droot%12)%12);
+                uint32_t folded=0;
+                for(unsigned bit=0;bit<24;bit++)if(expected[e].mask[i]>>bit&1u)folded|=1u<<(bit%12);
+                CHECK(played==folded);
+                ticks(cs.beats*SQ_PPQN);
+            }
+            ui_button(B_PLAY); flush(); CHECK(!cpa.on && !sqp.n && !sqp.nb);
+        }
+    }
+    /* A UI config queued for Daylily before the boundary must not restore its
+     * source after Sofia has become the committed song. */
+    cf_harmony_defaults(&ch); ch.mode=CF_H_AUTO; cpg.explored=1;
+    setup(100,CPA_OFF); ui_button(B_PLAY); flush();
+    ui_select(9); cf_send_config(); ticks(384); flush();
+    CHECK(cpa.plan.idea==109 && cfc.source==cf_progression_source(cf_progression_get(109)));
+    int dkey=cf_progression_key(&cfc.cfg,1);
+    cf_post(CFE_KEY,dkey,0,1); flush(); CHECK(cfc.out.mask==MIN7);
+    cf_post(CFE_KEY,dkey,0,0); ui_button(B_PLAY); flush();
+    /* Removed artist IDs never transfer an old favorite to a different song. */
+    cf_browser_t browser={0}; browser.favorites[(115-1)/8]|=1u<<((115-1)%8);
+    cf_browser_order(&browser,CPB_FAVORITES,1); CHECK(browser.n==0);
+    unsigned retained=0;
+    while(retained<cf_progression_count() && cf_progression_get(retained)->id!=119)retained++;
+    cf_browser_star(&browser,retained,1); cf_browser_order(&browser,CPB_FAVORITES,1);
+    CHECK(browser.n==1 && cf_progression_get(browser.order[0])->id==119);
+    /* Source harmony is explicit playback data even with live Harmony Off. */
+    cf_harmony_defaults(&ch); setup(109,CPA_OFF);
+    ui_button(B_PLAY); flush();
+    CHECK(cpa.on && sqp.dmask==MIN7);
+    ticks(384); CHECK(sqp.dmask==DOM7);
+    ui_button(B_PLAY); flush();
+    /* Slash bass/inversion is preserved by manual resolution too. */
+    cf_chord_t model; cf_chord_cfg_t cfg; cf_chord_defaults(&cfg);
+    cfg.scale=CF_SC_MAJOR; cfg.tonic=0; cfg.quantize=CF_Q_BASIC;
+    cf_chord_init(&model,&cfg);
+    const cf_source_chord_t slash={MAJ7,0,0,4};
+    model.source=&slash; model.source_n=1;
+    cf_harmony_t auto_h; cf_harmony_defaults(&auto_h); auto_h.mode=CF_H_AUTO;
+    cf_chord_harmony(&model,&auto_h);
+    int key=cf_progression_key(&cfg,0); cf_chord_key(&model,key,1);
+    CHECK(model.out.mask==MAJ7 && model.out.bass_pc==4 && model.out.note[0]%12==4);
+    /* An explicit 7 button preserves an existing dominant seventh. */
+    cf_harmony_t h; cf_harmony_defaults(&h); h.slot[0]=CF_MOD_7;
+    uint32_t stamps[CF_H_SLOTS]={1}; uint16_t used,conflict;
+    CHECK(cf_harmony_apply(&h,DOM7,1,stamps,&used,&conflict)==DOM7);
+    CHECK(cf_harmony_apply(&h,MAJ7,1,stamps,&used,&conflict)==MAJ7);
+    cf_harmony_defaults(&ch); cpg.explored=0;
 }
 static void queues(void)
 {

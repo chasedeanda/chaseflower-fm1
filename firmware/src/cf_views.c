@@ -1521,17 +1521,19 @@ static void view_progressions(int x)
     for (unsigned i = 0; i < p->n && i < CF_P_MAX; i++) {
         int cx = x + 25 + (int)(i % 4) * 56;
         int top = y + (longform ? 54 + (int)(i / 4) * 34 : 63);
-        int root = (cfg.tonic + cf_scale_step(cfg.scale, p->degree[i])) % 12;
-        int key = cf_progression_key(&cfg, p->degree[i]), idx;
+        int root = cf_progression_root(p,i,cfg.scale,cfg.tonic);
+        int key = cf_progression_slot_key(p,i,&cfg), idx;
         int on = (active >> i) & 1;
-        uint32_t mask = cf_progression_mask(cfg.scale, cfg.tonic, p->degree[i], &ch);
+        uint32_t mask = cf_progression_slot_mask(p,i,cfg.scale,cfg.tonic,&ch);
         fb_rbox(cx - 25, top, 51, longform ? 31 : 49, 3, on ? C_ACC(1) : cf_panel(1));
         if (cf_sn.ac_on && cf_sn.ac_slot == i)
             fb_rect(cx - 20, top + (longform ? 29 : 47), 41, 2, C_ACC(0));
         cf_harmony_numeral(cfg.scale, cfg.tonic, root, raw);
         fb_signs(raw, signs, sizeof signs);
         fb_text_c(&CF_FONT_UI, cx, top + 1, signs, on ? FL_BG : C_ACC(0), 1);
-        cf_chord_name(root, mask, -1, &spell, raw);
+        const cf_source_chord_t *source=cf_progression_source(p);
+        int bass_pc=source && source[i].bass>=0 ? (root+source[i].bass)%12 : -1;
+        cf_chord_name(root, mask, bass_pc, &spell, raw);
         fb_signs(raw, signs, sizeof signs);
         fb_text_c(fb_text_w(&CF_FONT_UI, signs, 1) <= 49 ? &CF_FONT_UI : &CF_FONT_MICRO,
                   cx, top + (longform ? 12 : 17), signs, on ? FL_BG : FL_INK, 1);
