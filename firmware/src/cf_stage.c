@@ -27,6 +27,16 @@ static void cfn_text(const cfn_font_t *f,int x,int baseline,const char *s,uint8_
 }
 static void cfn_center(const cfn_font_t *f,int x,int baseline,const char *s,uint8_t ink)
 { cfn_text(f,x-cfn_width(f,s)/2,baseline,s,ink); }
+/* True round outlines. Callers budget the complete diameter, not a cropped arc. */
+static void cfn_circle(int cx,int cy,int radius,uint8_t ink)
+{
+    int x=radius,y=0,error=1-radius;
+    while(x>=y) {
+        fb_pset(cx+x,cy+y,ink);fb_pset(cx+y,cy+x,ink);fb_pset(cx-y,cy+x,ink);fb_pset(cx-x,cy+y,ink);
+        fb_pset(cx-x,cy-y,ink);fb_pset(cx-y,cy-x,ink);fb_pset(cx+y,cy-x,ink);fb_pset(cx+x,cy-y,ink);
+        y++;if(error<0)error+=2*y+1;else{x--;error+=2*(y-x)+1;}
+    }
+}
 /* Window text deliberately; essential chord identity uses composition below. */
 static void cfn_fit(const cfn_font_t *f,int x,int baseline,const char *s,int width,uint8_t ink)
 {
@@ -54,7 +64,7 @@ typedef struct {
     char rail[4][24],numeral[4][12];
     char value[4][14],label[4][12];
     uint8_t live,hold,slot,first,count,total,skin,motion,battery,halo,rec,bank,disabled[4],emphasis[4],cursor_width;
-    uint8_t pulse,activity,activity_step;
+    uint8_t pulse,halo_ink,activity,activity_step;
     uint16_t matches;
     int8_t bank_dx,chord_dy;
 } cf_stage_model_t;
@@ -129,8 +139,12 @@ static void cf_stage_model(cf_stage_model_t *m)
     unsigned phase=cf_sn.beat_acc/(FS*60u/16u);if(phase>15)phase=15;
     m->halo=cf_motion && cfn_motion.active?(uint8_t)(1+cfn_motion.energy/64+(cfn_motion.parts>1?1:0)):0;
     if(m->halo) {
-        unsigned pulse=clock?(phase<8?8-phase:0):cf_stage_chord_ms && (int32_t)(cf_stage_chord_ms-cf_motion_epoch)>0 && cu.now-cf_stage_chord_ms<320?8-(cu.now-cf_stage_chord_ms)/40:0;
-        m->pulse=(uint8_t)((3+cfn_motion.energy/40)*pulse/8);
+        unsigned progress=clock?phase:cf_stage_chord_ms && (int32_t)(cf_stage_chord_ms-cf_motion_epoch)>0 && cu.now-cf_stage_chord_ms<320?(cu.now-cf_stage_chord_ms)*16/320:16;
+        if(progress<15) {
+            m->pulse=42+progress*10/14; /* 84..104 px, complete inside y=51..155 */
+            unsigned peak=m->halo>4?4:m->halo;
+            m->halo_ink=CFN_HALO_0+(peak*(15-progress)+14)/15-1;
+        }
     }
     if(cf_motion && clock){m->activity=1;m->activity_step=phase/4;}
     else if(cf_motion && cfn_motion.active){m->activity=2;m->activity_step=cfn_motion.energy/64;}
@@ -151,6 +165,7 @@ static void cf_stage_draw(void)
     if(cf_stage_valid && !fb_full && !memcmp(&m,&cf_stage_last,sizeof m))return;
     cf_stage_last=m;cf_stage_valid=1;cf_stage_draws++;
     fb_unclip();fb_fill(FL_BG);
+    if(m.pulse){cfn_circle(120,103,m.pulse,m.halo_ink);cfn_circle(120,103,m.pulse-1,m.halo_ink>CFN_HALO_0?m.halo_ink-1:m.halo_ink);}
     int status_x=210-cfn_width(&CFN_12,m.status);
     cfn_fit(&CFN_12,10,17,m.idea,status_x-22,FL_INK2);
     cfn_text(&CFN_12,status_x,17,m.status,C_ACC(0));
@@ -168,18 +183,6 @@ static void cf_stage_draw(void)
     char degree[24];str_cpy(degree,queued?(m.hold?"Hold ":m.live?"Now ":"Last "):"",sizeof degree);
     str_cpy(degree+str_len(degree),m.degree,sizeof degree-str_len(degree));
     cfn_center(&CFN_16,120,queued?82:76,degree,C_ACC(0));
-    if(m.halo) {
-        fb_clip(8,83,232,139);
-        for(unsigned ring=0;ring<2;ring++) {
-            int rx=(ring?92:78)+m.halo+m.pulse,ry=(ring?35:28)+m.pulse/2;
-            int px=120+rx,py=107;
-            for(int a=32;a<=1024;a+=32) {
-                int x=120+(int)(fl_fcos(a)*rx/16384),y=107+(int)(fl_fsin(a)*ry/16384);
-                fb_line(px,py,x,y,!ring?C_ACC(2):FL_BG3);px=x;py=y;
-            }
-        }
-        fb_unclip();
-    }
     fb_clip(0,83,240,138);cf_stage_chord(m.chord,130+m.chord_dy,m.live?FL_INK:FL_INK2);fb_unclip();
     cfn_fit(&CFN_12,10,148,m.notes,165,FL_INK2);
     char window[20];kint(window,m.first+1,"-");kint(window+str_len(window),m.first+m.count,"/");kint(window+str_len(window),m.total,0);

@@ -218,7 +218,15 @@ static flc_t fl_cv = {fl_px, FLW, FLH};
  * apart, they share the one colour) */
 #define C_ACC(s) ((uint8_t)(48 + (s)))
 #define C_SEC(s) ((uint8_t)(52 + (s)))
-static uint32_t cf_pal[64];
+enum { CFN_HALO_0=64, CFN_HALO_1, CFN_HALO_2, CFN_HALO_3, CFN_PAL_N };
+static uint32_t cf_pal[CFN_PAL_N];
+static uint32_t cfn_blend(uint32_t bg,uint32_t fg,unsigned alpha)
+{
+    unsigned r=((bg>>16&255)*(100-alpha)+(fg>>16&255)*alpha)/100;
+    unsigned g=((bg>>8&255)*(100-alpha)+(fg>>8&255)*alpha)/100;
+    unsigned b=((bg&255)*(100-alpha)+(fg&255)*alpha)/100;
+    return r<<16|g<<8|b;
+}
 
 #ifndef CF_EMU
 /* The FM-1's panel lifts the dark tones and washes out soft colours: the palette, made on a monitor, came out pale and
@@ -304,5 +312,6 @@ static void cf_palette_build(void)
     cf_pal[48] = cf_pal[49] = skin[5]; cf_pal[50] = skin[4]; cf_pal[51] = skin[1];
     cf_pal[52] = skin[5]; cf_pal[53] = skin[4]; cf_pal[54] = skin[2]; cf_pal[55] = skin[1];
     cf_pal[56] = skin[6];
-    fb_palette(cf_pal, 64);
+    for(unsigned i=0;i<4;i++)cf_pal[CFN_HALO_0+i]=cfn_blend(skin[0],skin[5],12+12*i);
+    fb_palette(cf_pal, CFN_PAL_N);
 }

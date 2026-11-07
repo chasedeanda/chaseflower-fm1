@@ -1,5 +1,5 @@
 /* SPDX-License-Identifier: GPL-3.0-only
- * Chase FM-1: the approved swimming/jumping bass intro, while the instrument already plays.
+ * Native CORD boot; the optional legacy scene profile retains its fish intro.
  * SAFE MODE keeps its notice; any key, button or encoder skips the animation.
  * The compatible CoralFlower INFO/USB/package identities remain unchanged.
  */
@@ -7,6 +7,8 @@
 #include "cf_boot.c"
 
 static void cf_splash_frame(uint32_t t) { cf_boot_draw(t); }
+#else
+#include "cf_boot_cord.c"
 #endif
 
 /* Draw the first frame with IRQs off; continue the animation in the live UI loop. */
@@ -17,6 +19,7 @@ static void cf_splash(void)
     cf_settings_load();                          /* (what was set before the power-off, unless SAFE MODE) */
     cfh_load();
     fxp_load();
+    cpb_load();                                  /* theme/Motion must be known before the first CORD frame */
     cf_palette_build();
     fb_full = 1;
     if (cr_safe) {
@@ -34,7 +37,8 @@ static void cf_splash(void)
     flora_set_species(&flo, cf_scene() == CF_SCENE_BASS ? FL_SP_CORAL : FL_SP_PLANT);
     cf_splash_frame(0);                          /* fish starts completely off screen */
 #else
-    fb_fill(FL_BG); /* next live frame opens the musical HOME immediately */
+    cf_intro_t=0;cf_cord_started=fm1_ms;cf_intro_on=cf_motion;
+    cf_cord_last.valid=0;cf_cord_draw(cf_motion?160:CF_CORD_BOOT_MS);
 #endif
     cf_present();
 }
@@ -64,7 +68,4 @@ static int cf_intro_draw(uint32_t dt)
     return 1;
 }
 
-#else
-static uint8_t cf_intro_on; /* retained for host HAL hooks; no intro code or buffer */
-static int cf_intro_draw(uint32_t dt) { (void)dt; return 0; }
 #endif

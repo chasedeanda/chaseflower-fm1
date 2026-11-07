@@ -18,7 +18,7 @@
 #define FB_TS 16
 #define FB_TX (FB_W / FB_TS)
 #define FB_TY (FB_H / FB_TS)
-#define FB_PAL 64
+#define FB_PAL 128 /* retain the bounded mask lookup; native halo uses 64..67 */
 
 _Static_assert(sizeof(cv_px) >= FB_W * FB_H, "cf_fb: the framebuffer lives in gfx.c's canvas (CV_ROWS 120)");
 #define fb ((uint8_t *)cv_px)

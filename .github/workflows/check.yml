@@ -122,6 +122,9 @@ jobs:
       - name: Native HOME, appearance migration and settled Motion Off
         run: sh tools/test_stage.sh
 
+      - name: CORD boot themes, complete round shapes and input/Motion skip
+        run: sh tools/test_cord_boot.sh
+
       - name: Progression accompaniment transport, queues, ownership and clocks
         run: sh tools/test_accomp.sh
 

@@ -143,7 +143,20 @@ static void home_feedback(void)
     cf_sn.running=1;cf_sn.beats_done=1;cf_sn.ac_lost=0;cf_sn.beat_acc=0;cf_stage_draw();
     CHECK(cf_stage_last.activity==1 && cf_stage_last.activity_step==0 && fb[8*FB_W+224]==C_ACC(0));
     unsigned pulse=cf_stage_last.pulse;cf_sn.beat_acc=FS*60u/4u;cf_stage_draw();
-    CHECK(cf_stage_last.activity_step==1 && fb[12*FB_W+228]==C_ACC(0) && cf_stage_last.pulse<pulse);
+    CHECK(cf_stage_last.activity_step==1 && fb[12*FB_W+228]==C_ACC(0) && cf_stage_last.pulse>pulse);
+    /* A complete circle at every visible phase: no narrow nameplate clipping. */
+    for(unsigned skin=0;skin<CF_SKIN_N;skin++) {
+        cf_skin=skin;cf_palette_build();
+        for(unsigned phase=0;phase<15;phase++) {
+            cf_sn.beat_acc=phase*(FS*60u/16u);cf_stage_draw();unsigned r=cf_stage_last.pulse,ink=cf_stage_last.halo_ink;
+            CHECK(r>=42 && r<=52);
+            CHECK(fb[(103-r)*FB_W+120]==ink && fb[(103+r)*FB_W+120]==ink);
+            /* The chord intentionally paints over side pixels; the complete
+             * top/bottom survive outside its former nameplate draw region. */
+            CHECK(120-r>0 && 120+r<FB_W-1 && 103-r>47 && 103+r<156);
+        }
+    }
+    cf_skin=0;cf_palette_build();
     cf_sn.ac_lost=1;cf_stage_model(&m);CHECK(m.activity!=1);cf_sn.ac_lost=0;
     cf_motion=0;cf_stage_model(&m);CHECK(!m.activity && !m.halo && !m.pulse);
     cf_sn.ac_on=cf_sn.running=0;cf_sn.out.sounding=0;

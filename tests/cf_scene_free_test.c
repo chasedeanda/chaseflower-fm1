@@ -12,7 +12,7 @@ static void blocks(unsigned n) { int32_t out[CTL*2];while(n--)audio_block(out,CT
 static void controls(void)
 {
 #if !CF_SCENES
-    CHECK(!cf_intro_on && !cf_intro_draw(16) && cu.scr==SCR_HOME && home_view()==HV_FLOWER);
+    CHECK(cf_intro_on && cf_intro_draw(16) && cu.scr==SCR_HOME && home_view()==HV_FLOWER);
     CHECK(cf_scene()==CF_SCENE_PROGRESSIONS && !cf_scene_animated());
     CHECK(sizeof(cs)==188 && sizeof(sq_ev_t)==22 && sizeof(sq_st)==7656 && sizeof(sq_take_rec_t)==2556);
     /* Old scene/backdrop/HOME bits remain valid backup data; boot is musical. */
