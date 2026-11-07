@@ -79,6 +79,13 @@ static void queues(void)
     CHECK(cs.chord.tonic==7 && cs.chord.scale==CF_SC_MAJOR);
     ticks(576); CHECK(cpa.slot==1 && cpa.plan.rhythm==r && cs.chord.tonic==tonic && cs.chord.scale==scale);
     CHECK(!dmp.on || DM_RHY[dmp.r].beats==6);
+    /* Existing drum detail/variation tweaks join the same next-bar queue. */
+    unsigned kit=(dmp.kit+1)%SQ_NKIT;
+    cf_post(CFE_DRUM,2,0,kit | 17<<8); flush();
+    CHECK(cpa_edit.flags&CPA_GROOVE); ticks(576);
+    CHECK(dmp.kit==kit && dmp.swing==17 && cpa.plan.kit==kit);
+    cvr.context=CV_SCALE; cvr_new(); CHECK(cvr.pending==1 && cpg.idea==13);
+    cvr_undo(); CHECK(!cvr.pending);
     /* Explicit mode and Off/Click do not silence the chord clock. */
     cpa_ui_mode(1); ticks(576); CHECK(cpa.plan.mode==CPA_DRUMS && !sqp.n && !sqp.nb && !sqp.dn);
     cpa_ui_mode(-1); ticks(576); CHECK(cpa.plan.mode==CPA_BOTH && sqp.n && sqp.nb);

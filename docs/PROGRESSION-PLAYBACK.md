@@ -40,7 +40,7 @@ first; no implicit pattern allocation or recording happens here.
 
 ## Runtime and persistence
 
-The foreground prepares a validated 144-byte plan: degree, duration, interval mask,
+The foreground prepares a validated 148-byte plan: degree, duration, interval mask,
 voiced MIDI notes, linked bass and complete setup. Two IRQ-protected latest-value
 mailboxes separate pending ideas from edits to the active idea. Audio owns the
 active copy and consumes publications at bounded boundaries. Plan construction,
@@ -91,3 +91,18 @@ favorite/order edit dirties preferences, saved by a small logged CPB1 record in 
 unused CZ pair 0xB0000/0xB1000. Existing object IDs and settings/take layouts remain
 unchanged. Backup object 70 includes preferences; restore validates its checksum
 and defers applying it until restart, like other preference objects.
+
+## Validation on current main
+
+Host checks pass: accompaniment/navigation (112,545 assertions), AddressSanitizer,
+Auto, progressions, queued variations, diagnostics, visuals, USB, FX presets,
+Chase3 and drum bank. Backup/restore passes 155 checks, including favorites and
+malformed-record rejection; browser/Python installer archive checks pass.
+Accompaniment physical output is identical with capture/drawing on/off at both
+USB rates. No physical FM-1 validation has been performed.
+
+The complete vendor-toolchain link uses 437,940 / 573,440 bytes of XIP and
+97,516 / 98,304 bytes of ordinary RAM (conservative symbol accounting), with
+333,852 / 344,064 bytes of pool. The 148-byte plan plus active state and both
+mailboxes occupy 476 bytes. Browser order, favorites and hold state are separate.
+Existing firmware link safety checks pass, including at least 8 KiB pool spare.

@@ -26,6 +26,7 @@ static int cpa_prepare(cpa_plan_t *plan, unsigned idea, cf_chord_cfg_t cfg, unsi
     plan->idea = idea; plan->n = p->n; plan->tonic = cfg.tonic; plan->scale = cfg.scale;
     plan->beats = p->beats; plan->mode = mode;
     plan->rhythm = cpa_compatible(rhythm, p->beats); cfg.quantize = CF_Q_BASIC;
+    if(plan->rhythm < DM_N) { plan->kit = dm_kit(plan->rhythm); plan->swing = dm_swing(plan->rhythm); }
     fm1_irq_off();
     slots = ch.mode == CF_H_AUTO && cfc.harmony.mode == ch.mode ? cfc_effective(&cfc) : 0;
     for (unsigned j = 0; j < CF_H_SLOTS; j++) stamp[j] = cfc.stamp[j];
@@ -124,7 +125,11 @@ static void cpa_ui_rhythm(int d)
     unsigned n = dm_count(beats), pos = r == CPA_OFF ? 0 : r == CPA_CLICK ? 1 : dm_place(r) + 2;
     pos = wrapi((int)pos + d, n + 2);
     r = pos == 0 ? CPA_OFF : pos == 1 ? CPA_CLICK : dm_nth(beats, pos - 2);
-    if (cpa_running()) { p.rhythm = r; cpa_publish(&p, CPA_GROOVE, 0); }
+    if (cpa_running()) {
+        p.rhythm = r;
+        if(r<DM_N) { p.kit=dm_kit(r); p.swing=dm_swing(r); }
+        cpa_publish(&p, CPA_GROOVE, 0);
+    }
     else cpg.rhythm = r;
 }
 static void cpa_ui_mode(int d)

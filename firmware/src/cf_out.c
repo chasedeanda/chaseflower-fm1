@@ -591,7 +591,15 @@ static void cf_apply(const cf_ev_in_t *e)
             if (e->a == 0) cpa_stop();
             else if (e->a == 1 && e->b < DM_N && DM_RHY[e->b].beats == cpa.plan.beats) {
                 if (!cpa_edit.flags) cpa_edit.plan = cpa.plan;
-                cpa_edit.plan.rhythm = e->b; cpa_edit.flags |= CPA_GROOVE;
+                cpa_edit.plan.rhythm = e->b;
+                cpa_edit.plan.kit = (uint8_t)e->v % SQ_NKIT;
+                cpa_edit.plan.swing = (uint8_t)(e->v >> 8) % 101u;
+                cpa_edit.flags |= CPA_GROOVE;
+            } else if (e->a == 2) {
+                if (!cpa_edit.flags) cpa_edit.plan = cpa.plan;
+                cpa_edit.plan.kit = (uint8_t)e->v % SQ_NKIT;
+                cpa_edit.plan.swing = (uint8_t)(e->v >> 8) % 101u;
+                cpa_edit.flags |= CPA_GROOVE;
             }
             break;
         }

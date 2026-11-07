@@ -14,7 +14,7 @@ typedef struct {
 } cpa_slot_t;
 typedef struct {
     cpa_slot_t slot[CF_P_MAX];
-    uint8_t idea, n, tonic, scale, beats, rhythm, mode, nb;
+    uint8_t idea, n, tonic, scale, beats, rhythm, mode, nb, kit, swing;
     uint8_t degree[CF_P_MAX];
 } cpa_plan_t;
 typedef struct { cpa_plan_t plan; volatile uint8_t flags; } cpa_mail_t;
@@ -32,7 +32,7 @@ static int cpa_valid(const cpa_plan_t *p)
     if (p->idea >= cf_progression_count() || !p->n || p->n > CF_P_MAX ||
         p->tonic > 11 || !cf_harmony_supported(p->scale, CF_Q_BASIC) ||
         !(p->beats == 2 || p->beats == 3 || p->beats == 4 || p->beats == 5 || p->beats == 6 || p->beats == 7) ||
-        p->mode >= CPA_NMODES || p->nb > 2 ||
+        p->mode >= CPA_NMODES || p->nb > 2 || p->kit >= SQ_NKIT || p->swing > 100 ||
         (p->rhythm != CPA_OFF && p->rhythm != CPA_CLICK &&
          (p->rhythm >= DM_N || DM_RHY[p->rhythm].beats != p->beats))) return 0;
     for (unsigned i = 0; i < p->n; i++) {
@@ -95,7 +95,7 @@ static void cpa_groove(int reset)
     if (r >= DM_N) { dmp_stop(); cfm.running = 1; return; }
     if (!dmp.on || dmp.r != r || reset) dmp.bar = 0;
     else dmp.bar = (uint8_t)((dmp.bar + 1u) % DM_RHY[r].bars);
-    dmp.r = (uint8_t)r; dmp.kit = DM_RHY[r].kit; dmp.swing = DM_RHY[r].swing;
+    dmp.r = (uint8_t)r; dmp.kit = cpa.plan.kit; dmp.swing = cpa.plan.swing;
     dmp.on = 1; dmp.next = 255; dmp.rin = 0;
     dmp.t = 0; dmp.nh = 0;
 }
@@ -148,6 +148,7 @@ static void cpa_tick1(void)
             if (cpa_edit.flags & CPA_GROOVE) {
                 cpa.plan.rhythm = cpa_edit.plan.rhythm;
                 cpa.plan.mode = cpa_edit.plan.mode;
+                cpa.plan.kit = cpa_edit.plan.kit; cpa.plan.swing = cpa_edit.plan.swing;
                 cpa_edit.flags &= ~CPA_GROOVE; cpa.revision++;
                 if (cpa.plan.mode == CPA_DRUMS) { sqp_chord_off(); sqp_bass_off(); sqp.dn = 0; }
             }
