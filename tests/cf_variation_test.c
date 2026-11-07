@@ -23,7 +23,14 @@ static void properties(void)
         int ok=cvr_generate(&a,ctx,level,seed);
         CHECK(ok); CHECK(cvr_value_valid(&a));
         CHECK(cvr_generate(&b,ctx,level,seed)==ok && !memcmp(&a,&b,sizeof a));
-        if(ctx==CV_DRUMS) { CHECK(b.bpm==base.bpm && b.beats==base.beats); }
+        if(ctx==CV_DRUMS) {
+            CHECK(b.bpm==base.bpm && b.beats==base.beats);
+            if(level) {
+                CHECK(b.rhythm!=base.rhythm);
+                CHECK(b.kit==DM_RHY[b.rhythm].kit && b.swing==DM_RHY[b.rhythm].swing);
+                CHECK(DM_RHY[b.rhythm].bpm >= (level==1?84:72) && DM_RHY[b.rhythm].bpm <= (level==1?116:128));
+            } else CHECK(b.rhythm==base.rhythm && b.kit==base.kit && abs((int)b.swing-(int)base.swing)<=2);
+        }
         if(ctx==CV_ARP) { CHECK(b.arp.latch==base.arp.latch); if(level==1)CHECK(b.arp.mode!=CF_ARP_RAND && !CF_ARP_STRUMMING(b.arp.mode)); }
         if(ctx==CV_SCALE) { CHECK(!base.auto_on || cf_harmony_supported(b.scale,b.quantize)); if(level<2)CHECK(b.tonic==base.tonic); }
 
@@ -103,11 +110,52 @@ static void boundaries(void)
     cvr_undo();blocks(1);CHECK(dmp.r==chosen);dmp_next_bar();CHECK(dmp.r==playing);
     /* Recording cannot be randomized; no saved sequencer data changes. */
     cf_snapshot();uint32_t pat=cfs_fnv(&sq_st,sizeof sq_st);cf_arp_t arp=cs.arp;
-    cvr.context=CV_ARP;unsigned seed=cvr.seed;cvr_new();CHECK(seed==cvr.seed&&!memcmp(&arp,&cs.arp,sizeof arp));
-    CHECK(cfs_fnv(&sq_st,sizeof sq_st)==pat);
+    sqk.on=1; /* a take, rather than independent drum playback */
+    cvr.context=CV_ARP;unsigned seed=cvr.seed;cvr_new();CHECK(cvr.pending==1 && seed==cvr.seed&&!memcmp(&arp,&cs.arp,sizeof arp));
+    cvr_undo();CHECK(!cvr.pending && !memcmp(&arp,&cs.arp,sizeof arp));
+    CHECK(cfs_fnv(&sq_st,sizeof sq_st)==pat);sqk.on=0;
+    cf_sn.dm_rin=1;cvr.context=CV_DRUMS;seed=cvr.seed;cvr_new();
+    CHECK(cvr.pending==1 && seed==cvr.seed);cvr_undo();cf_sn.dm_rin=0;
     quiet();
 }
-/* Rejected changes while playing must produce bit-identical physical and all
+static void queued_controls(void)
+{
+    quiet(); cvr_init(); cu.scr=SCR_GLO;cu.page[SCR_GLO]=CF_GLO_VARIATION;
+    cvr.context=CV_ARP;cvr.level=1;cu.arp_on=0;cf_send_config();blocks(1);
+    /* An enabled but stopped click and long FX tails must not block settings. */
+    cfm.on=1;cf_snapshot();cfx_quiet=0;CHECK(cfs_sounding());
+    cvr_new();CHECK(!cvr.pending && cvr.have_previous);cfm.on=0;
+    /* Queue under a real held chord; no settings, seed, undo or audio changes. */
+    cf_post(CFE_KEY,1,0,1);cf_post(CFE_KEY,1,0,0);cf_post(CFE_KEY,7,0,1);blocks(1);
+    dm_play(dm_cur());blocks(1);CHECK(cf_sn.dm_on);
+    CHECK(cf_sn.out.sounding);cf_arp_t old=cs.arp;unsigned seed=cvr.seed;
+    cvr_new();CHECK(cvr.pending==1 && seed==cvr.seed && !memcmp(&old,&cs.arp,sizeof old));
+    cf_knob_t knob={0};ui_knob_info(3,&knob);CHECK(!strcmp(knob.name,"CANCEL")&&!knob.dis);
+    unsigned flash=emu_flash_writes;cvr_poll();CHECK(cvr.pending && !memcmp(&old,&cs.arp,sizeof old));
+    /* Manual edits made while waiting remain the baseline, not a stale snapshot. */
+    cs.arp.gate=83;cv_value_t expected;cvr_capture(&expected,0);cf_arp_t baseline=cs.arp;
+    CHECK(cvr_generate(&expected,CV_ARP,1,seed));
+    cf_post(CFE_KEY,7,0,0);blocks(1);cfx_quiet=0;cvr_poll();
+    CHECK(!cvr.pending && cvr.seed==seed+1 && !memcmp(&expected.arp,&cs.arp,sizeof cs.arp));
+    CHECK(emu_flash_writes==flash && dmp.on);cvr_undo();CHECK(!memcmp(&baseline,&cs.arp,sizeof baseline));
+    /* Queued Undo can be canceled, then requested again and applied once idle. */
+    cf_post(CFE_KEY,7,0,1);blocks(1);old=cs.arp;cvr_undo();CHECK(cvr.pending==2);
+    cvr_undo();CHECK(!cvr.pending && !memcmp(&old,&cs.arp,sizeof old));
+    cvr_undo();CHECK(cvr.pending==2);cf_post(CFE_KEY,7,0,0);blocks(1);cvr_poll();
+    CHECK(!cvr.pending && !memcmp(&expected.arp,&cs.arp,sizeof cs.arp));
+    /* Leaving, changing amount, and replacing the sound cancel pending work. */
+    cf_post(CFE_KEY,7,0,1);blocks(1);cvr_new();CHECK(cvr.pending);
+    cu.scr=SCR_HOME;cvr_poll();CHECK(!cvr.pending);
+    cu.scr=SCR_GLO;cvr_new();CHECK(cvr.pending);ui_knob_turn(1,1);cvr_poll();CHECK(!cvr.pending);
+    cvr.context=CV_SOUND;cvr.part=0;cvr_new();CHECK(cvr.pending);
+    cf_snd_gen[0]++;cvr_poll();CHECK(!cvr.pending);cf_snd_gen[0]--;
+    cf_post(CFE_KEY,7,0,0);quiet();
+    /* Sound edits still wait for that part's release-stage voices. */
+    trk[0].v[0].active=1;cvr_new();CHECK(cvr.pending);trk[0].v[0].active=0;cvr_poll();CHECK(!cvr.pending);
+    /* Protected state never queues work which could unexpectedly apply later. */
+    cr_safe=1;cvr_new();CHECK(!cvr.pending);cr_safe=0;
+}
+/* Queued changes while playing must produce bit-identical physical and all
  * six USB channels, including a held Auto chord, bass, arp, rhythm and FX. */
 static void audio(int attempt,unsigned rate,const char *path)
 {
@@ -117,9 +165,9 @@ static void audio(int attempt,unsigned rate,const char *path)
     cf_post(CFE_KEY,1,0,1);cf_post(CFE_KEY,1,0,0);cf_post(CFE_KEY,7,0,1);
     dm_play(dm_cur());blocks(2);
     ua_reset();ua.cap_alt=1;ua.cap_hold=0;ua_rate_set(rate);
-    cvr.context=CV_SCALE;uint32_t flash=emu_flash_writes;
+    cvr.context=CV_SCALE;cu.scr=SCR_GLO;cu.page[SCR_GLO]=CF_GLO_VARIATION;uint32_t flash=emu_flash_writes;
     for(unsigned b=0;b<FS*2u/CTL;b++) {
-        if(attempt&&b%17==0) { cvr_new();CHECK(!cvr.have_previous); }
+        if(attempt&&b%17==0) { cvr_new();cvr_poll();CHECK(cvr.pending && !cvr.have_previous); }
         uint32_t w=ua.cw;audio_block(out,CTL);fwrite(out,sizeof out,1,file);
         for(unsigned i=w;i<ua.cw;i++)fwrite(ua.cap+(i&(UA_CAP_RING-1u))*6u,6*sizeof(int16_t),1,file);
         ua.cr=ua.cw;
@@ -130,7 +178,7 @@ int main(int argc,char **argv)
 {
     emu_fw_options(NULL,1,0,1);emu_hal.ready=2;emu_fw_init(0);
     if(argc==5)audio(atoi(argv[2]),(unsigned)atoi(argv[3]),argv[4]);
-    else { quiet();properties();controls();sound();boundaries(); }
+    else { quiet();properties();controls();sound();boundaries();queued_controls(); }
     printf("variations: %u checks, %u failures\n",checks,failures);
     return failures!=0;
 }
