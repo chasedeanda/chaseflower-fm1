@@ -18,9 +18,9 @@ static void appearance(void)
     CHECK(writes==emu_flash_writes); /* turning/drawing never writes flash */
     cpb_flush();CHECK(!cpb_dirty);cpb_load();CHECK(cf_skin==2 && !cf_motion && cpb.favorites[0]==1);
     cpb_rec_t current;CHECK(st_load(OBJ_CFPREFS,&current,sizeof current)==sizeof current && cpb_valid(&current));
-    current.reserved[1]=2;current.check=cfs_fnv(&current,__builtin_offsetof(cpb_rec_t,check));CHECK(!cpb_valid(&current));
+    current.reserved[1]=0x80;current.check=cfs_fnv(&current,__builtin_offsetof(cpb_rec_t,check));CHECK(!cpb_valid(&current));
     /* A real 28-byte v2 record keeps appearance and old favorites, zeroes new
-     * IDs, and does not write flash until an explicit edit needs v3. */
+     * IDs, and does not write flash until an explicit edit needs v4. */
     old.version=2;old.mode=CPB_ALPHA;old.reserved[0]=2;old.reserved[1]=0;
     old.favorites[15]=0x10;old.check=cfs_fnv(&old,__builtin_offsetof(cpb_legacy_rec_t,check));
     CHECK(sizeof old==28 && cpb_record_valid(&old,sizeof old));
@@ -31,7 +31,7 @@ static void appearance(void)
     for(unsigned i=16;i<CPB_BYTES;i++)CHECK(!cpb.favorites[i]);
     cf_browser_star(&cpb,cf_progression_count()-1,1);cpb_changed_ui();cpb_flush();cpb_load();
     CHECK(cf_browser_favorite(&cpb,cf_progression_count()-1) && cpb.favorites[15]==0x10);
-    CHECK(st_load(OBJ_CFPREFS,&current,sizeof current)==44 && current.version==3 && cpb_valid(&current));
+    CHECK(st_load(OBJ_CFPREFS,&current,sizeof current)==44 && current.version==4 && cpb_valid(&current));
     cf_skin=0;cf_palette_build();CHECK(cf_pal[FL_BG]==0x061B1E && cf_pal[FL_INK]==0xF2F8F4 && cf_pal[48]==0x77DACB);
 }
 static void stage(void)

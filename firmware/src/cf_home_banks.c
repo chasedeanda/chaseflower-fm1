@@ -2,6 +2,12 @@
  * Presentation ownership is session-only. Parameter edits reuse existing owners.
  * Kit/swing edits publish to the same accompaniment bar queue as rhythm edits.
  */
+static void cf_click_cancel_pending(void)
+{
+    fm1_irq_off();
+    if(cpg.click_generation!=cpa.click_generation){cs.metro_level=cfm.level;cpg.click_generation=cpa.click_generation;}
+    cpa_edit.plan.click_start=0;cpa_setup.plan.click_start=0;fm1_irq_on();
+}
 static unsigned cf_home_rhythm(void)
 {
     if (cpa_running()) { cpa_plan_t p; cpa_active_request(&p); return p.rhythm; }
@@ -78,7 +84,9 @@ static int cf_home_bank_turn(int k,int d)
     } else {
         if (k==0 || k==2) cf_home_groove(k,d);
         else if (k==1) sq_level_set(SQ_DRUMS,cs.level_drums+d*2);
-        else { cs.metro_level=(uint8_t)clampi(cs.metro_level+d*2,0,100); cf_send_metro(); }
+        else { cf_click_cancel_pending();cs.metro_level=(uint8_t)clampi(cs.metro_level+d*2,0,100);
+            if(cs.metro_level && cs.metro_level!=cf_click_level) { cf_click_level=cs.metro_level; cpb_dirty=1; cpb_changed=cu.now; }
+            cf_send_metro(); }
     }
     return 1;
 }

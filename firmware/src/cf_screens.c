@@ -87,6 +87,7 @@ static void draw_top_sound(uint32_t part, int xmax)   /* xmax: where the chips o
 
 #include "cf_views.c"                           /* (the heads, the pager, the central pictures) */
 #include "cf_stage.c"
+#include "cf_acc_screen.c"
 #include "cf_seqv.c"                            /* (the SEQUENCER screens' pictures) */
 #include "cf_dmv.c"                             /* (the drum machine's, 0.6) */
 static void draw_title(const char *t, const char *note);
@@ -639,7 +640,7 @@ static void draw_edit(void)
 
 static void draw_generic(void)
 {
-    static const char *const PG_GLO[CF_GLO_NPAGES] = {"Display", "MIDI", "Channels", "Play", "Reset", "Library", "Diagnostics", "Harmony", "Variation", "Accompany", "Browse", "Recordings"};
+    static const char *const PG_GLO[CF_GLO_NPAGES] = {"Display", "MIDI", "Channels", "Play", "Reset", "Library", "Diagnostics", "Harmony", "Variation", "Accompany", "Browse", "Recordings", "Legacy tools"};
     cf_scene_frame();
     draw_plant(Y_VIEW);
     fb_veil(0, Y_VIEW, FB_W, H_VIEW, FL_BG);   /* (the plant faint: the picture leads) */
@@ -651,7 +652,8 @@ static void draw_generic(void)
         uint32_t p = cu.page[SCR_GLO] % CF_GLO_NPAGES;
         draw_head(PG_GLO[p]);
         draw_pager((int)p, CF_GLO_NPAGES, 1, 0);
-        if (p == CF_GLO_RECORDINGS) {
+        if(p==CF_GLO_LEGACY) { fb_text_c(&CF_FONT_UI,120,Y_VIEW+68,"K1 selects / SEL opens",FL_INK,1); }
+        else if (p == CF_GLO_RECORDINGS) {
             fb_text_c(&CF_FONT_UI,120,Y_VIEW+55,"KEEP THE LATEST THREE",C_ACC(0),1);
             fb_text_c(&CF_FONT_UI,120,Y_VIEW+77,"Newest recording is always 1",FL_INK,1);
             fb_text_c(&CF_FONT_MICRO,120,Y_VIEW+101,sq_pref.protect?"FULL: CLEAR A RECORDING FIRST":"A FINISHED TAKE REPLACES THE OLDEST",FL_INK2,1);
@@ -837,7 +839,9 @@ static void cf_ui_draw(void)
 {
     char top[24];
     fb_unclip();
-    if (cf_intro_draw(cu.frame_dt)) { cf_stage_valid = 0; return; }
+    if (cf_intro_draw(cu.frame_dt)) { cf_stage_valid=cf_acc_valid=0; return; }
+    if(!cu.upd_left && (cu.scr==SCR_ACC || (cu.scr==SCR_GLO && cu.page[SCR_GLO]==CF_GLO_LEGACY))) {cf_acc_draw();return;}
+    cf_acc_valid=0;
     if (cu.scr == SCR_HOME && home_view() == HV_FLOWER && cf_scene() == CF_SCENE_PROGRESSIONS &&
         !cu.pop && !cu.upd_left) { cf_stage_draw(); return; }
     cf_stage_valid = 0; cf_stage_energy = 0; cf_stage_tick = cu.now;

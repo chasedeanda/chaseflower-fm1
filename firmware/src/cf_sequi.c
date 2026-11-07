@@ -1127,7 +1127,7 @@ static void sq_home_rec(void)                    /* REC tapped */
         cf_post(CFE_DRUM, 5, 0, 0);
         return;
     }
-    if (cpa_running() || (cu.scr == SCR_HOME && cf_scene() == CF_SCENE_PROGRESSIONS)) {
+    if (cpa_running() || ((cu.scr == SCR_HOME && cf_scene() == CF_SCENE_PROGRESSIONS) || cu.scr==SCR_ACC)) {
         cpa_ui_record(); return;
     }
     if (dm_home_rec())                           /* (under a rhythm: cf_dmui.c) */
@@ -1650,6 +1650,7 @@ static void metro_knob_info(int k, cf_knob_t *o)
 static void metro_knob_turn(int k, int d)
 {
     if (k == 0) {
+        cf_click_cancel_pending();
         cs.metro_level = (uint8_t)clampi(cs.metro_level + d * 5, 0, 100);
     } else if (k == 1) {
         cs.click = (uint8_t)wrapi(cs.click + d, (int)CF_NCLICKS);

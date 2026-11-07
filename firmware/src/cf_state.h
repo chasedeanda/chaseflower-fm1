@@ -17,11 +17,12 @@ enum {
     SCR_SQ,        /* SEQ again: the sequencer, a pattern's tracks or the song (cf_sequi.c) */
     SCR_SQED,      /* .. a track open: its steps */
     SCR_DRUM,      /* SEQ again, the METRONOME's carousel on it: the rhythm machine (0.6, cf_dmui.c) */
+    SCR_ACC,       /* native shared-clock Groove / Loop / Mix / Click */
     SCR_N
 };
 static const char *const SCR_NAME[SCR_N] = {"HOME", "CHORD", "ENVELOPE", "BASS", "SOUND", "GLOBAL", "EFFECTS",
                                              "ARPEGGIO", "METRONOME", "SAVE", "RECORDINGS",
-                                             "PATTERN", "RHYTHM MACHINE"};
+                                             "PATTERN", "RHYTHM MACHINE", "ACCOMPANIMENT"};
 
 /* themes: the one interface colour (GLO > Display > COLOR), a palette ramp, after the M-VAVE synths' panel
  * colours and a few more */
@@ -102,14 +103,19 @@ static uint8_t cf_skin, cf_motion = 1;
 enum { CF_HB_CORE, CF_HB_SOUND, CF_HB_TEXTURE, CF_HB_GROOVE, CF_HB_N };
 static const char *const CF_HOME_BANK_NAME[] = {"CORE", "SOUND", "TEXTURE", "GROOVE"};
 static uint8_t cf_home_bank;
-static uint32_t cf_home_bank_ms;
+static uint32_t cf_home_bank_ms, cf_motion_epoch;
+static uint8_t cf_click_level = 35;
+enum { CF_ACC_GROOVE, CF_ACC_LOOP, CF_ACC_MIX, CF_ACC_CLICK, CF_ACC_N };
+static const char *const CF_ACC_NAME[] = {"Groove", "Loop", "Mix", "Click"};
+static uint8_t cf_acc_focus, cf_legacy_pick;
+static uint32_t cf_acc_page_ms;
 static uint32_t cf_art_ms(void);
 
 static cf_harmony_t ch;                         /* separate versioned record; cf_set_t stays 188 bytes */
 static struct {
-    uint8_t idea, rhythm, mode, explored;
+    uint8_t idea, rhythm, mode, explored, repeat_off;
     uint8_t saved_tonic, saved_scale, saved_quantize, saved_beats;
-    uint32_t revision, modifiers;
+    uint32_t revision, modifiers, click_generation;
 } cpg;             /* Browser selection only; never persisted */
 
 static void cs_defaults(cf_set_t *s)
@@ -258,6 +264,13 @@ static uint32_t cf_panel_fix(uint32_t c, int colour)
 #endif
 
 static uint32_t cf_art_ms(void) { return cf_motion ? cu.now : 0; }
+/* One bounded latest target per region. No callbacks, allocation or visual clock. */
+static int cf_tween_offset(uint32_t start, unsigned ms, unsigned distance)
+{
+    if(!cf_motion || !start || !ms || (int32_t)(start-cf_motion_epoch)<=0 || cu.now-start>=ms)return 0;
+    unsigned left=ms-(cu.now-start);
+    return (int)(distance*left*left*left/(ms*ms*ms));
+}
 static const uint32_t CF_SKIN_RGB[CF_SKIN_N][7] = {
     {0x061B1E,0x113034,0x355054,0xF2F8F4,0x89A7A5,0x77DACB,0x092D2C},
     {0x0E0F10,0x1A1C1C,0x353738,0xF6F5F0,0x919391,0xE8A64D,0x16120C},

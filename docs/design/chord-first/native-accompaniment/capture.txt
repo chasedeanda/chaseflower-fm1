@@ -1,0 +1,24 @@
+turn SELECT 9
+btn SEQ
+shot groove-stopped
+btn PLAY
+wait 400
+shot groove-playing
+turn ALGORITHM 1
+shot loop
+turn K4 -1
+shot play-once-pending
+turn ALGORITHM 1
+shot mix
+turn ALGORITHM 1
+turn K1 1
+shot click
+btn HOME
+turn SELECT 2
+shot home-queued
+btn SEQ
+turn ALGORITHM 3
+turn K1 -1
+btn GLO
+turn SELECT 12
+shot tools

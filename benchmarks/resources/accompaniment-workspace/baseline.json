@@ -1,0 +1,72 @@
+{
+  "source": "e3333c1a41a5fd5b953f377552daff02a9701da9",
+  "elf_sha256": "5c9fa205fc3d3753c9a55f7feaf07cdb9d1e0b5c10747e3171d9334794e8cd60",
+  "sections": [
+    {
+      "name": "",
+      "address": 0,
+      "bytes": 0,
+      "flags": 0
+    },
+    {
+      "name": ".text",
+      "address": 33558528,
+      "bytes": 447664,
+      "flags": 6
+    },
+    {
+      "name": ".ram_text",
+      "address": 29360128,
+      "bytes": 2924,
+      "flags": 6
+    },
+    {
+      "name": ".c1_text",
+      "address": 29363052,
+      "bytes": 128,
+      "flags": 6
+    },
+    {
+      "name": ".data",
+      "address": 29392896,
+      "bytes": 13308,
+      "flags": 3
+    },
+    {
+      "name": ".bss",
+      "address": 29406208,
+      "bytes": 66764,
+      "flags": 3
+    },
+    {
+      "name": ".pool",
+      "address": 29491200,
+      "bytes": 315404,
+      "flags": 3
+    },
+    {
+      "name": ".noinit",
+      "address": 29868064,
+      "bytes": 216,
+      "flags": 3
+    },
+    {
+      "name": ".shstrtab",
+      "address": 0,
+      "bytes": 77,
+      "flags": 0
+    },
+    {
+      "name": ".symtab",
+      "address": 0,
+      "bytes": 32912,
+      "flags": 0
+    },
+    {
+      "name": ".strtab",
+      "address": 0,
+      "bytes": 22890,
+      "flags": 0
+    }
+  ]
+}

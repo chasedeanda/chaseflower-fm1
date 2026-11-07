@@ -33,7 +33,7 @@
       "sharedTemplate": "chord",
       "musicalMilestone": 1,
       "designStatus": "Native preview alongside selected prototype; device review pending",
-      "implementationStatus": "Partial implementation: queued idea/setup label; detailed pending setup remains legacy",
+      "implementationStatus": "Implemented native preview: queued idea plus key/mode/metre/rhythm; active edits show mode/repeat/kit/swing separately from applied setup",
       "deviceVerification": "Pending — host captures and device link only"
     },
     {
@@ -42,9 +42,9 @@
       "group": "Accompaniment",
       "sharedTemplate": "picker",
       "musicalMilestone": 1,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native preview follows selected prototype; physical review pending",
+      "implementationStatus": "Implemented native preview: compatible patterns, actual masks/bar/step, queued kit/swing and shared transport",
+      "deviceVerification": "Pending — native host captures and device link only"
     },
     {
       "id": "ACC_NO_GROOVE",
@@ -52,9 +52,9 @@
       "group": "Accompaniment",
       "sharedTemplate": "status",
       "musicalMilestone": 1,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native preview follows selected prototype; physical review pending",
+      "implementationStatus": "Implemented in Groove: compatible Off/Click choices, no fabricated pattern or cursor",
+      "deviceVerification": "Pending — native host captures and device link only"
     },
     {
       "id": "ACC_LOOP",
@@ -62,9 +62,9 @@
       "group": "Accompaniment",
       "sharedTemplate": "timeline",
       "musicalMilestone": 1,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native preview follows selected prototype; physical review pending",
+      "implementationStatus": "Implemented phase-1 native preview: full phrase read-only endpoints, shared mode, play once/repeat, explicit focus and true cursor",
+      "deviceVerification": "Pending — native host captures and device link only"
     },
     {
       "id": "ACC_MIX",
@@ -72,9 +72,9 @@
       "group": "Accompaniment",
       "sharedTemplate": "params",
       "musicalMilestone": 1,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native preview follows selected prototype; physical review pending",
+      "implementationStatus": "Implemented native preview: real chord/bass/drum levels and linked bass On/Off; no fake VU meters",
+      "deviceVerification": "Pending — native host captures and device link only"
     },
     {
       "id": "ACC_CLICK",
@@ -82,9 +82,9 @@
       "group": "Accompaniment",
       "sharedTemplate": "params",
       "musicalMilestone": 1,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native preview follows selected prototype; physical review pending",
+      "implementationStatus": "Implemented native preview: independent On/Off and remembered level, real sound and shared tempo/clock",
+      "deviceVerification": "Pending — native host captures and device link only"
     },
     {
       "id": "ACC_ARRANGE",
@@ -893,7 +893,7 @@
       "sharedTemplate": "params",
       "musicalMilestone": 1,
       "designStatus": "Native preview alongside selected prototype; device review pending",
-      "implementationStatus": "Partial implementation: persisted On/Off, bounded HOME activity, clipped bank-label transition and settled legacy art; cadence/tails/hardware tuning pending",
+      "implementationStatus": "Partial implementation: persisted On/Off, bounded HOME activity, finite clipped bank/page/chord transitions and settled caches; audio-tail metadata and hardware tuning pending",
       "deviceVerification": "Pending — host captures and device link only"
     },
     {

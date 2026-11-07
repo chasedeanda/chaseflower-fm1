@@ -17,14 +17,14 @@ static void cpa_explore(void)
     cpg.saved_quantize = cs.chord.quantize; cpg.saved_beats = cs.beats;
     cpg.explored = 1;
 }
-static int cpa_prepare(cpa_plan_t *plan, unsigned idea, cf_chord_cfg_t cfg, unsigned rhythm, unsigned mode)
+static int cpa_prepare_full(cpa_plan_t *plan, unsigned idea, cf_chord_cfg_t cfg, unsigned rhythm, unsigned mode, unsigned repeat_off, unsigned click_start)
 {
     const cf_progression_t *p = cf_progression_get(idea);
     uint32_t stamp[CF_H_SLOTS]; uint16_t slots;
     if (!p || !cf_harmony_supported(cfg.scale, CF_Q_BASIC)) return 0;
     memset(plan, 0, sizeof *plan);
     plan->idea = idea; plan->n = p->n; plan->tonic = cfg.tonic; plan->scale = cfg.scale;
-    plan->beats = p->beats; plan->mode = mode;
+    plan->beats = p->beats; plan->mode = mode; plan->repeat_off=repeat_off; plan->click_start=click_start;
     plan->rhythm = cpa_compatible(rhythm, p->beats); cfg.quantize = CF_Q_BASIC;
     if(plan->rhythm < DM_N) { plan->kit = dm_kit(plan->rhythm); plan->swing = dm_swing(plan->rhythm); }
     fm1_irq_off();
@@ -71,6 +71,8 @@ static int cpa_prepare(cpa_plan_t *plan, unsigned idea, cf_chord_cfg_t cfg, unsi
     }
     return cpa_valid(plan);
 }
+static int cpa_prepare(cpa_plan_t *p,unsigned idea,cf_chord_cfg_t cfg,unsigned rhythm,unsigned mode)
+{ return cpa_prepare_full(p,idea,cfg,rhythm,mode,0,0); }
 static void cpa_publish(const cpa_plan_t *p, unsigned flags, int setup)
 {
     if (!cpa_valid(p)) return;
@@ -92,10 +94,11 @@ static void cpa_ui_dirty(void)
     if (!cpa_running()) return;
     cpa_plan_t p; cpa_active_request(&p);
     cf_chord_cfg_t cfg = cs.chord; cfg.tonic = p.tonic; cfg.scale = p.scale;
-    if (cpa_prepare(&p, p.idea, cfg, p.rhythm, p.mode)) cpa_publish(&p, CPA_NOTES, 0);
+    if (cpa_prepare_full(&p, p.idea, cfg, p.rhythm, p.mode, p.repeat_off, p.click_start)) cpa_publish(&p, CPA_NOTES, 0);
 }
 static void cpa_ui_poll(void)
 {
+    cf_click_sync();
     if (cf_sn.ac_revision != cpg.revision) {
         cpg.revision = cf_sn.ac_revision;
         if (cf_sn.ac_on) {
@@ -123,7 +126,7 @@ static void cpa_home_key(int k, int d)
         unsigned i = 0; while (i + 1 < NELEM(modes) && modes[i] != cfg.scale) i++;
         cfg.scale = modes[wrapi((int)i + d, NELEM(modes))];
     }
-    if (cpa_prepare(&p, p.idea, cfg, p.rhythm, p.mode)) cpa_publish(&p, CPA_NOTES, 0);
+    if (cpa_prepare_full(&p, p.idea, cfg, p.rhythm, p.mode, p.repeat_off, p.click_start)) cpa_publish(&p, CPA_NOTES, 0);
 }
 static void cpa_ui_rhythm(int d)
 {
@@ -133,11 +136,15 @@ static void cpa_ui_rhythm(int d)
     pos = wrapi((int)pos + d, n + 2);
     r = pos == 0 ? CPA_OFF : pos == 1 ? CPA_CLICK : dm_nth(beats, pos - 2);
     if (cpa_running()) {
+        if(r==CPA_CLICK && p.rhythm!=CPA_CLICK && !cs.metro_level)p.click_start=cf_click_level;
         p.rhythm = r;
         if(r<DM_N) { p.kit=dm_kit(r); p.swing=dm_swing(r); }
         cpa_publish(&p, CPA_GROOVE, 0);
     }
-    else cpg.rhythm = r;
+    else {
+        if(r==CPA_CLICK && cpg.rhythm!=CPA_CLICK && !cs.metro_level){cs.metro_level=cf_click_level;cf_send_metro();}
+        cpg.rhythm = r;
+    }
 }
 static void cpa_ui_mode(int d)
 {
@@ -165,7 +172,7 @@ static void cpa_ui_record(void)
     if (cf_evq_w - cf_evq_r > CF_EVQ - 8u) { cf_message("Busy: press REC again"); return; }
     cpa_plan_t plan;
     if (cpa_running()) cpa_active_request(&plan);
-    else if (!cpa_prepare(&plan, cpg.idea, cs.chord, cpg.rhythm, cpg.mode)) return;
+    else if (!cpa_prepare_full(&plan, cpg.idea, cs.chord, cpg.rhythm, cpg.mode, cpg.repeat_off, 0)) return;
     cs.chord.tonic = plan.tonic; cs.chord.scale = plan.scale; cs.beats = plan.beats;
     cs.chord.quantize = CF_Q_BASIC;
     cf_post(CFE_ACCOMP, 0, 0, 0);
@@ -190,7 +197,7 @@ static void cpa_ui_play(void)
     const cf_progression_t *idea = cf_progression_current();
     cf_chord_cfg_t cfg = cs.chord;
     if (!cf_harmony_supported(cfg.scale, CF_Q_BASIC)) cfg.scale = idea->scale;
-    if (cpa_prepare(&p, cpg.idea, cfg, cpg.rhythm, cpg.mode)) {
+    if (cpa_prepare_full(&p, cpg.idea, cfg, cpg.rhythm, cpg.mode, cpg.repeat_off, 0)) {
         cpa_publish(&p, 0, 1);
         if (cf_post(CFE_ACCOMP, 1, 0, 0)) cpa_commanded = 1;
         else cf_message("Busy: press PLAY again");
