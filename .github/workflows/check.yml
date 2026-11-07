@@ -89,6 +89,9 @@ jobs:
       - name: Auto harmony, controls, persistence, MIDI and recording (host HAL)
         run: sh tools/test_auto.sh
 
+      - name: Contextual variations, undo and safe playback boundaries (host HAL)
+        run: sh tools/test_variations.sh
+
       - name: Progression suggestions, controls and uninterrupted audio (host HAL)
         run: sh tools/test_progressions.sh
 

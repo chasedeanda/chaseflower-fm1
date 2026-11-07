@@ -633,9 +633,11 @@ static void draw_edit(void)
     }
 }
 
+#include "cf_variation_view.c"
+
 static void draw_generic(void)
 {
-    static const char *const PG_GLO[CF_GLO_NPAGES] = {"Display", "MIDI", "Channels", "Play", "Reset", "Library", "Diagnostics", "Harmony", "Progressions"};
+    static const char *const PG_GLO[CF_GLO_NPAGES] = {"Display", "MIDI", "Channels", "Play", "Reset", "Library", "Diagnostics", "Harmony", "Progressions", "Variation"};
     cf_scene_render(&flo, &fl_cv);
     draw_plant(Y_VIEW);
     fb_veil(0, Y_VIEW, FB_W, H_VIEW, FL_BG);   /* (the plant faint: the picture leads) */
@@ -647,7 +649,10 @@ static void draw_generic(void)
         uint32_t p = cu.page[SCR_GLO] % CF_GLO_NPAGES;
         draw_head(PG_GLO[p]);
         draw_pager((int)p, CF_GLO_NPAGES, 1, 0);
-        if (p == CF_GLO_PROGRESSIONS) {
+        if (p >= CF_GLO_VARIATION) {
+            cvr_draw();
+        }
+        else if (p == CF_GLO_PROGRESSIONS) {
             fb_text_r(&CF_FONT_UI, 234, HEAD_LINE, cf_progression_tag(cpg.tag), C_ACC(1), 1);
             draw_view(view_progressions);
         }

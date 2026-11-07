@@ -114,7 +114,8 @@ static const char *const Q_NAME[3] = {"Off", "Basic", "Full"};
 static const char *const ALG_NAME[CF_NALGS] = {"Top", "Top Lock", "Side", "Side Lock"};
 #define CF_GLO_HARMONY 7u
 #define CF_GLO_PROGRESSIONS 8u
-#define CF_GLO_NPAGES 9u
+#define CF_GLO_VARIATION 9u
+#define CF_GLO_NPAGES 10u
 
 static const cf_progression_t *cf_progression_current(void)
 {
@@ -174,6 +175,7 @@ static void kpc(char *b, int pc)
 static void cv_turned(int d);
 #include "cf_sequi.c"                            /* (the SEQUENCER screens' controls) */
 #include "cf_dmui.c"                             /* (the drum machine's page, 0.6) */
+#include "cf_variation.c"                         /* one-page variation and undo */
 
 /* EDIT's part keys, as printed on the unit: MONO (upper key 8) the bass, POLY (9) the chords, the next (10) the LAYER */
 static uint32_t edit_key_part(int u) { return u == 8 ? CF_PART_BASS : u == 9 ? CF_PART_CHORD : CF_PART_LAYER; }
@@ -363,6 +365,9 @@ static void ui_knob_info(int k, cf_knob_t *o)
     case SCR_SQED: sq_knob_info(k, o); break;
     case SCR_GLO:
         switch (cu.page[SCR_GLO]) {
+        case CF_GLO_VARIATION:
+            cvr_knob_info(k, o);
+            break;
         case CF_GLO_PROGRESSIONS:
             cf_progression_current();
             if (k == 0) { kfmt(o->name, 12, "TAG"); kfmt(o->val, 14, cf_progression_tag(cpg.tag)); }
@@ -620,6 +625,9 @@ static void ui_knob_turn(int k, int d)
     case SCR_SQED: sq_knob_turn(k, d); break;
     case SCR_GLO:
         switch (cu.page[SCR_GLO]) {
+        case CF_GLO_VARIATION:
+            cvr_knob_turn(k, d);
+            break;
         case CF_GLO_PROGRESSIONS:
             cf_progression_current();
             if (k == 0) cpg.tag = (uint8_t)clampi(cpg.tag + d, 0, CF_P_NTAGS - 1);
@@ -1095,7 +1103,7 @@ static void ui_button(uint32_t b)
     case B_ENV: ui_open(SCR_ENV); break;
     case B_LFO: ui_open(SCR_BASS); break;
     case B_EDIT: ui_open(SCR_EDIT); break;
-    case B_GLO: ui_open(SCR_GLO); break;
+    case B_GLO: cvr_context_from_screen(); ui_open(SCR_GLO); break;
     case B_FX:
         if (cu.scr == SCR_FX && fxpu.mode == FXP_EDIT) fxpu.mode = FXP_BROWSE;
         else if (cu.scr == SCR_FX && fxpu.mode == FXP_MANAGE) { fxpu.mode = FXP_BROWSE; cu.save_hold = 0; }
@@ -1110,6 +1118,7 @@ static void ui_button(uint32_t b)
             ui_open(sq_screen(cu.scr) || cu.scr == SCR_DRUM ? SCR_HOME : SCR_SEQ);
         break;
     case B_SAVE:
+        if (cu.scr == SCR_GLO && cu.page[SCR_GLO] == CF_GLO_VARIATION) { cvr_save(); break; }
         if (cu.scr == SCR_FX) {
             if (fxpu.mode != FXP_MANAGE) fxp_manage_open();
             else cu.save_hold = cu.now ? cu.now : 1u;
@@ -1936,6 +1945,7 @@ static void cf_ui_init(void)
     cpg.idea = CF_P_NONE;
     if (!cfs_loaded)                             /* (cf_splash read the settings record: they stay) */
         cs_defaults(&cs);
+    cvr_init();
     cu.scr = SCR_HOME;
     cu.sel_btn = sel_first();
     cf_led_init();
