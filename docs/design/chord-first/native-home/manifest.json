@@ -1,0 +1,16 @@
+{
+  "kind": "Host HAL native C firmware captures; not device verification",
+  "sourceBase": "8bc9086cceb98544713bab1907543d632c703981",
+  "rendererSha256": "1beae986113765b2cf94a6ede8f5ee34847e60eae02ea26822c532d6a0f07109",
+  "nativeDimensions": [
+    240,
+    240
+  ],
+  "imagesSha256": {
+    "ready.png": "65a01a819d2145a45aa06e8a20a271984756d9785905f6d31a9e95b745bfa3f8",
+    "live.png": "129bb37d447a04bf59c8127b5d40844f2ca6fb1862433ac699176fc464187f06",
+    "last.png": "5289d5883e84e8f278c57aecfada6ba6ef124c2209a3fdbdcb2bb06b7377d57e",
+    "playing.png": "c03593b889d7a22d8c4d80a78064a6d4f92683e41e2518fd5c0b16b618d76567",
+    "motion-off.png": "bb18cb5a0e278ba30d65308ac0e91c692692f4e234aa0e721a83ae9a6d29fcdb"
+  }
+}

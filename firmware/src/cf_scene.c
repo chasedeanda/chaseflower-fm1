@@ -17,7 +17,7 @@ static uint32_t cf_scene(void)
     if (cs.seq_hint & CF_SCENE_FIRE_BIT) return CF_SCENE_FIRE;
     return cs.seq_hint & CF_SCENE_BASS_BIT ? CF_SCENE_BASS : CF_SCENE_PROGRESSIONS;
 }
-static int cf_scene_animated(void) { return cf_scene() <= CF_SCENE_FIRE; }
+static int cf_scene_animated(void) { return cf_motion && cf_scene() <= CF_SCENE_FIRE; }
 static void cf_scene_set(uint32_t scene)
 {
     cs.seq_hint = (uint8_t)((cs.seq_hint & ~(CF_SCENE_FIRE_BIT | CF_SCENE_OFF_BIT | CF_SCENE_BASS_BIT)) |

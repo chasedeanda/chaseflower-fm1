@@ -76,7 +76,7 @@ static int cv_slide(void)                         /* the picture's x offset now 
 {
     uint32_t t = cu.now - cv_turn_ms;
     int k;
-    if (!cv_turn_ms || t >= 180u)
+    if (!cf_motion || !cv_turn_ms || t >= 180u)
         return 0;
     k = 180 - (int)t;
     return cv_turn_dir * 28 * k * k / (180 * 180);
@@ -94,7 +94,7 @@ static void draw_chevron(int x, int y, int right, uint8_t c)   /* 5 x 7, its str
  * round (else the arrow at an end is dark) */
 static void draw_pager(int cur, int n, int wrap, const char *name)
 {
-    int i, x = 8, y = HEAD_LINE + 3, lit = cu.now - cv_turn_ms < 220u && cv_turn_ms;
+    int i, x = 8, y = HEAD_LINE + 3, lit = cf_motion && cu.now - cv_turn_ms < 220u && cv_turn_ms;
     uint8_t cl = !wrap && cur == 0 ? FL_BG3 : lit && cv_turn_dir < 0 ? C_ACC(0) : FL_INK2;
     uint8_t cr = !wrap && cur == n - 1 ? FL_BG3 : lit && cv_turn_dir > 0 ? C_ACC(0) : FL_INK2;
     draw_chevron(x, y - 1, 0, cl);
@@ -188,18 +188,18 @@ static void cv_backdrop_thumb(int x, int y, int w, int h, uint32_t bd, int on)
         if (!coral) {
             fb_rect(x + w - 11, y + 4, 4, 4, FL_INK2);         /* the moon */
             fb_rect(x + w - 10, y + 4, 3, 3, (uint8_t)(base + 0));
-            fb_pset(x + 6, y + 5, (cu.now / 600u) & 1u ? FL_INK : FL_INK3);
+            fb_pset(x + 6, y + 5, (cf_art_ms() / 600u) & 1u ? FL_INK : FL_INK3);
             fb_pset(x + 15, y + 3, FL_INK3);
             for (i = 0; i < w; i++)                            /* far hills */
                 fb_rect(x + i, y + h - 5 - ((i * 7 / w) & 1) - (i % 9 < 4), 1, 6, FL_BG1);
         } else {
             for (i = 0; i < 3; i++) {                          /* soft lights drifting */
-                int bx = x + 6 + (int)((i * 13 + cu.now / 90u) % (uint32_t)(w - 10)), by = y + 5 + i * 5;
+                int bx = x + 6 + (int)((i * 13 + cf_art_ms() / 90u) % (uint32_t)(w - 10)), by = y + 5 + i * 5;
                 fb_rect(bx, by, 3, 3, (uint8_t)(base + 3));
             }
         }
     } else if (bd == FL_BD_RIPPLES) {                          /* a ring going out */
-        int r = 3 + (int)(cu.now / 70u % 14u), cx = x + w / 2, cy = y + h - 3, a;
+        int r = 3 + (int)(cf_art_ms() / 70u % 14u), cx = x + w / 2, cy = y + h - 3, a;
         for (a = 0; a < 512; a += 24) {
             int px = cx + (int)((r * fcos_ui(a)) >> 14) * 3 / 2, py = cy - (int)((r * fsin_ui(a)) >> 14);
             if (px > x && px < x + w - 1 && py > y)
@@ -283,12 +283,12 @@ static void view_midi(int x0)
     fb_rect(x0 + 16, ym - 10, 28, 3, on ? C_ACC(1) : FL_INK3);
     fb_text_c(&CF_FONT_MICRO, x0 + 30, ym + 19, "USB", FL_INK3, 1);
     if (cs.clock_in == 1u) {                     /* MIDI clock in: what comes into the unit, a beat light when locked */
-        int lit = cf_sn.ext_clock && (int32_t)(cf_sn.now_ms - cf_sn.beat_ms) < 120;
+        int lit = cf_motion && cf_sn.ext_clock && (int32_t)(cf_sn.now_ms - cf_sn.beat_ms) < 120;
         fb_text_c(&CF_FONT_MICRO, x0 + 30, ym - 26, cf_sn.ext_clock ? "CLOCK IN" : "NO CLOCK", cf_sn.ext_clock ?
                   C_ACC(1) : FL_INK3, 1);
         fb_rect(x0 + 28, ym - 19, 4, 4, lit ? C_ACC(0) : FL_BG3);
     } else if (cs.clock_in == 2u) {              /* .. out: the unit's beat going out, its light while it runs */
-        int lit = cf_sn.running && (int32_t)(cf_sn.now_ms - cf_sn.beat_ms) < 120;
+        int lit = cf_motion && cf_sn.running && (int32_t)(cf_sn.now_ms - cf_sn.beat_ms) < 120;
         fb_text_c(&CF_FONT_MICRO, x0 + 30, ym - 26, "CLOCK OUT", on ? C_ACC(1) : FL_INK3, 1);
         fb_rect(x0 + 28, ym - 19, 4, 4, lit && on ? C_ACC(0) : FL_BG3);
     }
@@ -303,7 +303,7 @@ static void view_midi(int x0)
             fb_hline(xa, lane, mid - 6 - xa, c);
             fb_hline(mid + 6, lane, xb - mid - 6, c);
         }
-        if (on)
+        if (on && cf_motion)
             for (i = 0; i < 4; i++) {           /* the notes going out */
                 uint32_t t = cu.now - cv_mpulse[p][i];
                 if (cv_mpulse[p][i] && t < 420u) {
@@ -476,7 +476,7 @@ static void view_bass(int x0)
 {
     int ym = VIEW_Y + 24, w = 192, xa = x0 + 12, amp = 22 * cs.bass_level / 127, live = cf_sn.nb > 0, py = VIEW_Y + 50;
     int32_t cyc = 512 << (cs.bass_oct + 2) >> 2;           /* -2: half a cycle .. +2: eight */
-    uint32_t ph = live ? cu.now * 2600000u * (uint32_t)(cs.bass_oct + 3) : 0u;
+    uint32_t ph = live ? cf_art_ms() * 2600000u * (uint32_t)(cs.bass_oct + 3) : 0u;
     fb_hline(xa, ym, w, FL_BG3);
     if (!cs.bass_on) {
         const sq_pat_t *p = &sq_st.pat[cf_sn.sq_pat % SQ_NPAT];
@@ -559,7 +559,7 @@ static int32_t cv_osc(int32_t mode, int32_t wave, int32_t shape, uint32_t ph, in
     if (mode == VOM_MORPH)
         return va_morph(ph, inc, shape * 258);
     if (mode == VOM_NOISE || wave == VW_NOIS) {   /* (a fixed noise: the same each frame, jittering a little) */
-        uint32_t h = ((uint32_t)x * 2654435761u) ^ (cu.now / 80u * 40503u);
+        uint32_t h = ((uint32_t)x * 2654435761u) ^ (cf_art_ms() / 80u * 40503u);
         int32_t wn = (int32_t)((h >> 8) & 0xFFFFu) - 32768;
         if (mode == VOM_NOISE && wave == VN_BROWN)
             return (sine_i(ph) >> 1) + (wn >> 2);
@@ -571,7 +571,7 @@ static int32_t cv_osc(int32_t mode, int32_t wave, int32_t shape, uint32_t ph, in
     case VW_SAW: return osc_saw(ph, inc);
     case VW_SQR: return osc_pulse(ph, inc, VA_PULSE_PW(shape * 258));
     case VW_TRI: return osc_tri(ph);
-    case VW_PWM: return osc_pulse(ph, inc, VA_PULSE_PW((int32_t)(16000 + (osc_sine(cu.now * 900000u) >> 1))));
+    case VW_PWM: return osc_pulse(ph, inc, VA_PULSE_PW((int32_t)(16000 + (osc_sine(cf_art_ms() * 900000u) >> 1))));
     default: return sine_i(ph);
     }
 }
@@ -590,7 +590,7 @@ static void view_va_osc(int x0, uint32_t k, uint32_t pg)
     int32_t wave = cv_va(2u * k, 0), lvl = cv_va(2u * k, 1), coarse = cv_va(2u * k, 2), fine = cv_va(2u * k, 3);
     int32_t mode = cv_va(2u * k + 1u, 0), shape = cv_va(2u * k + 1u, 1), ktrk = cv_va(2u * k + 1u, 2);
     int32_t cyc = cv_cycles(coarse), amp = 4 + 22 * lvl / 127, x, py = 0, ym = VIEW_Y + 30, w = 150, i;
-    uint32_t step = cv_step(cyc, w), ph = (uint32_t)fine * 600000u * (cu.now / 40u);
+    uint32_t step = cv_step(cyc, w), ph = (uint32_t)fine * 600000u * (cf_art_ms() / 40u);
     uint8_t c = lvl ? C_ACC(0) : FL_INK3;
     fb_hline(x0 + 4, ym, w, FL_BG3);
     for (x = 0; x < w; x++) {
@@ -731,7 +731,7 @@ static void view_va_lfo(int x0, uint32_t pg)
         int ym = VIEW_Y + 28, amp = 3 + 22 * (int)dep / 127, fpx = (int)fade * w / 160;
         int32_t cyc = 128 + rate * 6 * 256 / 127;
         uint32_t step = cv_step(cyc, w);
-        int dot = (int)((cu.now * (uint32_t)(2 + rate)) / 64u % (uint32_t)w);
+        int dot = (int)((cf_art_ms() * (uint32_t)(2 + rate)) / 64u % (uint32_t)w);
         char b[40];
         static const uint8_t SH[5] = {0, 1, 2, 3, 3};
         fb_hline(xa, ym, w, FL_BG3);
@@ -1052,7 +1052,7 @@ static void view_fm_tuning(int x0, uint32_t op)
     }
     if (!fixed)
         draw_wave(xa, ym, w, 18, 512, 0, 0, FL_INK3, 1);   /* the note */
-    draw_wave(xa, ym, w, 18, cyc, (uint32_t)det * (cu.now * 40000u), 0, C_ACC(0), 0);
+    draw_wave(xa, ym, w, 18, cyc, (uint32_t)det * (cf_art_ms() * 40000u), 0, C_ACC(0), 0);
     fb_text_halo(&CF_FONT_UI, x0 + 176, VIEW_Y + 2, t, FL_INK3, FL_BG, 1);
     fb_text_halo(&CF_FONT_UI, x0 + 176, VIEW_Y + 16, b, FL_INK, FL_BG, 1);
     if (det) {
@@ -1073,7 +1073,7 @@ static void view_fm_level(int x0, uint32_t op)
 {
     int lv = cv_fo(op, FP_OL), vs = cv_fo(op, FP_KVS) & 7, am = cv_fo(op, FP_AMS) & 3;
     int car = fm6_carrier((uint32_t)cv_fg(FP_ALG) & 31u, op + 1u), xa = x0 + 8, w = 150, y = VIEW_Y + 10;
-    int full = w * lv / 99, soft = full * (14 - vs) / 14, wob = am ? (osc_sine(cu.now * 3000000u) * am * 2) / 32768 : 0;
+    int full = w * lv / 99, soft = full * (14 - vs) / 14, wob = am ? (osc_sine(cf_art_ms() * 3000000u) * am * 2) / 32768 : 0;
     w = 116;
     full = w * lv / 99;
     soft = full * (14 - vs) / 14;
@@ -1234,7 +1234,7 @@ static void view_sel(int x0)
 /* the arrow over the button being edited, in the key row (drawn after the view's clip is let go) */
 static void draw_sel_pointer(void)
 {
-    int k, idx, x, y, w, h, bob = (int)((cu.now / 250u) & 1u);
+    int k, idx, x, y, w, h, bob = (int)((cf_art_ms() / 250u) & 1u);
     for (k = 0; k < CF_NKEYS; k++)
         if (cf_key_role(cs.chord.algo, k, &idx) == CF_ROLE_BUTTON && idx == (int)cu.sel_btn) {
             key_box(k, &x, &y, &w, &h);

@@ -334,7 +334,7 @@ static uint32_t crb_commit(void)
         if (len && !cpb_valid((const cpb_rec_t *)raw)) return 2;
         if (st_save(OBJ_CFPREFS, raw, len)) return 4;
         cfs_restore_lock = 1;
-        cf_message("Favorites restored: restart");
+        cf_message("Preferences restored: restart");
         return 0;
     }
     if (id == CFB_FX) {

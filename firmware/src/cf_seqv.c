@@ -505,7 +505,7 @@ static void sq_pat_row(int y0)                   /* the patterns' letters and SO
             fb_rect(x, y0 + 12, w, 2, C_ACC(0));   /* (the tab's bar) */
         if (play)
             sq_firefly(x + w / 2 - 1, y0 - 4);
-        else if (next && ((cu.now / 250u) & 1u))
+        else if (next && (!cf_motion || ((cu.now / 250u) & 1u)))
             fb_rect(x + w / 2 - 1, y0 - 4, 2, 2, FL_C(FL_R_SAND, 1));
         x += w + 2;
     }

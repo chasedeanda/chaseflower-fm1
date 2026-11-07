@@ -123,7 +123,7 @@ static void draw_drum(void)
     uint32_t r = dm_cur(), n = DM_N, p = r;      /* (one list: its place among all the rhythms) */
     const dm_rhythm_t *y = &DM_RHY[r % DM_N];
     uint32_t beats = y->beats;                   /* (its own TIME SIG) */
-    int wait = cf_sn.dm_on && cf_sn.dm_next == r && cf_sn.dm_r != r, lit = cu.now - cv_turn_ms < 220u && cv_turn_ms;
+    int wait = cf_sn.dm_on && cf_sn.dm_next == r && cf_sn.dm_r != r, lit = cf_motion && cu.now - cv_turn_ms < 220u && cv_turn_ms;
     char t[40], a[8];
     cf_scene_frame();
     draw_plant(Y_VIEW);
@@ -131,7 +131,7 @@ static void draw_drum(void)
     /* the head as every section's (rc6, the designer's R1, the owner's pick): the rhythm's name white at the left, the
      * drum at the right; under it its place as a counter "‹ 1/27 ›" with the pager's arrows, then its TIME SIG, bars and
      * tempo. The name blinks while it waits for the bar line; a dot after it: the user's KIT or SWING */
-    if (!wait || (cu.now / 250u) & 1u)
+    if (!wait || !cf_motion || (cu.now / 250u) & 1u)
         draw_head(y->name);
     else
         draw_icon(234, HEAD_Y + 14, SCR_DRUM, C_ACC(1));

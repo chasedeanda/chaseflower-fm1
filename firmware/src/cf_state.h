@@ -95,6 +95,12 @@ typedef struct {
 
 static cf_set_t cs;
 static cf_browser_t cpb;
+/* Appearance v2 uses the preference record's two previously reserved bytes. */
+enum { CF_SKIN_TEAL, CF_SKIN_STUDIO, CF_SKIN_EDITORIAL, CF_SKIN_N };
+static const char *const CF_SKIN_NAME[] = {"Instrument", "Studio", "Editorial"};
+static uint8_t cf_skin, cf_motion = 1;
+static uint32_t cf_art_ms(void);
+
 static cf_harmony_t ch;                         /* separate versioned record; cf_set_t stays 188 bytes */
 static struct {
     uint8_t idea, rhythm, mode, explored;
@@ -247,6 +253,12 @@ static uint32_t cf_panel_fix(uint32_t c, int colour)
 }
 #endif
 
+static uint32_t cf_art_ms(void) { return cf_motion ? cu.now : 0; }
+static const uint32_t CF_SKIN_RGB[CF_SKIN_N][7] = {
+    {0x061B1E,0x113034,0x355054,0xF2F8F4,0x89A7A5,0x77DACB,0x092D2C},
+    {0x0E0F10,0x1A1C1C,0x353738,0xF6F5F0,0x919391,0xE8A64D,0x16120C},
+    {0xEEEDE8,0xE1DFD9,0xC8C8C0,0x1A1A19,0x777873,0xB96835,0xFFFFFF}
+};
 static void cf_palette_build(void)
 {
     uint32_t i;
@@ -263,5 +275,13 @@ static void cf_palette_build(void)
     for (i = 0; i < 64u; i++)
         cf_pal[i] = cf_panel_fix(cf_pal[i], i >= FL_RAMP0);
 #endif
+    /* Tokens are authored RGB; the panel conversion above belongs to legacy art. */
+    const uint32_t *skin = CF_SKIN_RGB[cf_skin % CF_SKIN_N];
+    cf_pal[FL_BG] = skin[0]; cf_pal[FL_BG1] = cf_pal[FL_BG2] = skin[1];
+    cf_pal[FL_BG3] = skin[2]; cf_pal[FL_INK] = skin[3];
+    cf_pal[FL_INK2] = skin[4]; cf_pal[FL_INK3] = skin[4];
+    cf_pal[48] = cf_pal[49] = skin[5]; cf_pal[50] = skin[4]; cf_pal[51] = skin[1];
+    cf_pal[52] = skin[5]; cf_pal[53] = skin[4]; cf_pal[54] = skin[2]; cf_pal[55] = skin[1];
+    cf_pal[56] = skin[6];
     fb_palette(cf_pal, 64);
 }

@@ -452,7 +452,8 @@ static void ui_knob_info(int k, cf_knob_t *o)
             }
             break;
         case 0: /* Display */
-            if (k == 0) { kfmt(o->name, 12, "COLOR"); kfmt(o->val, 14, CF_THEMES[cs.accent % CF_NTHEMES].name); }
+            if (k == 0) { kfmt(o->name, 12, "THEME"); kfmt(o->val, 14, CF_SKIN_NAME[cf_skin]); }
+            if (k == 3) { kfmt(o->name, 12, "MOTION"); kfmt(o->val, 14, cf_motion ? "On" : "Off"); }
 #if CF_SCENES
             if (k == 1) {
                 static const char *const BD[FL_NBD] = {"Scene", "Ripples", "None"};
@@ -720,8 +721,11 @@ static void ui_knob_turn(int k, int d)
             else cf_bank[0] = cf_bank[1] = cf_bank[2] = 0;
             break;
         case 0:
-            if (k == 0)
-                cs.accent = (uint8_t)wrapi(cs.accent + d, CF_NTHEMES);
+            if (k == 0 || k == 3) {
+                if (k == 0) cf_skin = (uint8_t)wrapi(cf_skin + d, CF_SKIN_N);
+                else cf_motion = (uint8_t)(d > 0);
+                cpb_dirty = 1; cpb_changed = cu.now;
+            }
 #if CF_SCENES
             if (k == 1)
                 cs.backdrop = (uint8_t)wrapi(cs.backdrop + d, FL_NBD);

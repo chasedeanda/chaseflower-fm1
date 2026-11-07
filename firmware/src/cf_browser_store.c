@@ -1,5 +1,7 @@
 /* SPDX-License-Identifier: GPL-3.0-only
- * Only an explicit star/order edit dirties preferences; SELECT/PLAY never do.
+ * Only explicit star/order/appearance edits dirty preferences; SELECT/PLAY never do.
+ * v1 migrates to Instrument Teal / Motion On without a write. v2 gives the two
+ * reserved bytes meaning without changing record length, object ID or sectors.
  */
 #define CPB_MAGIC 0x31425043u /* CPB1 */
 typedef struct {
@@ -11,22 +13,24 @@ static uint8_t cpb_dirty;
 static uint32_t cpb_changed, cpb_retry;
 static int cpb_valid(const cpb_rec_t *r)
 {
-    return r->magic==CPB_MAGIC && r->version==1 && r->mode<CPB_MODES &&
+    return r->magic==CPB_MAGIC && (r->version==1 || (r->version==2 && r->reserved[0]<CF_SKIN_N && r->reserved[1]<=1)) && r->mode<CPB_MODES &&
         r->check==cfs_fnv(r,__builtin_offsetof(cpb_rec_t,check));
 }
 static void cpb_load(void)
 {
     cpb_rec_t r;
-    memset(&cpb,0,sizeof cpb); cpb_dirty=0; cpb_retry=0;
+    memset(&cpb,0,sizeof cpb); cpb_dirty=0; cpb_retry=0; cf_skin=CF_SKIN_TEAL; cf_motion=1;
     if(!cr_safe)st_check_blank(OBJ_CFPREFS);
     if(!cr_safe && st_load(OBJ_CFPREFS,&r,sizeof r)==sizeof r && cpb_valid(&r)) {
         memcpy(cpb.favorites,r.favorites,sizeof cpb.favorites); cpb.mode=r.mode;
+        if(r.version==2) { cf_skin=r.reserved[0]; cf_motion=r.reserved[1]; }
     }
     cf_browser_order(&cpb,cpb.mode,fm1_ms);
 }
 static int cpb_write(uint32_t how)
 {
-    cpb_rec_t r={0}; r.magic=CPB_MAGIC; r.version=1; r.mode=cpb.mode;
+    cpb_rec_t r={0}; r.magic=CPB_MAGIC; r.version=2; r.mode=cpb.mode;
+    r.reserved[0]=cf_skin; r.reserved[1]=cf_motion;
     memcpy(r.favorites,cpb.favorites,sizeof r.favorites);
     r.check=cfs_fnv(&r,__builtin_offsetof(cpb_rec_t,check));
     int rc=st_put(OBJ_CFPREFS,&r,sizeof r,how);

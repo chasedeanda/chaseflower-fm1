@@ -122,6 +122,7 @@ def load_inventory() -> dict:
         "issues": {"tracker": 1, "playback": 43, "visuals": 44, "home": 45, "editing": 46, "learning": 47, "suggestions": 48, "themes": 49, "performance": 50, "trimming": 51},
         "defaultAppearance": {"theme": "Instrument Teal", "motion": "On (adaptive)", "motionChoices": ["On (adaptive)", "Off"], "background": "#061B1E", "foreground": "#F2F8F4", "secondary": "#89A7A5", "separator": "#355054", "subtle": "#113034", "accent": "#77DACB", "onAccent": "#092D2C"},
     })
+    data["implementation"] = json.loads((DESIGN / "implementation-evidence.json").read_text())
     return data
 
 
@@ -140,6 +141,7 @@ def guide(data: dict) -> str:
         "The [implementation plan](design/chord-first/IMPLEMENTATION-PLAN.md) uses the supplied [adaptive prototype](design/chord-first/instrument-teal/prototype.html), with **Instrument Teal** as the default palette and **Motion On (adaptive) / Off**.", "",
         "## Start here", "",
     ]
+    lines += ["> " + data["implementation"]["summary"], ""]
     lines += [f"{i}. {x}" for i, x in enumerate(data["quickStart"], 1)]
     lines += ["", "## Read the main screen", "",
         "The large chord is the sound you are hearing. Its degree/quality line might read **vi · minor**. In F major, the planned phrase can show **IV over Bb**, **V over C**, **vi over Dm**, and **I over F**. Uppercase numerals mean major; lowercase means minor. A slot counter such as 03/04 is the transport position, not the scale degree.", "",
@@ -171,6 +173,7 @@ def guide(data: dict) -> str:
 
 def engineering(data: dict) -> str:
     lines = ["# Chord-first FM-1 engineering handoff", "", "**Status:** complete planned-interface inventory for review; not an implementation or hardware validation claim.", "", "Start with the [implementation plan](IMPLEMENTATION-PLAN.md), [selected Instrument Teal prototype](instrument-teal/prototype.html) and [motion specification](MOTION-SPEC.md).", "", f"Design version {data['version']}, {data['date']}. {len(data['screens'])} screen/state definitions and {len(data['workflows'])} workflows share canonical JSON with the board and player guide.", "", "## Product contracts", ""]
+    lines[2:2] = [data["implementation"]["summary"], ""]
     lines += [f"{i}. {x}" for i, x in enumerate(CONTRACTS, 1)]
     lines += ["", "## Delivery", ""] + [f"- {v}." for v in PHASES.values()]
     lines += ["", "Playback, HOME and the modern visual system are the first work. Optional accent modes, pruning and a comprehensive optimization project do not block initial playback. Measure linked memory and FM-1/USB timing; derive safe capacities rather than inventing limits.", "", "## Screen contracts", ""]
@@ -203,14 +206,23 @@ def main() -> None:
     (ROOT / "docs/CHORD-FIRST-USER-GUIDE.md").write_text(guide(data))
     (DESIGN / "ENGINEERING-HANDOFF.md").write_text(engineering(data))
     rollout = {"status": "All entries planned; no implementation or physical validation inferred from a mockup", "defaultAppearance": data["defaultAppearance"], "screens": [{"id": s["id"], "title": s["title"], "group": s["group"], "sharedTemplate": s["kind"], "musicalMilestone": s["phase"], "designStatus": "Planned — migrate layout to selected prototype", "implementationStatus": "Not assessed by this design task", "deviceVerification": "Required"} for s in data["screens"]]}
+    rollout["status"] = "Engineering preview progress; physical verification remains pending"
+    for entry in rollout["screens"]:
+        entry.update(data["implementation"]["screens"].get(entry["id"], {}))
     (DESIGN / "screen-rollout.json").write_text(json.dumps(rollout, ensure_ascii=False, indent=2) + "\n")
     if args.board_fragment:
         path = args.board_fragment
         fragment = path.read_text()
         start_tag = '<script type="application/json" id="fm1-board-data">'
+        import html
+        end_tag = "</script>"
+        value = payload.replace("</", "<\\/")
+        if start_tag not in fragment:
+            start_tag, end_tag = html.escape(start_tag, quote=True), html.escape(end_tag, quote=True)
+            value = html.escape(value, quote=True)
         start = fragment.index(start_tag) + len(start_tag)
-        end = fragment.index("</script>", start)
-        fragment = fragment[:start] + "\n" + payload.replace("</", "<\\/") + fragment[end:]
+        end = fragment.index(end_tag, start)
+        fragment = fragment[:start] + "\n" + value + fragment[end:]
         path.write_text(fragment)
     print(json.dumps({"screens": len(data["screens"]), "workflows": len(data["workflows"]), "groups": len(set(s['group'] for s in data['screens'])), "status": "validated"}))
 

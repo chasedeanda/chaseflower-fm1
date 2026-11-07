@@ -6,6 +6,8 @@ The [implementation plan](design/chord-first/IMPLEMENTATION-PLAN.md) uses the su
 
 ## Start here
 
+> Engineering preview: native Instrument Teal CORE HOME, paired planned degrees/names, actual Now/Last chord and notes, real cursor/window, and persisted theme/Motion On or Off. GLO > Display: K1 theme, K4 Motion. Existing HOME Chord/Keys/Diagnostics navigation and recording behavior are retained in this first slice; the four-bank gesture, finite transitions, full Songs lifecycle and device verification remain pending. On uses documented volume/activity metadata, not a measured audio envelope.
+
 1. Open HOME. Turn SELECT to explore the complete progression catalogue; each idea supplies its starting key, mode and time signature.
 2. Press PLAY to hear the selected progression. Press PLAY again to stop.
 3. Turn K1 for a compatible drum groove or Drums Off, K2 to transpose, K3 for the mode and K4 for tempo. PRESETS changes the chord sound; MASTER changes volume.

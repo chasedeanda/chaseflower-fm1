@@ -2,6 +2,8 @@
 
 **Start with [AGENT-START.md](AGENT-START.md).**
 
+The [native HOME preview](native-home/README.md) records the first implementation slice, native host captures, linked costs and pending device checks.
+
 The selected visual reference is the supplied adaptive motion prototype, with
 **Instrument Teal as the default** and **Motion On (adaptive) / Off**.
 

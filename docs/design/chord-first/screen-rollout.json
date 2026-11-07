@@ -1,5 +1,5 @@
 {
-  "status": "All entries planned; no implementation or physical validation inferred from a mockup",
+  "status": "Engineering preview progress; physical verification remains pending",
   "defaultAppearance": {
     "theme": "Instrument Teal",
     "motion": "On (adaptive)",
@@ -22,9 +22,9 @@
       "group": "Home",
       "sharedTemplate": "chord",
       "musicalMilestone": 1,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native preview alongside selected prototype; device review pending",
+      "implementationStatus": "Partial implementation: native CORE HOME; bank/navigation migration pending",
+      "deviceVerification": "Pending — host captures and device link only"
     },
     {
       "id": "HOME_PENDING",
@@ -32,9 +32,9 @@
       "group": "Home",
       "sharedTemplate": "chord",
       "musicalMilestone": 1,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native preview alongside selected prototype; device review pending",
+      "implementationStatus": "Partial implementation: queued idea/setup label; detailed pending setup remains legacy",
+      "deviceVerification": "Pending — host captures and device link only"
     },
     {
       "id": "ACC_GROOVE",
@@ -882,9 +882,9 @@
       "group": "Display",
       "sharedTemplate": "params",
       "musicalMilestone": 1,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native preview alongside selected prototype; device review pending",
+      "implementationStatus": "Implemented preview: three persisted palettes; physical validation pending",
+      "deviceVerification": "Pending — host captures and device link only"
     },
     {
       "id": "DISPLAY-MOTION",
@@ -892,9 +892,9 @@
       "group": "Display",
       "sharedTemplate": "params",
       "musicalMilestone": 1,
-      "designStatus": "Planned — migrate layout to selected prototype",
-      "implementationStatus": "Not assessed by this design task",
-      "deviceVerification": "Required"
+      "designStatus": "Native preview alongside selected prototype; device review pending",
+      "implementationStatus": "Partial implementation: persisted On/Off, HOME activity envelope and settled legacy art; cadence/tails/hardware tuning pending",
+      "deviceVerification": "Pending — host captures and device link only"
     },
     {
       "id": "DISPLAY-SCENES",

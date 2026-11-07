@@ -98,6 +98,9 @@ jobs:
       - name: Progression suggestions, controls and uninterrupted audio (host HAL)
         run: sh tools/test_progressions.sh
 
+      - name: Native HOME, appearance migration and settled Motion Off
+        run: sh tools/test_stage.sh
+
       - name: Progression accompaniment transport, queues, ownership and clocks
         run: sh tools/test_accomp.sh
 

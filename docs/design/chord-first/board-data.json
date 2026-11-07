@@ -14657,5 +14657,32 @@
     "subtle": "#113034",
     "accent": "#77DACB",
     "onAccent": "#092D2C"
+  },
+  "implementation": {
+    "sourceBase": "8bc9086cceb98544713bab1907543d632c703981",
+    "designRevision": "845325136418dd038c7ef81eaca01ec64ac5e61e",
+    "summary": "Engineering preview: native Instrument Teal CORE HOME, paired planned degrees/names, actual Now/Last chord and notes, real cursor/window, and persisted theme/Motion On or Off. GLO > Display: K1 theme, K4 Motion. Existing HOME Chord/Keys/Diagnostics navigation and recording behavior are retained in this first slice; the four-bank gesture, finite transitions, full Songs lifecycle and device verification remain pending. On uses documented volume/activity metadata, not a measured audio envelope.",
+    "screens": {
+      "HOME_STAGE": {
+        "designStatus": "Native preview alongside selected prototype; device review pending",
+        "implementationStatus": "Partial implementation: native CORE HOME; bank/navigation migration pending",
+        "deviceVerification": "Pending — host captures and device link only"
+      },
+      "HOME_PENDING": {
+        "designStatus": "Native preview alongside selected prototype; device review pending",
+        "implementationStatus": "Partial implementation: queued idea/setup label; detailed pending setup remains legacy",
+        "deviceVerification": "Pending — host captures and device link only"
+      },
+      "DISPLAY-STYLE": {
+        "designStatus": "Native preview alongside selected prototype; device review pending",
+        "implementationStatus": "Implemented preview: three persisted palettes; physical validation pending",
+        "deviceVerification": "Pending — host captures and device link only"
+      },
+      "DISPLAY-MOTION": {
+        "designStatus": "Native preview alongside selected prototype; device review pending",
+        "implementationStatus": "Partial implementation: persisted On/Off, HOME activity envelope and settled legacy art; cadence/tails/hardware tuning pending",
+        "deviceVerification": "Pending — host captures and device link only"
+      }
+    }
   }
 }
