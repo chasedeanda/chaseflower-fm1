@@ -161,7 +161,7 @@ static void draw_fx(void)
     uint32_t sel = cu.fx_pos % CFX_N, e = cs.fx.order[sel] % CFX_N, i;
     int x0 = 8, y0 = Y_VIEW + 58, tw = 34, gap = 4, run = 6 * tw + 5 * gap;
     char sub[24];
-    flora_render(&flo, &fl_cv);
+    cf_scene_render(&flo, &fl_cv);
     draw_plant(Y_VIEW);
     fb_veil(0, Y_VIEW, FB_W, H_VIEW, FL_BG);   /* (the plant faint: the picture leads) */
     str_cpy(sub, e == CFX_FILTER ? CFX_FTYPE[cs.fx.v[e][0] % 3u] : e == CFX_REVERB ? CFX_RTYPE[cs.fx.v[e][0] % 3u] : "",
@@ -417,7 +417,7 @@ static void draw_home(void)
 {
     char key[16], k2[8];
     uint32_t view = home_view();
-    flora_render(&flo, &fl_cv);
+    cf_scene_render(&flo, &fl_cv);
     draw_plant(Y_VIEW);
     name_update();
     hv_update();
@@ -476,7 +476,7 @@ static void draw_sel(void)
 {
     const cf_form_t *f = sel_form();
     char lab[8], b[24];
-    flora_render(&flo, &fl_cv);
+    cf_scene_render(&flo, &fl_cv);
     draw_plant(Y_VIEW);
     fb_veil(0, Y_VIEW, FB_W, H_VIEW, FL_BG);   /* (the plant faint: the picture leads) */
     if (cf_is_off(&cs.chord, cu.sel_btn)) {
@@ -506,7 +506,7 @@ static void draw_env(void)
     int r = cf_env_get(env_part(), 3), x0 = 16, yb = Y_VIEW + H_VIEW - 14, yt = Y_VIEW + 50;
     int xa = x0 + 8 + a * 44 / 99, xd = xa + 8 + d * 44 / 99, xs = xd + 40, xr = xs + 8 + r * 50 / 99;
     int ys = yb - (yb - yt) * sl / 99;
-    flora_render(&flo, &fl_cv);
+    cf_scene_render(&flo, &fl_cv);
     draw_plant(Y_VIEW);
     fb_veil(0, Y_VIEW, FB_W, H_VIEW, FL_BG);   /* (the plant faint: the picture leads) */
     draw_head(TGT[cu.env_tgt % 4u]);
@@ -530,7 +530,7 @@ static void draw_edit(void)
 {
     uint32_t part = cu.edit_part, np = cfe_npages(part, cu.edit_sec);
     char t[24];
-    flora_render(&flo, &fl_cv);
+    cf_scene_render(&flo, &fl_cv);
     draw_plant(Y_VIEW);
     fb_veil(0, Y_VIEW, FB_W, H_VIEW, FL_BG);   /* (the plant faint: the picture leads) */
     /* the title: the section (FM: "OP 1", its page's name by the pager), or the VA's page ("OSC 1", its second page
@@ -579,7 +579,7 @@ static void draw_edit(void)
 static void draw_generic(void)
 {
     static const char *const PG_GLO[6] = {"Display", "MIDI", "Channels", "Play", "Reset", "Library"};
-    flora_render(&flo, &fl_cv);
+    cf_scene_render(&flo, &fl_cv);
     draw_plant(Y_VIEW);
     fb_veil(0, Y_VIEW, FB_W, H_VIEW, FL_BG);   /* (the plant faint: the picture leads) */
     switch (cu.scr) {

@@ -173,6 +173,7 @@ static void cf_ui_pump(void);
 #include "cf_fb.c"
 #include "cf_sound.c"
 #include "cf_state.h"
+#include "cf_scene.c"
 #include "cf_draw.c"
 #include "cf_settings.c"           /* the settings in flash */
 #include "cf_ui.c"
