@@ -3,10 +3,10 @@
 Chase's personal firmware for the **M-VAVE FM-1**, built on [CoralFlower](https://github.com/FicusFicusov/CoralFlower).
 Explore chord progressions, build a groove, play over it, edit your own phrase and learn what makes the chords work.
 
-**Release 0.6-chase9: CORD boot, responsive HOME motion, Songs and Chord Lab.**
+**Release 0.6-chase10: Warm CORD boot chime, responsive HOME motion, Songs and Chord Lab.**
 
-**[Download the firmware (.fwsc)](https://github.com/chasedeanda/chaseflower-fm1/releases/download/v0.6-chase9/coralflower-0.6-chase9.fwsc)** ·
-[Release notes](docs/releases/0.6-chase9.md) · [Build current main](#build-current-main)
+**[Download the firmware (.fwsc)](https://github.com/chasedeanda/chaseflower-fm1/releases/download/v0.6-chase10/coralflower-0.6-chase10.fwsc)** ·
+[Release notes](docs/releases/0.6-chase10.md) · [Build current main](#build-current-main)
 
 This guide covers the new interface. The older 0.6-chase7 download has different controls and scene animations.
 
@@ -184,6 +184,9 @@ The separate chord-library picker remains deferred.
   Off settles all visual animation while notes, recording and transport keep updating.
 - **CORD startup:** piano keys assemble inside a complete ring in your saved theme, then open HOME / CORE.
   Touch a key, button or encoder to skip. Motion Off shows the finished logo during startup.
+- **Boot sound:** the short warm Dm7 chime matches the piano-key logo. **GLO → Display → K3 BOOT SND**
+  turns it On/Off; On previews it. MASTER sets its level, and playing takes priority.
+  [Listen to the chime](docs/audio/cord-boot-chime.wav).
 - **HOME feedback:** with Motion On and audible output, a round pulse expands and fades with sound and the beat.
   A small top-right indicator follows the playing clock. Filled progression cards match the chord you are playing;
   the underline remains the sequence's actual position. Matching still works with Motion Off.
@@ -226,13 +229,13 @@ GitHub Actions runs the complete regression suite. [Local emulator](tools/emu/RE
 1. Save a current backup of your sounds, settings and recordings.
 2. Open the [upstream installer's custom-build section](https://ficusficusov.github.io/CoralFlower/#own)
    in Chrome or Edge on a computer, and connect the FM-1 with a data-capable USB cable.
-3. Expand **Another version, or a build of your own**, choose the downloaded **`coralflower-0.6-chase9.fwsc`**
+3. Expand **Another version, or a build of your own**, choose the downloaded **`coralflower-0.6-chase10.fwsc`**
    or your own **`build/coralflower.fwsc`**, and install
    from that section. Check the selected file first: the installer's default download is upstream CoralFlower.
 4. Keep the cable connected and the page open until restart. The **CORD** piano-key boot screen leads to native **HOME / CORE**.
 
 The separate app `.bin` and GitHub source archives are not installer packages.
-This release reports **CoralFlower 0.6-chase9**. The compatible `CoralFlower` INFO prefix, `FM-1_930` package identity
+This release reports **CoralFlower 0.6-chase10**. The compatible `CoralFlower` INFO prefix, `FM-1_930` package identity
 and USB names remain in use; an unversioned development build can retain an older version label. The published
 [0.6-chase7 package](https://github.com/chasedeanda/chaseflower-fm1/releases/download/v0.6-chase7/coralflower-0.6-chase7.fwsc)
 has its own [release notes](docs/releases/0.6-chase7.md) and older controls/scene animations.
