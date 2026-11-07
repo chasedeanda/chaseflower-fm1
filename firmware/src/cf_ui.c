@@ -1815,8 +1815,8 @@ static uint16_t cf_progression_cue(uint16_t *playing)
         cpg_follow.valid = 0;
         cpg_follow.press = cf_sn.root_press;
         cpg_follow.seq = cf_sn.sq_dser;
-        if(o->sounding)*playing|=(uint16_t)(1u<<o->root_pc);
-        if(cf_sn.sq_dn)*playing|=(uint16_t)(1u<<(cf_sn.sq_droot%12));
+        if(o->sounding && !o->single)*playing|=(uint16_t)(1u<<o->root_pc);
+        if(cf_sn.sq_dn && !cf_sn.sq_dsingle)*playing|=(uint16_t)(1u<<(cf_sn.sq_droot%12));
         if (!cf_sn.ac_n || cf_sn.ac_slot >= cf_sn.ac_n || cf_sn.ac_paused) return 0;
         unsigned next = cf_sn.ac_waiting ? cf_sn.ac_slot : (cf_sn.ac_slot + 1u) % cf_sn.ac_n;
         if (!cf_sn.ac_waiting && !next && cf_sn.ac_repeat_off) return 0;
@@ -1827,8 +1827,8 @@ static uint16_t cf_progression_cue(uint16_t *playing)
     uint16_t matches = src == 1u ? (o->single ? 0 : cf_progression_highlight(p, cs.chord.scale,
         cs.chord.tonic, o->root_pc, o->mask)) : src == 2u ? (cf_sn.sq_dsingle ? 0 :
         cf_progression_highlight(p, cs.chord.scale, cs.chord.tonic, cf_sn.sq_droot % 12, cf_sn.sq_dmask)) : 0;
-    if(src==1u)*playing=(uint16_t)(1u<<o->root_pc);
-    else if(src==2u)*playing=(uint16_t)(1u<<(cf_sn.sq_droot%12));
+    if(src==1u && !o->single)*playing=(uint16_t)(1u<<o->root_pc);
+    else if(src==2u && !cf_sn.sq_dsingle)*playing=(uint16_t)(1u<<(cf_sn.sq_droot%12));
     int reset = !cpg_follow.valid || cpg_follow.idea != cpg.idea || cpg_follow.tonic != cs.chord.tonic ||
         cpg_follow.scale != cs.chord.scale || cpg_follow.quantize != cs.chord.quantize;
     int gesture = src == 1u ? cf_sn.root_press != cpg_follow.press :
@@ -1952,7 +1952,7 @@ static void cf_leds(void)
     uint16_t auto_notes = 0;
     uint16_t guide_playing, guide_next = cf_progression_cue(&guide_playing);
     /* Only roots guide the hand: generated thirds/fifths must not hide the next root. */
-    if(out->sounding)auto_notes=(uint16_t)(1u<<out->root_pc);
+    if(out->automatic && !out->fallback && out->sounding && !out->single)auto_notes=(uint16_t)(1u<<out->root_pc);
     auto_notes|=guide_playing;
     /* buttons: the open screen lit, the others dim; PLAY with the beat. The sequencer: only what works there is up
      * (HOME, SEQ, GLO here; EDIT, SAVE, SEL, PLAY, REC below); the other screens' buttons do nothing there, dark */
