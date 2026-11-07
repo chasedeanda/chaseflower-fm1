@@ -98,6 +98,7 @@ static void cfn_page_model(cfn_page_t *m)
     memset(m,0,sizeof *m);m->skin=cf_skin;m->rows=4;m->kind=N_PARAMS;m->focus=m->cursor=m->playrow=m->playcol=255;m->dx=cfn_page_dx();m->grid_label_width=27;
     NP(title,SCR_NAME[cu.scr]);NP(status,cf_acc_transport());NP(hint,"HOME back / SELECT page");
     m->page=cu.page[cu.scr];m->npages=screen_pages(cu.scr);
+    if(m->npages<2)NP(hint,"HOME back");
     for(unsigned k=0;k<4;k++){cf_knob_t o;memset(&o,0,sizeof o);ui_knob_info(k,&o);str_cpy(m->label[k],o.name,sizeof m->label[k]);str_cpy(m->value[k],o.val,sizeof m->value[k]);m->disabled[k]=o.dis;m->emphasis[k]=cfn_knob(k);}
     switch(cu.scr) {
     case SCR_HOME:
@@ -106,7 +107,7 @@ static void cfn_page_model(cfn_page_t *m)
         m->kind=N_KEYS;m->keys=cf_sn.keys_held;NP(hint,"ALGORITHM layout / PRESETS sound");break;
     case SCR_ENV:
         {static const char *const target[]={"Chord + bass","Chord","Bass","Layer"};NP(title,"Envelope");NP(section,target[cu.env_tgt%4]);m->kind=N_ENV;
-         for(unsigned k=0;k<4;k++)m->env[k]=cf_env_get(env_part(),k);NP(hint,"SELECT sound / EDIT advanced");}break;
+         m->page=cu.env_tgt%4;m->npages=4;for(unsigned k=0;k<4;k++)m->env[k]=cf_env_get(env_part(),k);NP(hint,"SELECT sound / EDIT advanced");}break;
     case SCR_EDIT:
         NP(title,cf_snd[cu.edit_part].name);NP(section,cfe_page_title(cu.edit_part,cu.edit_sec,cu.page[SCR_EDIT]));NP(hint,"SELECT page / keys section or part");break;
     case SCR_SEL:
@@ -116,7 +117,9 @@ static void cfn_page_model(cfn_page_t *m)
         NP(title,"Effects");
         if(fxpu.mode==FXP_BROWSE){m->kind=N_LINES;m->rows=4;NP(section,"FX presets");NP(row[0],fxp_pick_name());NP(row[1],!cs.fx.on?"No FX":cfx_bypass?"Chain bypassed":"K2 clear / K3 undo");NP(row[2],fxp_pending()?"Saving / keep power on":fxp_protected?"User bank protected":"SELECT hears presets");NP(hint,"SAVE manage / K4 edit");}
         else if(fxpu.mode==FXP_MANAGE){m->kind=N_NAME;NP(section,fxpu.action==2?"Delete user FX":fxpu.action?"Replace user FX":"Save new FX");NP(detail,fxpu.name);m->name_cursor=fxpu.cursor;NP(hint,"Hold SAVE 1 second / FX back");if(cu.save_hold)m->progress=(cu.now-cu.save_hold>=1000)?100:(cu.now-cu.save_hold)/10;}
-        else {NP(section,CFX_NAME[cs.fx.order[cu.fx_pos%CFX_N]%CFX_N]);NP(hint,"ALGORITHM effect / SAVE presets");}break;
+        else {NP(section,CFX_NAME[cs.fx.order[cu.fx_pos%CFX_N]%CFX_N]);m->page=cu.fx_pos;m->npages=CFX_N;
+            for(unsigned i=0;i<CFX_N;i++){if(i)str_cpy(m->detail+str_len(m->detail)," > ",sizeof m->detail-str_len(m->detail));str_cpy(m->detail+str_len(m->detail),CFX_SHORT[cs.fx.order[i]%CFX_N],sizeof m->detail-str_len(m->detail));}
+            NP(hint,"SELECT effect / ALGORITHM order");}break;
     case SCR_SAVE:
         m->kind=N_NAME;NP(title,cu.save_del?"Delete sound":"Save sound");NP(section,cf_save_part()==2?"Layer":cf_save_part()?"Bass":"Chord");NP(detail,cu.save_name);m->name_cursor=cu.save_cur;NP(hint,cu.save_del?"Hold SAVE to delete":"Hold SAVE to save / HOME cancel");
         if(cu.save_hold)m->progress=(cu.now-cu.save_hold>=1000)?100:(cu.now-cu.save_hold)/10;break;
@@ -132,7 +135,7 @@ static void cfn_page_model(cfn_page_t *m)
     case SCR_SQ: {
         const sq_pat_t *p=sq_cur();m->kind=N_LIST;NP(title,"Recordings");kint(m->section,sq_number(squ.pat)," / 3");m->focus=squ.trk;
         for(unsigned t=0;t<4;t++){NP(row[t],SQ_TRK_NAME[t]);str_cpy(m->right[t],(p->mute>>t)&1?"Muted":sq_track_has(p,t)?"Recorded":t==SQ_BASS && sq_count(p,SQ_CHORDS)?"Follows":"Empty",sizeof m->right[t]);}
-        NP(hint,"SELECT track / EDIT opens / GLO help");
+        NP(hint,"SELECT track / EDIT opens / GLO help");NP(detail,"ALGO recording / hold SAVE clears");
         if(squ.sel_down && sq_track_has(p,squ.trk)){unsigned t=cu.now-squ.sel_down;m->progress=t>=SQ_CLEAR_MS?100:t*100/SQ_CLEAR_MS;NP(detail,"Hold SEL to clear track");}break;}
     case SCR_SQED:NP(title,SQ_TRK_NAME[squ.trk%SQ_NTRK]);kint(m->section,sq_number(squ.pat)," / Recording");cfn_record_grid(m,sq_cur());break;
     case SCR_GLO: {

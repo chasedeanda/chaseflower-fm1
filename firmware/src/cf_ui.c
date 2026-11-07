@@ -1220,6 +1220,7 @@ static void ui_button(uint32_t b)
     switch (b) {
     case B_HOME:
         if (home_stage()) {
+            cf_nav_dir=1;
             cf_home_bank = (uint8_t)((cf_home_bank + 1u) % CF_HB_N);
             cf_home_bank_ms = cf_motion ? (cu.now ? cu.now : 1u) : 0u;
             if (cu.pop == POP_SOUND_CHORD || cu.pop == POP_SOUND_BASS) cu.pop = POP_NONE;
