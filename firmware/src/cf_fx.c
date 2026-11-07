@@ -565,18 +565,21 @@ static void cfx_phaser(int32_t *l, int32_t *r, uint32_t n)
 /* fx.c's FX_MIX_HOOK: the chain, in its order, on the mixed parts */
 /* ------------------------------------------------------ the power-on sound --- */
 /* CORD: a short Dm7 electric-key signature, matching the piano-key logo.
- * Four softly rolled notes, a brief second harmonic and a finite 1.1 s tail.
+ * Six rising notes, a brief second harmonic and a finite 2.2 s tail.
  * Independent of the chosen patches/FX, after the effects and before MASTER.
  * This audio-owned voice never emits MIDI, changes a part or writes a recording.
  */
 static const struct { uint16_t ms; uint8_t note, vel; int8_t pan; } CF_BOOT[] = {
-    {0,50,88,-10}, {65,53,76,-4}, {130,57,72,4}, {195,60,84,10} /* D3 F3 A3 C4 */
+    {0,50,88,-10}, {100,53,76,-6}, {210,57,72,-2},
+    {330,60,84,2}, {470,65,74,6}, {620,69,70,10} /* D3 F3 A3 C4 F4 A4 */
 };
 #define CF_BOOT_N ((uint32_t)(sizeof CF_BOOT / sizeof CF_BOOT[0]))
-#define CF_BOOT_SAMPLES (FS * 1100u / 1000u)
-#define CF_BOOT_FADE (FS * 180u / 1000u)
+#define CF_BOOT_SAMPLES (FS * 2200u / 1000u)
+#define CF_BOOT_FADE (FS * 500u / 1000u)
 static const uint32_t CF_BOOT_INC[12] = {796254u,843601u,893765u,946911u,1003217u,1062871u,
     1126073u,1193033u,1263974u,1339134u,1418763u,1503127u}; /* MIDI 0..11, per sample */
+static volatile uint8_t cf_boot_pending; /* delayed power-on request; notes cancel it */
+static uint32_t cf_boot_ready_ms;
 static volatile uint8_t cf_boot_go; /* UI mailbox: 1 start/audition, 2 cancel/fade */
 static struct {
     uint8_t on,yield;
@@ -593,29 +596,41 @@ static void cf_boot_mix(int32_t *l,int32_t *r,uint32_t n)
         else cfb.yield=1;
     }
     if(!cfb.on)return;
-    for(unsigned i=0;i<n;i++) {
-        if(cfb.t>=CF_BOOT_SAMPLES || (cfb.yield && (cfb.gain-=128)<=0)){cfb.on=0;return;}
-        int32_t left=0,right=0;
-        for(unsigned k=0;k<CF_BOOT_N;k++) {
-            unsigned start=CF_BOOT[k].ms*FS/1000u;
-            if(cfb.t<start)continue;
-            unsigned age=cfb.t-start;
+    /* Note setup belongs outside the sample loop. In particular, MIDI
+     * octave/remainder and note-time divisions are costly on the device. */
+    if(cfb.t>=CF_BOOT_SAMPLES){cfb.on=0;return;}
+    unsigned count=n;
+    if(count>CF_BOOT_SAMPLES-cfb.t)count=CF_BOOT_SAMPLES-cfb.t;
+    if(cfb.yield && count>(unsigned)(cfb.gain-1)/128u)count=(unsigned)(cfb.gain-1)/128u;
+    int32_t boot_l[CTL]={0},boot_r[CTL]={0};
+    for(unsigned k=0;k<CF_BOOT_N;k++) {
+        unsigned start=CF_BOOT[k].ms*FS/1000u;
+        if(cfb.t+count<=start)continue;
+        unsigned first=cfb.t<start?start-cfb.t:0;
+        uint32_t inc=CF_BOOT_INC[CF_BOOT[k].note%12u]<<(CF_BOOT[k].note/12u);
+        int32_t velocity=CF_BOOT[k].vel*80,pan=CF_BOOT[k].pan;
+        for(unsigned i=first;i<count;i++) {
+            unsigned at=cfb.t+i,age=at-start;
             if(!age)cfb.e[k]=cfb.ei[k]=1<<30;
             unsigned attack=age<FS*8u/1000u?age*32768u/(FS*8u/1000u):32768u;
             int32_t bright=(osc_sine(cfb.pa[k]*2u)*(cfb.ei[k]>>15))>>15;
             int32_t y=(osc_sine(cfb.pa[k])*7+bright)/8;
             y=(y*(cfb.e[k]>>15))>>15;y=(y*(int32_t)attack)>>15;
-            y=y*(CF_BOOT[k].vel*40)/32768;
-            left+=y*(32-CF_BOOT[k].pan)/32;right+=y*(32+CF_BOOT[k].pan)/32;
-            cfb.pa[k]+=CF_BOOT_INC[CF_BOOT[k].note%12u]<<(CF_BOOT[k].note/12u);
-            cfb.e[k]-=cfb.e[k]>>14;cfb.ei[k]-=cfb.ei[k]>>12;
+            y=y*velocity/32768;
+            boot_l[i]+=y*(32-pan)/32;boot_r[i]+=y*(32+pan)/32;
+            cfb.pa[k]+=inc;cfb.e[k]-=cfb.e[k]>>15;cfb.ei[k]-=cfb.ei[k]>>12;
         }
-        unsigned remain=CF_BOOT_SAMPLES-cfb.t;
-        int32_t fade=remain<CF_BOOT_FADE?remain*32768u/CF_BOOT_FADE:32768u;
-        int32_t gain=(cfb.gain*fade)>>15;
-        l[i]+=(left*gain)>>15;r[i]+=(right*gain)>>15;cfb.t++;
     }
-    if(cfb.t>=CF_BOOT_SAMPLES)cfb.on=0;
+    for(unsigned i=0;i<count;i++) {
+        unsigned remain=CF_BOOT_SAMPLES-(cfb.t+i);
+        int32_t fade=remain<CF_BOOT_FADE?remain*32768u/CF_BOOT_FADE:32768u;
+        int32_t level=cfb.yield?cfb.gain-(int32_t)(128u*(i+1u)):cfb.gain;
+        int32_t gain=(level*fade)>>15;
+        l[i]+=(boot_l[i]*gain)>>15;r[i]+=(boot_r[i]*gain)>>15;
+    }
+    cfb.t+=count;
+    if(cfb.yield)cfb.gain-=(int32_t)(128u*count);
+    if(cfb.t>=CF_BOOT_SAMPLES || count<n || (cfb.yield && cfb.gain<=128))cfb.on=0;
 }
 /* The signature always yields before an instrument voice or its ringing tail. */
 static int cf_boot_yield(void)
@@ -628,6 +643,7 @@ static int cf_boot_yield(void)
 /* Also cancel a queued start: a key can arrive before the first chime block. */
 static void cf_boot_note(void)
 {
+    cf_boot_pending=0;
     if(cf_boot_go==1)cf_boot_go=0;
     if(cfb.on)cfb.yield=1;
 }

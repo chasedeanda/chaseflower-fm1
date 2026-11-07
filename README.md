@@ -3,17 +3,13 @@
 Chase's personal firmware for the **M-VAVE FM-1**, built on [CoralFlower](https://github.com/FicusFicusov/CoralFlower).
 Explore chord progressions, build a groove, play over it, edit your own phrase and learn what makes the chords work.
 
-**Development build:** [Devil/Ember and Cat/Plum mascots](docs/MASCOTS.md), antialiased type and a
-[shared screen style](docs/HOUSE-STYLE.md), plus [live fills, drum drops and downbeat returns](docs/DRUM-PERFORMANCE.md).
-These changes require building this source; they are not in the chase10 download below.
+**Release 0.6-chase13:** Eight HOME toolbars, ALGORITHM page cycling, Harmony last,
+root-only next-chord LEDs, a single Cord boot animation and a louder, longer warm rising strum.
+Includes the Devil/Ember and Cat/Plum mascots, shared screen style, live drum fills,
+and the latest Harmony controls.
 
-The [compact Cord devil boot](docs/CORD-BOOT.md) reuses existing artwork, restores the visible startup
-timer and keeps the final lettering white. Unused large-font glyphs are removed to free 26,000 linked flash bytes.
-
-**Release 0.6-chase10: Warm CORD boot chime, responsive HOME motion, Songs and Chord Lab.**
-
-**[Download the firmware (.fwsc)](https://github.com/chasedeanda/chaseflower-fm1/releases/download/v0.6-chase10/coralflower-0.6-chase10.fwsc)** ·
-[Release notes](docs/releases/0.6-chase10.md) · [Build current main](#build-current-main)
+**[Download the firmware (.fwsc)](https://github.com/chasedeanda/chaseflower-fm1/releases/download/v0.6-chase13/coralflower-0.6-chase13.fwsc)** ·
+[Release notes](docs/releases/0.6-chase13.md) · [Build current main](#build-current-main)
 
 This guide covers the new interface. The older 0.6-chase7 download has different controls and scene animations.
 
@@ -103,7 +99,7 @@ Four added modes—**Converge, Diverge, Low pedal, High pedal**—join the origi
 See [controls, patterns and native previews](docs/ARP.md). This development change
 is not included in the 0.6-chase10 download above.
 
-### The six HOME pages
+### The eight HOME pages
 
 | Bank | K1 | K2 | K3 | K4 |
 | --- | --- | --- | --- | --- |
@@ -112,17 +108,22 @@ is not included in the 0.6-chase10 download above.
 | **Texture** | Reverb mix | Delay mix | Chorus mix | Glide |
 | **Groove** | Drum kit | Drum level | Swing | Click level / Off |
 | **Perform** (development) | One-bar fill | Drop drums | Bring back | Tempo |
-| **Keyboard / Learn** | Inactive | Inactive | Inactive | Inactive |
+| **Loop** | Mode | First (read-only) | Last (read-only) | Repeat |
+| **Mix** | Chord level | Bass level | Drums level | Bass link On/Off |
+| **Keyboard / Learn** | Harmony On/Off | Reset defaults | Inactive | Inactive |
 
+Turn **ALGORITHM** in either direction or tap **HOME** to cycle these eight toolbars.
+Harmony/Keyboard is always the last HOME page, immediately before wrapping to Core.
 Switching banks leaves the music playing. SELECT still browses ideas in every bank.
+Loop and Mix share the exact controls and state used by their Sequence tabs.
 Perform gestures start on the next bar; fills return automatically. The published chase10 has the first four banks.
-For separate chord/bass/drum levels and linked bass On/Off, use **SEQ → Mix**.
-For drums alone, use **SEQ → Loop → K1 Drums only**. **K4 Repeat Off** plays the full phrase once.
+For separate chord/bass/drum levels and linked bass On/Off, use **HOME → Mix** or **SEQ → Mix**.
+For drums alone, use **HOME → Loop** or **SEQ → Loop**, then **K1 Drums only**. **K4 Repeat Off** plays the full phrase once.
 For a metronome alongside any groove, use **SEQ → Click**: K1 On/Off, K2 level, K3 sound, K4 tempo.
 
 ## Know what the keys do (current source)
 
-Tap **HOME** until **KEYBOARD 6/6** appears, just after Perform. All **27 keys**
+Tap **HOME** until **KEYBOARD 8/8** appears, just after Mix. All **27 keys**
 appear in their physical positions: upper chord choices and HOLD, lower root
 notes with scale degrees. Labels follow your actual key, scale, octave and
 Manual/Harmony assignments.

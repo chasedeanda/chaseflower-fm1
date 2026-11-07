@@ -43,6 +43,7 @@ int main(int argc,char **argv)
     cf_skin=0;cf_motion=1;cf_splash();CHECK(cf_skin==CF_SKIN_PLUM && !cf_motion && cf_pal[FL_BG]==bg[CF_SKIN_PLUM] && !cf_intro_on);
     /* A slow device initialization must not consume the visible intro. */
     cf_motion=1;cpb_dirty=1;cpb_flush();cf_splash();
+    for(unsigned i=0;i<FB_W*FB_H;i++)CHECK(fb[i]==FL_BG);
     fm1_ms+=10000;cf_ui_init();
     CHECK(cf_cord_started==fm1_ms && cf_intro_t==0 && cf_intro_on);
     CHECK(cf_intro_draw(16) && cf_intro_t==16);

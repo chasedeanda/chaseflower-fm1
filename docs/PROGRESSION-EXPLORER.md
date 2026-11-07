@@ -6,9 +6,10 @@ Development source; not included in the existing 0.6-chase5 package.
 
 On this main Progressions view, the key LEDs also guide your next chord:
 
-- The sounding chord's tones stay at full brightness.
-- The next chord's tones pulse gently between dim and faint once per second.
-  Shared tones stay bright, so the playing chord always takes priority.
+- Only the sounding chord's root lights steadily; generated thirds/fifths stay dark.
+- Only the next root pulses clearly twice per second. Its cue takes priority over a held/current root,
+  so a repeated root still pulses between bright and dim. Other next roots pulse bright/off.
+  Upper keys continue to show their actual held/latched modifier state.
 - Before you start, the first chord is the cue. Each matching root press moves
   the cue forward, including repeated chords with HOLD on; the last wraps to
   the first. Rests keep the cue ready and modifiers/redraws do not advance it.

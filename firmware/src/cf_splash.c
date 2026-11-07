@@ -38,7 +38,9 @@ static void cf_splash(void)
     cf_splash_frame(0);                          /* fish starts completely off screen */
 #else
     cf_intro_t=0;cf_cord_started=fm1_ms;cf_intro_on=cf_motion;
-    cf_cord_last.valid=0;cf_cord_draw(cf_motion?0:CF_CORD_BOOT_MS);
+    /* No early logo: main clears this splash before the live UI starts. */
+    cf_cord_last.valid=0;
+    if(cf_motion)fb_fill(FL_BG);else cf_cord_draw(CF_CORD_BOOT_MS);
 #endif
     cf_present();
 }
