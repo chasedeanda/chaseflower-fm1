@@ -1,0 +1,2070 @@
+{
+  "status": "All entries planned; no implementation or physical validation inferred from a mockup",
+  "defaultAppearance": {
+    "theme": "Instrument Teal",
+    "motion": "On (adaptive)",
+    "motionChoices": [
+      "On (adaptive)",
+      "Off"
+    ],
+    "background": "#061B1E",
+    "foreground": "#F2F8F4",
+    "secondary": "#89A7A5",
+    "separator": "#355054",
+    "subtle": "#113034",
+    "accent": "#77DACB",
+    "onAccent": "#092D2C"
+  },
+  "screens": [
+    {
+      "id": "HOME_STAGE",
+      "title": "Progressions · CORE",
+      "group": "Home",
+      "sharedTemplate": "chord",
+      "musicalMilestone": 1,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "HOME_PENDING",
+      "title": "Progressions · Next Song Queued",
+      "group": "Home",
+      "sharedTemplate": "chord",
+      "musicalMilestone": 1,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "ACC_GROOVE",
+      "title": "Groove",
+      "group": "Accompaniment",
+      "sharedTemplate": "picker",
+      "musicalMilestone": 1,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "ACC_NO_GROOVE",
+      "title": "No Matching Groove",
+      "group": "Accompaniment",
+      "sharedTemplate": "status",
+      "musicalMilestone": 1,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "ACC_LOOP",
+      "title": "Playback and Loop",
+      "group": "Accompaniment",
+      "sharedTemplate": "timeline",
+      "musicalMilestone": 1,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "ACC_MIX",
+      "title": "Mix",
+      "group": "Accompaniment",
+      "sharedTemplate": "params",
+      "musicalMilestone": 1,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "ACC_CLICK",
+      "title": "Click",
+      "group": "Accompaniment",
+      "sharedTemplate": "params",
+      "musicalMilestone": 1,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "ACC_ARRANGE",
+      "title": "Arrange A/B",
+      "group": "Accompaniment",
+      "sharedTemplate": "timeline",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "ARRANGE_REMOVE_CONFIRM",
+      "title": "Remove Arrangement Step?",
+      "group": "Accompaniment",
+      "sharedTemplate": "confirm",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "EDIT_HARMONY",
+      "title": "Edit Chord",
+      "group": "Progression Editor",
+      "sharedTemplate": "chord",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "CHORD_LIBRARY",
+      "title": "Chord Library",
+      "group": "Progression Editor",
+      "sharedTemplate": "picker",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "EDIT_TIMING",
+      "title": "Chord Timing",
+      "group": "Progression Editor",
+      "sharedTemplate": "params",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "EDIT_VOICING",
+      "title": "Chord Voicing",
+      "group": "Progression Editor",
+      "sharedTemplate": "params",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "EDIT_BASS",
+      "title": "Slot Bass",
+      "group": "Progression Editor",
+      "sharedTemplate": "params",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "EDIT_PHRASE",
+      "title": "Phrase and Metre",
+      "group": "Progression Editor",
+      "sharedTemplate": "timeline",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "EDIT_REMOVE_CONFIRM",
+      "title": "Remove Chord Slot?",
+      "group": "Progression Editor",
+      "sharedTemplate": "confirm",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "IDEA_MENU",
+      "title": "Manage Songs",
+      "group": "Songs",
+      "sharedTemplate": "picker",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "IDEA_LIBRARY",
+      "title": "Songs",
+      "group": "Songs",
+      "sharedTemplate": "picker",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "IDEA_DETAILS",
+      "title": "Song Details",
+      "group": "Songs",
+      "sharedTemplate": "text",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "IDEA_LIBRARY_EMPTY",
+      "title": "Songs · Empty View",
+      "group": "Songs",
+      "sharedTemplate": "status",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "IDEA_NAME",
+      "title": "Save New Song",
+      "group": "Songs",
+      "sharedTemplate": "text",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "IDEA_SAVE_OPTIONS",
+      "title": "Save Current Song",
+      "group": "Songs",
+      "sharedTemplate": "picker",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "IDEA_OVERWRITE_CONFIRM",
+      "title": "Update Saved Song?",
+      "group": "Songs",
+      "sharedTemplate": "confirm",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "IDEA_RENAME",
+      "title": "Rename Song",
+      "group": "Songs",
+      "sharedTemplate": "text",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "IDEA_DELETE_CONFIRM",
+      "title": "Delete Selected Song?",
+      "group": "Songs",
+      "sharedTemplate": "confirm",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "IDEA_DRAFT_RETURN",
+      "title": "Return to Working Draft",
+      "group": "Songs",
+      "sharedTemplate": "status",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "IDEA_DRAFT_CONFLICT",
+      "title": "Keep the Existing Draft?",
+      "group": "Songs",
+      "sharedTemplate": "confirm",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "IDEA_UNDO",
+      "title": "Undo / Redo",
+      "group": "Songs",
+      "sharedTemplate": "picker",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "IDEA_RECOVERY",
+      "title": "Recover Draft Checkpoint?",
+      "group": "Songs",
+      "sharedTemplate": "confirm",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "IDEA_STORAGE_FULL",
+      "title": "Songs Full · New Song Pending",
+      "group": "Songs",
+      "sharedTemplate": "status",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "IDEA_WRITE_ERROR",
+      "title": "Song Not Saved Yet",
+      "group": "Songs",
+      "sharedTemplate": "status",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "REC_ARMED",
+      "title": "Progressions · Record Armed",
+      "group": "Recording",
+      "sharedTemplate": "chord",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "REC_COUNT_IN",
+      "title": "Progressions · Recording Count-in",
+      "group": "Recording",
+      "sharedTemplate": "chord",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "REC_RECORDING",
+      "title": "Progressions · Recording",
+      "group": "Recording",
+      "sharedTemplate": "chord",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "REC_LIMIT",
+      "title": "Progressions · Recording Limit Reached",
+      "group": "Recording",
+      "sharedTemplate": "chord",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "LAB_NOTES",
+      "title": "Notes and Degree",
+      "group": "Chord Lab",
+      "sharedTemplate": "chord",
+      "musicalMilestone": 3,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "LAB_INTERVALS",
+      "title": "Chord Intervals",
+      "group": "Chord Lab",
+      "sharedTemplate": "params",
+      "musicalMilestone": 3,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "LAB_COMPARE",
+      "title": "Compare Chord Sounds",
+      "group": "Chord Lab",
+      "sharedTemplate": "picker",
+      "musicalMilestone": 3,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "LAB_COMPARE_PLAYING",
+      "title": "Comparison Audition",
+      "group": "Chord Lab",
+      "sharedTemplate": "chord",
+      "musicalMilestone": 3,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "NEXT_SHORTLIST",
+      "title": "What Could Come Next?",
+      "group": "Next Chord",
+      "sharedTemplate": "picker",
+      "musicalMilestone": 4,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "NEXT_AUDITION",
+      "title": "Audition Next Chord",
+      "group": "Next Chord",
+      "sharedTemplate": "chord",
+      "musicalMilestone": 4,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "NEXT_INSERTED",
+      "title": "Candidate Inserted",
+      "group": "Next Chord",
+      "sharedTemplate": "status",
+      "musicalMilestone": 4,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "MOTION_ARP",
+      "title": "Arpeggio and Strum",
+      "group": "Motion",
+      "sharedTemplate": "params",
+      "musicalMilestone": 1,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "MOTION_FEEL",
+      "title": "Motion Feel and Glide",
+      "group": "Motion",
+      "sharedTemplate": "params",
+      "musicalMilestone": 1,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "BASS_SOUND",
+      "title": "Bass Sound and Level",
+      "group": "Bass",
+      "sharedTemplate": "params",
+      "musicalMilestone": 1,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "BASS_BEHAVIOR",
+      "title": "Linked Bass Behavior",
+      "group": "Bass",
+      "sharedTemplate": "params",
+      "musicalMilestone": 1,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "ENV_ENVELOPE",
+      "title": "Envelope",
+      "group": "Sound",
+      "sharedTemplate": "params",
+      "musicalMilestone": 1,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SOUND_PRESETS",
+      "title": "Sound Presets",
+      "group": "Sound",
+      "sharedTemplate": "picker",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SOUND_ACTIONS",
+      "title": "Sound Actions",
+      "group": "Sound",
+      "sharedTemplate": "picker",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SOUND_SAVE",
+      "title": "Name and Save Sound",
+      "group": "Sound",
+      "sharedTemplate": "text",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SOUND_OVERWRITE_CONFIRM",
+      "title": "Replace User Sound?",
+      "group": "Sound",
+      "sharedTemplate": "confirm",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SOUND_DELETE_CONFIRM",
+      "title": "Delete User Sound?",
+      "group": "Sound",
+      "sharedTemplate": "confirm",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "FX_FILTER",
+      "title": "Filter",
+      "group": "Effects",
+      "sharedTemplate": "params",
+      "musicalMilestone": 1,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "FX_DRIVE",
+      "title": "Drive",
+      "group": "Effects",
+      "sharedTemplate": "params",
+      "musicalMilestone": 1,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "FX_CHORUS",
+      "title": "Chorus",
+      "group": "Effects",
+      "sharedTemplate": "params",
+      "musicalMilestone": 1,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "FX_PHASER",
+      "title": "Phaser",
+      "group": "Effects",
+      "sharedTemplate": "params",
+      "musicalMilestone": 1,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "FX_DELAY",
+      "title": "Delay",
+      "group": "Effects",
+      "sharedTemplate": "params",
+      "musicalMilestone": 1,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "FX_REVERB",
+      "title": "Reverb",
+      "group": "Effects",
+      "sharedTemplate": "params",
+      "musicalMilestone": 1,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "FX_ORDER",
+      "title": "Effect Order",
+      "group": "Effects",
+      "sharedTemplate": "timeline",
+      "musicalMilestone": 1,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "FX_PRESETS",
+      "title": "Effect Presets",
+      "group": "Effects",
+      "sharedTemplate": "picker",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "FX_SAVE",
+      "title": "Name Effect Preset",
+      "group": "Effects",
+      "sharedTemplate": "text",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "REC_EMPTY",
+      "title": "Progressions · Nothing to Save",
+      "group": "Recording",
+      "sharedTemplate": "chord",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SOUND_EMPTY",
+      "title": "No Sounds in This Bank",
+      "group": "Sound",
+      "sharedTemplate": "status",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "NEXT_UNSUPPORTED",
+      "title": "Next Needs a Seven-Note Mode",
+      "group": "Next Chord",
+      "sharedTemplate": "status",
+      "musicalMilestone": 4,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SONGS_CLEAR_RECORDINGS_CONFIRM",
+      "title": "Clear Saved Recordings?",
+      "group": "Songs",
+      "sharedTemplate": "confirm",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SONGS_CLEAR_ALL_CONFIRM",
+      "title": "Clear All Saved Songs?",
+      "group": "Songs",
+      "sharedTemplate": "confirm",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SONG_PENDING_DISCARD_CONFIRM",
+      "title": "Discard Pending Song?",
+      "group": "Songs",
+      "sharedTemplate": "confirm",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SONGS_OPERATION_PENDING",
+      "title": "Library Change Pending",
+      "group": "Songs",
+      "sharedTemplate": "status",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SONG_PENDING",
+      "title": "Song Pending · Kept in Songs",
+      "group": "Songs",
+      "sharedTemplate": "chord",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SONG_SAVING",
+      "title": "Saving New Song",
+      "group": "Songs",
+      "sharedTemplate": "chord",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SONG_SAVED",
+      "title": "New Song Saved",
+      "group": "Songs",
+      "sharedTemplate": "chord",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "REC_FINISHING",
+      "title": "Progressions · Finishing Recording",
+      "group": "Recording",
+      "sharedTemplate": "chord",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SOUND_STORAGE_FULL",
+      "title": "Sound Storage Full",
+      "group": "Sound",
+      "sharedTemplate": "status",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SOUND_WRITE_ERROR",
+      "title": "Sound Could Not Save",
+      "group": "Sound",
+      "sharedTemplate": "status",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "FX_STORAGE_FULL",
+      "title": "FX preset Storage Full",
+      "group": "Effects",
+      "sharedTemplate": "status",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "FX_WRITE_ERROR",
+      "title": "FX preset Could Not Save",
+      "group": "Effects",
+      "sharedTemplate": "status",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "HOME_SOUND",
+      "title": "Progressions · SOUND",
+      "group": "Home",
+      "sharedTemplate": "chord",
+      "musicalMilestone": 1,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "HOME_TEXTURE",
+      "title": "Progressions · TEXTURE",
+      "group": "Home",
+      "sharedTemplate": "chord",
+      "musicalMilestone": 1,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "HOME_GROOVE",
+      "title": "Progressions · GROOVE",
+      "group": "Home",
+      "sharedTemplate": "chord",
+      "musicalMilestone": 1,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SYS-ROOT",
+      "title": "Settings",
+      "group": "Settings",
+      "sharedTemplate": "picker",
+      "musicalMilestone": 1,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SYS-HARMONY",
+      "title": "Harmony",
+      "group": "Settings",
+      "sharedTemplate": "params",
+      "musicalMilestone": 1,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "CTRL-ROOT",
+      "title": "Controls",
+      "group": "Controls",
+      "sharedTemplate": "picker",
+      "musicalMilestone": 1,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "CTRL-PLAY",
+      "title": "Play behavior",
+      "group": "Controls",
+      "sharedTemplate": "params",
+      "musicalMilestone": 1,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "CTRL-QUANTIZE",
+      "title": "Quantize and glide",
+      "group": "Controls",
+      "sharedTemplate": "params",
+      "musicalMilestone": 1,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "CTRL-MODIFIERS",
+      "title": "Modifier assignments",
+      "group": "Controls",
+      "sharedTemplate": "params",
+      "musicalMilestone": 1,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "CTRL-FORMS",
+      "title": "Manual chord forms",
+      "group": "Controls",
+      "sharedTemplate": "params",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "DISPLAY-STYLE",
+      "title": "Appearance · Theme",
+      "group": "Display",
+      "sharedTemplate": "params",
+      "musicalMilestone": 1,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "DISPLAY-MOTION",
+      "title": "Motion",
+      "group": "Display",
+      "sharedTemplate": "params",
+      "musicalMilestone": 1,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "DISPLAY-SCENES",
+      "title": "Secondary scenes",
+      "group": "Display",
+      "sharedTemplate": "params",
+      "musicalMilestone": 1,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SYS-MIDI",
+      "title": "MIDI",
+      "group": "MIDI/USB",
+      "sharedTemplate": "params",
+      "musicalMilestone": 1,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SYS-MIDI-CHANNELS",
+      "title": "MIDI channels",
+      "group": "MIDI/USB",
+      "sharedTemplate": "params",
+      "musicalMilestone": 1,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SYS-CLOCK-WAIT",
+      "title": "Waiting for clock",
+      "group": "MIDI/USB",
+      "sharedTemplate": "status",
+      "musicalMilestone": 1,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SYS-CLOCK-LOST",
+      "title": "Clock lost",
+      "group": "MIDI/USB",
+      "sharedTemplate": "status",
+      "musicalMilestone": 1,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SYS-USB",
+      "title": "USB capture",
+      "group": "MIDI/USB",
+      "sharedTemplate": "status",
+      "musicalMilestone": 1,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SND-ROOT",
+      "title": "Sound",
+      "group": "Sound",
+      "sharedTemplate": "picker",
+      "musicalMilestone": 1,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SND-ADVANCED",
+      "title": "Advanced sound",
+      "group": "Sound",
+      "sharedTemplate": "picker",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SND-FM6-OP1-RATE",
+      "title": "FM6 OP 1 · Envelope Rate",
+      "group": "Advanced FM6",
+      "sharedTemplate": "params",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SND-FM6-OP1-LEVEL",
+      "title": "FM6 OP 1 · Envelope Level",
+      "group": "Advanced FM6",
+      "sharedTemplate": "params",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SND-FM6-OP1-TUNING",
+      "title": "FM6 OP 1 · Tuning",
+      "group": "Advanced FM6",
+      "sharedTemplate": "params",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SND-FM6-OP1-SENS",
+      "title": "FM6 OP 1 · Sensitivity and level",
+      "group": "Advanced FM6",
+      "sharedTemplate": "params",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SND-FM6-OP1-SCALING",
+      "title": "FM6 OP 1 · Keyboard scaling",
+      "group": "Advanced FM6",
+      "sharedTemplate": "params",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SND-FM6-OP1-CURVES",
+      "title": "FM6 OP 1 · Scaling curves",
+      "group": "Advanced FM6",
+      "sharedTemplate": "params",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SND-FM6-OP2-RATE",
+      "title": "FM6 OP 2 · Envelope Rate",
+      "group": "Advanced FM6",
+      "sharedTemplate": "params",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SND-FM6-OP2-LEVEL",
+      "title": "FM6 OP 2 · Envelope Level",
+      "group": "Advanced FM6",
+      "sharedTemplate": "params",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SND-FM6-OP2-TUNING",
+      "title": "FM6 OP 2 · Tuning",
+      "group": "Advanced FM6",
+      "sharedTemplate": "params",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SND-FM6-OP2-SENS",
+      "title": "FM6 OP 2 · Sensitivity and level",
+      "group": "Advanced FM6",
+      "sharedTemplate": "params",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SND-FM6-OP2-SCALING",
+      "title": "FM6 OP 2 · Keyboard scaling",
+      "group": "Advanced FM6",
+      "sharedTemplate": "params",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SND-FM6-OP2-CURVES",
+      "title": "FM6 OP 2 · Scaling curves",
+      "group": "Advanced FM6",
+      "sharedTemplate": "params",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SND-FM6-OP3-RATE",
+      "title": "FM6 OP 3 · Envelope Rate",
+      "group": "Advanced FM6",
+      "sharedTemplate": "params",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SND-FM6-OP3-LEVEL",
+      "title": "FM6 OP 3 · Envelope Level",
+      "group": "Advanced FM6",
+      "sharedTemplate": "params",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SND-FM6-OP3-TUNING",
+      "title": "FM6 OP 3 · Tuning",
+      "group": "Advanced FM6",
+      "sharedTemplate": "params",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SND-FM6-OP3-SENS",
+      "title": "FM6 OP 3 · Sensitivity and level",
+      "group": "Advanced FM6",
+      "sharedTemplate": "params",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SND-FM6-OP3-SCALING",
+      "title": "FM6 OP 3 · Keyboard scaling",
+      "group": "Advanced FM6",
+      "sharedTemplate": "params",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SND-FM6-OP3-CURVES",
+      "title": "FM6 OP 3 · Scaling curves",
+      "group": "Advanced FM6",
+      "sharedTemplate": "params",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SND-FM6-OP4-RATE",
+      "title": "FM6 OP 4 · Envelope Rate",
+      "group": "Advanced FM6",
+      "sharedTemplate": "params",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SND-FM6-OP4-LEVEL",
+      "title": "FM6 OP 4 · Envelope Level",
+      "group": "Advanced FM6",
+      "sharedTemplate": "params",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SND-FM6-OP4-TUNING",
+      "title": "FM6 OP 4 · Tuning",
+      "group": "Advanced FM6",
+      "sharedTemplate": "params",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SND-FM6-OP4-SENS",
+      "title": "FM6 OP 4 · Sensitivity and level",
+      "group": "Advanced FM6",
+      "sharedTemplate": "params",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SND-FM6-OP4-SCALING",
+      "title": "FM6 OP 4 · Keyboard scaling",
+      "group": "Advanced FM6",
+      "sharedTemplate": "params",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SND-FM6-OP4-CURVES",
+      "title": "FM6 OP 4 · Scaling curves",
+      "group": "Advanced FM6",
+      "sharedTemplate": "params",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SND-FM6-OP5-RATE",
+      "title": "FM6 OP 5 · Envelope Rate",
+      "group": "Advanced FM6",
+      "sharedTemplate": "params",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SND-FM6-OP5-LEVEL",
+      "title": "FM6 OP 5 · Envelope Level",
+      "group": "Advanced FM6",
+      "sharedTemplate": "params",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SND-FM6-OP5-TUNING",
+      "title": "FM6 OP 5 · Tuning",
+      "group": "Advanced FM6",
+      "sharedTemplate": "params",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SND-FM6-OP5-SENS",
+      "title": "FM6 OP 5 · Sensitivity and level",
+      "group": "Advanced FM6",
+      "sharedTemplate": "params",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SND-FM6-OP5-SCALING",
+      "title": "FM6 OP 5 · Keyboard scaling",
+      "group": "Advanced FM6",
+      "sharedTemplate": "params",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SND-FM6-OP5-CURVES",
+      "title": "FM6 OP 5 · Scaling curves",
+      "group": "Advanced FM6",
+      "sharedTemplate": "params",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SND-FM6-OP6-RATE",
+      "title": "FM6 OP 6 · Envelope Rate",
+      "group": "Advanced FM6",
+      "sharedTemplate": "params",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SND-FM6-OP6-LEVEL",
+      "title": "FM6 OP 6 · Envelope Level",
+      "group": "Advanced FM6",
+      "sharedTemplate": "params",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SND-FM6-OP6-TUNING",
+      "title": "FM6 OP 6 · Tuning",
+      "group": "Advanced FM6",
+      "sharedTemplate": "params",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SND-FM6-OP6-SENS",
+      "title": "FM6 OP 6 · Sensitivity and level",
+      "group": "Advanced FM6",
+      "sharedTemplate": "params",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SND-FM6-OP6-SCALING",
+      "title": "FM6 OP 6 · Keyboard scaling",
+      "group": "Advanced FM6",
+      "sharedTemplate": "params",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SND-FM6-OP6-CURVES",
+      "title": "FM6 OP 6 · Scaling curves",
+      "group": "Advanced FM6",
+      "sharedTemplate": "params",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SND-FM6-PITCH-RATE",
+      "title": "FM6 Pitch Rate",
+      "group": "Advanced FM6",
+      "sharedTemplate": "params",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SND-FM6-PITCH-LEVEL",
+      "title": "FM6 Pitch Level",
+      "group": "Advanced FM6",
+      "sharedTemplate": "params",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SND-FM6-GLOBAL-VOICE",
+      "title": "FM6 Voice",
+      "group": "Advanced FM6",
+      "sharedTemplate": "params",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SND-FM6-GLOBAL-LFO",
+      "title": "FM6 LFO",
+      "group": "Advanced FM6",
+      "sharedTemplate": "params",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SND-FM6-GLOBAL-LFO2",
+      "title": "FM6 LFO 2",
+      "group": "Advanced FM6",
+      "sharedTemplate": "params",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SND-VA-OSC1",
+      "title": "VA · Oscillator 1",
+      "group": "Advanced VA",
+      "sharedTemplate": "params",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SND-VA-OSC1-DETAIL",
+      "title": "VA · Oscillator 1 detail",
+      "group": "Advanced VA",
+      "sharedTemplate": "params",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SND-VA-OSC2",
+      "title": "VA · Oscillator 2",
+      "group": "Advanced VA",
+      "sharedTemplate": "params",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SND-VA-OSC2-DETAIL",
+      "title": "VA · Oscillator 2 detail",
+      "group": "Advanced VA",
+      "sharedTemplate": "params",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SND-VA-OSC3",
+      "title": "VA · Oscillator 3",
+      "group": "Advanced VA",
+      "sharedTemplate": "params",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SND-VA-OSC3-DETAIL",
+      "title": "VA · Oscillator 3 detail",
+      "group": "Advanced VA",
+      "sharedTemplate": "params",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SND-VA-OSC4",
+      "title": "VA · Oscillator 4",
+      "group": "Advanced VA",
+      "sharedTemplate": "params",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SND-VA-OSC4-DETAIL",
+      "title": "VA · Oscillator 4 detail",
+      "group": "Advanced VA",
+      "sharedTemplate": "params",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SND-VA-FILTER",
+      "title": "VA · Filter",
+      "group": "Advanced VA",
+      "sharedTemplate": "params",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SND-VA-FILTER-DETAIL",
+      "title": "VA · Filter detail",
+      "group": "Advanced VA",
+      "sharedTemplate": "params",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SND-VA-ENV1",
+      "title": "VA · Envelope 1",
+      "group": "Advanced VA",
+      "sharedTemplate": "params",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SND-VA-ENV1-DETAIL",
+      "title": "VA · Envelope 1 detail",
+      "group": "Advanced VA",
+      "sharedTemplate": "params",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SND-VA-ENV2",
+      "title": "VA · Envelope 2",
+      "group": "Advanced VA",
+      "sharedTemplate": "params",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SND-VA-ENV2-DETAIL",
+      "title": "VA · Envelope 2 detail",
+      "group": "Advanced VA",
+      "sharedTemplate": "params",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SND-VA-ENV3",
+      "title": "VA · Envelope 3",
+      "group": "Advanced VA",
+      "sharedTemplate": "params",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SND-VA-ENV3-DETAIL",
+      "title": "VA · Envelope 3 detail",
+      "group": "Advanced VA",
+      "sharedTemplate": "params",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SND-VA-ENV4",
+      "title": "VA · Envelope 4",
+      "group": "Advanced VA",
+      "sharedTemplate": "params",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SND-VA-ENV4-DETAIL",
+      "title": "VA · Envelope 4 detail",
+      "group": "Advanced VA",
+      "sharedTemplate": "params",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SND-VA-LFO1",
+      "title": "VA · LFO 1",
+      "group": "Advanced VA",
+      "sharedTemplate": "params",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SND-VA-LFO2",
+      "title": "VA · LFO 2",
+      "group": "Advanced VA",
+      "sharedTemplate": "params",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SND-VA-LFO3",
+      "title": "VA · LFO 3",
+      "group": "Advanced VA",
+      "sharedTemplate": "params",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SND-VA-LFO4",
+      "title": "VA · LFO 4",
+      "group": "Advanced VA",
+      "sharedTemplate": "params",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SND-VA-LFO-SYNC",
+      "title": "VA · LFO sync",
+      "group": "Advanced VA",
+      "sharedTemplate": "params",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SND-VA-VOICE",
+      "title": "VA · Voice spread",
+      "group": "Advanced VA",
+      "sharedTemplate": "params",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SND-VA-MOD1",
+      "title": "VA · Modulation 1",
+      "group": "Advanced VA",
+      "sharedTemplate": "params",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SND-VA-MOD2",
+      "title": "VA · Modulation 2",
+      "group": "Advanced VA",
+      "sharedTemplate": "params",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SND-VA-MOD3",
+      "title": "VA · Modulation 3",
+      "group": "Advanced VA",
+      "sharedTemplate": "params",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SND-VA-MOD4",
+      "title": "VA · Modulation 4",
+      "group": "Advanced VA",
+      "sharedTemplate": "params",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SND-VA-MOD5",
+      "title": "VA · Modulation 5",
+      "group": "Advanced VA",
+      "sharedTemplate": "params",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SND-VA-MOD6",
+      "title": "VA · Modulation 6",
+      "group": "Advanced VA",
+      "sharedTemplate": "params",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SND-VA-MOD7",
+      "title": "VA · Modulation 7",
+      "group": "Advanced VA",
+      "sharedTemplate": "params",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SND-VA-MOD8",
+      "title": "VA · Modulation 8",
+      "group": "Advanced VA",
+      "sharedTemplate": "params",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SND-SAVED",
+      "title": "Sound saved",
+      "group": "Sound",
+      "sharedTemplate": "status",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SYS-TOOLS",
+      "title": "Tools / System",
+      "group": "System",
+      "sharedTemplate": "picker",
+      "musicalMilestone": 1,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SYS-INFO",
+      "title": "Information",
+      "group": "System",
+      "sharedTemplate": "text",
+      "musicalMilestone": 1,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SYS-DIAG-OVERVIEW",
+      "title": "Diagnostics · overview",
+      "group": "System",
+      "sharedTemplate": "status",
+      "musicalMilestone": 1,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SYS-DIAG-TIMING",
+      "title": "Diagnostics · timing",
+      "group": "System",
+      "sharedTemplate": "status",
+      "musicalMilestone": 1,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SYS-DIAG-MEMORY",
+      "title": "Diagnostics · memory",
+      "group": "System",
+      "sharedTemplate": "status",
+      "musicalMilestone": 1,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SYS-DIAG-USB",
+      "title": "Diagnostics · USB",
+      "group": "System",
+      "sharedTemplate": "status",
+      "musicalMilestone": 1,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SYS-BACKUP",
+      "title": "Backup / restore",
+      "group": "System",
+      "sharedTemplate": "text",
+      "musicalMilestone": 1,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SYS-RESTORE-CONFIRM",
+      "title": "Restore incoming backup",
+      "group": "System",
+      "sharedTemplate": "confirm",
+      "musicalMilestone": 1,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SYS-RESTORE-BUSY",
+      "title": "Restoring",
+      "group": "System",
+      "sharedTemplate": "status",
+      "musicalMilestone": 1,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SYS-RESTORE-DONE",
+      "title": "Restore complete · restart",
+      "group": "System",
+      "sharedTemplate": "status",
+      "musicalMilestone": 1,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SYS-LEGACY",
+      "title": "Legacy content",
+      "group": "System",
+      "sharedTemplate": "picker",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SYS-LEGACY-PATTERNS",
+      "title": "Imported patterns / takes",
+      "group": "System",
+      "sharedTemplate": "picker",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SYS-LEGACY-LOOP",
+      "title": "Old loop conversion",
+      "group": "System",
+      "sharedTemplate": "status",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SYS-LEGACY-DX7",
+      "title": "DX7 voice / bank receive",
+      "group": "System",
+      "sharedTemplate": "status",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SYS-LEGACY-LAYER",
+      "title": "Layer compatibility",
+      "group": "System",
+      "sharedTemplate": "status",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SND-LEGACY-LAYER-VOICE",
+      "title": "Legacy Layer voice",
+      "group": "Sound",
+      "sharedTemplate": "params",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SYS-RESET-ARM",
+      "title": "Factory reset",
+      "group": "System",
+      "sharedTemplate": "confirm",
+      "musicalMilestone": 1,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SYS-RESET-HOLD",
+      "title": "Hold SAVE to reset",
+      "group": "System",
+      "sharedTemplate": "confirm",
+      "musicalMilestone": 1,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SYS-RESET-CONFIRM",
+      "title": "Reset everything?",
+      "group": "System",
+      "sharedTemplate": "confirm",
+      "musicalMilestone": 1,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SYS-RESET-BUSY",
+      "title": "Resetting",
+      "group": "System",
+      "sharedTemplate": "status",
+      "musicalMilestone": 1,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SYS-UPDATE",
+      "title": "Update / recovery",
+      "group": "System",
+      "sharedTemplate": "text",
+      "musicalMilestone": 1,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SYS-UPDATE-COUNTDOWN",
+      "title": "Entering update mode",
+      "group": "System",
+      "sharedTemplate": "status",
+      "musicalMilestone": 1,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SYS-UPDATE-ACTIVE",
+      "title": "Update mode",
+      "group": "System",
+      "sharedTemplate": "status",
+      "musicalMilestone": 1,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SYS-BOOT",
+      "title": "Startup",
+      "group": "System",
+      "sharedTemplate": "status",
+      "musicalMilestone": 1,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SYS-SAFE",
+      "title": "Safe Mode",
+      "group": "System",
+      "sharedTemplate": "status",
+      "musicalMilestone": 1,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SYS-RECOVERY",
+      "title": "Recovery help",
+      "group": "System",
+      "sharedTemplate": "text",
+      "musicalMilestone": 1,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SYS-CALIBRATION",
+      "title": "Panel calibration",
+      "group": "System",
+      "sharedTemplate": "status",
+      "musicalMilestone": 1,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SND-SAVING",
+      "title": "Saving sound",
+      "group": "Sound",
+      "sharedTemplate": "status",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SND-DELETED",
+      "title": "User sound deleted",
+      "group": "Sound",
+      "sharedTemplate": "status",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SYS-BACKUP-STATUS",
+      "title": "Backing up to computer",
+      "group": "System",
+      "sharedTemplate": "status",
+      "musicalMilestone": 1,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SYS-RESTORE-ERROR",
+      "title": "Restore not completed",
+      "group": "System",
+      "sharedTemplate": "status",
+      "musicalMilestone": 1,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SND-ADVANCED-VA",
+      "title": "Advanced sound · VA",
+      "group": "Sound",
+      "sharedTemplate": "picker",
+      "musicalMilestone": 2,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "SND-LEGACY-LAYER-ENV",
+      "title": "Envelope · Legacy Layer",
+      "group": "Sound",
+      "sharedTemplate": "params",
+      "musicalMilestone": 1,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "DISPLAY-ACCENT",
+      "title": "Solid Accent",
+      "group": "Display",
+      "sharedTemplate": "params",
+      "musicalMilestone": 1,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    },
+    {
+      "id": "CTRL-BANKS",
+      "title": "Live Control Banks",
+      "group": "Controls",
+      "sharedTemplate": "picker",
+      "musicalMilestone": 1,
+      "designStatus": "Planned — migrate layout to selected prototype",
+      "implementationStatus": "Not assessed by this design task",
+      "deviceVerification": "Required"
+    }
+  ]
+}

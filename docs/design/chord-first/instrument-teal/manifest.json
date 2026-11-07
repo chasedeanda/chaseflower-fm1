@@ -1,0 +1,14 @@
+{
+  "reference": "fm1_adaptive_motion_prototype.html",
+  "sourceSha256": "4b26061f6e0ffd0b524b10bdf8beb76d9e40cd9cbf848fe04eefd03864fe29d8",
+  "preservedByteExactly": true,
+  "workingCopy": "prototype.html",
+  "defaultTheme": "instrument",
+  "motion": "On (adaptive) / Off",
+  "changesFromSupplied": [
+    "Default body theme: Instrument Teal",
+    "Default theme select: Instrument Teal",
+    "Initial settings label: Instrument Teal"
+  ],
+  "status": "Approved visual reference and browser simulation; not firmware implementation or device timing evidence"
+}
