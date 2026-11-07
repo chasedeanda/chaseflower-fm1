@@ -40,7 +40,7 @@ static void name_update(void)
     const cf_chord_out_t *o = &cf_sn.out;
     if (o->sounding && o->n)
         name_set(o->root_pc, o->mask, cs.bass_on ? o->bass_pc : -1, o->single, o->n, o->note);
-    else if (cf_sn.sq_on && cf_sn.sq_dn)
+    else if ((cf_sn.sq_on || cf_sn.ac_on) && cf_sn.sq_dn)
         name_set(cf_sn.sq_droot % 12u, cf_sn.sq_dmask, cf_sn.sq_bn ? cf_sn.sq_bass[cf_sn.sq_bn - 1u] % 12 : -1,
                  cf_sn.sq_dsingle, cf_sn.sq_dn, cf_sn.sq_dnote);
     else
@@ -269,7 +269,7 @@ static void hv_update(void)
     const cf_chord_out_t *o = &cf_sn.out;
     if (o->sounding && o->n)
         hv_keep(o->n, o->note, cs.bass_on ? cf_sn.nb : 0u, cf_sn.bass, o->root_pc, o->mask, o->single);
-    else if (cf_sn.sq_on && cf_sn.sq_dn)
+    else if ((cf_sn.sq_on || cf_sn.ac_on) && cf_sn.sq_dn)
         hv_keep(cf_sn.sq_dn, cf_sn.sq_dnote, cf_sn.sq_bn, cf_sn.sq_bass, cf_sn.sq_droot, cf_sn.sq_dmask,
                 cf_sn.sq_dsingle);
 }
@@ -638,7 +638,7 @@ static void draw_edit(void)
 
 static void draw_generic(void)
 {
-    static const char *const PG_GLO[CF_GLO_NPAGES] = {"Display", "MIDI", "Channels", "Play", "Reset", "Library", "Diagnostics", "Harmony", "Variation"};
+    static const char *const PG_GLO[CF_GLO_NPAGES] = {"Display", "MIDI", "Channels", "Play", "Reset", "Library", "Diagnostics", "Harmony", "Variation", "Accompany", "Browse"};
     cf_scene_render(&flo, &fl_cv);
     draw_plant(Y_VIEW);
     fb_veil(0, Y_VIEW, FB_W, H_VIEW, FL_BG);   /* (the plant faint: the picture leads) */
@@ -653,12 +653,29 @@ static void draw_generic(void)
         if (p == CF_GLO_VARIATION) {
             cvr_draw();
         }
+        else if (p == CF_GLO_BROWSE) {
+            unsigned idea=cpb_target(); char b[64];
+            kint(b,idea+1," / "); kint(b+str_len(b),cf_progression_count(),0);
+            if(cf_browser_favorite(&cpb,idea))str_cpy(b+str_len(b),"  FAVORITE",sizeof b-str_len(b));
+            fb_text_c(&CF_FONT_UI,120,Y_VIEW+42,b,C_ACC(0),1);
+            fb_text_c(&CF_FONT_UI,120,Y_VIEW+61,cf_progression_get(idea)->name,FL_INK,1);
+            fb_text_c(&CF_FONT_MICRO,120,Y_VIEW+78,cf_progression_get(idea)->context,FL_INK2,1);
+            fb_text_c(&CF_FONT_UI,120,Y_VIEW+95,CPB_ORDER_NAME[cpb.mode],C_ACC(1),1);
+            fb_text_c(&CF_FONT_MICRO,120,Y_VIEW+113,"K1: TENS / K2: ONES",FL_INK2,1);
+            fb_text_c(&CF_FONT_MICRO,120,Y_VIEW+126,"SELECT: BROWSE / SAVE: FAVORITE",FL_INK2,1);
+        }
+        else if (p == CF_GLO_ACCOMP) {
+            fb_text_c(&CF_FONT_UI, 120, Y_VIEW + 55, CPA_MODE_NAME[cpg.mode], C_ACC(0), 1);
+            fb_text_c(&CF_FONT_UI, 120, Y_VIEW + 77, "PLAY: start / stop accompaniment", FL_INK2, 1);
+            fb_text_c(&CF_FONT_MICRO, 120, Y_VIEW + 97, "CHANGES AT THE NEXT BAR", FL_INK3, 1);
+        }
         else if (p == CF_GLO_HARMONY) {
             fb_text_c(&CF_FONT_UI, 120, Y_VIEW + 65, ch.mode ? "AUTO HARMONY" : "MANUAL HARMONY", C_ACC(0), 1);
             fb_text_c(&CF_FONT_UI, 120, Y_VIEW + 83,
                 cf_harmony_supported(cs.chord.scale, cs.chord.quantize) ? "HOLD sustains; Lock latches" : "Auto: choose a 7-note scale", FL_INK2, 1);
         } else draw_view(V[p]);
-        draw_hints(H, 1);
+        if(p==CF_GLO_BROWSE) { static const char *const BH[2]={"HOME","back"}; draw_hints(BH,1); }
+        else draw_hints(H, 1);
         break;
     }
     case SCR_BASS: {

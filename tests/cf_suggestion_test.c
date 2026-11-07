@@ -45,7 +45,7 @@ static void controls(void)
     cf_set_t settings = cs;
     cf_harmony_t harmony = ch;
     uint32_t patterns = cfs_fnv(&sq_st, sizeof sq_st);
-    CHECK(sizeof(cf_set_t) == 188 && sizeof(sq_ev_t) == 22 && sizeof cpg == 1);
+    CHECK(sizeof(cf_set_t) == 188 && sizeof(sq_ev_t) == 22);
     CHECK(cu.scr==SCR_HOME && cf_scene()==CF_SCENE_PROGRESSIONS && screen_pages(SCR_GLO)==CF_GLO_NPAGES);
     CHECK(cf_progression_current()==cf_progression_get(0));
     ui_knob_info(0,&knob); CHECK(!strcmp(knob.name,"RHYTHM"));
@@ -66,12 +66,12 @@ static void controls(void)
     cs.chord.quantize=CF_Q_OFF; ui_select(1); render_blocks(2);
     CHECK(cs.chord.quantize==CF_Q_BASIC && cpg.idea==0);
     unsigned tonic=cs.chord.tonic; ui_knob_turn(1,1); CHECK(cs.chord.tonic==(tonic+1)%12 && cpg.idea==0);
-    uint32_t rhythm=dm_cur(), beats=cs.beats; cf_chord_cfg_t chord=cs.chord;
+    uint32_t rhythm=cpg.rhythm, beats=cs.beats; cf_chord_cfg_t chord=cs.chord;
     ui_knob_turn(0,1); render_blocks(2);
-    CHECK(dm_cur()!=rhythm && dmr.last && cs.beats==beats);
+    CHECK(cpg.rhythm!=rhythm && cs.beats==beats);
     CHECK(!memcmp(&chord,&cs.chord,sizeof chord));
-    sqk.on=1; unsigned idea=cpg.idea; rhythm=dm_cur();
-    ui_select(1); ui_knob_turn(0,1); CHECK(cpg.idea==idea && dm_cur()==rhythm); sqk.on=0;
+    sqk.on=1; unsigned idea=cpg.idea; rhythm=cpg.rhythm;
+    ui_select(1); ui_knob_turn(0,1); CHECK(cpg.idea==idea && cpg.rhythm==rhythm); sqk.on=0;
     cf_intro_on=0; cu.pop=POP_NONE; cv_turn_ms=0;
     /* Highlight live chords, upper extensions, sequenced chords and HOLD.
      * Silence and single notes must not leave stale highlights. */

@@ -56,6 +56,7 @@ static uint32_t cfs_fnv(const void *p, uint32_t n)
     return h;
 }
 
+#include "cf_browser_store.c"
 #include "cf_harmony_store.c"
 #include "cf_fx_store.c"
 
@@ -186,6 +187,12 @@ static int cf_settings_load(void)
     return 1;
 }
 
+static void cfs_performance_image(cf_set_t *s)
+{
+    if (!cpg.explored) return;
+    s->chord.tonic = cpg.saved_tonic; s->chord.scale = cpg.saved_scale;
+    s->chord.quantize = cpg.saved_quantize; s->beats = cpg.saved_beats;
+}
 /* cs to flash (storage.c st_put; how: ST_NOERASE while the audio plays): 1 written, 0 not now (the log full: a
  * quiet moment makes room), -1 a flash error */
 static int cf_settings_write(uint32_t how)
@@ -195,6 +202,7 @@ static int cf_settings_write(uint32_t how)
     cf_rec.version = CF_SET_VERSION;
     cf_rec.size = sizeof(cf_set_t);
     cf_rec.s = cs;
+    cfs_performance_image(&cf_rec.s);
     cf_rec.check = cfs_fnv(&cf_rec.s, sizeof cf_rec.s);
     if ((rc = st_put(CF_SET_OBJ, &cf_rec, sizeof cf_rec, how)) != 0)
         return rc == 1 ? 0 : -1;
@@ -649,7 +657,9 @@ static void settings_poll(void)
         cfs_sound_ms = now;
     if (cs.arp_keep != cu.arp_on)                 /* (the ARP's on / off, kept: cf_ui.c cf_ui_init) */
         cs.arp_keep = cu.arp_on;
-    h = cfs_fnv(&cs, sizeof cs);
+    cf_set_t image = cs;
+    cfs_performance_image(&image);
+    h = cfs_fnv(&image, sizeof image);
     if (h != cfs_seen) {
         cfs_seen = h;
         cfs_changed_ms = now;
@@ -657,6 +667,7 @@ static void settings_poll(void)
     cfk_poll(now, now - cfs_sound_ms >= CF_SET_SILENT_MS);   /* (the sounds' edits) */
     cfps_poll(now, now - cfs_sound_ms >= CF_SET_SILENT_MS);   /* (the patterns' own sounds) */
     cfh_poll(now, now - cfs_sound_ms >= CF_SET_SILENT_MS);
+    cpb_poll(now, now - cfs_sound_ms >= CF_SET_SILENT_MS);
     fxp_poll(now, now - cfs_sound_ms >= CF_SET_SILENT_MS);
     if (cfs_retry_ms && (int32_t)(now - cfs_retry_ms) < 0)
         return;                                   /* (a flash error, or the log full: once more a second later) */

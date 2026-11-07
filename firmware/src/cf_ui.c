@@ -36,6 +36,7 @@ static const char CF_NAME_CHARS[] = " ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-.+#/"
 static uint8_t sq_live_part(void);              /* (cf_sequi.c) */
 static uint8_t sq_live_bass(void);              /* (cf_sequi.c) */
 static uint8_t sq_keys_arp(void);               /* (cf_sequi.c: the keys' ARP, a track's own while it is open) */
+static void cpa_ui_dirty(void);
 static void cf_send_config(void)                 /* the chord settings -> the audio side */
 {
     cs.chord.algo = CF_ALG_TOP_LOCK;
@@ -69,10 +70,11 @@ static void cf_send_config(void)                 /* the chord settings -> the au
     fm1_irq_on();
     cf_fx_apply(&cs.fx);
     cf_post(CFE_CONFIG, 0, 0, 0);
+    cpa_ui_dirty();
 }
 static void cf_send_metro(void)
 {
-    sq_beats = (uint8_t)(cs.beats >= 2u && cs.beats <= 7u ? cs.beats : 4u);   /* (the sequencer's bar: cf_seqd.c) */
+    if (!cpa_running()) sq_beats = (uint8_t)(cs.beats >= 2u && cs.beats <= 7u ? cs.beats : 4u);   /* (the sequencer's bar: cf_seqd.c) */
     cf_post(CFE_TEMPO, 0, 0, cs.bpm);
     cf_post(CFE_SIG, 0, 0, cs.beats);
     cf_post(CFE_METRO, 0, cs.metro_level, 0);   /* (the click only while the beat runs, PLAY: the owner, 2026-10-19;
@@ -114,7 +116,9 @@ static const char *const Q_NAME[3] = {"Off", "Basic", "Full"};
 static const char *const ALG_NAME[CF_NALGS] = {"Top", "Top Lock", "Side", "Side Lock"};
 #define CF_GLO_HARMONY 7u
 #define CF_GLO_VARIATION 8u
-#define CF_GLO_NPAGES 9u
+#define CF_GLO_ACCOMP 9u
+#define CF_GLO_BROWSE 10u
+#define CF_GLO_NPAGES 11u
 
 static const cf_progression_t *cf_progression_current(void)
 {
@@ -122,6 +126,7 @@ static const cf_progression_t *cf_progression_current(void)
     return cf_progression_get(cpg.idea);
 }
 static void cf_progression_select(int d);
+static void cf_progression_choose(unsigned next);
 
 static void kfmt(char *b, uint32_t n, const char *s) { str_cpy(b, s, n); }
 static void kint(char *b, int v, const char *unit)
@@ -175,19 +180,31 @@ static void kpc(char *b, int pc)
 static void cv_turned(int d);
 #include "cf_sequi.c"                            /* (the SEQUENCER screens' controls) */
 #include "cf_dmui.c"                             /* (the drum machine's page, 0.6) */
+#include "cf_accomp_ui.c"
+#include "cf_browser_ui.c"
 #include "cf_variation.c"                         /* one-page variation and undo */
 
 /* SELECT on Progressions: apply the idea's setup, without touching sounds,
  * modifiers, saved patterns or transport. Drum meter changes use its bar queue. */
-static void cf_progression_select(int d)
+static void cf_progression_choose(unsigned next)
 {
-    if (!d) return;
+    next=cf_progression_pick(next,0);
     if (sqk.on || cf_sn.sq_rec != 0xFFu) {
         cf_message("Finish recording to browse");
         return;
     }
-    cpg.idea = cf_progression_pick(cpg.idea, d);
+    cpa_explore();
+    if (cpa_running()) {
+        cpa_plan_t plan;
+        const cf_progression_t *p = cf_progression_get(next);
+        cf_chord_cfg_t cfg = cs.chord; cfg.tonic = p->tonic; cfg.scale = p->scale;
+        if (cpa_prepare(&plan, next, cfg, cpa_compatible(cpg.rhythm, p->beats), cpg.mode))
+            cpa_publish(&plan, 0, 1);
+        return;
+    }
+    cpg.idea = cf_progression_pick(next, 0);
     const cf_progression_t *p = cf_progression_current();
+    cpg.rhythm = cpa_compatible(cpg.rhythm, p->beats);
     cs.chord.tonic = p->tonic;
     cs.chord.scale = p->scale;
     if (cs.chord.quantize == CF_Q_OFF) cs.chord.quantize = CF_Q_BASIC;
@@ -206,12 +223,8 @@ static void cf_progression_select(int d)
  * cannot accidentally change the progression's time signature. */
 static void cf_progression_rhythm(int d)
 {
-    uint32_t r = dm_cur(), beats = dm_view < DM_N ? DM_RHY[dm_view].beats : dm_beats();
-    uint32_t n = dm_count(beats);
-    if (!d || !n || sqk.on) return;
-    dmr.last = 1;
-    int pos = ((int)dm_place(r) + d % (int)n + (int)n) % (int)n;
-    dm_select((int)dm_nth(beats, (uint32_t)pos) - (int)r);
+    if (!d || sqk.on) return;
+    cpa_ui_rhythm(d);
 }
 
 /* EDIT's part keys, as printed on the unit: MONO (upper key 8) the bass, POLY (9) the chords, the next (10) the LAYER */
@@ -247,9 +260,9 @@ static void ui_knob_info(int k, cf_knob_t *o)
     o->bar = -1;
     switch (cu.scr) {
     case SCR_HOME:
-        if (k == 0 && home_view() == HV_FLOWER && cf_scene() == CF_SCENE_PROGRESSIONS) {
+        if (k == 0 && (cf_scene() == CF_SCENE_PROGRESSIONS || cpa_running())) {
             kfmt(o->name, 12, "RHYTHM");
-            kfmt(o->val, 14, DM_RHY[dm_cur()].name);
+            kfmt(o->val, 14, cpa_rhythm_name(cpg.rhythm));
             o->dis = sqk.on;
             break;
         }
@@ -265,14 +278,7 @@ static void ui_knob_info(int k, cf_knob_t *o)
             kfmt(o->val, 14, CF_SCALES[cs.chord.scale].shrt);
             o->dis = cs.chord.quantize == CF_Q_OFF;
             break;
-        default:
-            kfmt(o->name, 12, "GLIDE");          /* (the chord sound's own, 0.5: cf_play.c cfp_glide_g) */
-            if (trk[CF_PART_CHORD].p[P_GLIDE] > 0)
-                kint(o->val, (int)cfe_glide_ms(trk[CF_PART_CHORD].p[P_GLIDE]), "ms");
-            else
-                kfmt(o->val, 14, "Off");
-            o->bar = (int16_t)(clampi(trk[CF_PART_CHORD].p[P_GLIDE], 0, 127) * 255 / 127);
-            break;
+        default: cpa_tempo_info(o); break;
         }
         break;
     case SCR_SEL: {
@@ -408,6 +414,13 @@ static void ui_knob_info(int k, cf_knob_t *o)
     case SCR_SQED: sq_knob_info(k, o); break;
     case SCR_GLO:
         switch (cu.page[SCR_GLO]) {
+        case CF_GLO_BROWSE: cpb_knob_info(k,o); break;
+        case CF_GLO_ACCOMP:
+            if (k == 0) { kfmt(o->name, 12, "ACCOMPANY"); kfmt(o->val, 14, CPA_MODE_NAME[cpg.mode]); }
+            if (k == 1) { kfmt(o->name, 12, "RHYTHM"); kfmt(o->val, 14, cpa_rhythm_name(cpg.rhythm)); }
+            if (k == 2) cpa_tempo_info(o);
+            if (k == 3) { kfmt(o->name, 12, "GLIDE"); kint(o->val, cfe_glide_ms(trk[0].p[P_GLIDE]), "ms"); }
+            break;
         case CF_GLO_VARIATION:
             cvr_knob_info(k, o);
             break;
@@ -499,13 +512,37 @@ static void ui_knob_info(int k, cf_knob_t *o)
 
 #define CF_MSG_QOFF "QUANTIZE is Off: turn it on"   /* (KEY or SCALE turned while they are dimmed) */
 static void cf_xnotes_up_all(void);              /* (below: the outside notes held go up) */
+static void cpa_glide(int d)
+{
+    /* GLIDE: the chord sound's (0.5, the owner: "Если переключается инструмент, глайд переключается на тот
+     * что был у другого инструмента"): an edit of the sound, kept as the others are (a pattern's own sound:
+     * in the pattern; SAVE) */
+    /* steps of about a quarter more each: Off, 6, 13, 23, 33, 44, 57, 71, 87, 105, 131, 160, 192, 236, 285,
+     * 349, 420, 510, 625, 768, 944, 1158, 1463 ms (voice.c's TIME: 1 + g^2 / 8 control blocks) */
+    static const uint8_t GS[] = {0, 8, 12, 16, 19, 22, 25, 28, 31, 34, 38, 42, 46, 51, 56, 62, 68, 75, 83, 92,
+                                 102, 113, 127};
+    int g = trk[CF_PART_CHORD].p[P_GLIDE], i = 0;
+    while (i + 1 < (int)NELEM(GS) && GS[i + 1] <= g)
+        i++;
+    if (d < 0 && GS[i] < g)
+        i++;                             /* (a value between two steps: down goes to the lower) */
+    g = GS[clampi(i + d, 0, (int)NELEM(GS) - 1)];
+    fm1_irq_off();
+    trk[CF_PART_CHORD].p[P_GLIDE] = (int16_t)g;
+    fm1_irq_on();
+    cf_edited(CF_PART_CHORD);
+
+}
+
 static void ui_knob_turn(int k, int d)
 {
     cu.knob_ms[k] = cu.now ? cu.now : 1u;
     cu.knob_last = (uint8_t)k;
     switch (cu.scr) {
     case SCR_HOME:
-        if (k == 0 && home_view() == HV_FLOWER && cf_scene() == CF_SCENE_PROGRESSIONS) {
+        if (cpa_running() && (k == 1 || k == 2)) { cpa_home_key(k, d); break; }
+        if (k == 3) { cpa_tempo(d); break; }
+        if (k == 0 && (cf_scene() == CF_SCENE_PROGRESSIONS || cpa_running())) {
             cf_progression_rhythm(d);
             break;
         }
@@ -520,25 +557,7 @@ static void ui_knob_turn(int k, int d)
         else if (k == 1 || k == 2)                /* dimmed (QUANTIZE Off): it says what wakes it, every turn (the
                                                   * owner, 2026-10-20, after a reboot: "key и scale заблокировались") */
             cf_message(CF_MSG_QOFF);
-        else if (k == 3) {
-            /* GLIDE: the chord sound's (0.5, the owner: "Если переключается инструмент, глайд переключается на тот
-             * что был у другого инструмента"): an edit of the sound, kept as the others are (a pattern's own sound:
-             * in the pattern; SAVE) */
-            /* steps of about a quarter more each: Off, 6, 13, 23, 33, 44, 57, 71, 87, 105, 131, 160, 192, 236, 285,
-             * 349, 420, 510, 625, 768, 944, 1158, 1463 ms (voice.c's TIME: 1 + g^2 / 8 control blocks) */
-            static const uint8_t GS[] = {0, 8, 12, 16, 19, 22, 25, 28, 31, 34, 38, 42, 46, 51, 56, 62, 68, 75, 83, 92,
-                                         102, 113, 127};
-            int g = trk[CF_PART_CHORD].p[P_GLIDE], i = 0;
-            while (i + 1 < (int)NELEM(GS) && GS[i + 1] <= g)
-                i++;
-            if (d < 0 && GS[i] < g)
-                i++;                             /* (a value between two steps: down goes to the lower) */
-            g = GS[clampi(i + d, 0, (int)NELEM(GS) - 1)];
-            fm1_irq_off();
-            trk[CF_PART_CHORD].p[P_GLIDE] = (int16_t)g;
-            fm1_irq_on();
-            cf_edited(CF_PART_CHORD);
-        }
+
         cu_spell_update();
         cf_send_config();
         if (ch.mode == CF_H_AUTO && !cf_harmony_supported(cs.chord.scale, cs.chord.quantize))
@@ -659,6 +678,13 @@ static void ui_knob_turn(int k, int d)
     case SCR_SQED: sq_knob_turn(k, d); break;
     case SCR_GLO:
         switch (cu.page[SCR_GLO]) {
+        case CF_GLO_BROWSE: cpb_knob_turn(k,d); break;
+        case CF_GLO_ACCOMP:
+            if (k == 0) cpa_ui_mode(d);
+            if (k == 1) cpa_ui_rhythm(d);
+            if (k == 2) cpa_tempo(d);
+            if (k == 3) cpa_glide(d);
+            break;
         case CF_GLO_VARIATION:
             cvr_knob_turn(k, d);
             break;
@@ -797,6 +823,7 @@ static void cv_turned(int d)
 
 static void ui_select(int d)                     /* SELECT: the bass sound, or a screen's page */
 {
+    if(cpb_page()) { cf_progression_select(d); return; }
     if (cu.scr == SCR_HOME && home_view() == HV_FLOWER && cf_scene() == CF_SCENE_PROGRESSIONS) {
         cf_progression_select(d);
         return;
@@ -1030,6 +1057,10 @@ static void ui_button(uint32_t b)
         cf_message("Reset cancelled");
         return;
     }
+    if (b == B_PLAY && (cpa_running() || cpa_commanded || cpb_page() || (cu.scr == SCR_HOME && cf_scene() == CF_SCENE_PROGRESSIONS))) {
+        cpa_ui_play(); return;
+    }
+    if (b == B_REC && cpa_running()) { cf_message("Stop accompaniment to record"); return; }
     if (cu.scr == SCR_DRUM) {                    /* the rhythm machine: the SEQUENCER's grammar (the owner on rc3: "когда в
                                                   * неё заходишь не должны нажиматься кнопки других вкладок, как и в
                                                   * секвенсоре", "гло должна быть с подсказками"): HOME and SEQ leave, the
@@ -1128,7 +1159,9 @@ static void ui_button(uint32_t b)
     case B_ENV: ui_open(SCR_ENV); break;
     case B_LFO: ui_open(SCR_BASS); break;
     case B_EDIT: ui_open(SCR_EDIT); break;
-    case B_GLO: cvr_context_from_screen(); ui_open(SCR_GLO); break;
+    case B_GLO:
+        if(cpb_home())cpbu.menu_hold=cu.now?cu.now:1u;
+        cvr_context_from_screen(); ui_open(SCR_GLO); break;
     case B_FX:
         if (cu.scr == SCR_FX && fxpu.mode == FXP_EDIT) fxpu.mode = FXP_BROWSE;
         else if (cu.scr == SCR_FX && fxpu.mode == FXP_MANAGE) { fxpu.mode = FXP_BROWSE; cu.save_hold = 0; }
@@ -1143,6 +1176,9 @@ static void ui_button(uint32_t b)
             ui_open(sq_screen(cu.scr) || cu.scr == SCR_DRUM ? SCR_HOME : SCR_SEQ);
         break;
     case B_SAVE:
+        if(cpb_home() || cpb_page()) {
+            cpbu.idea=cpb_home()?cf_progression_pick(cpg.idea,0):cpb_target(); cpbu.save_hold=cu.now?cu.now:1u; cpbu.fired=0; break;
+        }
         if (cu.scr == SCR_GLO && cu.page[SCR_GLO] == CF_GLO_VARIATION) { cvr_save(); break; }
         if (cu.scr == SCR_FX) {
             if (fxpu.mode != FXP_MANAGE) fxp_manage_open();
@@ -1310,7 +1346,7 @@ static void cf_save_do(void)
  * loop's action and the LOOPER screen; REC held 1 s: the last layer undone (as ChoralRoot's) */
 static void cf_rec_poll(void)
 {
-    if (cf_sn.ext_clock && cf_sn.ext_bpm >= 30u && cf_sn.ext_bpm <= 300u && cf_sn.ext_bpm != cs.bpm) {
+    if (!cf_sn.ac_on && cf_sn.ext_clock && cf_sn.ext_bpm >= 30u && cf_sn.ext_bpm <= 300u && cf_sn.ext_bpm != cs.bpm) {
         cs.bpm = cf_sn.ext_bpm;                  /* (MIDI clock in: the tempo it makes, on the knobs; the audio side
                                                   * has it already) */
         fm1_irq_off();
@@ -1535,6 +1571,7 @@ static void cf_ui_input(void)
     cf_glide_migrate();                          /* (the old GLIDE into HOME's sound, once) */
     sq_undo_poll();                              /* (before the input: the state an edit starts from) */
     cf_ui_pump();
+    cpb_hold_poll();
     cf_save_poll();
     cf_reset_poll();
     cf_rec_poll();
@@ -1772,7 +1809,7 @@ static void cf_leds(void)
             if (squ.trk == SQ_CHORDS || squ.trk == SQ_LAYER)   /* (ARP: the track's own, lit while on) */
                 cf_led((p->arp >> squ.trk) & 1u ? lit : dim, panel.btn[B_ARP], 1);
         }
-        if (cf_sn.sq_on)
+        if (cf_sn.sq_on || cf_sn.ac_on)
             cf_led((int32_t)(cf_sn.now_ms - cf_sn.beat_ms) < 120 ? lit : mid, panel.btn[B_PLAY], 1);
         else
             cf_led(has ? mid : faint, panel.btn[B_PLAY], 1);
@@ -1898,7 +1935,7 @@ static void cf_feed_plant(uint32_t dt)
     /* what the flower shows: the keys' chord while they sound, else the sequencer's CHORDS track's while it plays,
      * as if played by hand (0.5, the owner: "то, что играется в секвенсоре я бы хотел, чтобы на главной
      * отображалось на цветочке"), else nothing */
-    src = o->sounding && o->n ? 1u : cf_sn.sq_on && cf_sn.sq_dn ? 2u : 0u;
+    src = o->sounding && o->n ? 1u : (cf_sn.sq_on || cf_sn.ac_on) && cf_sn.sq_dn ? 2u : 0u;
     ser = src == 2u ? cf_sn.sq_dser : o->serial;
     if (src != cu_last_src || ser != cu_last_serial) {
         fl_chord_t c;
@@ -1968,6 +2005,7 @@ static void cf_edited(uint32_t part)
 static void cf_ui_init(void)
 {
     cpg.idea = CF_P_NONE;
+    cpb_load();
     if (!cfs_loaded)                             /* (cf_splash read the settings record: they stay) */
         cs_defaults(&cs);
     cvr_init();
@@ -2026,6 +2064,7 @@ static void cf_ui_init(void)
     cu.idle_ms = 0x7FFFFFFF;                     /* (the intro runs until the first touch) */
     fb_full = 1;                                 /* (main.c cleared the panel after the splash) */
     cu.last_ms = fm1_ms;
+    cpg.rhythm = cpa_compatible(dm_cur(), cs.beats);
     cu.booted = 1;
 }
 
@@ -2039,6 +2078,7 @@ static void cf_ui_frame(void)                    /* ui_leds: the snapshot, the p
     cu.frames++;
     cf_diag_poll(now);
     cf_snapshot();
+    cpa_ui_poll();
     cf_feed_plant(dt);
     cf_leds();
     if (cu.pop && (int32_t)(cu.now - cu.pop_until) > 0)
