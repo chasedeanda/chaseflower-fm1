@@ -91,6 +91,7 @@ static void cfn_controls(const char label[4][12],const char value[4][14],const u
 #include "cf_stage.c"
 #include "cf_acc_screen.c"
 #include "cf_draft_screen.c"
+#include "cf_lab_screen.c"
 #include "cf_seqv.c"                            /* (the SEQUENCER screens' pictures) */
 #include "cf_dmv.c"                             /* (the drum machine's, 0.6) */
 static void draw_title(const char *t, const char *note);
@@ -843,6 +844,8 @@ static void cf_legacy_frame(void)
     char top[24];
     fb_unclip();
     if (cf_intro_draw(cu.frame_dt)) { cf_stage_valid=cf_acc_valid=0; return; }
+    if(!cu.upd_left && cu.scr==SCR_LAB){cfl_draw();return;}
+    cfl_valid=0;
     if(!cu.upd_left && cu.scr==SCR_PEDIT){cfd_draw();return;}
     cfd_valid=0;
     if(!cu.upd_left && (cu.scr==SCR_ACC || (cu.scr==SCR_GLO && cu.page[SCR_GLO]==CF_GLO_LEGACY))) {cf_acc_draw();return;}
@@ -956,6 +959,8 @@ static void cfn_message_lines(char dst[3][64],const char *src)
 static void cf_ui_draw(void)
 {
     fb_unclip();cfn_motion_frame();
+    if(!cu.upd_left && cu.scr==SCR_LAB){cf_stage_valid=cf_acc_valid=cfd_valid=cfn_page_valid=0;cfl_draw();return;}
+    cfl_valid=0;
     if(cf_intro_draw(cu.frame_dt)){cf_stage_valid=cf_acc_valid=cfd_valid=cfn_page_valid=0;return;}
     cfn_popup_t pop;memset(&pop,0,sizeof pop);pop.kind=cu.pop;pop.skin=cf_skin;
     if(cu.pop==POP_SOUND_CHORD || cu.pop==POP_SOUND_BASS || cu.pop==POP_SOUND_LAYER) {

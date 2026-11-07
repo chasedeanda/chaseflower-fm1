@@ -385,6 +385,7 @@ static void cfm_restart(void)
 #include "cf_seqp.c"                             /* (.. playing them) */
 #include "cf_drum.c"                             /* (the drum machine's rhythms and their player, 0.6) */
 #include "cf_accomp.c"
+#include "cf_lab_audio.c"
 
 /* the metronome's sounds: a decaying resonator (the accent on the downbeat a different pitch), some with noise.
  * a1 = 2 r cos w and a2 = r^2 (Q14), s = sin w (x 10000) sets the start; len: samples to -60 dB; noise: % */
@@ -538,6 +539,8 @@ static volatile uint8_t cf_ready;
 
 static void cf_apply(const cf_ev_in_t *e)
 {
+    if(e->op==CFE_PANIC || e->op==CFE_ACCOMP || e->op==CFE_SEQ || e->op==CFE_DRUM || e->op==CFE_TRANSPORT)cla_cancel(0);
+    if(e->op==CFE_CONFIG)cla_cancel(1);
     switch (e->op) {
     case CFE_KEY:
         if (e->v) {
@@ -668,6 +671,7 @@ static void cf_audio_block(uint32_t n)
         cf_evq_r++;
     }
     cf_midi_in();
+    cla_process(n);
     cf_ms_rem += n * 1000u;
     while (cf_ms_rem >= FS) {
         cf_ms_rem -= FS;
@@ -700,7 +704,7 @@ static void cf_visual_publish(uint32_t peak)
     cf_visual_peak=(uint16_t)(peak>32767?32767:peak);cf_visual_ms=cf_now_ms;
     cf_visual_muted=song.master_q12==0;
     cf_visual_parts=0;
-    if(trk[0].p[P_LEVEL] && (cfp.n || sqp.dn))cf_visual_parts|=1;
+    if(trk[0].p[P_LEVEL] && (cfp.n || sqp.dn || cla.on))cf_visual_parts|=1;
     if(trk[1].p[P_LEVEL] && (cfp.nb || sqp.nb))cf_visual_parts|=2;
     if(trk[2].p[P_LEVEL] && sqp.ln)cf_visual_parts|=4;
     if(trk[3].p[P_LEVEL] && sqp.lit_t[SQ_DRUMS] && cf_now_ms-sqp.lit_t[SQ_DRUMS]<150)cf_visual_parts|=8;
@@ -708,6 +712,8 @@ static void cf_visual_publish(uint32_t peak)
 
 /* ---------------------------------------------------- what the UI reads --- */
 typedef struct {
+    cf_lab_chord_t audition;
+    uint8_t audition_on,audition_blocked;
     uint32_t visual_ms;
     uint16_t visual_peak;
     uint8_t visual_parts,visual_muted;
@@ -752,6 +758,7 @@ static void cf_snapshot(void)
 {
     uint32_t i;
     fm1_irq_off();
+    cf_sn.audition=cla.chord;cf_sn.audition_on=cla.on;cf_sn.audition_blocked=cla.blocked;
     cf_sn.visual_ms=cf_visual_ms;cf_sn.visual_peak=cf_visual_peak;
     cf_sn.visual_parts=cf_visual_parts;cf_sn.visual_muted=cf_visual_muted;
     cf_sn.ac_revision = cpa.revision;cf_sn.ac_n=cpa.plan.n;

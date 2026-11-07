@@ -215,6 +215,7 @@ static void cpa_ui_record(void);
 #include "cf_accomp_ui.c"
 #include "cf_browser_ui.c"
 #include "cf_draft_ui.c"
+#include "cf_lab_ui.c"
 #include "cf_variation.c"                         /* one-page variation and undo */
 
 /* SELECT on Progressions: apply the idea's setup, without touching sounds,
@@ -295,6 +296,7 @@ static void ui_knob_info(int k, cf_knob_t *o)
 {
     o->bar = -1;
     switch (cu.scr) {
+    case SCR_LAB: cfl_knob_info(k,o);break;
     case SCR_HOME:
         if (home_stage() && cf_home_bank_info(k, o)) break;
         if (k == 0 && (cf_scene() == CF_SCENE_PROGRESSIONS || cpa_running())) {
@@ -579,6 +581,7 @@ static void cpa_glide(int d)
 
 static void ui_knob_turn(int k, int d)
 {
+    if(cu.scr==SCR_LAB){cfl_turn(k,d);return;}
     cu.knob_ms[k] = cu.now ? cu.now : 1u;
     cu.knob_last = (uint8_t)k;
     switch (cu.scr) {
@@ -878,6 +881,7 @@ static void cv_turned(int d)
 
 static void ui_select(int d)                     /* SELECT: the bass sound, or a screen's page */
 {
+    if(cu.scr==SCR_LAB){cfl_select(d);return;}
     cf_nav_dir=d<0?-1:1;
     if(cu.scr==SCR_PEDIT){if(cfwd.have&&!cfdu.conflict&&!cfdu.confirm)cfdu.focus=wrapi(cfdu.focus+d,cfwd.song.n);return;}
     if(cu.scr==SCR_ACC){cf_acc_select(d);return;}
@@ -977,6 +981,7 @@ static void ui_presets(int d)                    /* PRESETS: the chord sound (a 
 }
 static void ui_algo(int d)                       /* ALGORITHM: scene, effect, or workspace tab */
 {
+    if(cu.scr==SCR_LAB){cfl_tab(d);return;}
     cf_nav_dir=d<0?-1:1;
     if(cu.scr==SCR_PEDIT){if(!cfdu.conflict&&!cfdu.confirm)cu.page[SCR_PEDIT]=wrapi(cu.page[SCR_PEDIT]+d,CFD_NTAB);return;}
     if(cu.scr==SCR_ACC){cu.page[SCR_ACC]=(uint8_t)wrapi(cu.page[SCR_ACC]+d,CF_ACC_N);cf_acc_focus=0;cf_acc_page_ms=cf_motion?(cu.now?cu.now:1u):0;return;}
@@ -1024,6 +1029,7 @@ static void ui_ctx_from_track(uint32_t trk)
 static void ui_open(uint32_t scr)
 {
     uint32_t was = cu.scr;
+    if(was==SCR_LAB)cla_request(0);
     if (sq_screen(was) && !sq_screen(scr) && scr != SCR_SEQ)
         ui_ctx_from_track(squ.trk);
     cu.scr = (uint8_t)(scr == was && scr != SCR_HOME ? SCR_HOME : scr);
@@ -1122,6 +1128,15 @@ static void ui_button(uint32_t b)
         cf_message("Reset cancelled");
         return;
     }
+    if(cu.scr==SCR_LAB) {
+        if(b==B_SCL){if(clu.tab==CFL_COMPARE || clu.tab==CFL_NEXT)cfl_audition();else {ui_open(SCR_HOME);home_boot_main=1;}return;}
+        if(b==B_EDIT){cfl_edit();return;}
+        if(b==B_PLAY){cla_request(0);cpa_ui_play();return;}
+        if(b==B_SAVE){cla_request(0);cu.scr=SCR_GLO;cu.page[SCR_GLO]=CF_GLO_RECORDINGS;cu.pop=POP_NONE;return;}
+        cla_request(0);
+    }
+    if(b==B_SCL && cpb_home()){cfl_open();return;}
+    if(b==B_SCL && cu.scr==SCR_GLO && cu.page[SCR_GLO]==CF_GLO_HARMONY){ui_open(SCR_SEL);return;}
     if(b==B_EDIT && (cu.scr==SCR_PEDIT || cu.scr==SCR_ACC || cpb_home())) {
         if(cu.scr==SCR_PEDIT){ui_open(SCR_HOME);home_boot_main=1;}else cfd_open();return;
     }
@@ -2180,6 +2195,7 @@ static void cf_ui_frame(void)                    /* ui_leds: the snapshot, the p
     cf_snapshot();
     cpa_ui_poll();
     cfd_ui_poll();
+    cfl_poll();
     sq_tempo_poll();
     cf_feed_plant(dt);
     cf_leds();

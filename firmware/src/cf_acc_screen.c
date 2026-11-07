@@ -20,7 +20,7 @@ static void cf_acc_model(cf_acc_model_t *m)
     str_cpy(m->status,cf_acc_transport(),sizeof m->status);
     if(cu.pop==POP_MSG)str_cpy(m->message,cu.msg,sizeof m->message);
     else if(cu.pop==POP_SOUND_CHORD || cu.pop==POP_SOUND_BASS)str_cpy(m->message,cf_snd[cu.pop==POP_SOUND_BASS?1:0].name,sizeof m->message);
-    if(m->tab==CF_ACC_N){m->focus=cf_legacy_pick;m->focus_weight=cfn_focus(0x40000u|m->focus);return;}
+    if(m->tab==CF_ACC_N){m->focus=cf_legacy_pick;m->focus_weight=cfn_focus(CFN_FOCUS_LEGACY|m->focus);return;}
     uint32_t arrival=(int32_t)(cf_acc_page_ms-cfn_motion.page_ms)>0?cf_acc_page_ms:cfn_motion.page_ms;
     m->dx=(int8_t)(cf_tween_offset(arrival,170,8)*(cf_nav_dir<0?-1:1));
     const cf_progression_t *p=cf_progression_current();m->n=p->n;m->focus=cf_acc_focus%p->n;

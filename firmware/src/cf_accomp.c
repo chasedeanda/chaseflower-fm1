@@ -63,12 +63,14 @@ static void cpa_overlay_cfg(cf_chord_cfg_t *cfg)
 }
 static void cpa_release(void)
 {
+    cla_cancel(0);
     sqp_chord_off(); sqp_bass_off(); sqp.dn = 0;
     sqp_drum_offs();
 }
 static void cpa_stop(void)
 {
     cpa_commanded = 0;
+    cla_cancel(0);
     if (!cpa.on) return;
     cpa_release(); dmp_stop();
     cpa.on = cpa.paused = cpa.clock_wait = cpa.clock_lost = 0;
@@ -78,6 +80,7 @@ static void cpa_stop(void)
 static uint8_t cpa_tie_from;
 static void cpa_emit(void)
 {
+    if(cla_active())return;
     const cpa_slot_t *s = &cpa.plan.slot[cpa.slot];
     if(cpa_tie_from && sqp.n==s->n && sqp.nb==(cfp_cfg.bass_on?s->nb:0) &&
        !memcmp(sqp.note,s->note,s->n) && !memcmp(sqp.bass,s->bass,sqp.nb)) {
@@ -205,6 +208,7 @@ static void cpa_tick1(void)
         cfm.beat = (cpa.t / SQ_PPQN + 1u) % cfm.beats;
         cfm.beats_done++; cfm.beat_ms = cf_now_ms;
     }
+    cla_tick1();
     cfm.acc = (cpa.t % SQ_PPQN) * (FS * 60u / SQ_PPQN);
     cf_grid.on = 1; cf_grid.g24 = 24u + cpa.q2 / 8u;
 }

@@ -42,6 +42,9 @@ typedef struct {                /* the looper's settings up to 0.3.1: unused sin
  * the last of the two lets it go) */
 static int cfp_holds(uint32_t part, uint32_t note);   /* (below: a note the keys' player sounds) */
 static int cpa_running(void);
+static void cla_cancel(int restore);
+static int cla_active(void);
+static void cla_tick1(void);
 static void cpa_stop(void);
 static void cpa_overlay_cfg(cf_chord_cfg_t *cfg);
 static void cpa_overlay_source(void);
@@ -511,6 +514,7 @@ static void cfp_sync(int how)
 #define CFP_GATHER_MS 50u                            /* a button this soon after a root is still that chord's */
 static void cfp_key(int key, int down)
 {
+    if(down)cla_cancel(1);
     int idx, role = key >= CF_KEY_EXT ? CF_ROLE_ROOT : cf_key_role(cfc.cfg.algo, key, &idx);   /* (an outside root) */
     /* RETRIG Wait: a button under held keys waits for the next root; but one pressed or let go just after a root went
      * down (fingers are never quite together) still makes that root's chord */
@@ -561,6 +565,7 @@ static void cfp_config(void)                         /* CFE_CONFIG: the UI's set
 
 static void cfp_panic(void)
 {
+    cla_cancel(0);
     uint32_t i;
     cfa_stop();
     cf_chord_reset(&cfc);

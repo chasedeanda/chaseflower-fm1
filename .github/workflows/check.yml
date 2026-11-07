@@ -59,6 +59,9 @@ jobs:
               > build/smoke.txt
           sh tools/emu/cf_headless.sh build/smoke.txt build/smoke | tail -20
 
+      - name: Chord Lab theory, suggestions, ownership, undo and audio regressions
+        run: sh tools/test_lab.sh
+
       - name: Host tests
         run: |
           set -euo pipefail
