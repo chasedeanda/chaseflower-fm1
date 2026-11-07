@@ -84,7 +84,7 @@ static void cf_acc_draw(void)
                 for(unsigned l=0;l<3;l++){int y=119+l*17;cfn_text(&CFN_12,10+x,y+8,label[l],FL_INK2);for(unsigned i=0;i<m.steps;i++){int gx=30+x+i*200/m.steps,w=200/m.steps-2;fb_rect(gx,y,w,7,(m.lane[l]>>i)&1?C_ACC(0):FL_BG1);if(m.playhead==i)fb_hline(gx,y+9,w,FL_INK);}}
             }
             if(m.tab==CF_ACC_LOOP) {
-                for(unsigned i=0;i<4 && m.first+i<m.n;i++){int cx=30+i*60+x;fb_clip(i*60+x,112,(i+1)*60+x,168);if(m.focus==m.first+i)fb_frame(cx-27,114,54,41,FL_BG3);cfn_center(&CFN_16,cx,131,m.degree[i],C_ACC(0));cfn_center(&CFN_12,cx,148,m.rail[i],FL_INK);if(m.slot==m.first+i)fb_hline(cx-22,158,44,C_ACC(0));}
+                for(unsigned i=0;i<4 && m.first+i<m.n;i++){int cx=30+i*60+x;fb_clip(i*60+x,112,(i+1)*60+x,168);if(m.focus==m.first+i){fb_frame(cx-27,114,54,41,FL_BG3);if(m.focus_weight)fb_hline(cx-26,115,52,C_ACC(0));}cfn_center(&CFN_16,cx,131,m.degree[i],C_ACC(0));cfn_center(&CFN_12,cx,148,m.rail[i],FL_INK);if(m.slot==m.first+i)fb_hline(cx-22,158,44*m.cursor_width/100,C_ACC(0));}
                 fb_clip(0,49,240,183);char b[24];kint(b,m.focus+1," focus / ");if(m.slot!=255)kint(b+str_len(b),m.slot+1," playing");else str_cpy(b+str_len(b),"stopped",sizeof b-str_len(b));cfn_text(&CFN_12,10+x,179,b,FL_INK2);
             }
         }
