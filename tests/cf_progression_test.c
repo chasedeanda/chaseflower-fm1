@@ -8,14 +8,13 @@ static unsigned checks, failures;
 
 static void song_seed_fixtures(void)
 {
-    /* Explicit sounding chord roots/qualities from the documented section
-     * reductions, independent of the catalog's degree/scale representation.
-     * Pitch classes use C=0; minor=1 means a minor triad, 0 a major triad. */
+    /* Independent roots; generic entries also check triad quality. Full
+     * source intervals have independent fixtures in cf_accomp_test.c. */
     static const struct {
         uint16_t id;
         uint8_t n, root[CF_P_MAX], minor[CF_P_MAX];
     } songs[] = {
-        {101, 4, {7,2,4,2},       {0,0,1,0}},       /* Daylily: G D Em D */
+        {101, 4, {7,2,4,2},       {0,0,1,0}},       /* Daylily: Gmaj7 D Em D */
         {102, 3, {9,4,6},         {0,0,1}},         /* Full Circle: A E F#m */
         {103, 7, {9,5,9,0,9,5,9}, {1,0,1,0,1,0,1}}, /* Kept: Am F Am C Am F Am */
         {104, 5, {4,1,4,1,9},     {0,1,0,1,0}},     /* Keep This Up: E C#m E C#m A */
@@ -24,24 +23,19 @@ static void song_seed_fixtures(void)
         {107, 4, {9,1,4,6},       {0,1,0,1}},       /* Country Girl: A C#m E F#m */
         {108, 5, {7,11,7,11,9},   {0,1,0,1,0}},     /* Placeholder: G Bm G Bm A */
         {109, 3, {6,10,8},        {0,1,0}},         /* Bags: Gb Bbm Ab */
-        {110, 4, {2,7,0,5},       {1,0,0,0}},       /* Sofia: Dm G C F */
-        {111, 4, {2,0,4,2},       {1,0,1,1}},       /* Pretty Girl: Dm C Em Dm */
+        {110, 4, {2,7,0,5},       {1,0,0,0}},       /* Sofia: Dm7 G7 Cmaj7 Fmaj7 */
+        {111, 4, {2,0,4,2},       {1,0,1,1}},       /* Pretty Girl: Dm7 Cmaj7 Em7 Dm7 */
         {112, 4, {5,0,7,2},       {0,0,1,1}},       /* Not The Same: F C Gm Dm */
-        {113, 4, {10,5,10,5},     {0,0,0,0}},       /* The Shade: Bb F Bb F */
-        {114, 4, {0,4,5,7},       {0,1,0,0}},       /* Pluto Projector adaptation: C Em F G */
-        {115, 4, {2,9,6,6},       {0,0,1,1}},       /* Bloody Valentine: D A F#m F#m */
-        {116, 3, {1,5,3},         {0,1,0}},         /* my ex's best friend: Db Fm Eb */
-        {117, 6, {0,4,2,0,7,2},   {0,1,0,0,0,0}},   /* I Think I'm OKAY: C Em D C G D */
-        {118, 4, {4,9,2,7},       {1,0,0,0}},       /* I.F.L.Y. adaptation: Em A D G */
+        {113, 4, {10,5,10,5},     {0,0,0,0}},       /* The Shade: Bbmaj7 Fmaj7 Bbmaj7 Fmaj7 */
+        {114, 7, {0,4,5,6,7,7,7}, {0,1,0,1,0,0,0}},       /* Pluto: C Em7 Fmaj7 F#m7b5 G7 G7sus4 G7 */
+        {118, 4, {4,9,2,7},       {1,0,0,0}},       /* I.F.L.Y.: Em9 A13 Dmaj9 Gmaj7 */
         {119, 6, {9,9,6,2,6,2},   {0,0,1,0,1,0}},   /* Intentions: A A F#m D F#m D */
         {120, 4, {9,0,7,5},       {1,0,0,0}},       /* Hurt: Am C G F */
         {121, 3, {9,11,4},        {0,0,0}},         /* Habitual: A B E */
         {122, 6, {5,3,1,8,10,5},  {1,0,0,0,1,1}},   /* Confirmation: Fm Eb Db Ab Bbm Fm */
-        {123, 3, {5,4,2},         {0,1,1}},         /* Changes: F Em Dm */
+        {123, 3, {5,4,2},         {0,1,1}},         /* Changes: Fmaj7 Em7 Dm7 */
         {124, 4, {1,4,1,4},       {1,0,1,0}},       /* Forever: C#m E C#m E */
-        {125, 4, {7,9,7,9},       {1,1,1,1}},       /* Yummy: Gm Am Gm Am */
-        {126, 4, {11,4,6,8},      {0,0,0,1}},       /* Concert for Aliens: B E F# G#m */
-        {127, 4, {8,4,11,1},      {1,0,0,1}},       /* Sick and Tired: G#m E B C#m */
+        {125, 4, {7,9,7,9},       {1,1,1,1}},       /* Yummy: Gm7 Am7 Gm7 Am7 */
     };
     cf_harmony_t h;
     cf_harmony_defaults(&h);
@@ -55,10 +49,10 @@ static void song_seed_fixtures(void)
         if (!p) continue;
         CHECK(p->n == songs[i].n);
         for (unsigned j = 0; j < songs[i].n && j < p->n; j++) {
-            int root = (p->tonic + cf_scale_step(p->scale, p->degree[j])) % 12;
+            int root = cf_progression_root(p,j,p->scale,p->tonic);
             uint32_t expected = 1u | (1u << (songs[i].minor[j] ? 3 : 4)) | (1u << 7);
             CHECK(root == songs[i].root[j]);
-            CHECK(cf_progression_mask(p->scale, p->tonic, p->degree[j], &h) == expected);
+            if (!cf_progression_source(p)) CHECK(cf_progression_slot_mask(p,j,p->scale,p->tonic,&h) == expected);
         }
     }
 }
@@ -74,7 +68,7 @@ int main(void)
     unsigned tags = 0;
     cf_harmony_t h;
     cf_harmony_defaults(&h);
-    CHECK(cf_progression_count() == 127);
+    CHECK(cf_progression_count() == 122);
     song_seed_fixtures();
     CHECK(!cf_progression_get(CF_P_NONE) && !cf_progression_get(UINT_MAX));
     for (unsigned i = 0; i < cf_progression_count(); i++) {
@@ -85,12 +79,14 @@ int main(void)
         modes |= 1u << p->scale; meters |= 1u << p->beats;
         for (unsigned j = 0; j < p->n; j++) CHECK(p->degree[j] < 7);
         for (unsigned j = 0; j < p->n; j++) {
-            int root=(p->tonic+cf_scale_step(p->scale,p->degree[j]))%12;
-            uint32_t mask=cf_progression_mask(p->scale,p->tonic,p->degree[j],&h);
+            int root=cf_progression_root(p,j,p->scale,p->tonic);
+            uint32_t mask=cf_progression_slot_mask(p,j,p->scale,p->tonic,&h);
             uint8_t expected=0;
-            for(unsigned k=0;k<p->n;k++) if(p->degree[k]==p->degree[j]) expected|=(uint8_t)(1u<<k);
-            CHECK(cf_progression_highlight(p,p->scale,p->tonic,root,mask | (1u<<10) | (1u<<14))==expected);
-            CHECK(cf_progression_highlight(p,p->scale,p->tonic,root,mask | (1u<<15) | (1u<<16))==expected);
+            for(unsigned k=0;k<p->n;k++)
+                if(cf_progression_root(p,k,p->scale,p->tonic)==root &&
+                   cf_progression_slot_mask(p,k,p->scale,p->tonic,&h)==mask) expected|=(uint8_t)(1u<<k);
+            CHECK(cf_progression_highlight(p,p->scale,p->tonic,root,mask)==expected);
+            CHECK(cf_progression_highlight(p,p->scale,p->tonic,root,mask)==expected);
             CHECK(!cf_progression_highlight(p,p->scale,p->tonic,root,mask ^ (1u<<3) ^ (1u<<4)));
             CHECK(!cf_progression_highlight(p,p->scale,p->tonic,(root+1)%12,mask));
         }

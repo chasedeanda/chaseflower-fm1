@@ -46,8 +46,8 @@ instrument's intro runs for 2.4 seconds and any input skips it.
 [Scenes and controls](docs/VISUALS.md) · [Sound banks and 6/8](docs/CHASE3.md) ·
 [Diagnostics](docs/DIAGNOSTICS.md) · [USB recording](docs/USB-AUDIO.md)
 
-**Progression explorer:** HOME starts with [127 browsable ideas](docs/PROGRESSION-EXPLORER.md),
-including [27 Spotify-selected song snippets](docs/research/SPOTIFY-COVER-SHORTLIST.md) in the development source.
+**Progression explorer:** HOME starts with [122 browsable ideas](docs/PROGRESSION-EXPLORER.md),
+including [22 Spotify-selected song snippets](docs/research/SPOTIFY-COVER-SHORTLIST.md) in the development source.
 Turn SELECT to explore; key, scale and meter follow the idea. K1 changes rhythm, and matching chord cards light
 while you play. ALGORITHM cycles Progressions, Bass, Bonfire and Nothing.
 

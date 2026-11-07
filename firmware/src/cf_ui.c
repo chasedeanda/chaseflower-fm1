@@ -43,6 +43,9 @@ static void cf_send_config(void)                 /* the chord settings -> the au
     fm1_irq_off();
     cfc_shadow = cs.chord;
     cfh_shadow = ch;
+    const cf_progression_t *source_p = cf_progression_get(cpa.on ? cpa.plan.idea : cpg.idea);
+    cfsrc_shadow = cpg.explored ? cf_progression_source(source_p) : 0;
+    cfsrc_n = source_p && cfsrc_shadow ? source_p->n : 0;
     cfp_cfg.glide_always = cs.glide_always;
     cfp_cfg.vel = cs.vel;
     cfp_cfg.bass_on = cs.bass_on;

@@ -36,10 +36,17 @@ static int cpa_prepare(cpa_plan_t *plan, unsigned idea, cf_chord_cfg_t cfg, unsi
         uint16_t used, conflict; int inv = 0, bass = 0; uint32_t newest = 0;
         int key = cf_progression_key(&cfg, p->degree[i]);
         if (key < 0) return 0;
-        s->root = cf_key_root_note(&cfg, key); plan->degree[i] = p->degree[i];
-        s->mask = cf_harmony_mask(&ch, cfg.scale, cfg.tonic, s->root % 12, slots, stamp, &used, &conflict);
+        const cf_source_chord_t *source=cf_progression_source(p);
+        s->root = cf_key_root_note(&cfg,key)+(source?source[i].alter:0);
+        plan->degree[i] = p->degree[i];
+        s->mask = source ? cf_harmony_apply(&ch,source[i].mask,slots,stamp,&used,&conflict)
+                        : cf_harmony_mask(&ch,cfg.scale,cfg.tonic,s->root%12,slots,stamp,&used,&conflict);
         for (unsigned j = 0; j < CF_H_SLOTS; j++) if ((used >> j & 1u) && stamp[j] >= newest) {
             newest = stamp[j]; inv = ch.inv[j]; bass = ch.bass[j];
+        }
+        if(source && source[i].bass>=0 && !inv && !bass) {
+            int8_t tones[12]; int nt=cf_mask_tones(s->mask,tones);
+            for(int ti=0;ti<nt;ti++) if(tones[ti]%12==source[i].bass) { inv=ti; break; }
         }
         int base = s->root;
         if (inv == CF_INV_AUTO) {
@@ -58,7 +65,7 @@ static int cpa_prepare(cpa_plan_t *plan, unsigned idea, cf_chord_cfg_t cfg, unsi
                 s->note[s->n++] = o.note[j];
             }
         o.sounding = 1; o.root_note = s->root; o.root_pc = s->root % 12; o.mask = s->mask;
-        o.bass_pc = cf_bass_pc(o.root_pc, s->mask, bass);
+        o.bass_pc = source && source[i].bass>=0 && !bass ? (o.root_pc+source[i].bass)%12 : cf_bass_pc(o.root_pc,s->mask,bass);
         plan->nb = cfp_bass_notes_of(&o, s->bass);
         s->ticks = p->beats * SQ_PPQN; /* explicit durations can be supplied here later */
     }

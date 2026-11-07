@@ -16,13 +16,18 @@ typedef struct {
     uint8_t n, degree[CF_P_MAX]; /* zero-based scale degrees */
 } cf_progression_t;
 
+const cf_source_chord_t *cf_progression_source(const cf_progression_t *p);
+int cf_progression_root(const cf_progression_t *p, unsigned slot, int scale, int tonic);
+uint32_t cf_progression_slot_mask(const cf_progression_t *p, unsigned slot, int scale, int tonic, const cf_harmony_t *h);
+int cf_progression_slot_key(const cf_progression_t *p, unsigned slot, const cf_chord_cfg_t *cfg);
 const char *cf_progression_tag(int tag);
 unsigned cf_progression_count(void);
 const cf_progression_t *cf_progression_get(unsigned index);
 /* One wrapping list, independent of the current key, scale and descriptive tags. */
 uint8_t cf_progression_pick(unsigned current, int turn);
-/* All matching cards light, including repeated chords. Extensions and inversion
- * do not prevent a root/major-minor match. Caller excludes silence/single notes. */
+/* All matching cards light, including repeated chords. Generic entries match
+ * root/third quality; source entries require their full intervals too. Inversion
+ * does not affect matching. Caller excludes silence/single notes. */
 uint8_t cf_progression_highlight(const cf_progression_t *p, int scale, int tonic,
                                  int root, uint32_t mask);
 /* Underlying Auto triad, without physical/latched modifiers or live state. */

@@ -1,0 +1,10 @@
+{
+  "excluded_artist_names": [
+    "Dance Gavin Dance",
+    "Dwellings",
+    "mgk",
+    "Machine Gun Kelly"
+  ],
+  "exclude_features": true,
+  "chord_policy": "Preserve written source chord quality, sevenths, extensions, alterations, passing chords and slash bass. Do not reduce to fit the catalog format; extend the format. Simplify only for a demonstrated instrument limit, document every omitted note and the limit. Conflicting or unverified harmony is a research hold, not a reason to substitute easy chords."
+}

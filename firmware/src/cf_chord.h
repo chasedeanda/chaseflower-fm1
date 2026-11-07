@@ -65,6 +65,8 @@ typedef struct {
 
 typedef struct {
     cf_chord_cfg_t cfg;
+    const cf_source_chord_t *source; /* selected factory section, transient */
+    uint8_t source_n;
     cf_harmony_t harmony;       /* separate from the legacy persisted manual forms */
     uint16_t held;              /* chord buttons physically down */
     uint16_t gesture;           /* the buttons of the press under way (Lock) */
