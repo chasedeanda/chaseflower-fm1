@@ -1,0 +1,10 @@
+In file included from firmware/src/coralflower.c:180:
+In file included from firmware/src/cf_settings.c:61:
+firmware/src/cf_fx_store.c:31:23: warning: suggest braces around initialization of subobject [-Wmissing-braces]
+    fxp_preset_t p = {0};
+                      ^
+                      {}
+1 warning generated.
+size: 98 main-loop functions built for size (780 not in this build)
+size: .text 446208 B, .ram_text 2924 B, .c1_text 128 B (RAMTEXT 3052 of 24576), .data 13308 B, .bss 66620 B; XIP 462568 B of 573440 (80.7%), RAM 79928 B of 98304 (81.3%), POOL 315404 B of 344064 (91.7%), NOINIT 216 B of 15664 (1.4%)
+checks: [] ['.ram_text: 916 insns, no calls', 'image 466376 B (stub 3808 + app 462568); RAM .data+.bss 79932 B of 98304; pool 315404 B of 344064']

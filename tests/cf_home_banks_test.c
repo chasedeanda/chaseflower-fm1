@@ -74,6 +74,24 @@ static void queued(void)
     CHECK(cpa.on && cpa.slot==slot && cpa_edit.flags==flags && cf_evq_w==queue);
     ui_button(B_PLAY);blocks(2);CHECK(!cpa.on && !sqp.n && !sqp.nb);
 }
+static void source_rail(void)
+{
+    setup();cf_home_bank=CF_HB_CORE;ch.mode=CF_H_MANUAL;
+    for(unsigned idea=0;idea<cf_progression_count();idea++) {
+        const cf_progression_t *p=cf_progression_get(idea);
+        const cf_source_chord_t *source=cf_progression_source(p);if(!source)continue;
+        cpg.idea=idea;cs.chord.tonic=p->tonic;cs.chord.scale=p->scale;cu_spell_update();
+        cf_sn.ac_on=1;cf_sn.ac_next=CF_P_NONE;cf_sn.ac_edits=0;
+        for(unsigned slot=0;slot<p->n;slot++) {
+            cf_sn.ac_slot=slot;cf_stage_model_t m;cf_stage_model(&m);
+            int root=(p->tonic+cf_scale_step(p->scale,p->degree[slot])+source[slot].alter+12)%12;
+            int bass=source[slot].bass<0?-1:(root+source[slot].bass)%12;char expected[24];
+            cf_chord_name(root,source[slot].mask,bass,&cu_spell,expected);
+            CHECK(!strcmp(m.rail[slot%4],expected));
+        }
+    }
+    cf_sn.ac_on=0;
+}
 static void audio(const char *path,int cycle)
 {
     setup();cf_motion=1;ui_button(B_PLAY);blocks(2);FILE *f=fopen(path,"wb");CHECK(f);if(!f)return;
@@ -87,6 +105,6 @@ static void audio(const char *path,int cycle)
 int main(int argc,char **argv)
 {
     emu_fw_options(NULL,1,0,1);emu_hal.ready=2;emu_fw_init(0);
-    if(argc==3)audio(argv[2],atoi(argv[1]));else {navigation();parameters();queued();}
+    if(argc==3)audio(argv[2],atoi(argv[1]));else {navigation();parameters();queued();source_rail();}
     printf("HOME banks: %u checks, %u failures\n",checks,failures);return failures!=0;
 }

@@ -1,0 +1,23 @@
+{
+  "kind": "Host HAL native C firmware captures; physical verification pending",
+  "sourceBase": "4e678049762279740f750ec3566ed1e0939c26a1",
+  "nativeDimensions": [
+    240,
+    240
+  ],
+  "sourceSha256": {
+    "firmware/src/cf_home_banks.c": "7fa85f253799b3b8070c8831746d462e9aeeac20b71f3173da3d52b47bc50ca1",
+    "firmware/src/cf_stage.c": "974f084209fa5b7831ee27a981ed2137a9b5704bbcb6640930fb31fc468f27c3",
+    "firmware/src/cf_ui.c": "89c9c9b2326b6b7ec77e9e2ab4467a1704170301cceec9b7eaab3ffb0e34fc5f"
+  },
+  "imagesSha256": {
+    "return-core.png": "54aeebd8f5a7e97d14f29e1032d9b9021ac2686c5f1dfa2ee68eccf979be5a31",
+    "sound.png": "3c859a485bdb5a6245633df9d1964a990ff90d3b300bea9e6e37722754ecc1c4",
+    "sound-motion-off.png": "36e547d8b930200250037faaaf31e0568329da611931906d4077f59eb6ad9738",
+    "texture.png": "3a48f18778b5f3c07c541a74fdfa9991f260b7834b0ce73a55ca3e2c58e6dcfe",
+    "diagnostics.png": "b511450770fe8d7c7b47d091b1fd8ec4528d8c3c158fdcb5025539e96901a9f6",
+    "groove-pending.png": "23e67b37e0630794b6b3c750f5484f12874789fe8b07b1c6ce4f358ce996745b",
+    "core.png": "8cf3806acf653df799d09d62d174a383550581c464bd852f47fec0ef44849b59",
+    "groove.png": "fad7e55eb658db7f8242ca049bd916a752a3bdc7584602a01e3d49408c2494d2"
+  }
+}
