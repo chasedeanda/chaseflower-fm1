@@ -638,7 +638,7 @@ static void draw_edit(void)
 
 static void draw_generic(void)
 {
-    static const char *const PG_GLO[CF_GLO_NPAGES] = {"Display", "MIDI", "Channels", "Play", "Reset", "Library", "Diagnostics", "Harmony", "Variation", "Accompany", "Browse"};
+    static const char *const PG_GLO[CF_GLO_NPAGES] = {"Display", "MIDI", "Channels", "Play", "Reset", "Library", "Diagnostics", "Harmony", "Variation", "Accompany", "Browse", "Recordings"};
     cf_scene_frame();
     draw_plant(Y_VIEW);
     fb_veil(0, Y_VIEW, FB_W, H_VIEW, FL_BG);   /* (the plant faint: the picture leads) */
@@ -650,7 +650,13 @@ static void draw_generic(void)
         uint32_t p = cu.page[SCR_GLO] % CF_GLO_NPAGES;
         draw_head(PG_GLO[p]);
         draw_pager((int)p, CF_GLO_NPAGES, 1, 0);
-        if (p == CF_GLO_VARIATION) {
+        if (p == CF_GLO_RECORDINGS) {
+            fb_text_c(&CF_FONT_UI,120,Y_VIEW+38,"KEEP THE LATEST THREE",C_ACC(0),1);
+            fb_text_c(&CF_FONT_UI,120,Y_VIEW+60,"Newest recording is always 1",FL_INK,1);
+            fb_text_c(&CF_FONT_MICRO,120,Y_VIEW+83,sq_pref.protect?"FULL: CLEAR A RECORDING FIRST":"A FINISHED TAKE REPLACES THE OLDEST",FL_INK2,1);
+            fb_text_c(&CF_FONT_MICRO,120,Y_VIEW+102,"CANCEL KEEPS YOUR PREVIOUS TAKES",FL_INK2,1);
+        }
+        else if (p == CF_GLO_VARIATION) {
             cvr_draw();
         }
         else if (p == CF_GLO_BROWSE) {

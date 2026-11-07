@@ -118,7 +118,8 @@ static const char *const ALG_NAME[CF_NALGS] = {"Top", "Top Lock", "Side", "Side 
 #define CF_GLO_VARIATION 8u
 #define CF_GLO_ACCOMP 9u
 #define CF_GLO_BROWSE 10u
-#define CF_GLO_NPAGES 11u
+#define CF_GLO_RECORDINGS 11u
+#define CF_GLO_NPAGES 12u
 
 static const cf_progression_t *cf_progression_current(void)
 {
@@ -181,6 +182,7 @@ static void kpc(char *b, int pc)
 #include "cf_fx_presets_ui.c"
 #include "cf_fxui.c"                             /* (the FX screen's controls) */
 static void cv_turned(int d);
+static void cpa_ui_record(void);
 #include "cf_sequi.c"                            /* (the SEQUENCER screens' controls) */
 #include "cf_dmui.c"                             /* (the drum machine's page, 0.6) */
 #include "cf_accomp_ui.c"
@@ -417,6 +419,9 @@ static void ui_knob_info(int k, cf_knob_t *o)
     case SCR_SQED: sq_knob_info(k, o); break;
     case SCR_GLO:
         switch (cu.page[SCR_GLO]) {
+        case CF_GLO_RECORDINGS:
+            if (!k) { kfmt(o->name,12,"AUTO REPLACE"); kfmt(o->val,14,sq_pref.protect?"Off":"On"); }
+            break;
         case CF_GLO_BROWSE: cpb_knob_info(k,o); break;
         case CF_GLO_ACCOMP:
             if (k == 0) { kfmt(o->name, 12, "ACCOMPANY"); kfmt(o->val, 14, CPA_MODE_NAME[cpg.mode]); }
@@ -683,6 +688,10 @@ static void ui_knob_turn(int k, int d)
     case SCR_SQED: sq_knob_turn(k, d); break;
     case SCR_GLO:
         switch (cu.page[SCR_GLO]) {
+        case CF_GLO_RECORDINGS:
+            if (!k && d) { sq_pref.protect=d<0; sq_pref_dirty=1;
+                cf_message(sq_pref.protect?"Full: new takes are refused":"New takes replace the oldest"); }
+            break;
         case CF_GLO_BROWSE: cpb_knob_turn(k,d); break;
         case CF_GLO_ACCOMP:
             if (k == 0) cpa_ui_mode(d);
@@ -1066,10 +1075,9 @@ static void ui_button(uint32_t b)
         cf_message("Reset cancelled");
         return;
     }
-    if (b == B_PLAY && (cpa_running() || cpa_commanded || cpb_page() || (cu.scr == SCR_HOME && cf_scene() == CF_SCENE_PROGRESSIONS))) {
+    if (b == B_PLAY && (cpa_running() || cpa_commanded || cpb_page() || (cu.scr == SCR_HOME && cf_scene() == CF_SCENE_PROGRESSIONS && !sqk.on && !cf_sn.sq_on))) {
         cpa_ui_play(); return;
     }
-    if (b == B_REC && cpa_running()) { cf_message("Stop accompaniment to record"); return; }
     if (cu.scr == SCR_DRUM) {                    /* the rhythm machine: the SEQUENCER's grammar (the owner on rc3: "когда в
                                                   * неё заходишь не должны нажиматься кнопки других вкладок, как и в
                                                   * секвенсоре", "гло должна быть с подсказками"): HOME and SEQ leave, the
@@ -1095,8 +1103,11 @@ static void ui_button(uint32_t b)
             sq_edit_press();
             return;
         }
-        if (b == B_FX || b == B_ENV || b == B_LFO || b == B_ARP ||
-            (cu.scr == SCR_SQ && b == B_SAVE))   /* (SAVE: nothing on the SEQUENCER; a pattern's copy is OCT+'s) */
+        if (cu.scr == SCR_SQ && b == B_SAVE) {
+            sq_clear_slot = squ.pat; sq_clear_down = cu.now ? cu.now : 1u;
+            cf_message("Hold SAVE 3s: clear recording"); cu.pop_until = cu.now + 3500u; return;
+        }
+        if (b == B_FX || b == B_ENV || b == B_LFO || b == B_ARP)   /* (SAVE: nothing on the SEQUENCER; a pattern's copy is OCT+'s) */
             return;                              /* (no way out to another screen here but HOME and SEQ: the owner,
                                                   * 2026-10-19; their lights are off) */
         if (cu.scr == SCR_SQ && b == B_EDIT) {
@@ -1115,8 +1126,6 @@ static void ui_button(uint32_t b)
             } else {
                 squ.sel_down = cu.now ? cu.now : 1u;
                 squ.cpy = 0;
-                sqh.busy = 0;                    /* (an action of its own: one undo) */
-                sq_undo_poll();
             }
             return;
         }
@@ -1124,9 +1133,6 @@ static void ui_button(uint32_t b)
                                                   * sq_sel_poll) */
             squ.sel_down = cu.now ? cu.now : 1u;
             squ.cpy = 0;
-            sqh.busy = 0;                        /* (SEL begins an action of its own: undo takes back the erase
-                                                  * alone, not what was written just before) */
-            sq_undo_poll();
             return;
         }
         if (cu.scr == SCR_SQED && b == B_SAVE) {
@@ -1145,7 +1151,7 @@ static void ui_button(uint32_t b)
             sq_play();
             return;
         }
-        if (b == B_REC) {                        /* a tap: a take; held 1 s: undo (cf_loop_poll) */
+        if (b == B_REC) {                        /* a tap: a take; held 1 s: cancel the new take */
             cu.rec_hold = cu.now ? cu.now : 1u;
             cu.rec_fired = 0;
             cf_rec_down();
@@ -1207,7 +1213,7 @@ static void ui_button(uint32_t b)
         else
             sq_home_play();
         break;
-    case B_REC:                                  /* a tap records a new pattern, a hold undoes (cf_rec_poll) */
+    case B_REC:                                  /* a tap records; a hold cancels the current new take */
         cu.rec_hold = cu.now ? cu.now : 1u;
         cu.rec_fired = 0;
         cf_rec_down();
@@ -1362,12 +1368,11 @@ static void cf_rec_poll(void)
         cfp_cfg.bpm = cs.bpm;
         fm1_irq_on();
     }
-    if (cu.rec_hold && sq_screen(cu.scr)) {      /* the sequencer: a tap records, held 1 s undoes (as on HOME) */
+    if (cu.rec_hold && sq_screen(cu.scr)) {      /* the sequencer: tap records, hold cancels a new take */
         int held = (fm1_in.buttons >> panel.btn[B_REC]) & 1u;
         if (held && !cu.rec_fired && cu.now - cu.rec_hold >= 1000u) {
             cu.rec_fired = 1;
-            sq_home_undo();                      /* (as on HOME: a take under way dropped, else the last change; an
-                                                  * undone take shows the pattern before it) */
+            sq_home_cancel();
             if (cu.scr == SCR_SQED && sq_empty(sq_cur()))
                 ui_open(SCR_SQ);                 /* (the pattern back to nothing: its tracks) */
             else if (cu.scr == SCR_SQED)
@@ -1379,11 +1384,11 @@ static void cf_rec_poll(void)
         }
         return;
     }
-    if (cu.rec_hold) {                           /* away from the sequencer: a tap a new pattern, held 1 s undo */
+    if (cu.rec_hold) {                           /* away from the sequencer: tap a new take, hold cancels it */
         int held = (fm1_in.buttons >> panel.btn[B_REC]) & 1u;
         if (held && !cu.rec_fired && cu.now - cu.rec_hold >= 1000u) {
             cu.rec_fired = 1;
-            sq_home_undo();
+            sq_home_cancel();
         } else if (!held) {
             if (!cu.rec_fired) {
                 if (cu.scr == SCR_DRUM)
@@ -1575,10 +1580,9 @@ static void cf_ui_input(void)
 {
     uint32_t rel = 0, pr = fm1_input_edges(&rel), i;
     int32_t d;
-    sq_home_poll();                              /* (a take from HOME ended: its bars, before its undo is kept) */
+    sq_home_poll();                              /* finish the current take in whole bars */
     sq_snd_poll();                               /* (the current pattern's sounds: 0.5) */
     cf_glide_migrate();                          /* (the old GLIDE into HOME's sound, once) */
-    sq_undo_poll();                              /* (before the input: the state an edit starts from) */
     cf_ui_pump();
     cpb_hold_poll();
     cf_save_poll();
@@ -1591,6 +1595,7 @@ static void cf_ui_input(void)
     sq_oct_poll();
     sq_edit_poll();
     sq_save_poll();
+    sq_clear_poll();
     dm_poll();                                   /* (the drum machine: what was chosen last, its settings kept) */
     for (i = 0; i < 14u; i++)
         if ((pr >> i) & 1u) {
@@ -2031,7 +2036,7 @@ static void cf_ui_init(void)
     cu_spell_update();
     cf_out_init();
     if (!cr_safe) {
-        sq_load();                               /* the sequencer's patterns and song */
+        sq_load();                               /* three recordings; legacy store stays archived */
         cfps_load();                             /* .. their own sounds (0.5) */
         cfk_load();                              /* .. the sounds' tweaks (put on them as they load: cfk_take) */
         sq_from_loop();                          /* (a loop kept by 0.3.1 or before, or restored: a pattern now) */
@@ -2098,6 +2103,7 @@ static void cf_ui_frame(void)                    /* ui_leds: the snapshot, the p
     cf_diag_poll(now);
     cf_snapshot();
     cpa_ui_poll();
+    sq_tempo_poll();
     cf_feed_plant(dt);
     cf_leds();
     if (cu.pop && (int32_t)(cu.now - cu.pop_until) > 0)

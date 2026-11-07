@@ -13,7 +13,8 @@
  * the 16 lower keys; x 2 in a bar of more than 4 beats). The song is a row of patterns played in turn. Included by
  * cf_out.c (the audio side plays it; the UI edits it between blocks). */
 
-#define SQ_NPAT 8u                               /* patterns A..H */
+#define SQ_NPAT 3u                               /* three active recordings A..C */
+#define SQ_LEGACY_NPAT 8u                        /* archived on-flash/backup layout: never shrink */
 #define SQ_BARS 8u                               /* bars a pattern can have */
 #define SQ_MAXST 32u                             /* steps a bar can have */
 #define SQ_NLANE 11u                             /* drum lanes, one an upper key: kick, snare, clap, hat, open hat,
@@ -102,6 +103,27 @@ typedef struct {
     sq_pat_t pat[SQ_NPAT];
 } sq_store_t;
 static sq_store_t sq_st;                         /* (RAM, not the pool: the pool is the engines', 2026-10-18) */
+typedef struct {
+    uint32_t magic, size, check;
+    sq_song_t song;
+    sq_pat_t pat[SQ_LEGACY_NPAT];
+} sq_legacy_store_t;                             /* type only; old recordings stay in flash */
+_Static_assert(sizeof(sq_legacy_store_t) == 20336u, "legacy archive layout stays eight patterns");
+typedef struct { uint16_t bpm; uint8_t beats, reserved; } sq_take_meta_t;
+static sq_take_meta_t sq_meta[SQ_NPAT];
+static uint8_t sq_meta_known, sq_drafting;
+static uint32_t sq_serial[SQ_NPAT];
+static uint8_t sq_order[SQ_NPAT] = {0,1,2};
+#define SQ_TAKE_MAGIC 0x314B5443u                 /* CTK1, independent atomic recording */
+typedef struct {
+    uint32_t magic, check;
+    uint16_t size;
+    uint8_t version, slot;
+    uint32_t serial;
+    sq_take_meta_t meta;
+    sq_pat_t pat;
+} sq_take_rec_t;
+_Static_assert(sizeof(sq_take_rec_t) == 2556u, "recording v1 layout");
 
 /* the drum kits (KIT, PRESETS on DRUMS): the DRUM engine's eight knobs set together (eng_drum.c: KIT, TUNE, TONE,
  * DECY, SNAP, ACC, KICK, DRV), so a kit changes every drum (its KIT alone swapped three of the eight, and the kit

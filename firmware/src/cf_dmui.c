@@ -431,8 +431,6 @@ static void dm_make_pattern(void)
     dm_sig_for(r);                               /* (its TIME SIG, as a take under it) */
     squ.pat = (uint8_t)f;
     squ.trk = SQ_DRUMS;
-    sqh.busy = 0;
-    sq_undo_poll();                              /* (the undo: the pattern as it was, empty) */
     p = &sq_st.pat[f];
     sq_fresh(p, cs.beats);
     p->tonic = cs.chord.tonic;
@@ -591,8 +589,6 @@ static void dm_hold_press(void)                  /* EDIT down in the DRUMS edito
     sq_pat_t *p = sq_cur();
     if (squ_rec_on() || sqk.on || squ.pat >= SQ_NPAT)
         return;                                  /* (a take under way: nothing) */
-    sqh.busy = 0;                                /* (one action: one undo, REC held) */
-    sq_undo_poll();
     memcpy(dmh.hit, p->hit, sizeof dmh.hit);
     memcpy(dmh.dkit, p->dkit, sizeof dmh.dkit);
     memcpy(dmh.dlev, p->dlev, sizeof dmh.dlev);

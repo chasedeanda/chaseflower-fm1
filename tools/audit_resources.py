@@ -128,6 +128,8 @@ def make_report(elf, inputs):
     groups = {
         'scene_allocations_gross_not_net_savings': ('fl_px', 'scene_body_px', 'flo'),
         'pattern_store_and_undo_not_reclaimable_without_replacement': ('sq_st', 'sqh'),
+        'recording_cancel_and_flash_staging_pool': ('sq_cancel', 'sq_io'),
+        'recording_order_and_preferences': ('sq_meta', 'sq_serial', 'sq_order', 'sq_pref'),
         'display_framebuffer_and_dma_shared_with_recovery': ('cv_px', 'fb_dma'),
         'engine_part_and_voice_state': ('trk', 'eng_state', 'va_vs', 'va_patch', 'va_mlast', 'va_rate_off', 'va_lfo', 'fm6_patch', 'fm6_eff'),
         'fx_buffers_preserve_audible_tails': ('xd_buf', 'cv_buf', 'cho_buf'),

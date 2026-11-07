@@ -150,6 +150,26 @@ static void cpa_tempo_info(cf_knob_t *o)
     kint(o->val, cs.clock_in == 1u ? cf_sn.ext_bpm : cs.bpm, cs.clock_in == 1u ? " EXT" : " BPM");
     o->dis = cs.clock_in == 1u;
 }
+static void cpa_ui_record(void)
+{
+    if (sq_home_target() < 0) { cf_message("All 3 recordings are used:\nclear one in RECORDINGS"); return; }
+    /* REC starts a manual take, after count-in, with the groove shown on HOME.
+     * The sequencer's audio-side setup releases automatic chord/bass ownership. */
+    if (cf_evq_w - cf_evq_r > CF_EVQ - 8u) { cf_message("Busy: press REC again"); return; }
+    cpa_plan_t plan;
+    if (cpa_running()) cpa_active_request(&plan);
+    else if (!cpa_prepare(&plan, cpg.idea, cs.chord, cpg.rhythm, cpg.mode)) return;
+    cs.chord.tonic = plan.tonic; cs.chord.scale = plan.scale; cs.beats = plan.beats;
+    cs.chord.quantize = CF_Q_BASIC;
+    cf_post(CFE_ACCOMP, 0, 0, 0);
+    cf_send_config(); cf_send_metro();
+    sq_home_rec_r(plan.rhythm, 1);
+    if (sqk.on && plan.rhythm < DM_N) {
+        sq_pat_t *p = &sq_st.pat[sqk.pat];
+        p->kit = plan.kit; p->swing = plan.swing;
+        for (unsigned i = 0; i < SQ_NLANE; i++) p->dkit[i] = plan.kit;
+    }
+}
 static void cpa_ui_play(void)
 {
     cpa_plan_t p;

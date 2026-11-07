@@ -241,7 +241,7 @@ typedef struct {
 typedef struct {
     uint32_t magic;
     uint8_t npat, ntrk, rsv[2];
-    cf_sref_t r[SQ_NPAT][3];                      /* the tracks: 0 CHORDS (part 0), 1 BASS (part 1), 2 LAYER (part 2) */
+    cf_sref_t r[SQ_LEGACY_NPAT][3];                /* archive layout retains all eight legacy sound references */
     uint32_t check;
 } cfps_rec_t;
 _Static_assert(sizeof(cfps_rec_t) <= ST_LMAX(OBJ_CFPSND), "pattern sounds: the record fits one log entry");
@@ -301,13 +301,13 @@ static int cfps_where(uint32_t pat, uint32_t t3, uint32_t *e, uint32_t *pos)
 static uint32_t cfps_check(void)
 {
     cfps.magic = CFPS_MAGIC;
-    cfps.npat = SQ_NPAT;
+    cfps.npat = SQ_LEGACY_NPAT;
     cfps.ntrk = 3;
     return cfs_fnv(&cfps, (uint32_t)__builtin_offsetof(cfps_rec_t, check));
 }
 static int cfps_valid(const cfps_rec_t *r)
 {
-    return r->magic == CFPS_MAGIC && r->npat == SQ_NPAT && r->ntrk == 3u &&
+    return r->magic == CFPS_MAGIC && r->npat == SQ_LEGACY_NPAT && r->ntrk == 3u &&
            r->check == cfs_fnv(r, (uint32_t)__builtin_offsetof(cfps_rec_t, check));
 }
 /* power-on, before the sounds load (cf_ui.c cf_ui_init): what the patterns have (none kept: every track HOME's) */
@@ -327,6 +327,7 @@ static void cfps_load(void)
 }
 static void cfps_poll(uint32_t now, int silent)
 {
+    if (sq_drafting) return;
     uint32_t h;
     int rc, quiet;
     if (cfps_retry_ms && (int32_t)(now - cfps_retry_ms) < 0)
@@ -531,7 +532,7 @@ static void cfk_load(void)
         st_check_blank(cfk_obj(st));
         n = st_load(cfk_obj(st), &cfk_rec, sizeof cfk_rec);
         if (n == (int)sizeof cfk_rec && cfk_valid(&cfk_rec, cfk_rec.part) && (st < 3u ? cfk_rec.part == st &&
-            !cfk_rec.pat1 : cfk_rec.pat1 != 0u && cfk_rec.pat1 <= SQ_NPAT && cfk_rec.part < 3u)) {
+            !cfk_rec.pat1 : cfk_rec.pat1 != 0u && cfk_rec.pat1 <= SQ_LEGACY_NPAT && cfk_rec.part < 3u)) {
             cfk_head(st, &cfk_rec);
             cfk_st[st].saved = cfk_rec.check;
         } else {
@@ -551,6 +552,7 @@ static int cfk_store_for(uint32_t part)
         return f;
     for (st = 3u; st < CFK_NST; st++) {
         uint32_t pp = cfk_st[st].pat1;
+        if (pp > SQ_NPAT && pp <= SQ_LEGACY_NPAT) continue; /* archived D..H tweaks are never reclaimed */
         if (!cfk_st[st].edited)
             break;
         if (pp && pp <= SQ_NPAT && cfps_where(pp - 1u, cfk_st[st].part, &e, &pos)) {
@@ -580,6 +582,7 @@ static int cfk_write(uint32_t st, const cfk_rec_t *r, uint32_t how)
  * write a frame */
 static void cfk_poll(uint32_t now, int silent)
 {
+    if (sq_drafting) return;
     uint32_t part, st;
     int rc, quiet;
     if (cfk_retry_ms && (int32_t)(now - cfk_retry_ms) < 0)

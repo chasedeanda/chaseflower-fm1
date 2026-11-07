@@ -340,9 +340,9 @@ static void draw_sq_track(void)
         str_cpy(b + str_len(b), " to ", 5);
         kint(b + str_len(b), squ.bar + 1, 0);
     } else {
-        str_cpy(b, "Pattern ", sizeof b);
-        b[8] = (char)('A' + squ.pat);
-        b[9] = 0;
+        str_cpy(b, "Recording ", sizeof b);
+        b[10] = (char)('0' + sq_number(squ.pat));
+        b[11] = 0;
     }
     fb_text(&CF_FONT_UI, 8, Y_VIEW + 4, b, squ.cpy || squ.ocpy || squ.mv ? C_ACC(0) : FL_INK2, 1);
     if (!squ.cpy && !squ.ocpy && !drums && (p->arp >> squ.trk) & 1u) {   /* (the track's ARP on: its button named,
@@ -483,15 +483,16 @@ static void sq_pat_row(int y0)                   /* the patterns' letters and SO
      * in its colour, as its blocks in the song; an empty one dim. Playing: the firefly over it, as over a playing block
      * and a track's playhead (an underline would read as the tab's bar); coming in next: a dot there, blinking */
     int i, x = 8 + draw_chip(8, y0, "ALGO") + 5;
-    for (i = 0; i <= (int)SQ_NPAT; i++) {
+    for (i = 0; i < (int)SQ_NPAT; i++) {
         char b[6];
-        int w, cur = i == squ.pat, used = i < (int)SQ_NPAT && sq_has((uint32_t)i);   /* (steps in it: a pattern
+        unsigned physical=sq_view_slot((unsigned)i);
+        int w, cur = physical == squ.pat, used = sq_has(physical);   /* (steps in it: a pattern
                                                   * cleared reads empty, not "opened once", the owner, 2026-10-20) */
-        int play = cf_sn.sq_on && (i < (int)SQ_NPAT ? !cf_sn.sq_song && i == cf_sn.sq_pat : cf_sn.sq_song);
+        int play = cf_sn.sq_on && (i < (int)SQ_NPAT ? !cf_sn.sq_song && physical == cf_sn.sq_pat : cf_sn.sq_song);
         int next = cf_sn.sq_on && cf_sn.sq_next != 0xFFu &&
-                   (i < (int)SQ_NPAT ? cf_sn.sq_next == i : cf_sn.sq_next >= SQ_NPAT);
+                   (i < (int)SQ_NPAT ? cf_sn.sq_next == physical : cf_sn.sq_next >= SQ_NPAT);
         if (i < (int)SQ_NPAT) {
-            b[0] = (char)('A' + i);
+            b[0] = (char)('1' + i);
             b[1] = 0;
         } else {
             str_cpy(b, "SONG", sizeof b);
@@ -519,12 +520,12 @@ static void draw_sq_tracks(void)
     uint32_t r;
     if (squ.ocpy) {                              /* (OCT+ held, ALGORITHM turned: the copy's way) */
         str_cpy(t, "Copy A to A", sizeof t);
-        t[5] = (char)('A' + squ.ofrom % SQ_NPAT);
-        t[10] = (char)('A' + squ.pat % SQ_NPAT);
+        t[5] = (char)('0' + sq_number(squ.ofrom));
+        t[10] = (char)('0' + sq_number(squ.pat));
     } else {
-        str_cpy(t, "Pattern ", sizeof t);
-        t[8] = (char)('A' + squ.pat);
-        t[9] = 0;
+        str_cpy(t, "Recording ", sizeof t);
+        t[10] = (char)('0' + sq_number(squ.pat));
+        t[11] = 0;
     }
     draw_head(t);
     sq_pat_row(HEAD_LINE);
@@ -735,14 +736,13 @@ static void draw_sq_song(void)
 static void draw_sq_help(void)
 {
     /* (what the knobs do their cells say: the owner, 2026-10-19, "K1-4 are not needed here") */
-    /* (PLAY and REC need no line: the owner, 2026-10-19; REC held undoes any last change, not only a take) */
-    static const char *const TR[] = {"[SELECT] track", "[ALGO] pattern A..H, song", "[EDIT] open the track",
+    static const char *const TR[] = {"[SELECT] track", "[ALGO] recordings 1..3", "[EDIT] open the track",
                                      "hold [OCT+], turn [ALGO]:", "   copy the pattern there",
-                                     "hold [SEL]: clear the track", "hold [REC]: undo last change",
-                                     "[GLO] close", 0};
+                                     "hold [SEL]: clear the track", "hold [REC]: cancel new take",
+                                     "hold [SAVE] 3s: clear recording", "[GLO] close", 0};
     static const char *const SO[] = {"upper keys A..H: add at the end", "[SELECT] move the frame",
                                      "[SEL] remove it  [EDIT] open it", "[PLAY] play from the frame",
-                                     "hold [REC]: undo last change", "[GLO] close", 0};
+                                     "hold [REC]: cancel new take", "[GLO] close", 0};
     /* (no "[SEQ] home": SEQ's way home is no news, "лишнее", the owner on rc4) */
     /* (a gesture says "turn", and the copy where it lands: "copy the bar there" explained it, the owner, 2026-10-19) */
     /* (no PRESETS line, no SEL-held eraser: "тут лишнее SEL + hold, и лишнее PRESETS", the owner, 2026-10-20; the
@@ -750,17 +750,17 @@ static void draw_sq_help(void)
     static const char *const NO[] = {"[SELECT] move the frame", "keys: write in the frame", "[SEL] clear the step",
                                      "[ARP] arpeggio", "hold [EDIT], turn [SELECT]: move",
                                      "hold [OCT+], turn [SELECT]:", "   copy the bar there",
-                                     "hold [REC]: undo last change", "[SAVE] back  [GLO] close", 0};
+                                     "hold [REC]: cancel new take", "[SAVE] back  [GLO] close", 0};
     static const char *const BA[] = {"[SELECT] move the frame", "keys: write in the frame", "[SEL] clear the step",
                                      "hold [EDIT], turn [SELECT]: move",
                                      "hold [OCT+], turn [SELECT]:", "   copy the bar there",
-                                     "hold [REC]: undo last change", "[SAVE] back  [GLO] close", 0};   /* (no ARP) */
+                                     "hold [REC]: cancel new take", "[SAVE] back  [GLO] close", 0};   /* (no ARP) */
     static const char *const DR[] = {"upper keys: pick a drum", "lower keys: steps on / off",
                                      "[SELECT] bar  [PRESETS] the kit",   /* (no eraser line: "Стереть убрать, набор
                                                   * оставить", the owner, 2026-10-20) */
                                      "hold [OCT+], turn [SELECT]:", "   copy the bar there",
                                      "hold [EDIT], [PRESETS]: a rhythm",   /* (0.6: cf_dmui.c; "turn" did not fit) */
-                                     "REC on: upper keys are pads", "hold [REC]: undo last change",
+                                     "REC on: upper keys are pads", "hold [REC]: cancel new take",
                                      "[SAVE] back  [GLO] close", 0};
     const char *const *l = cu.scr == SCR_SQ ? (squ.pat == SQ_SONGPG ? SO : TR) : squ.trk == SQ_DRUMS ? DR :
                            squ.trk == SQ_BASS ? BA : NO;

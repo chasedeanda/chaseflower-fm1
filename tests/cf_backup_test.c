@@ -209,7 +209,7 @@ int main(void)
     CHECK(a && a[1] == 5, "GET before LIST: 5");
 
     /* ---- a fresh device: the 8 objects, nothing stored but what the boot wrote ---- */
-    CHECK(t_list() == 0 && nman == 29, "LIST on a fresh flash: 29 objects (%u)", nman);
+    CHECK(t_list() == 0 && nman == 33, "LIST on a fresh flash: 33 objects (%u)", nman);
     CHECK(t_find(50) && !t_find(50)->size && t_find(55) && !t_find(55)->size, "LIST: no patterns stored yet");
 
     CHECK(t_find(CFB_FX) && !t_find(CFB_FX)->size, "FX bank absent on an old/blank device");
@@ -235,10 +235,15 @@ int main(void)
     fm1_irq_on();
     cf_edited(CF_PART_BASS);
     make_loop(40, 1);
-    sq_st.song.n = 3;                                /* patterns and a song, not saved yet (LIST writes them) */
-    sq_st.song.pat[0] = 2, sq_st.song.pat[1] = 7, sq_st.song.pat[2] = 2;
+    static sq_legacy_store_t archive;
+    archive.magic=SQ_MAGIC;archive.size=sizeof archive;archive.song.n=3;
+    archive.song.pat[0]=2;archive.song.pat[1]=7;archive.song.pat[2]=2;
+    archive.song.mute=SQ_MUTE_OWN;archive.pat[7].dlev[3]=42;
+    archive.check=cfs_fnv(&archive.song,sizeof archive-__builtin_offsetof(sq_legacy_store_t,song));
+    for(unsigned k=0;k<SQ_NCHUNK;k++)
+        CHECK(!st_save(OBJ_CFSEQ0+k,(const uint8_t *)&archive+k*SQ_CHUNK,sq_chunk_len(k)),"legacy archive seeded");
     sq_st.pat[2].hit[0][1] = 0x1111u;
-    sq_st.pat[7].dlev[3] = 42;                       /* (in the last object) */
+    sq_st.pat[2].dlev[3] = 37;
     sq_dirty = 1;
     CHECK(t_list() == 0, "LIST");
     CHECK(t_find(CFB_PREFS)->size==sizeof(cpb_rec_t),"LIST flushes pending favorites");
@@ -305,8 +310,10 @@ int main(void)
     }
     memset(&sq_st, 0, sizeof sq_st);                 /* the restart: the sequencer read in from flash */
     sq_load();
-    CHECK(sq_st.magic == SQ_MAGIC && sq_st.song.n == 3 && sq_st.song.pat[1] == 7 && sq_st.pat[2].hit[0][1] == 0x1111u &&
-          sq_st.pat[7].dlev[3] == 42 && sq_st.pat[0].dlev[0] == 0, "the restored patterns and song read in whole (sq_load's checks)");
+    CHECK(sq_st.song.n == 0 && sq_st.pat[2].hit[0][1] == 0x1111u && sq_st.pat[2].dlev[3] == 37,
+          "active recording restores independently; legacy arrangement stays archived");
+    CHECK(sq_legacy_read(__builtin_offsetof(sq_legacy_store_t,pat)+7*sizeof(sq_pat_t),&archive.pat[7],sizeof(sq_pat_t)) &&
+          archive.pat[7].dlev[3]==42,"archived H remains recoverable without occupying a live slot");
 
     cpb_load(); CHECK(cf_browser_favorite(&cpb,72),"favorites reload after backup restore");
     {
@@ -367,7 +374,7 @@ int main(void)
         obj_t *q = t_find(55);
         uint32_t crc_before = q->crc;
         cfs_restore_lock = 0;
-        sq_st.pat[7].dlev[3] = 99;
+        sq_st.pat[2].dlev[3] = 99;
         sq_dirty = 1;
         CHECK(t_put(55, q->bytes, q->size, q->crc) == 0 && cfs_restore_lock == 1 && !sq_dirty,
               "a sequencer part restored: the lock on, the change in RAM dropped");
@@ -481,6 +488,27 @@ int main(void)
         s.in_ch = CF_INCH_ALL + 17u;
         cfs_sanitize(&s);
         CHECK(s.in_ch == CF_INCH_ALL, "IN CH past 16: All (%u)", s.in_ch);
+    }
+
+    /* Active takes have their own validated IDs; old files still replace A..C. */
+    {
+        obj_t *take=0;
+        for(unsigned j=0;j<nref;j++)if(ref[j].id==CFB_TAKE+2)take=&ref[j];
+        CHECK(take && take->size==sizeof(sq_take_rec_t),"modern backup includes the nonempty recording");
+        sq_take_rec_t bad;memcpy(&bad,take->bytes,sizeof bad);bad.version++;
+        unsigned writes=emu_flash_writes;
+        CHECK(t_put(CFB_TAKE,(uint8_t *)&bad,sizeof bad,st_crc32(&bad,sizeof bad))==2,"unknown recording version refused");
+        memcpy(&bad,take->bytes,sizeof bad);
+        CHECK(t_put(CFB_TAKE,(uint8_t *)&bad,sizeof bad,st_crc32(&bad,sizeof bad))==2,"recording A cannot be restored as B");
+        bad.meta.beats=1;bad.check=cfs_fnv(&bad.serial,sizeof bad.serial+sizeof bad.meta+sizeof bad.pat);
+        CHECK(t_put(CFB_TAKE,(uint8_t *)&bad,sizeof bad,st_crc32(&bad,sizeof bad))==2,"invalid meter refused even with correct checksums");
+        CHECK(emu_flash_writes==writes,"refused recordings write nothing");
+        for(unsigned j=0;j<nref;j++)if(ref[j].id>=CFB_SEQ && ref[j].id<CFB_SEQ+SQ_NCHUNK)
+            CHECK(t_put(ref[j].id,ref[j].bytes,ref[j].size,ref[j].crc)==0,"old backup archive restored");
+        sq_load();CHECK(sq_st.pat[2].hit[0][1]==0,"old backup replaces the active takes instead of being masked by newer slots");
+        for(unsigned j=0;j<nref;j++)if(ref[j].id>=CFB_TAKE && ref[j].id<CFB_TAKE+SQ_NPAT)
+            CHECK(t_put(ref[j].id,ref[j].bytes,ref[j].size,ref[j].crc)==0,"modern take restores after archive");
+        sq_load();CHECK(sq_st.pat[2].hit[0][1]==0x1111u,"modern recording overrides its legacy import");
     }
 
     /* ---- RESTART ---- */
