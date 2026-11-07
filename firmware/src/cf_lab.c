@@ -48,7 +48,8 @@ unsigned cf_lab_suggest(const cf_lab_history_t *h,cf_lab_choice_t out[CF_LAB_CHO
     int last=h->n?cf_scale_index(h->scale,(h->chord[h->n-1].root%12+12-h->tonic)%12):-1;
     for(unsigned p=0;p<cf_progression_count();p++) {
         const cf_progression_t *v=cf_progression_get(p);
-        if(v->scale!=h->scale)continue;examples++;
+        if(v->scale!=h->scale)continue;
+        examples++;
         for(unsigned i=0;i<v->n;i++) {
             if(last<0 || v->degree[i]!=last)continue;
             uint32_t mask=cf_progression_slot_mask(v,i,h->scale,h->tonic,&harmony);
