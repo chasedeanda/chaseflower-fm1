@@ -10,5 +10,5 @@ static void cvr_draw(void)
     fb_text_c(&CF_FONT_UI, 120, VIEW_Y + 38, detail, FL_INK2, 1);
     fb_text_c(&CF_FONT_UI, 120, VIEW_Y + 58,
               cvr.context == CV_FX || cvr.context == CV_SOUND ? "SAVE keeps a preset" :
-              cvr.context == CV_HARMONY ? "See GLO Progressions" : "Settings kept automatically", FL_INK2, 1);
+              cvr.context == CV_HARMONY ? "See HOME Progressions" : "Settings kept automatically", FL_INK2, 1);
 }

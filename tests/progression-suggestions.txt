@@ -1,34 +1,41 @@
-# Actual panel controls, on a fresh emulator/flash image.
+# Main HOME progression explorer, real panel controls on a fresh emulator.
 wait 100
 btn GLO
-turn SELECT 8
-wait 300
-shot manual
-turn SELECT -1
+turn SELECT 7
 turn K1 1
-turn SELECT 1
+btn HOME
 wait 300
-shot basic
-turn SELECT -1
-turn K2 2
-turn SELECT 1
-wait 300
+shot explorer
 key 7 down
 wait 250
-shot dreamy-live
+shot live-tonic
 key 7 up
-turn K4 1
+turn SELECT 9
 wait 300
-shot minor
-turn K1 6
+shot still-into-you
+turn K1 1
+key 12 down
+wait 250
+shot live-chorus
+key 12 up
+turn SELECT 10
 wait 300
-shot empty
-turn K1 -6
-turn K4 2
+shot only-exception
+turn SELECT 30
 wait 300
-shot auto-unsupported
-btn HOME
-turn K1 -2
-btn GLO
-wait 2200
-shot quantize-off
+shot dorian-waltz
+turn SELECT 29
+wait 300
+shot canon
+turn ALGORITHM 1
+wait 300
+shot bass
+turn ALGORITHM 1
+wait 300
+shot bonfire
+turn ALGORITHM 1
+wait 300
+shot nothing
+turn ALGORITHM 1
+wait 300
+shot explorer-return

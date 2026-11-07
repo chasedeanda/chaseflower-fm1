@@ -297,6 +297,11 @@ static const dm_rhythm_t DM_RHY[] = {
       [DM_O] = "............x." "...........x..",
       [DM_LT] = ".............." "............x."},
      {[DM_K] = 91, [DM_S] = 83, [DM_H] = 34, [DM_O] = 33, [DM_LT] = 49}},
+    {"Waltz", 63, 3, 2, DMK_BRUSH, 0, 90,
+     {[DM_K] = "x..........." "x.......x...",
+      [DM_R] = "....x...x..." "....x...x...",
+      [DM_H] = "x.x.x.x.x.x." "x.x.x.x.x.x."},
+     {[DM_K] = 85, [DM_R] = 65, [DM_H] = 30}},
 };
 #define DM_N ((uint32_t)(sizeof DM_RHY / sizeof DM_RHY[0]))
 

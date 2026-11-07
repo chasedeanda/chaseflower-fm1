@@ -264,7 +264,7 @@ static void draw_knobs(void)
 /* ------------------------------------------------------------------ view --- */
 static void draw_plant(int y0)
 {
-    if (cf_scene() == CF_SCENE_OFF) {
+    if (!cf_scene_animated()) {
         fb_rect(0, y0, FB_W, FLH * 2, FL_BG);
         return;
     }

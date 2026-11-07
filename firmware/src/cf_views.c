@@ -1425,53 +1425,94 @@ static void view_library(int x)
     fb_text(&CF_FONT_MICRO, x + 2, VIEW_Y + 71, "K4: ALL / FILTERS RESET AT BOOT", FL_INK2, 1);
 }
 
-/* Suggestions are read-only. Names come from the underlying Auto triads, while
- * the line below the cards names what is actually sounding (including modifiers). */
+/* Explorer on HOME. Metadata never filters the list; the actual sounding chord
+ * is independent of the selection, including sequencer playback and HOLD. */
+static uint8_t cf_progression_live(const cf_progression_t *p, int scale)
+{
+    const cf_chord_out_t *o = &cf_sn.out;
+    if (o->sounding && o->n)
+        return o->single ? 0 : cf_progression_highlight(p, scale, cs.chord.tonic, o->root_pc, o->mask);
+    if (cf_sn.sq_on && cf_sn.sq_dn && !cf_sn.sq_dsingle)
+        return cf_progression_highlight(p, scale, cs.chord.tonic, cf_sn.sq_droot % 12, cf_sn.sq_dmask);
+    return 0;
+}
+static const char *cf_progression_mode(int scale)
+{
+    switch (scale) {
+    case CF_SC_MAJOR: return "Ionian";
+    case CF_SC_MINOR: return "Aeolian";
+    default: return CF_SCALES[scale].name;
+    }
+}
 static void view_progressions(int x)
 {
     const cf_progression_t *p = cf_progression_current();
+    cf_chord_cfg_t cfg = cs.chord;
     cf_spell_t spell;
-    char text[40], raw[24], signs[32];
-    int supported = cf_harmony_supported(cs.chord.scale, cs.chord.quantize);
+    char text[64], raw[24], signs[64];
+    int y = Y_VIEW + 4;
+    /* Unsupported live settings do not hide ideas: keep a playable preview. */
+    if (!cf_harmony_supported(cfg.scale, cfg.quantize)) {
+        cfg.scale = p->scale; cfg.quantize = CF_Q_BASIC;
+    }
+    uint8_t active = cf_progression_live(p, cfg.scale);
     name_update();
-    fb_rbox(x - 6, VIEW_Y - 4, 228, 86, 3, FL_BG);
-    cf_key_spell(cs.chord.tonic, cs.chord.scale, &spell);
-    fb_text(&CF_FONT_UI, x + 2, VIEW_Y, p ? p->name : "No matching ideas", FL_INK, 1);
-    cf_pc_name(cs.chord.tonic, &spell, raw);
+    fb_rect(0, Y_VIEW, FB_W, H_VIEW, FL_BG);
+    cf_key_spell(cfg.tonic, cfg.scale, &spell);
+    fb_text(&CF_FONT_MICRO, x, y, "PROGRESSIONS", FL_INK2, 1);
+    if (ch.mode == CF_H_MANUAL) fb_text(&CF_FONT_MICRO, x + 90, y, "AUTO OFF", FL_INK3, 1);
+    kint(text, cpg.idea + 1, 0);
+    str_cpy(text + str_len(text), "/", sizeof text - str_len(text));
+    kint(text + str_len(text), (int)cf_progression_count(), 0);
+    fb_text_r(&CF_FONT_UI, x + 216, y - 1, text, C_ACC(0), 1);
+    int longform = p->n > 4;
+    int size = !longform && fb_text_w(&CF_FONT_UI, p->name, 2) <= 216 ? 2 : 1;
+    fb_text(&CF_FONT_UI, x, y + (size == 2 ? 11 : 17), p->name, FL_INK, size);
+    str_cpy(text, p->context, sizeof text);
+    for (int tag = 1; tag < CF_P_NTAGS; tag++) if (p->tags & (1u << (tag - 1))) {
+        str_cpy(text + str_len(text), " / ", sizeof text - str_len(text));
+        str_cpy(text + str_len(text), cf_progression_tag(tag), sizeof text - str_len(text));
+        break;
+    }
+    fb_text(&CF_FONT_MICRO, x, y + (longform ? 27 : 36), text, FL_INK2, 1);
+    cf_pc_name(cfg.tonic, &spell, raw);
     str_cpy(text, raw, sizeof text);
     str_cpy(text + str_len(text), " ", sizeof text - str_len(text));
-    str_cpy(text + str_len(text), CF_SCALES[cs.chord.scale].shrt, sizeof text - str_len(text));
+    str_cpy(text + str_len(text), cf_progression_mode(cfg.scale), sizeof text - str_len(text));
     fb_signs(text, signs, sizeof signs);
-    fb_text(&CF_FONT_UI, x + 2, VIEW_Y + 14, signs, FL_INK2, 1);
-    if (ch.mode == CF_H_MANUAL)
-        fb_text_r(&CF_FONT_MICRO, x + 216, VIEW_Y + 17, "USE AUTO", C_ACC(0), 1);
-    if (!supported) {
-        fb_text(&CF_FONT_UI, x + 2, VIEW_Y + 35, "Auto needs a 7-note scale", FL_INK2, 1);
-        fb_text(&CF_FONT_UI, x + 2, VIEW_Y + 49, "and Quantize Basic or Full", FL_INK2, 1);
-    } else if (!p) {
-        fb_text(&CF_FONT_UI, x + 2, VIEW_Y + 35, "Try another tag or scale", FL_INK2, 1);
-    } else for (unsigned i = 0; i < p->n && i < CF_P_MAX; i++) {
-        int cx = x + 28 + (int)i * 56;
-        int root = (cs.chord.tonic + cf_scale_step(cs.chord.scale, p->degree[i])) % 12;
-        int key = cf_progression_key(&cs.chord, p->degree[i]), idx;
-        uint32_t mask = cf_progression_mask(cs.chord.scale, cs.chord.tonic, p->degree[i], &ch);
-        cf_harmony_numeral(cs.chord.scale, cs.chord.tonic, root, raw);
+    fb_text(&CF_FONT_UI, x, y + (longform ? 39 : 48), signs, C_ACC(1), 1);
+    kint(text, cs.beats, cs.beats == 6 ? "/8" : "/4");
+    if (dm_view < DM_N && DM_RHY[dm_view].beats != cs.beats) {
+        str_cpy(text + str_len(text), " > ", sizeof text - str_len(text));
+        int beats = DM_RHY[dm_view].beats;
+        kint(text + str_len(text), beats, beats == 6 ? "/8" : "/4");
+    }
+    fb_text_r(&CF_FONT_UI, x + 216, y + (longform ? 39 : 48), text, FL_INK2, 1);
+    for (unsigned i = 0; i < p->n && i < CF_P_MAX; i++) {
+        int cx = x + 25 + (int)(i % 4) * 56;
+        int top = y + (longform ? 54 + (int)(i / 4) * 34 : 63);
+        int root = (cfg.tonic + cf_scale_step(cfg.scale, p->degree[i])) % 12;
+        int key = cf_progression_key(&cfg, p->degree[i]), idx;
+        int on = (active >> i) & 1;
+        uint32_t mask = cf_progression_mask(cfg.scale, cfg.tonic, p->degree[i], &ch);
+        fb_rbox(cx - 25, top, 51, longform ? 31 : 49, 3, on ? C_ACC(1) : cf_panel(1));
+        cf_harmony_numeral(cfg.scale, cfg.tonic, root, raw);
         fb_signs(raw, signs, sizeof signs);
-        fb_text_c(&CF_FONT_UI, cx, VIEW_Y + 28, signs, C_ACC(0), 1);
+        fb_text_c(&CF_FONT_UI, cx, top + 1, signs, on ? FL_BG : C_ACC(0), 1);
         cf_chord_name(root, mask, -1, &spell, raw);
         fb_signs(raw, signs, sizeof signs);
-        fb_text_c(fb_text_w(&CF_FONT_UI, signs, 1) <= 54 ? &CF_FONT_UI : &CF_FONT_MICRO,
-                  cx, VIEW_Y + 42, signs, FL_INK, 1);
+        fb_text_c(fb_text_w(&CF_FONT_UI, signs, 1) <= 49 ? &CF_FONT_UI : &CF_FONT_MICRO,
+                  cx, top + (longform ? 12 : 17), signs, on ? FL_BG : FL_INK, 1);
         str_cpy(text, "key ", sizeof text);
-        if (key >= 0 && cf_key_role(cs.chord.algo, key, &idx) == CF_ROLE_ROOT) kint(text + 4, idx + 1, 0);
+        if (key >= 0 && cf_key_role(cfg.algo, key, &idx) == CF_ROLE_ROOT) kint(text + 4, idx + 1, 0);
         else str_cpy(text + 4, "--", sizeof text - 4);
-        fb_text_c(&CF_FONT_MICRO, cx, VIEW_Y + 56, text, FL_INK2, 1);
+        fb_text_c(&CF_FONT_MICRO, cx, top + (longform ? 23 : 36), text, on ? FL_BG : FL_INK2, 1);
     }
     str_cpy(text, "Now: ", sizeof text);
     fb_signs(cu_name_live ? cu_name : "--", signs, sizeof signs);
     str_cpy(text + 5, signs, sizeof text - 5);
-    fb_text(&CF_FONT_UI, x + 2, VIEW_Y + 70, text, FL_INK2, 1);
-    if (cf_sn.out.hold) fb_text_r(&CF_FONT_MICRO, x + 216, VIEW_Y + 73, "HOLD", C_ACC(0), 1);
+    fb_text(&CF_FONT_UI, x, y + (longform ? 123 : 119), text, FL_INK, 1);
+    if (cf_sn.out.hold) fb_text_r(&CF_FONT_MICRO, x + 216, y + (longform ? 126 : 122), "HOLD", C_ACC(0), 1);
 }
 
 /* Diagnostic controls: musical encoders retain their normal roles on HOME. */

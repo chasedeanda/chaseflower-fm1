@@ -18,4 +18,4 @@ for rate in 44100 48000; do
     done
     cmp "build/progression-tests/$rate-0.raw" "build/progression-tests/$rate-1.raw"
 done
-echo 'PASS: browsing preserves held Auto chords, patterns and identical physical/USB capture at both rates.'
+echo 'PASS: complete catalog, automatic setup, HOME controls, live highlighting and identical audio with/without drawing at both rates.'

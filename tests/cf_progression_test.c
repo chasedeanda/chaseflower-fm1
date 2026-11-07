@@ -8,41 +8,50 @@ static unsigned checks, failures;
 
 int main(void)
 {
-    static const int scale[4] = {CF_SC_MAJOR, CF_SC_MINOR, CF_SC_DORIAN, CF_SC_MIXOLYDIAN};
+    static const int scale[7] = {CF_SC_MAJOR, CF_SC_MINOR, CF_SC_DORIAN, CF_SC_MIXOLYDIAN, CF_SC_LYDIAN, CF_SC_PHRYGIAN, CF_SC_LOCRIAN};
     /* Independent pitch fixtures, including the seventh's wrap into the next octave. */
-    static const int semitone[4][7] = {{0,2,4,5,7,9,11}, {0,2,3,5,7,8,10},
-        {0,2,3,5,7,9,10}, {0,2,4,5,7,9,10}};
-    static const unsigned counts[4] = {8,8,2,2};
+    static const int semitone[7][7] = {{0,2,4,5,7,9,11}, {0,2,3,5,7,8,10},
+        {0,2,3,5,7,9,10}, {0,2,4,5,7,9,10}, {0,2,4,6,7,9,11},
+        {0,1,3,5,7,8,10}, {0,1,3,5,6,8,10}};
+    unsigned modes=0, meters=0;
     unsigned tags = 0;
     cf_harmony_t h;
     cf_harmony_defaults(&h);
-    CHECK(cf_progression_count() == 20);
+    CHECK(cf_progression_count() == 100);
     CHECK(!cf_progression_get(CF_P_NONE) && !cf_progression_get(UINT_MAX));
     for (unsigned i = 0; i < cf_progression_count(); i++) {
         const cf_progression_t *p = cf_progression_get(i);
         CHECK(p && p->id && p->name && strlen(p->name) < 20 && p->n >= 3 && p->n <= CF_P_MAX);
+        CHECK(p->context && p->tonic<12 && cf_harmony_supported(p->scale,1));
+        CHECK(p->beats>=2 && p->beats<=7);
+        modes |= 1u << p->scale; meters |= 1u << p->beats;
         for (unsigned j = 0; j < p->n; j++) CHECK(p->degree[j] < 7);
+        for (unsigned j = 0; j < p->n; j++) {
+            int root=(p->tonic+cf_scale_step(p->scale,p->degree[j]))%12;
+            uint32_t mask=cf_progression_mask(p->scale,p->tonic,p->degree[j],&h);
+            uint8_t expected=0;
+            for(unsigned k=0;k<p->n;k++) if(p->degree[k]==p->degree[j]) expected|=(uint8_t)(1u<<k);
+            CHECK(cf_progression_highlight(p,p->scale,p->tonic,root,mask | (1u<<10) | (1u<<14))==expected);
+            CHECK(cf_progression_highlight(p,p->scale,p->tonic,root,mask | (1u<<15) | (1u<<16))==expected);
+            CHECK(!cf_progression_highlight(p,p->scale,p->tonic,root,mask ^ (1u<<3) ^ (1u<<4)));
+            CHECK(!cf_progression_highlight(p,p->scale,p->tonic,(root+1)%12,mask));
+        }
         for (unsigned j = i+1; j < cf_progression_count(); j++) CHECK(p->id != cf_progression_get(j)->id);
         tags |= p->tags;
     }
     CHECK(tags == (1u << (CF_P_NTAGS-1)) - 1);
-    for (int sc = 0; sc < 4; sc++) {
-        CHECK(cf_progression_filtered_count(scale[sc], CF_P_ALL) == counts[sc]);
-        for (int tag = 0; tag < CF_P_NTAGS; tag++) {
-            unsigned n = cf_progression_filtered_count(scale[sc], tag);
-            uint8_t first = cf_progression_pick(scale[sc], tag, CF_P_NONE, 0);
-            if (!n) { CHECK(first == CF_P_NONE); continue; }
-            CHECK(cf_progression_matches(first, scale[sc], tag));
-            CHECK(cf_progression_position(scale[sc], tag, first) == 1);
-            CHECK(cf_progression_pick(scale[sc], tag, first, INT_MIN) == first);
-            uint8_t last = cf_progression_pick(scale[sc], tag, first, INT_MAX);
-            CHECK(cf_progression_position(scale[sc], tag, last) == n);
-            for (unsigned i = 0; i < n; i++) {
-                uint8_t picked = cf_progression_pick(scale[sc], tag, first, (int)i);
-                CHECK(cf_progression_position(scale[sc], tag, picked) == i+1);
-                CHECK(cf_progression_pick(scale[sc], tag, picked, 0) == picked);
-            }
-        }
+    CHECK(meters==0xFCu);
+    unsigned expected_modes=0; for(int i=0;i<7;i++) expected_modes |= 1u << scale[i];
+    CHECK(modes==expected_modes);
+    for(unsigned i=0;i<cf_progression_count();i++) {
+        CHECK(cf_progression_pick(i,1)==(i+1)%cf_progression_count());
+        CHECK(cf_progression_pick(i,-1)==(i+cf_progression_count()-1)%cf_progression_count());
+        CHECK(cf_progression_pick(i,0)==i);
+        CHECK(cf_progression_pick(i,INT_MIN)<cf_progression_count());
+        CHECK(cf_progression_pick(i,INT_MAX)<cf_progression_count());
+    }
+    CHECK(cf_progression_pick(CF_P_NONE,0)==0 && cf_progression_pick(UINT_MAX,0)==0);
+    for (int sc = 0; sc < 7; sc++) {
         for (int tonic = 0; tonic < 12; tonic++) for (int degree = 0; degree < 7; degree++) {
             cf_chord_cfg_t cfg;
             cf_chord_defaults(&cfg);
@@ -74,11 +83,6 @@ int main(void)
         cf_chord_name(root,cf_progression_mask(CF_SC_MAJOR,0,p->degree[i],&h),-1,&sp,name);
         CHECK(!strcmp(name,names[i]));
     }
-    CHECK(cf_progression_pick(-1,0,0,1) == CF_P_NONE);
-    CHECK(cf_progression_pick(CF_NSCALES,0,0,1) == CF_P_NONE);
-    CHECK(cf_progression_pick(CF_SC_MAJOR,-1,0,1) == CF_P_NONE);
-    CHECK(cf_progression_pick(CF_SC_MAJOR,CF_P_NTAGS,0,1) == CF_P_NONE);
-    CHECK(cf_progression_pick(CF_SC_LYDIAN,0,0,0) == CF_P_NONE);
     CHECK(!cf_progression_mask(CF_SC_MAJOR,0,7,&h));
     CHECK(!cf_progression_mask(CF_SC_MINOR,12,0,&h));
     CHECK(!cf_progression_mask(CF_SC_MAJOR,0,0,0));

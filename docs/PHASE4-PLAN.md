@@ -22,9 +22,10 @@ Chaos allows wider variation while retaining valid ranges and bounded feedback.
 The arp's generated settings remain separate from its Random note-order mode;
 generation never switches its On/Off or Latch settings.
 
-Harmony chooses an existing compatible suggestion; it does not start playback.
-Chaos broadens the tag to All. See the adjacent Progressions page for root-key
-hints. Sound varies the existing engine's amplitude envelope. Scale preserves the
+Harmony changes the selected idea without starting playback or changing the live key/scale.
+Subtle moves one idea in the complete list, Musical prefers the current mode, and
+Chaos can choose any of the 100 ideas. There are no tag filters. See HOME
+Progressions for the selected idea and root-key hints. Sound varies the existing engine's amplitude envelope. Scale preserves the
 key and Quantize setting, and keeps seven-note scales when Auto Harmony is on.
 
 FX uses the existing recall fade and preserves bypass. Drums keep the selected
