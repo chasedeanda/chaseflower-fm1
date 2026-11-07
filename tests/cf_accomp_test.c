@@ -55,7 +55,7 @@ static void catalogue(void)
     CHECK(cf_progression_live(cf_progression_get(54),cs.chord.scale)==3);
     ui_button(B_PLAY); flush();
     CHECK(sizeof(cf_set_t)==188 && sizeof(sq_ev_t)==22 && sizeof(cf_harmony_t)==38);
-    CHECK(sizeof(cpa_plan_t)<=152);
+    CHECK(sizeof(cpa_plan_t)<=352 && sizeof cpa+sizeof cpa_setup+sizeof cpa_edit<=1100);
     plan.n=0; CHECK(!cpa_valid(&plan));
 }
 /* Independently specified source chords, exercised through both actual note

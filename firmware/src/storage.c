@@ -55,6 +55,7 @@ enum { OBJ_SETTINGS, OBJ_PROJECT0, OBJ_UPRESET0 = OBJ_PROJECT0 + 4, OBJ_FM6BANK 
        OBJ_CFTAKE0,                           /* three independent recording pairs 0xE6000..0xEBFFF */
        OBJ_CFTAKE2 = OBJ_CFTAKE0 + 2,
        OBJ_CFRECPREF,                         /* recorder policy at 0xEC000 / 0xED000 */
+       OBJ_CFDRAFT,                           /* protected semantic draft at 0xEE000 / 0xEF000 */
 #endif
        OBJ_COUNT
 #endif
@@ -111,6 +112,7 @@ static uint32_t st_sector(uint32_t obj, uint32_t copy)  /* flash offset of copy 
 #if defined(CF_LOOP_STORE) && !FELUCCA_CZ
     if (obj == OBJ_CFLOOP)
         return 0xB6000u + copy * ST_SECTOR;
+    if (obj == OBJ_CFDRAFT) return 0xEE000u + copy * ST_SECTOR;
     if (obj == OBJ_CFRECPREF) return 0xEC000u + copy * ST_SECTOR;
     if (obj >= OBJ_CFTAKE0 && obj <= OBJ_CFTAKE2)
         return 0xE6000u + (obj - OBJ_CFTAKE0) * 2u * ST_SECTOR + copy * ST_SECTOR;
@@ -158,7 +160,7 @@ static uint8_t st_buf[ST_PAYLOAD_MAX] __attribute__((aligned(4)));
 /* the old looper's object keeps the drum machine's record since 0.6 (cf_dmui.c), a log of 256-byte entries too, once
  * no loop of 0.3.1 waits in it (dm_load: such a loop's record is longer than an entry) */
 static uint8_t st_loop_log;
-#define ST_LOGGED(obj) ((obj) == (uint32_t)(ST_LOG_OBJ) || (obj) == OBJ_CFHARM || (obj) == OBJ_CFXPRESET || (obj) == OBJ_CFPREFS || ((obj) >= OBJ_CFEDIT0 && (obj) <= OBJ_CFTWK7) || \
+#define ST_LOGGED(obj) ((obj) == OBJ_CFDRAFT || (obj) == (uint32_t)(ST_LOG_OBJ) || (obj) == OBJ_CFHARM || (obj) == OBJ_CFXPRESET || (obj) == OBJ_CFPREFS || ((obj) >= OBJ_CFEDIT0 && (obj) <= OBJ_CFTWK7) || \
                         ((obj) == OBJ_CFLOOP && st_loop_log))
 #define ST_LSZ(obj) ((obj) == OBJ_CFXPRESET ? 1024u : ST_LSZ_SMALL(obj))
 #define ST_LSZ_SMALL(obj) ((obj) == (uint32_t)(ST_LOG_OBJ) || (obj) == OBJ_CFPSND || (obj) == OBJ_CFHARM || (obj) == OBJ_CFPREFS || (obj) == OBJ_CFLOOP ? 256u : 512u)

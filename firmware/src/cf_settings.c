@@ -226,6 +226,8 @@ static int cfs_sounding(void)
     return 0;
 }
 
+#include "cf_draft_store.c"
+
 /* ------------------------------------------------------- the patterns' own sounds --- */
 /* 0.5 (the owner, 2026-10-21: "в каждый паттерн можно было свой звук подгрузить на каждый инструмент"): each pattern's
  * CHORDS, BASS and LAYER sound its own, or HOME's ("HOME": it follows what HOME plays). A sound is kept by what it is
@@ -671,6 +673,7 @@ static void settings_poll(void)
     cfps_poll(now, now - cfs_sound_ms >= CF_SET_SILENT_MS);   /* (the patterns' own sounds) */
     cfh_poll(now, now - cfs_sound_ms >= CF_SET_SILENT_MS);
     cpb_poll(now, now - cfs_sound_ms >= CF_SET_SILENT_MS);
+    cfd_poll(now, now - cfs_sound_ms >= CF_SET_SILENT_MS);
     fxp_poll(now, now - cfs_sound_ms >= CF_SET_SILENT_MS);
     if (cfs_retry_ms && (int32_t)(now - cfs_retry_ms) < 0)
         return;                                   /* (a flash error, or the log full: once more a second later) */

@@ -209,7 +209,7 @@ int main(void)
     CHECK(a && a[1] == 5, "GET before LIST: 5");
 
     /* ---- a fresh device: the 8 objects, nothing stored but what the boot wrote ---- */
-    CHECK(t_list() == 0 && nman == 33, "LIST on a fresh flash: 33 objects (%u)", nman);
+    CHECK(t_list() == 0 && nman == 34, "LIST on a fresh flash: 34 objects (%u)", nman);
     CHECK(t_find(50) && !t_find(50)->size && t_find(55) && !t_find(55)->size, "LIST: no patterns stored yet");
 
     CHECK(t_find(CFB_FX) && !t_find(CFB_FX)->size, "FX bank absent on an old/blank device");
@@ -340,6 +340,22 @@ int main(void)
         old.check^=1;
         CHECK(t_put(CFB_PREFS,(const uint8_t *)&old,sizeof old,st_crc32(&old,sizeof old))==2,
               "legacy checksum validated beyond transport CRC");
+    }
+    /* Semantic recovery draft uses its checked wire format, including bank validation. */
+    {
+        cf_song_t song;uint8_t bytes[CF_SONG_WIRE];
+        CHECK(cf_song_clone(&song,cf_progression_get(0)) && cf_song_encode(&song,bytes),"draft fixture encoded");
+        int32_t out[CTL*2];audio_block(out,CTL);cf_snapshot();
+        cf_sn.running=cf_sn.metro_on=cf_sn.sq_on=0;cu.keys=0;cfx_quiet=FS/CTL*2;
+        for(unsigned p=0;p<NTRK;p++)for(unsigned i=0;i<NVOICE;i++)trk[p].v[i].active=0;
+        CHECK(t_put(CFB_DRAFT,bytes,sizeof bytes,st_crc32(bytes,sizeof bytes))==0,"draft restores after other objects set restore lock");
+        bytes[4]++;
+        CHECK(t_put(CFB_DRAFT,bytes,sizeof bytes,st_crc32(bytes,sizeof bytes))==2,"unsupported draft refused before flash");
+        song.kit=255;cf_song_encode(&song,bytes);
+        CHECK(t_put(CFB_DRAFT,bytes,sizeof bytes,st_crc32(bytes,sizeof bytes))==2,"unsupported kit refused by device adapter");
+        song.kit=0;cf_song_encode(&song,bytes);cf_sn.running=1;
+        CHECK(t_put(CFB_DRAFT,bytes,sizeof bytes,st_crc32(bytes,sizeof bytes))==3,"draft restore waits for real audio quiet");
+        cf_sn.running=0;
     }
     /* ---- FX payload validation through actual PUT (wire CRC alone is insufficient) ---- */
     {

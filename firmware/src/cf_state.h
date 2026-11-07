@@ -18,11 +18,12 @@ enum {
     SCR_SQED,      /* .. a track open: its steps */
     SCR_DRUM,      /* SEQ again, the METRONOME's carousel on it: the rhythm machine (0.6, cf_dmui.c) */
     SCR_ACC,       /* native shared-clock Groove / Loop / Mix / Click */
+    SCR_PEDIT,     /* native protected semantic progression editor */
     SCR_N
 };
 static const char *const SCR_NAME[SCR_N] = {"HOME", "CHORD", "ENVELOPE", "BASS", "SOUND", "GLOBAL", "EFFECTS",
                                              "ARPEGGIO", "METRONOME", "SAVE", "RECORDINGS",
-                                             "PATTERN", "RHYTHM MACHINE", "ACCOMPANIMENT"};
+                                             "PATTERN", "RHYTHM MACHINE", "ACCOMPANIMENT", "PROGRESSION EDIT"};
 
 /* themes: the one interface colour (GLO > Display > COLOR), a palette ramp, after the M-VAVE synths' panel
  * colours and a few more */

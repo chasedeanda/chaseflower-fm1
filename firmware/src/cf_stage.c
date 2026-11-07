@@ -81,7 +81,7 @@ static void cf_stage_model(cf_stage_model_t *m)
     }
     str_cpy(m->notes,cf_stage_notes,sizeof m->notes);
     const cf_progression_t *p=cf_progression_current();
-    str_cpy(m->idea,p->name,sizeof m->idea);str_cpy(m->sound,cf_snd[0].name,sizeof m->sound);
+    if(cpg.idea==CF_P_DRAFT){str_cpy(m->idea,"Draft: ",sizeof m->idea);str_cpy(m->idea+7,p->name,sizeof m->idea-7);}else str_cpy(m->idea,p->name,sizeof m->idea);str_cpy(m->sound,cf_snd[0].name,sizeof m->sound);
     char b[16],key[4];cf_pc_name(cs.chord.tonic,&cu_spell,key);
     str_cpy(m->context,key,sizeof m->context);str_cpy(m->context+str_len(m->context)," ",sizeof m->context-str_len(m->context));
     str_cpy(m->context+str_len(m->context),cf_progression_mode(cs.chord.scale),sizeof m->context-str_len(m->context));

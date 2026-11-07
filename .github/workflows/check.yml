@@ -98,6 +98,9 @@ jobs:
       - name: Progression suggestions, controls and uninterrupted audio (host HAL)
         run: sh tools/test_progressions.sh
 
+      - name: Native semantic editor, shared-clock boundaries and checkpoint power cuts
+        run: sh tools/test_editor.sh
+
       - name: Semantic phrase, protected draft and wire-format validation
         run: sh tools/test_song.sh
 

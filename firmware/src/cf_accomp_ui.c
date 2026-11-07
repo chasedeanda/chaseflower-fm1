@@ -17,8 +17,10 @@ static void cpa_explore(void)
     cpg.saved_quantize = cs.chord.quantize; cpg.saved_beats = cs.beats;
     cpg.explored = 1;
 }
+static int cfd_prepare(cpa_plan_t *,cf_chord_cfg_t,unsigned,unsigned,unsigned,unsigned);
 static int cpa_prepare_full(cpa_plan_t *plan, unsigned idea, cf_chord_cfg_t cfg, unsigned rhythm, unsigned mode, unsigned repeat_off, unsigned click_start)
 {
+    if(idea==CF_P_DRAFT)return cfd_prepare(plan,cfg,rhythm,mode,repeat_off,click_start);
     const cf_progression_t *p = cf_progression_get(idea);
     uint32_t stamp[CF_H_SLOTS]; uint16_t slots;
     if (!p || !cf_harmony_supported(cfg.scale, CF_Q_BASIC)) return 0;
@@ -67,6 +69,7 @@ static int cpa_prepare_full(cpa_plan_t *plan, unsigned idea, cf_chord_cfg_t cfg,
         o.sounding = 1; o.root_note = s->root; o.root_pc = s->root % 12; o.mask = s->mask;
         o.bass_pc = source && source[i].bass>=0 && !bass ? (o.root_pc+source[i].bass)%12 : cf_bass_pc(o.root_pc,s->mask,bass);
         plan->nb = cfp_bass_notes_of(&o, s->bass);
+        s->nb=plan->nb;s->gate=100;s->bass_pc=o.bass_pc;
         s->ticks = p->beats * SQ_PPQN; /* explicit durations can be supplied here later */
     }
     return cpa_valid(plan);
@@ -78,7 +81,7 @@ static void cpa_publish(const cpa_plan_t *p, unsigned flags, int setup)
     if (!cpa_valid(p)) return;
     fm1_irq_off();
     if (setup) { cpa_setup.plan = *p; cpa_setup.flags = 1; }
-    else if (cpa.on && p->idea == cpa.plan.idea) {
+    else if (cpa.on && (p->idea == cpa.plan.idea || (((flags|cpa_edit.flags)&CPA_PHRASE) && p->idea==CF_P_DRAFT))) {
         cpa_edit.plan = *p; cpa_edit.flags |= flags;
     }
     fm1_irq_on();

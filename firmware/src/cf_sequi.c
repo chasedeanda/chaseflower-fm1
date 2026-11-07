@@ -1127,7 +1127,7 @@ static void sq_home_rec(void)                    /* REC tapped */
         cf_post(CFE_DRUM, 5, 0, 0);
         return;
     }
-    if (cpa_running() || ((cu.scr == SCR_HOME && cf_scene() == CF_SCENE_PROGRESSIONS) || cu.scr==SCR_ACC)) {
+    if (cpa_running() || ((cu.scr == SCR_HOME && cf_scene() == CF_SCENE_PROGRESSIONS) || cu.scr==SCR_ACC || cu.scr==SCR_PEDIT)) {
         cpa_ui_record(); return;
     }
     if (dm_home_rec())                           /* (under a rhythm: cf_dmui.c) */

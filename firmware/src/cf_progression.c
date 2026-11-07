@@ -142,7 +142,7 @@ _Static_assert(sizeof CF_PROGRESSIONS / sizeof CF_PROGRESSIONS[0] < CF_P_NONE, "
 
 /* Full source harmony. Factory chord colors are data, not global button state.
  * Sources and the audit of unchanged triad sections are in the cover notes. */
-static const struct { uint16_t id; cf_source_chord_t chord[CF_P_MAX]; } CF_SOURCE[] = {
+static const struct { uint16_t id; cf_source_chord_t chord[8]; } CF_SOURCE[] = {
     /* The Only Exception: B B F#m6 Emaj7 */
     {20, {{0x91u,0,0,-1}, {0x91u,0,0,-1}, {0x289u,4,0,-1}, {0x891u,3,0,-1}}},
     /* Still Into You verse: F5 F5 D5 D5 */
@@ -182,9 +182,14 @@ static const struct { uint16_t id; cf_source_chord_t chord[CF_P_MAX]; } CF_SOURC
     /* What I Want (with Tate McRae): Bm A E; preserve Dorian's major IV. */
     {135, {{0x89u,0,0,-1}, {0x91u,6,0,-1}, {0x91u,3,0,-1}}},
 };
+static const cf_progression_t *cfp_draft_view;
+static const cf_source_chord_t *cfp_draft_source;
+void cf_progression_draft_register(const cf_progression_t *p,const cf_source_chord_t *source)
+{ cfp_draft_view=p;cfp_draft_source=source; }
 const cf_source_chord_t *cf_progression_source(const cf_progression_t *p)
 {
     if (!p) return 0;
+    if(p==cfp_draft_view)return cfp_draft_source;
     for (unsigned i=0; i<sizeof CF_SOURCE/sizeof CF_SOURCE[0]; i++)
         if (CF_SOURCE[i].id==p->id) return CF_SOURCE[i].chord;
     return 0;
@@ -221,22 +226,25 @@ const char *cf_progression_tag(int tag)
         "Uplifting", "Jazzy", "Energetic", "Experimental"};
     return names[tag >= 0 && tag < CF_P_NTAGS ? tag : 0];
 }
+_Static_assert(sizeof CF_PROGRESSIONS/sizeof CF_PROGRESSIONS[0]<CF_P_DRAFT,"reserved draft index");
 unsigned cf_progression_count(void) { return sizeof CF_PROGRESSIONS / sizeof CF_PROGRESSIONS[0]; }
 const cf_progression_t *cf_progression_get(unsigned index)
 {
+    if(index==CF_P_DRAFT)return cfp_draft_view;
     return index < cf_progression_count() ? &CF_PROGRESSIONS[index] : 0;
 }
 uint8_t cf_progression_pick(unsigned current, int turn)
 {
+    if(current==CF_P_DRAFT && !turn && cfp_draft_view)return CF_P_DRAFT;
     int n = (int)cf_progression_count();
     int pos = current < (unsigned)n ? (int)current : 0;
     /* Reduce before adding, including INT_MIN/INT_MAX encoder input. */
     return (uint8_t)((pos + turn % n + n) % n);
 }
-uint8_t cf_progression_highlight(const cf_progression_t *p, int scale, int tonic,
+uint16_t cf_progression_highlight(const cf_progression_t *p, int scale, int tonic,
                                  int root, uint32_t mask)
 {
-    uint8_t active = 0;
+    uint16_t active = 0;
     /* Masks describe the unvoiced chord. A high #9 is a color, not a minor
      * third; folding upper extensions would misclassify a major chord. */
     uint32_t thirds = mask & ((1u << 3) | (1u << 4));
@@ -249,7 +257,7 @@ uint8_t cf_progression_highlight(const cf_progression_t *p, int scale, int tonic
         const cf_source_chord_t *source=cf_progression_source(p);
         uint32_t wanted=source?source[i].mask:triad;
         if (root == pc && thirds == (wanted & ((1u<<3)|(1u<<4))) &&
-            (!source || (mask & wanted)==wanted)) active |= (uint8_t)(1u << i);
+            (!source || (mask & wanted)==wanted)) active |= (uint16_t)(1u << i);
     }
     return active;
 }
