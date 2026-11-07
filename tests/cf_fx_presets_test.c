@@ -30,7 +30,12 @@ static void controls(void)
     CHECK(!memcmp(&cs.fx,&CFX_DEFAULT,sizeof cs.fx));
     /* Rapid recall keeps the final target and unrelated configuration. */
     for(unsigned i=0;i<FXP_FACTORY_N;i++) { fxpu.pick=i; ui_knob_turn(0,1); render(1); }
-    render(40); CHECK(!cfx_pending && !memcmp(&cfx_set,&FXP_FACTORY[7].fx,sizeof cs.fx));
+    render(40); CHECK(!cfx_pending && !memcmp(&cfx_set,&FXP_FACTORY[FXP_FACTORY_N-1].fx,sizeof cs.fx));
+    /* Catalog boundary: every factory is browsable; custom slots start after it. */
+    ui_select(1); CHECK(fxpu.pick==FXP_FACTORY_N && !fxp_pick());
+    cf_fx_t last=cs.fx; ui_knob_turn(0,1); CHECK(!memcmp(&last,&cs.fx,sizeof last));
+    ui_select(1000); CHECK(fxpu.pick==FXP_FACTORY_N+FXP_SLOTS-1);
+    ui_select(-1000); CHECK(fxpu.pick==0 && fxp_pick()==&FXP_FACTORY[0]);
     ui_button(B_SAVE); CHECK(fxpu.mode==FXP_MANAGE && !cu.save_hold);
     fxpu.slot=3; fxpu.action=0; memset(fxpu.name,0,sizeof fxpu.name); strcpy(fxpu.name,"MY SPACE");
     /* The actual held SAVE path. */
@@ -106,13 +111,14 @@ static void render_presets(unsigned capture,unsigned hz,const char *path)
     sq_fresh(&sq_st.pat[0],4); dm_fill(&sq_st.pat[0],dm_nth(4,0),0);
     sqp_start(0,0); cfm_restart(); cfm.running=1;
     ua_reset(); ua.cap_alt=capture; ua.cap_hold=0; usb.config=usb.up=1; ua_rate_set(hz);
-    for(unsigned b=0;b<4800;b++) {
+    for(unsigned b=0;b<FXP_FACTORY_N*500u;b++) {
         if(b%500==0) {
             unsigned queue=cf_evq_w; cf_chord_out_t held=cfc.out;
             fxpu.pick=(b/500)%FXP_FACTORY_N; fxp_recall_selected();
             CHECK(queue==cf_evq_w && !memcmp(&held,&cfc.out,sizeof held));
         }
-        if(b%700==0) cf_fx_bypass((b/700)&1);
+        if(b%500==150) cf_fx_bypass(1);
+        if(b%500==250) cf_fx_bypass(0);
         unsigned w=ua.cw; audio_block(out,CTL);
         CHECK(cfc.out.sounding && sqp.on && cfc.cfg.algo==CF_ALG_TOP_LOCK);
         fwrite(out,sizeof out,1,f);
@@ -132,11 +138,12 @@ static void render_presets(unsigned capture,unsigned hz,const char *path)
 static void shots(const char *dir)
 {
     cf_intro_on=0; cu.scr=SCR_FX; cu.pop=POP_NONE;
-    for(unsigned mode=0;mode<3;mode++) {
-        fxpu.mode=mode; fxpu.pick=0;
-        if(mode==FXP_MANAGE) fxp_manage_open();
+    for(unsigned page=0;page<8;page++) {
+        fxpu.mode=page<3?page:FXP_BROWSE;
+        fxpu.pick=page<3?0:(page==7?FXP_FACTORY_N-1:(page-2)*FXP_GROUP_SIZE);
+        if(fxpu.mode==FXP_MANAGE) fxp_manage_open();
         cf_ui_draw();
-        char path[1024]; snprintf(path,sizeof path,"%s/fx-%u.ppm",dir,mode);
+        char path[1024]; snprintf(path,sizeof path,"%s/fx-%u.ppm",dir,page);
         FILE *f=fopen(path,"wb"); CHECK(f); if(!f)continue;
         fprintf(f,"P6\n240 240\n255\n");
         for(unsigned i=0;i<FB_W*FB_H;i++) {
@@ -146,13 +153,85 @@ static void shots(const char *dir)
         fclose(f);
     }
 }
+static void catalog(void)
+{
+    CHECK(FXP_FACTORY_N>=30);
+    for(unsigned i=0;i<FXP_FACTORY_N;i++) {
+        CHECK(fxp_preset_valid(&FXP_FACTORY[i]));
+        for(unsigned j=0;j<i;j++) {
+            const cf_fx_t *a=&FXP_FACTORY[i].fx,*b=&FXP_FACTORY[j].fx;
+            int distinct=a->on!=b->on;
+            CHECK(strcmp(FXP_FACTORY[i].name,FXP_FACTORY[j].name)!=0);
+            /* Changing disabled parameters alone does not make a new sound. */
+            unsigned ao[CFX_N],bo[CFX_N],an=0,bn=0;
+            for(unsigned e=0;e<CFX_N;e++) {
+                if((a->on>>e)&1) distinct |= memcmp(a->v[e],b->v[e],3)!=0;
+                if((a->on>>a->order[e])&1) ao[an++]=a->order[e];
+                if((b->on>>b->order[e])&1) bo[bn++]=b->order[e];
+            }
+            distinct |= an!=bn || memcmp(ao,bo,an*sizeof *ao)!=0;
+            CHECK(distinct);
+        }
+    }
+}
+static void wav_u32(FILE *f,uint32_t n)
+{
+    uint8_t b[4]={n,n>>8,n>>16,n>>24}; fwrite(b,1,4,f);
+}
+/* A separate fresh process per factory/voice makes level comparisons reproducible.
+ * Full-volume six-note Cmaj7 + a bass, held for 2 s then released for 1 s.
+ * These host fixtures measure output behavior, not FM1 listening quality. */
+static void audition(unsigned preset,unsigned fm,const char *path)
+{
+    CHECK(preset<FXP_FACTORY_N); if(preset>=FXP_FACTORY_N)return;
+    unsigned found=0;
+    for(unsigned i=0;i<cf_snd_count(CF_PART_CHORD);i++) {
+        uint32_t e,pos; cf_snd_t meta; cf_snd_at(CF_PART_CHORD,i,&e,&pos); cf_snd_meta(e,pos,&meta);
+        if(e==(fm?ENGI_FM6:ENGI_VA) && !strcmp(meta.name,fm?"PAD":"POLY KEYS")) {
+            cf_snd_load_index(CF_PART_CHORD,i); found=1; break;
+        }
+    }
+    CHECK(found); cf_boot_go=0; cfb.on=0; cf_intro_on=0;
+    song.master_q12=4096; fx_output_set(1,1);
+    cs.fx=FXP_FACTORY[preset].fx; cf_fx_apply(&cs.fx);
+    int32_t out[CTL*2];
+    for(unsigned b=0;b<64;b++)audio_block(out,CTL);
+    static const uint8_t notes[]={48,55,60,64,67,71};
+    for(unsigned i=0;i<sizeof notes;i++)trk_note_on(&trk[0],notes[i],100);
+    trk_note_on(&trk[1],36,100);
+    FILE *f=fopen(path,"wb"); CHECK(f); if(!f)return;
+    unsigned blocks=FS*3/CTL,frames=blocks*CTL,peak=0,clips=0,count=0; double squares=0;
+    fwrite("RIFF",1,4,f); wav_u32(f,36+frames*4); fwrite("WAVEfmt ",1,8,f); wav_u32(f,16);
+    wav_u32(f,0x00020001u); wav_u32(f,FS); wav_u32(f,FS*4); wav_u32(f,0x00100004u);
+    fwrite("data",1,4,f); wav_u32(f,frames*4);
+    for(unsigned b=0;b<blocks;b++) {
+        if(b==FS*2/CTL) {
+            for(unsigned i=0;i<sizeof notes;i++)trk_note_off(&trk[0],notes[i]);
+            trk_note_off(&trk[1],36);
+        }
+        audio_block(out,CTL);
+        for(unsigned i=0;i<CTL*2;i++) {
+            int16_t s=ua_sat(out[i]>>8); uint8_t le[2]={(uint8_t)s,(uint8_t)((uint16_t)s>>8)};
+            fwrite(le,1,2,f);
+            unsigned a=(unsigned)abs((int)s); if(a>peak)peak=a;
+            clips+=a>=32767;
+            if(b>=FS/4/CTL && b<FS*2/CTL) { squares+=(double)s*s; count++; }
+        }
+    }
+    double rms=10*log10(squares/count/(32768.0*32768.0));
+    fclose(f); CHECK(peak>100 && !clips && rms>-27 && rms<-10);
+    printf("FX_LEVEL,%u,%s,%s,%.2f,%.2f,%u\n",preset+1,fm?"FM PAD":"VA POLY KEYS",FXP_FACTORY[preset].name,
+           20*log10((double)peak/32768),rms,clips);
+}
 int main(int argc,char **argv)
 {
     emu_fw_options(NULL,1,0,1); emu_hal.ready=2; emu_fw_init(0);
     cu.booted=1; render(10);
-    for(unsigned i=0;i<FXP_FACTORY_N;i++) CHECK(fxp_preset_valid(&FXP_FACTORY[i]));
-    if(argc==5 && !strcmp(argv[1],"--render")) render_presets(atoi(argv[2]),atoi(argv[3]),argv[4]);
+    catalog();
+    if(argc==2 && !strcmp(argv[1],"--count")) printf("FX_COUNT,%u\n",FXP_FACTORY_N);
+    else if(argc==5 && !strcmp(argv[1],"--render")) render_presets(atoi(argv[2]),atoi(argv[3]),argv[4]);
     else if(argc==3 && !strcmp(argv[1],"--shots")) shots(argv[2]);
+    else if(argc==5 && !strcmp(argv[1],"--audition")) audition(atoi(argv[2]),atoi(argv[3]),argv[4]);
     else {
         controls(); storage();
         unsigned hard=transition_jump(0), smooth=transition_jump(1);

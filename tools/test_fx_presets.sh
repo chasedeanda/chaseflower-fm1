@@ -17,3 +17,5 @@ for hz in 44100 48000; do
     cmp "build/fx-tests/$hz-0.raw" "build/fx-tests/$hz-1.raw"
 done
 build/host/cf_fx_presets_test --shots build/fx-tests > build/fx-tests/shots.log
+python3 tools/audition_fx_presets.py > build/fx-tests/levels.log
+cat build/fx-tests/levels.log

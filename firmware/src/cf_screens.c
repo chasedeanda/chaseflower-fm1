@@ -160,7 +160,15 @@ static void draw_fx_presets(void)
     char sub[32], text[32];
     fb_rect(0, Y_VIEW, FB_W, H_VIEW, FL_BG);
     if (fxpu.mode == FXP_BROWSE) {
-        if (fxpu.pick < FXP_FACTORY_N) kfmt(sub, sizeof sub, "Factory preset");
+        if (fxpu.pick < FXP_FACTORY_N) {
+            char number[14];
+            kfmt(sub, sizeof sub, FXP_GROUP[fxpu.pick / FXP_GROUP_SIZE]);
+            str_cpy(sub + str_len(sub), "  ", 3);
+            kint(number, fxpu.pick + 1, " / ");
+            str_cpy(sub + str_len(sub), number, sizeof sub - str_len(sub));
+            kint(number, FXP_FACTORY_N, "");
+            str_cpy(sub + str_len(sub), number, sizeof sub - str_len(sub));
+        }
         else kint(sub, fxpu.pick - FXP_FACTORY_N + 1, " / 16 user");
         draw_title("FX presets", sub);
         fb_text_c(&CF_FONT_UI, 120, Y_VIEW + 60, fxp_pick_name(), C_ACC(0), 1);

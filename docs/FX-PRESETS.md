@@ -1,6 +1,6 @@
 # Phase 2 — FX presets
 
-Implementation branch: `codex/phase2-fx-presets`, branched from main `89d2599` and rebased onto main `7c56dd2` after chase5 release preparation.
+Implementation branch: `codex/phase2-fx-presets`, branched from main `89d2599` and rebased onto main `38bdd14`, including chase5 release preparation and the progression browser.
 Scope: roadmap #1, storage #13, workflow #14 and initial factory concepts #15.
 Status: implemented for host verification; FM1 listening, real-time timing and physical USB validation remain release gates.
 
@@ -8,13 +8,15 @@ Status: implemented for host verification; FM1 listening, real-time timing and p
 
 The controls were reviewed with Chase on 2026-11-06: complete-chain replacement, 16 independent user slots,
 FX first opens the existing editor and FX again opens the browser. Individual effects keep their original controls.
+Chase subsequently prioritized ready-made sounds: the factory catalog now contains 40 presets in five groups of eight.
+The browser shows the group and position (for example, `Space  9 / 40`); factory presets come before optional user slots.
 
 | Page | Control | Result |
 | --- | --- | --- |
 | FX editor | SELECT / ALGORITHM | Select an effect / move it in the chain, as before |
 | FX editor | K1 / K2–K4 | Enable an effect / edit its three parameters, as before |
 | FX editor | FX again | Open the FX preset browser |
-| Browser | SELECT | Browse eight factory presets and 16 user slots; browsing does not change the sound |
+| Browser | SELECT | Browse 40 factory presets, followed by 16 user slots; browsing does not change the sound |
 | Browser | K1 clockwise | Recall the selected complete chain; an empty user slot does nothing |
 | Browser | K2 right / left | Bypass / enable the complete chain |
 | Browser | K3 clockwise | Swap with the previous chain and its bypass state; available after a recall |
@@ -39,22 +41,56 @@ The existing settings continue to remember the active chain across startup, inde
 The UI shows `Save pending: keep power on` while a bank edit waits for flash; queued edits are not yet durable.
 The browser does not claim that a browsed name identifies the currently sounding chain.
 
-## Factory starting points
+## Factory catalog
 
-| Name | Existing processing used |
-| --- | --- |
-| Glass Cathedral | Chorus, long hall and delay |
-| Beautiful Noise | Low-pass, drive, chorus and plate |
-| Broken Tape | Low-pass, mild drive, chorus and delay |
-| Slow Motion | Slow phaser, delay and hall |
-| Dream Pop | Chorus, light delay and plate |
-| Glitch Garden | Resonant band-pass, phaser and short delay |
-| Tight Electronic | Mild drive, short delay and short room |
-| Deep Space | Slow chorus/phaser, long delay and hall |
+| Group | Name | Character and processing |
+| --- | --- | --- |
+| Signature | Glass Cathedral | Spacious chorus, long hall and delay |
+| Signature | Beautiful Noise | Warm low-pass, drive, chorus and plate |
+| Signature | Broken Tape | Filtered drive, chorus and worn echoes |
+| Signature | Slow Motion | Slow phaser, delay and hall |
+| Signature | Dream Pop | Clear chorus, light delay and plate |
+| Signature | Glitch Garden | Mid-focused band-pass, phaser and short delay |
+| Signature | Tight Electronic | Mild drive, short delay and short room |
+| Signature | Deep Space | Slow chorus/phaser, long delay and hall |
+| Space | Moonlit Room | Intimate room ambience |
+| Space | Velvet Hall | Softened highs and a warm hall |
+| Space | Silver Plate | Bright plate with light chorus |
+| Space | Cloud Atlas | Long hall moving through phaser and chorus |
+| Space | Distant Signals | Long, repeating echoes into hall |
+| Space | Frozen Lake | Slow chorus after delay, followed by a long plate |
+| Space | Afterglow | Chorus and hall fed into gentle saturation |
+| Space | Nebula Drift | Very slow modulation, long hall and dense echoes |
+| Lo-fi | Dusty Cassette | Darkened chorus, mild drive and short echoes |
+| Lo-fi | VHS Dreams | Filtered, modulated repeats with hall |
+| Lo-fi | Worn Postcard | Dark drive and small-room reflections |
+| Lo-fi | AM After Dark | Broad midrange filter, drive and delay |
+| Lo-fi | Velvet Saturation | Warm low-pass saturation without a reverb tail |
+| Lo-fi | Hazy Polaroid | Soft chorus, rolled-off highs and plate |
+| Lo-fi | Melted Chrome | Chorus/phaser and plate into stronger saturation |
+| Lo-fi | Old Answerphone | Telephone-like mids and short driven echoes |
+| Motion | Liquid Glass | Pure chorus, with no delay or reverb |
+| Motion | Neon Chorus | Faster, deeper chorus with a short plate |
+| Motion | Slow Orbit | Deep, slow phaser and hall |
+| Motion | Velvet Swirl | Warm chorus and phaser without echoes |
+| Motion | Prism Echoes | Delay repeats passing through two modulation stages |
+| Motion | Underwater Arcade | Resonant low-pass, fast phaser and delay |
+| Motion | Carousel Lights | Room reflections passing through faster modulation |
+| Motion | Solar Wind | Low-cut chorus/phaser, hall and long echoes |
+| Punch | Dry Heat | Focused drive without ambience |
+| Punch | Concrete Room | Punchy drive and short room reflections |
+| Punch | Garage Slap | Mild drive and a single short echo |
+| Punch | Dub Lantern | Warm, high-feedback echoes with a little room |
+| Punch | Acid Corridor | Resonant filter, drive, phaser and delay |
+| Punch | Shoegaze Bloom | Chorus, echoes and long hall into distortion |
+| Punch | Bittersweet Drive | Stronger drive softened by low-pass and plate |
+| Punch | Warehouse Exit | Drive and plate moving through phaser and delay |
 
-These are initial tuning candidates. Broken Tape uses modulation/filtering; it does not emulate tape transport.
-Glitch Garden uses the available resonant sweep and echoes; stutter, gating, bitcrushing, reverse and granular
-processing remain conceptual. All eight require FM1 level matching and listening before release.
+All 40 use the existing six effects, with varied parameters, enabled combinations and chain placements.
+Names suggest musical character: tape transport, freeze, stutter, rhythmic gating, bitcrushing, reverse and granular
+processing are not implemented. Delay times and modulation rates are free-running rather than tempo synchronized.
+The first eight positions are preserved; Glitch Garden's filtering and several output levels were retuned after host auditioning.
+Real FM1 listening and level matching remain release gates.
 
 ## Persistence and compatibility
 
@@ -93,7 +129,8 @@ and keeps processing the chain, preserving its running state and CPU cost.
 Individual parameter editing retains the existing filter/mix smoothing and behavior.
 
 The principal added runtime storage is a 752-byte bank, a 256-byte dry scratch pair, a 25-byte pending chain and a
-small UI/previous-chain state. Factory data is 368 bytes of constants. These are source-layout measurements;
+small UI/previous-chain state. The 40 factory records occupy 1,840 bytes of constants, plus small group labels:
+1,472 bytes more preset data than the original eight, without additional DSP buffers. These are source-layout measurements;
 final linked device memory and real CPU headroom must be checked before release.
 
 ## Verification
@@ -105,24 +142,31 @@ nonoverlapping sectors, deferral without erase, transitions and held-note/sequen
 
 Observed locally:
 
-- Format validation: 849 checks; workflow/storage and transition fixture: 1,909 checks, no failures.
+- Format validation: 849 checks; catalog names, effective-chain uniqueness, workflow/storage and transition checks pass.
 - Extended NOR log test: 1,500 steps, 2,189 power cuts (215 interrupted again during reboot), 18,432 checks, no failures.
 - The 752-byte bank allowed 177 small fixture changes without erase; actual capacity varies with edit size.
 - Constant-input transition fixture: maximum sample step 8,862 for an immediate distortion-level change, 23 with the recall fade.
   This measures the fade on a controlled signal, not perceived quality across all presets.
 - Physical output is byte-identical with USB capture on/off at 44.1 and 48 kHz during preset/bypass changes.
   At 44.1 kHz the captured master also matches the physical output frame by frame.
+- Each of the 40 chains is exercised with bypass transitions during held-note/sequencer playback at both USB rates.
+- Eighty independent level auditions: each factory on a six-note VA POLY KEYS or FM PAD chord plus bass at full MASTER,
+  held for two seconds and released for one. No PCM samples clipped. Sustained RMS was -20.72..-15.22 dBFS on VA and
+  -23.80..-14.39 dBFS on FM. The colored filters intentionally change energy; this is not perceptual loudness normalization.
+  The fixtures reject unexpectedly quiet/loud output outside -27..-10 dBFS and saturation at the PCM boundary.
 
 The ARM-target syntax check, fresh header generation, backup/restore (147 checks), Auto Harmony, scenes,
 sound-library, diagnostics and the existing 64 USB render comparisons also pass.
 
 Rendered screen previews and test logs are in `build/fx-tests/`. No flashing or release package is part of this change.
+The suite also writes 80 three-second stereo WAVs and `levels.csv` to `build/fx-auditions/`. To rerender only these
+auditions after building the test executable, run `python3 tools/audition_fx_presets.py`.
 
 Before release on FM1:
 
 - Save a named configuration, change it, recall it, wait for pending storage to clear, power-cycle and recall it again.
 - Save/replace/delete during held or latched chords, ARP, sequencer and recording; ensure no note/transport changes or audio holes.
-- Record all eight factories and repeated transitions over six-channel USB at both rates; listen for clicks, level jumps and tail changes.
+- Record all 40 factories and repeated transitions over six-channel USB at both rates; listen for clicks, level jumps and tail changes.
 - Capture diagnostics before/after for CPU peak/history, voice shedding, audio deadlines, flash holes, USB drops and stack/memory margins.
 - Audition each factory at varied input levels and dense FM/VA chords; adjust levels before approving the factory bank.
 - Test backup/restore including older files without object 69, factory reset and SAFE MODE on the device.

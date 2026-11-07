@@ -45,8 +45,9 @@ instrument's intro runs for 2.4 seconds and any input skips it.
 **Auto Harmony:** Open **GLO → Harmony** and turn **K1 to Auto** to enable
 [scale-aware chords and smart modifiers](docs/AUTO-HARMONY.md). Manual remains the default.
 
-**In development:** [Phase 2 FX presets](docs/FX-PRESETS.md) add eight factory chains, 16 user slots,
-and recall/bypass controls. Hardware validation is pending; they are not in the download above.
+**In development:** [Phase 2 FX presets](docs/FX-PRESETS.md) add 40 ready-to-play factory chains across
+Signature, Space, Lo-fi, Motion and Punch, with recall/bypass controls and 16 optional user slots.
+Hardware validation is pending; they are not in the download above.
 
 ## Install this release
 
