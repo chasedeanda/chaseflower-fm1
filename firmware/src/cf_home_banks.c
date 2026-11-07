@@ -13,9 +13,42 @@ static unsigned cf_home_rhythm(void)
     if (cpa_running()) { cpa_plan_t p; cpa_active_request(&p); return p.rhythm; }
     return cpg.rhythm;
 }
+/* Moments are real drum actions; availability/status comes from the audio snapshot. */
+static int cf_perform_ready(void)
+{
+    if(sqk.on || cf_sn.sq_rec != 255 || cf_sn.sq_cin || cf_sn.dm_rin) return 0;
+    if(cf_sn.ac_on) return !cf_sn.ac_paused && !cf_sn.ac_waiting && !cf_sn.ac_lost && cf_sn.dm_on;
+    if(cf_sn.dm_on) return 1;
+    const sq_pat_t *p=&sq_st.pat[cf_sn.sq_pat%SQ_NPAT];
+    return cf_sn.sq_on && sq_own(p,SQ_DRUMS) && !((p->mute>>SQ_DRUMS)&1u);
+}
+static void cf_perform_turn(unsigned action)
+{
+    if(!cf_perform_ready()) {
+        cf_message(sqk.on || cf_sn.sq_rec!=255 || cf_sn.dm_rin ? "Finish recording first" :
+                   cf_sn.ac_waiting || cf_sn.ac_lost ? "Waiting for MIDI clock" : "PLAY a groove first");
+        return;
+    }
+    if(action==CFPERF_FILL && cf_sn.perf_dropped) { cf_message("Bring drums back first"); return; }
+    if(!cf_post(CFE_PERFORM,action,0,0))cf_message("Busy: turn again");
+    else cu.pop=POP_NONE;
+}
 static int cf_home_bank_info(int k, cf_knob_t *o)
 {
     if (cf_home_bank == CF_HB_CORE) return 0;
+    if (cf_home_bank == CF_HB_PERFORM) {
+        static const char *const label[]={"FILL","DROP","BACK","TEMPO"};
+        if(k==3){cpa_tempo_info(o);return 1;}
+        kfmt(o->name,12,label[k]);
+        const char *value="Turn";
+        if(cf_sn.perf_pending==(unsigned)k+1u)value="Queued";
+        else if(k==0 && cf_sn.perf_fill)value="1 bar";
+        else if(k==1 && cf_sn.perf_dropped)value="Off";
+        else if(k==2 && !cf_sn.perf_dropped && !cf_sn.perf_fill)value="Groove";
+        kfmt(o->val,14,value);
+        o->dis=!cf_perform_ready() || (k==0 && (cf_sn.perf_dropped || cf_sn.perf_fill));
+        return 1;
+    }
     if (cf_home_bank == CF_HB_SOUND) {
         static const char *const label[] = {"CHORD", "BASS", "C.LEVEL", "B.LEVEL"};
         kfmt(o->name, 12, label[k]);
@@ -70,6 +103,10 @@ static int cf_home_bank_turn(int k,int d)
 {
     if (cf_home_bank==CF_HB_CORE) return 0;
     if (!d) return 1;
+    if(cf_home_bank==CF_HB_PERFORM) {
+        if(k<3)cf_perform_turn((unsigned)k+1u);else cpa_tempo(d);
+        return 1;
+    }
     if (cf_home_bank==CF_HB_SOUND) {
         if (k<2) {
             if (cf_snd_step((unsigned)k,d)) {
