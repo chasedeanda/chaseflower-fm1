@@ -22,13 +22,7 @@
 #error "cf_fx.c: the delay at the full rate, the reverb at half (cr_fx.c's defaults)"
 #endif
 
-enum { CFX_FILTER, CFX_REVERB, CFX_DELAY, CFX_DIST, CFX_CHORUS, CFX_PHASER, CFX_N };
-typedef struct {
-    uint8_t order[CFX_N];            /* the chain, first to last: effect ids */
-    uint8_t on;                      /* bit e: effect e is on */
-    uint8_t v[CFX_N][3];             /* each effect's three values 0..100 (the filter's and the reverb's first: the type
-                                      * 0..2; the filter's cutoff 0..99) */
-} cf_fx_t;
+#include "cf_fx_preset.c"
 
 /* a new unit's chain (the owner's settings): the classic order, a short delay (75 ms, 35 %, mix 8 %) and a touch of
  * hall (decay 40 %, mix 5 %) on, the rest off */
@@ -145,6 +139,13 @@ static volatile uint32_t cfx_quiet;  /* blocks since the chain's output was last
                                       * on the unit) never lands in a reverb's or a delay's tail */
 static cf_fx_t cfx_set;              /* the chain as the ISR uses it (cf_fx_apply copies cs.fx in, IRQ off) */
 static uint8_t cfx_ready;
+static cf_fx_t cfx_target;
+static volatile uint8_t cfx_pending, cfx_bypass;
+static int32_t cfx_blend = 32768;  /* 0 dry, 32768 processed; a preset swaps only at dry */
+static int32_t cfx_dry[2][CTL] __attribute__((section(".pool")));
+/* 10 ms per leg at 44.1 kHz, one DSP chain throughout. */
+#define CFX_FADE_STEP 75
+
 
 static struct {
     uint32_t hash;                   /* of cfx_set: what the values below were worked out from */
@@ -173,9 +174,23 @@ static uint32_t cfx_fnv(const void *p, uint32_t n)
 static void cf_fx_apply(const cf_fx_t *s)
 {
     fm1_irq_off();
-    cfx_set = *s;
+    if (cfx_pending) cfx_target = *s;
+    else cfx_set = *s;
     cfx_ready = 1;
     fm1_irq_on();
+}
+
+/* Preset changes are published atomically; the ISR performs the bounded fade.
+ * Keep delay/reverb buffers alive. Rapid recalls replace only the pending target. */
+static void cf_fx_recall(const cf_fx_t *s)
+{
+    fm1_irq_off();
+    cfx_target = *s; cfx_pending = 1; cfx_ready = 1;
+    fm1_irq_on();
+}
+static void cf_fx_bypass(int on)
+{
+    fm1_irq_off(); cfx_bypass = on != 0; fm1_irq_on();
 }
 
 static void cv_coefs(uint32_t type, uint32_t decay);   /* (the reverb, below) */
@@ -667,6 +682,11 @@ static void cf_fx_chain(int32_t *l, int32_t *r, uint32_t n)
     uint32_t i, h;
     if (!cfx_ready)
         return;
+    if (cfx_pending && !cfx_blend) { cfx_set = cfx_target; cfx_pending = 0; }
+    /* Save dry only during a transition/bypass. At steady unity the original
+     * rendering path stays bit-identical and avoids copying the scratch pair. */
+    int transitioning = cfx_pending || cfx_bypass || cfx_blend != 32768;
+    if (transitioning) for (i = 0; i < n; i++) { cfx_dry[0][i] = l[i]; cfx_dry[1][i] = r[i]; }
     h = cfx_fnv(&cfx_set, sizeof cfx_set);
     if (h != cfx.hash || !cfx.fa1) {
         cfx.hash = h;
@@ -687,6 +707,18 @@ static void cf_fx_chain(int32_t *l, int32_t *r, uint32_t n)
         case CFX_DELAY: cfx_delay(l, r, n, on); break;   /* (off: no new sound in, the tail rings out) */
         case CFX_REVERB: cfx_reverb(l, r, n, on); break;
         default: break;
+        }
+    }
+    if (transitioning) {
+        int32_t target = cfx_pending || cfx_bypass ? 0 : 32768;
+        for (i = 0; i < n; i++) {
+            if (cfx_blend < target) { cfx_blend += CFX_FADE_STEP; if (cfx_blend > target) cfx_blend = target; }
+            else if (cfx_blend > target) { cfx_blend -= CFX_FADE_STEP; if (cfx_blend < target) cfx_blend = target; }
+            if (!cfx_blend) { l[i] = cfx_dry[0][i]; r[i] = cfx_dry[1][i]; }
+            else if (cfx_blend != 32768) {
+                l[i] = (int32_t)(cfx_dry[0][i] + ((((int64_t)l[i] - cfx_dry[0][i]) * cfx_blend) >> 15));
+                r[i] = (int32_t)(cfx_dry[1][i] + ((((int64_t)r[i] - cfx_dry[1][i]) * cfx_blend) >> 15));
+            }
         }
     }
 #if CF_VLOAD

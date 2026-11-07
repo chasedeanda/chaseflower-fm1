@@ -83,6 +83,9 @@ jobs:
       - name: Built-in drum bank, stable IDs, sequencer copies and real audio (host HAL)
         run: sh tools/test_drum_bank.sh
 
+      - name: FX presets, safe storage and performance controls (host HAL)
+        run: sh tools/test_fx_presets.sh
+
       - name: Auto harmony, controls, persistence, MIDI and recording (host HAL)
         run: sh tools/test_auto.sh
 
