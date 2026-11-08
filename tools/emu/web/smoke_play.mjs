@@ -3,7 +3,7 @@
 import fs from 'node:fs';
 const bytes=fs.readFileSync('build/emu-web/coralflower.wasm');
 let mem;
-const wasi=new Proxy({clock_time_get:(_id,_p,out)=>{new DataView(mem.buffer).setBigUint64(out,0n,true);return 0;},fd_write:()=>0,proc_exit:(n)=>{throw Error('WASM exit '+n);}},{get:(o,k)=>o[k]||(()=>0)});
+const wasi=new Proxy({clock_time_get:(_id,_p,out)=>{new DataView(mem.buffer).setBigUint64(out,0n,true);return 0;},fd_write:(_fd,iov,n,out)=>{const d=new DataView(mem.buffer);let written=0;for(let i=0;i<n;i++)written+=d.getUint32(iov+8*i+4,true);d.setUint32(out,written,true);return 0;},proc_exit:(n)=>{throw Error('WASM exit '+n);}},{get:(o,k)=>o[k]||(()=>0)});
 const {instance}=await WebAssembly.instantiate(bytes,{wasi_snapshot_preview1:wasi,env:new Proxy({},{get:()=>()=>0})});
 const ex=instance.exports;mem=ex.memory;if(ex._initialize)ex._initialize();ex.web_boot();ex.web_master(724);
 for(let i=0;i<900;i++)ex.web_render(128);
