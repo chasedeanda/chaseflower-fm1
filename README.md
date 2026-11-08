@@ -1,5 +1,7 @@
 # CORD · FM-1
 
+**CORD 1.0** · [Install the latest release](https://chasedeanda.github.io/cord-fm1/install/) · [1.0 release notes](docs/releases/1.0.md)
+
 **A chord instrument, groovebox and songwriting companion for the M-VAVE FM-1.**
 
 Start with a progression, choose a sound and press PLAY. Add drums, shape the bass, turn a chord into an arpeggio, or take over with your own playing. CORD puts the controls you reach for on the HOME screen, with a live chord display and a little Devil or Cat keeping you company.

@@ -31,8 +31,10 @@ def main():
     if api('/compare/' + tag + '...main')['status'] not in ('ahead', 'identical'):
         raise ValueError('The release is not on main')
     version = tag[1:]
-    filename = 'coralflower-' + version + '.fwsc'
     assets = {a['name']: a for a in release['assets']}
+    filename = 'cord-' + version + '.fwsc'
+    if filename not in assets:
+        filename = 'coralflower-' + version + '.fwsc'
     sums = download(assets['SHA256SUMS']['browser_download_url']).decode()
     expected = next(line.split()[0] for line in sums.splitlines() if line.split()[-1].lstrip('*') == filename)
     package = download(assets[filename]['browser_download_url'])
