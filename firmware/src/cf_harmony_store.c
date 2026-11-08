@@ -22,6 +22,7 @@ static int cfh_valid(const cfh_rec_t *r)
 static void cfh_load(void)
 {
     cf_harmony_defaults(&ch);
+    if (!cr_safe) ch.mode = CF_H_AUTO;
     if (!cr_safe) {
         st_check_blank(OBJ_CFHARM);
         for (int i = 0; i < 3 && st_tidy(OBJ_CFHARM) > 0; i++) fm1_wdt_feed();

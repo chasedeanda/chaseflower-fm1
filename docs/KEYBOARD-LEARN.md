@@ -30,7 +30,7 @@ maj7 / minor chord m7. Manual form help names its assigned type and added tones.
 Unsupported Harmony scale/quantize settings explicitly say unavailable.
 
 **K1 turns Harmony On/Off. K2 restores factory Harmony defaults**, including
-Off and the default modifier assignments, inversions and bass tones. Turn K2
+On and the default modifier assignments, inversions and bass tones. Turn K2
 either way to reset. K3 and K4 are inactive. The keyboard and explanation layout
 stays the same, with a short control reminder in the existing footer.
 SELECT, PRESETS, MASTER, OCT, transport and destination buttons keep their usual

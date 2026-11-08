@@ -27,7 +27,7 @@ static void harmony_knobs(void)
     cf_knob_t control={0};ui_knob_info(0,&control);CHECK(!control.dis && !strcmp(control.val,"Off"));
     ui_knob_info(1,&control);CHECK(!control.dis && !strcmp(control.name,"RESET"));
     cf_chord_cfg_t manual=cs.chord;
-    cf_harmony_t defaults;cf_harmony_defaults(&defaults);
+    cf_harmony_t defaults;cf_harmony_defaults(&defaults);defaults.mode=CF_H_AUTO;
     ui_knob_turn(0,1);blocks(2);CHECK(ch.mode==CF_H_AUTO && cfc.harmony.mode==CF_H_AUTO && cpa.on);
     cf_ui_draw();CHECK(cf_stage_last.learn.automatic);
     ui_knob_turn(0,-1);blocks(2);CHECK(ch.mode==CF_H_MANUAL && cfc.harmony.mode==CF_H_MANUAL && cpa.on);

@@ -37,12 +37,12 @@ static void ui_and_store(void)
     CHECK(sizeof(cf_set_t)==188 && sizeof(sq_ev_t)==22 && sizeof(cf_harmony_t)==38 && sizeof(cfh_rec_t)==52);
     CHECK(screen_pages(SCR_GLO)==CF_GLO_NPAGES && CF_GLO_HARMONY==7);
     cu.scr=SCR_GLO; cu.page[SCR_GLO]=6; cfd.page=DP_OVERVIEW;
-    ui_knob_turn(0,1); CHECK(cfd.page==DP_TIMING && ch.mode==CF_H_MANUAL);
+    ui_knob_turn(0,1); CHECK(cfd.page==DP_TIMING && ch.mode==CF_H_AUTO);
     CHECK(st_sector(OBJ_CFHARM,0)==0xB4000 && st_sector(OBJ_CFHARM,1)==0xB5000);
     for(unsigned o=0;o<OBJ_COUNT;o++) if(o!=OBJ_CFHARM)
         for(unsigned a=0;a<2;a++) for(unsigned b=0;b<2;b++) CHECK(st_sector(o,a)!=st_sector(OBJ_CFHARM,b));
     cu.scr=SCR_GLO; cu.page[SCR_GLO]=CF_GLO_HARMONY;
-    cf_knob_t knob={0}; ui_knob_info(0,&knob); CHECK(!strcmp(knob.val,"Off"));
+    cf_knob_t knob={0}; ui_knob_info(0,&knob); CHECK(!strcmp(knob.val,"On"));
     ui_knob_turn(0,1); audio_ms(6); CHECK(ch.mode==CF_H_AUTO && cfc.harmony.mode==CF_H_AUTO);
     ui_knob_info(0,&knob); CHECK(!strcmp(knob.val,"On"));
     cf_harmony_t simple=ch;
@@ -53,7 +53,7 @@ static void ui_and_store(void)
     CHECK(!memcmp(&simple,&ch,sizeof ch));
     memset(&knob,0,sizeof knob); ui_knob_info(1,&knob);
     CHECK(!strcmp(knob.name,"RESET") && !strcmp(knob.val,"Defaults"));
-    cf_harmony_t defaults; cf_harmony_defaults(&defaults);
+    cf_harmony_t defaults; cf_harmony_defaults(&defaults); defaults.mode=CF_H_AUTO;
     for(int direction=-1;direction<=1;direction+=2) {
         ch.mode=CF_H_AUTO; ch.slot[0]=CF_MOD_DIM; ch.inv[0]=2; ch.bass[0]=4;
         simple=ch; ui_knob_turn(1,0); CHECK(!memcmp(&simple,&ch,sizeof ch));
@@ -67,6 +67,9 @@ static void ui_and_store(void)
     CHECK(!memcmp(&manual,&cs.chord,sizeof manual));
     CHECK(cfh_write(0)==0); cf_harmony_t saved=ch;
     cf_harmony_defaults(&ch); cfh_load(); CHECK(!memcmp(&ch,&saved,sizeof ch));
+    /* An explicit saved Off survives the new fresh-settings default. */
+    ch.mode=CF_H_MANUAL;CHECK(cfh_write(0)==0);ch.mode=CF_H_AUTO;cfh_load();CHECK(ch.mode==CF_H_MANUAL);
+    ch=saved;CHECK(cfh_write(0)==0);cfh_load();CHECK(!memcmp(&ch,&saved,sizeof ch));
     CHECK(crb_obj(CFB_HARM)==OBJ_CFHARM && crb_size_ok(CFB_HARM,sizeof(cfh_rec_t)) && !crb_size_ok(CFB_HARM,5));
     CHECK(cfh_valid(&cfh_rec)); cfh_rec.version=99; CHECK(!cfh_valid(&cfh_rec));
     cfh_rec.version=1; cfh_rec.h.slot[0]^=1; CHECK(!cfh_valid(&cfh_rec));

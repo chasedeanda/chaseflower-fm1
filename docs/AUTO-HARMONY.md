@@ -12,11 +12,11 @@ Open **GLO → Harmony** and turn **K1 On**. Use **K1** for On/Off:
   the notes you select.
 
 **K2 Reset → Defaults** restores all Harmony modifier assignments, inversions and
-bass tones, and turns Harmony Off. Turn K2 either way to reset. K3 and K4 are unused.
+bass tones, and turns Harmony On. Turn K2 either way to reset. K3 and K4 are unused.
 
 The same K1/K2 actions work on **HOME → Keyboard (6/6)** without leaving the guide.
 
-Off is the default. HOME retains Quantize, Key, Scale and Glide. Use Quantize
+On is the default for fresh settings; existing saved On/Off preferences are preserved. HOME retains Quantize, Key, Scale and Glide. Use Quantize
 Basic or Full and a seven-note scale.
 
 The scale chooses each root and its major/minor quality. Every automatic triad
@@ -107,7 +107,7 @@ Legacy settings remain **188 bytes** and pattern events **22 bytes**. Saved
 chord forms, sounds and CFQ6 patterns retain their formats. Auto preferences use
 the existing checked/versioned **CHH1** record at **0xB4000/0xB5000**, with backup
 object **68**. Retired option bytes stay reserved to preserve record compatibility;
-they are cleared when loading. Missing/invalid data and Safe Mode default to Off.
+they are cleared when loading. Missing/invalid data defaults to On; Safe Mode remains Off.
 Old backups without object 68 leave existing Auto preferences alone.
 
 Auto events retain the full interval mask using the high button-field tag and
