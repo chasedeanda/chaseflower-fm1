@@ -3,7 +3,7 @@
 /* Felucca update loader (device side). Runs from RAM, started by the SPL from
  * an update record, with interrupts off: USB is polled from the main loop.
  * It is a USB-MIDI device "Felucca Update" (1209:0002) that answers the
- * M-UPGRADE update protocol as "ota-FM-1_900" (hosts look for "ota-"), and
+ * M-UPGRADE update protocol as "ota-FM-1_936" (hosts look for "ota-"), and
  * writes the app area only (ldr_core.c). The UBOOT soft key works here too.
  * Single compilation unit. */
 #include <stdint.h>
@@ -12,7 +12,9 @@
 #define FELUCCA_OTA 1
 #define FELUCCA_OTA_DRYRUN 0
 #define FELUCCA_USB_PID 0x0002
-#define FELUCCA_ID "ota-FM-1_900"
+#ifndef FELUCCA_ID
+#define FELUCCA_ID "ota-FM-1_936"
+#endif
 #define RING_PUBLISH() __asm__ volatile("" ::: "memory")
 #include "fm1_time.h"
 #include "fm1_sys.h"
@@ -56,16 +58,17 @@ static void ota_commit(const uint8_t *parm) { (void)parm; }
 #include "../src/ota.c"
 
 /* ---- ldr_core.c hooks: interrupts are off for the whole loader ---- */
+static int ldr_flash_known; /* unknown parts may never be erased or programmed */
 static int ldr_fread(uint32_t off, void *p, uint32_t n) { return fl_read_ram(off, p, n); }
 static int ldr_erase(uint32_t off)
 {
     uint32_t took;
-    return fl_erase4k_ram(off, &took);
+    return ldr_flash_known ? fl_erase4k_ram(off, &took) : -1;
 }
 static int ldr_prog(uint32_t off, const void *p, uint32_t n)
 {
     uint32_t took;
-    return fl_prog_ram(off, p, n, &took);
+    return ldr_flash_known ? fl_prog_ram(off, p, n, &took) : -1;
 }
 static void ldr_record_clear(void)
 {
@@ -80,6 +83,7 @@ void ldr_main(void)
 {
     fm1_wdt_arm(0x0D);                              /* ~8 s, fed by ldr_poll */
     fm1_time_init();
+    ldr_flash_known = FL_JEDEC_OK(fl_jedec_ram());
     usb_start();
     for (;;) {
         ldr_poll();

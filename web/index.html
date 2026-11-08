@@ -442,7 +442,7 @@ import { Updater, classifyFirmware, refusalText } from "./fm1ota.js";
 import { BackupConnection, captureBackup, restoreBackup, deviceInfo, restartDevice, readBackup, backupFamily, backupFileName, objectNames } from "./fm1backup.js";
 
 const $ = (id) => document.getElementById(id);
-const PRODUCT = "FM-1_930";                      // CoralFlower's identity (tools/build.py PRODUCT): every package, every version
+const PRODUCT = "FM-1_936";                      // CORD (tools/build.py); legacy 930 packages remain installable
 const MODEL = PRODUCT.split("_")[0];
 const LOADER_MARK = "FELUCCA-LOADER-1";          // Felucca's update loader (tools/fm1pkg_make.py ota.bin): never a vendor one
 const PKG_FLASH = 0x93000, PKG_APP_BASE = 0x4000; // the FM-1 flash layout of every fm1pkg_make.py package
@@ -543,6 +543,7 @@ const say = (txt) => { $(out.status).textContent = txt; };
 const log = (line) => { $("log").textContent += line + "\n"; if (out.log) $(out.log).textContent += line + "\n"; };
 
 let writing = false;
+let pkgProduct = null;
 let image = null;                                // the logical image Install writes, set only after its checks passed
 let pick = null;                                 // what Install writes: { rel, label, file } (a release) or { label, file }
 let releases = [];                               // firmware/releases.json, newest first, each { version, sha256, file, url }
@@ -638,7 +639,7 @@ const hasText = (bytes, text) => {
 function checkPackage(bytes) {
   if (!bytes || bytes.length < 20 * 48 + 0x400 || bytes.length > PKG_MAX) throw coded("pkgNotFm1");
   const product = productOf(bytes);
-  if (product !== PRODUCT) {
+  if (product !== PRODUCT && product !== "FM-1_930") {
     if (/^FM-1_0\d\d$/.test(product)) throw coded("pkgStock", product);
     if (/^FM-1_\d+$/.test(product)) throw coded("pkgIdentity", product);
     throw coded("pkgNotFm1");
@@ -701,7 +702,7 @@ function renderPick() {
   $("notes").innerHTML = pick && pick.rel ? notesOf(pick.rel) : "";
 }
 function newChoice(p) {                          // a new choice: nothing checked yet, the last run's panels go
-  pick = p; image = null; ++pkgEpoch;
+  pick = p; image = null; pkgProduct = null; ++pkgEpoch;
   $("done").hidden = true; $("interrupted").hidden = true; $("force-box").hidden = true; $("force-risk").checked = false;
   $("bar").value = 0; say("");
   lockInstaller(writing);
@@ -723,7 +724,7 @@ async function loadRelease(r) {
       return;
     }
     const ok = checkPackage(bytes);
-    image = ok.image;
+    image = ok.image; pkgProduct = ok.product;
     pkgSay(tv("pkgRelOk", { version: r.version }), "ok", sum);
     log(`release ${r.version}: ${r.file}, ${bytes.length} B, ${ok.product}, sha256 ${sum}`);
   } catch (e) { if (epoch === pkgEpoch) pkgFail(e, r.file); }
@@ -740,7 +741,7 @@ async function loadFile(file) {
     const ok = checkPackage(bytes);
     const sum = await sha256hex(bytes);
     if (epoch !== pkgEpoch) return;
-    image = ok.image;
+    image = ok.image; pkgProduct = ok.product;
     pkgSay(tv("pkgOk", { name: file.name }), "ok", sum);
     log(`file ${file.name}: ${bytes.length} B, ${ok.product}, sha256 ${sum}`);
   } catch (e) { if (epoch === pkgEpoch) pkgFail(e, file.name); }
@@ -806,7 +807,7 @@ function finishInstall(runs) {
 }
 $("go").addEventListener("click", async () => {
   if (writing || !image) return;
-  const what = pick, pkgImage = image;           // what the button named when it was pressed
+  const what = pick, pkgImage = image, selectedProduct = pkgProduct;           // what the button named when it was pressed
   let began = false, okDone = false, halted = false, runs = null;
   lockInstaller(true);
   $("interrupted").hidden = true; $("done").hidden = true; $("bar").value = 0; $("backup-note").hidden = true;
@@ -831,7 +832,7 @@ $("go").addEventListener("click", async () => {
       ota.link.close();
       began = true;
       log(`resume: ${what.label}`);
-      okDone = await up.resume(pkgImage, step, PRODUCT);
+      okDone = await up.resume(pkgImage, step, selectedProduct);
       sayK(okDone ? "done" : "stopped");
       halted = !okDone;
       if (okDone) runs = await readBack(up);
@@ -868,7 +869,7 @@ $("go").addEventListener("click", async () => {
         }
       }
       log(`install: ${what.label} (${what.file})`);
-      await up.install(pkgImage, PRODUCT, step);
+      await up.install(pkgImage, selectedProduct, step);
       okDone = true;
       runs = await readBack(up);
       // over another firmware: offer its data back (CoralFlower and ChoralRoot data stay in the flash, and are used)

@@ -1,0 +1,11 @@
+{
+  "what": "A chord instrument and groovebox based on CoralFlower. Play progressions with drums and bass, explore arpeggios and Auto Harmony, shape sounds with effects, try contextual variations, and save songs and recordings.",
+  "author": "Chase DeAnda",
+  "kinds": [
+    "chords"
+  ],
+  "play": "https://chasedeanda.github.io/cord-fm1/play/",
+  "cheat": "https://github.com/chasedeanda/cord-fm1#make-your-first-loop",
+  "image": "docs/images/house-style/devil-core.png",
+  "color": "#FF7A00"
+}
