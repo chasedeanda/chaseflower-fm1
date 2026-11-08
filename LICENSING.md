@@ -1,6 +1,6 @@
-# CoralFlower licensing
+# CORD licensing
 
-CoralFlower is free software under the GNU General Public License, version 3 only (`GPL-3.0-only`; the full text is
+CORD is a fork of **CoralFlower** (<https://github.com/FicusFicusov/CoralFlower>) and is free software under the GNU General Public License, version 3 only (`GPL-3.0-only`; the full text is
 in `LICENSE`). That covers the firmware, the tools, the web pages and the tests in this tree. A few bundled or ported
 parts keep their own licences. They are listed below and in `docs/LICENSING-choralroot.md`, and their licence texts
 are in `LICENSES/`.
@@ -75,7 +75,11 @@ hold only CoralFlower and the three SDK files above.
 CoralFlower is independent firmware that runs on FM-1 hardware. It is not affiliated with, endorsed by or supported
 by any of them.
 
-## Contributions and contact
+## CORD contributions and upstream contact
+
+CORD issues and contributions: <https://github.com/chasedeanda/cord-fm1/issues>.
+
+The following contact information belongs to the **upstream CoralFlower project**, not CORD.
 
 Contributions are welcome under GPL-3.0-only. Contact: iambemoli@gmail.com, Telegram channel
 <https://t.me/ficusficusov>.

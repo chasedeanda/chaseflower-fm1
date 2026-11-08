@@ -1864,7 +1864,7 @@ int main(int argc, char **argv)
             if (x < ub.x) x = ub.x;
             if (y < ub.y + 28) y = ub.y + 28;
         }
-        win = SDL_CreateWindow("FM-1 emulator", x, y, win_w, win_h, SDL_WINDOW_ALLOW_HIGHDPI | SDL_WINDOW_RESIZABLE);
+        win = SDL_CreateWindow("CORD FM-1 emulator", x, y, win_w, win_h, SDL_WINDOW_ALLOW_HIGHDPI | SDL_WINDOW_RESIZABLE);
         if (!win) {
             printf("SDL_CreateWindow: %s\n", SDL_GetError());
             return 1;

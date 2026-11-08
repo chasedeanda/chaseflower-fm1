@@ -348,7 +348,7 @@
       if (!was || was === document.body || was === $("start")) svg.focus({ preventScroll: true });   // (keys and Tab: the panel's)
       sentK = sentB = -1;
       publish();
-      status(m.version + " is running. The lower keys play roots; hold an upper key to change the chord type.");
+      status(m.version.replace(/^CoralFlower\b/i, "CORD") + " is running. The lower keys play roots; hold an upper key to change the chord type.");
     } else if (m.type === "midi") midiOut(m.pkts);
     else if (m.type === "flash") flashSave(m.data);
     else if (m.type === "error") status("The emulator failed: " + m.message);

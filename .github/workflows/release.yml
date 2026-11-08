@@ -176,7 +176,7 @@ jobs:
         with:
           tag_name: ${{ github.ref_name }}
           name: CORD ${{ needs.build.outputs.version }}
-          make_latest: true
+          make_latest: ${{ !contains(needs.build.outputs.version, '-rc') && !contains(needs.build.outputs.version, '-alpha') && !contains(needs.build.outputs.version, '-beta') }}
           prerelease: ${{ contains(needs.build.outputs.version, '-rc') || contains(needs.build.outputs.version, '-alpha') || contains(needs.build.outputs.version, '-beta') }}
           fail_on_unmatched_files: true
           files: assets/*

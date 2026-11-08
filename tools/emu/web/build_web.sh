@@ -32,12 +32,7 @@ if [ -n "${CR_VERSION:-}" ]; then
         *) VER="CoralFlower $(printf %s "$CR_VERSION" | tr A-Z a-z)" ;;
     esac
 else
-    REL=$(sed -n 's/^ *"version": *"\([^"]*\)".*/\1/p' web/releases.json 2>/dev/null | head -1)
-    if [ -n "$REL" ]; then
-        VER="CoralFlower $REL"
-    else
-        VER=$(sed -n 's/^#define FELUCCA_VERSION "\(.*\)"/\1/p' firmware/src/coralflower.c | head -1)
-    fi
+    VER=$(sed -n 's/^#define FELUCCA_VERSION "\(.*\)".*/\1/p' firmware/src/coralflower.c | head -1)
 fi
 OUT=build/emu-web
 W=tools/emu/web

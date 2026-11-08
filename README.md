@@ -1,6 +1,6 @@
 # CORD · FM-1
 
-**CORD 1.0** · [Install the latest release](https://chasedeanda.github.io/cord-fm1/install/) · [1.0 release notes](docs/releases/1.0.md)
+**CORD 1.0.1** · [Install the latest release](https://chasedeanda.github.io/cord-fm1/install/) · [1.0.1 release notes](docs/releases/1.0.1.md)
 
 **A chord instrument, groovebox and songwriting companion for the M-VAVE FM-1.**
 
@@ -398,7 +398,7 @@ Record the full live mix to a computer over USB when you want the exact heard co
 
 ### USB audio
 
-Connect the FM-1 with a data-capable USB cable. Select its audio device in your DAW; compatible USB names may still say **ChaseFlower** or **CoralFlower**.
+Connect the FM-1 with a data-capable USB cable. Select its audio device in your DAW; the device names are **CORD FM-1** (MIDI) and **CORD In** (audio). Older installed releases can retain their previous names until updated.
 
 | DAW input pair | What you record |
 | --- | --- |
@@ -534,7 +534,7 @@ GitHub Actions runs host regressions. Generate headers with `python tools/build.
 
 Feature guides sometimes retain historical build notes or older page numbers. This README's nine-page HOME table describes current main; release notes describe packaged versions. Design boards and implementation plans are proposals, not a list of shipped features. Full arranged recording, A/B song arrangement and a separate chord-library picker are not current features.
 
-[All releases](https://github.com/chasedeanda/cord-fm1/releases) · [Screenshots in both themes](docs/images/house-style) · [House style](docs/HOUSE-STYLE.md) · [Boot implementation](docs/CORD-BOOT.md) · [Chord/drum budget](docs/CHORD-DRUM-BUDGET.md) · [Licensing](LICENSING.md)
+[All releases](https://github.com/chasedeanda/cord-fm1/releases) · [Screenshots in both themes](docs/images/house-style) · [House style](docs/HOUSE-STYLE.md) · [Boot implementation](docs/CORD-BOOT.md) · [Chord/drum budget](docs/CHORD-DRUM-BUDGET.md) · [Licensing](LICENSING.md) · [Public-release audit](docs/PUBLIC-RELEASE-AUDIT.md)
 
 CORD builds on [CoralFlower](https://github.com/FicusFicusov/CoralFlower), [ChoralRoot FM-1](https://github.com/Quixotic7/ChoralRootFM1) by Quixotic7, and [Felucca](https://github.com/hugelton/Felucca) by Leo Kuroshita / Hügelton Instruments. The FM engine comes from [Melodee](https://github.com/keremimo/melodee) by Kerem Kilic. Imported Aquanode voices retain their CC0 attribution in the sound catalogue. The interface uses Inter Tight and inherited Departure Mono assets; see [licensing and acknowledgements](LICENSING.md).
 

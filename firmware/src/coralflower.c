@@ -85,7 +85,7 @@ static void cf_boot_note(void);            /* (cf_fx.c) */
 #define FELUCCA_ID "FM-1_930"    /* package identity (build.py: the .fwsc marker string) */
 #endif
 #ifndef FELUCCA_VERSION
-#define FELUCCA_VERSION "CoralFlower 1.0" /* compatibility INFO prefix; public firmware name is CORD */
+#define FELUCCA_VERSION "CoralFlower 1.0.1" /* compatibility INFO prefix; public firmware name is CORD */
 #endif
 #if FELUCCA_OTA && !FELUCCA_FLASH
 #error "FELUCCA_OTA needs FELUCCA_FLASH"

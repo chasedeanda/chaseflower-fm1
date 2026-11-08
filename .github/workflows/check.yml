@@ -47,6 +47,9 @@ jobs:
       - name: Device resource audit parser and build-flag consistency
         run: python3 tests/resource_audit_test.py
 
+      - name: CORD public branding and release provenance
+        run: python3 tools/audit_public_release.py
+
       - name: The unit compiles (an ARM target, every include present)
         run: |
           clang -target armv7m-none-eabi -Os -fno-builtin -w -Ifirmware/hal -Ifirmware/src -Ibuild/gen \
@@ -83,7 +86,7 @@ jobs:
       - name: USB audio protocol and real-render regression tests (host HAL)
         run: sh tools/test_usb.sh
 
-      - name: ChaseFlower library, saved sounds, HOME views and 6/8 timing (host HAL)
+      - name: CORD library, saved sounds, HOME views and 6/8 timing (host HAL)
         run: sh tools/test_chase3.sh
 
       - name: Built-in drum bank, stable IDs, sequencer copies and real audio (host HAL)
