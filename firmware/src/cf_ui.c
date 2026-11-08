@@ -572,7 +572,7 @@ static void cf_harmony_turn(int k, int d)
 {
     if (!d || k > 1) return;
     if (k == 0) ch.mode = (uint8_t)clampi(ch.mode + d, 0, CF_H_AUTO);
-    else { cf_harmony_defaults(&ch); cf_message("Harmony defaults restored"); }
+    else { cf_harmony_defaults(&ch); ch.mode=CF_H_AUTO; cf_message("Harmony defaults restored"); }
     cf_send_config();
     if (ch.mode == CF_H_AUTO && !cf_harmony_supported(cs.chord.scale, cs.chord.quantize))
         cf_message("Auto needs a 7-note scale\nand Quantize Basic or Full");

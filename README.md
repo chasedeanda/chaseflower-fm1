@@ -130,7 +130,7 @@ Lower keys choose roots. Upper keys select qualities, extensions, suspensions an
 
 ### Auto Harmony
 
-On **HOME → Keyboard**, turn **K1 Harmony On**. Choose a key and seven-note scale in Core; each root produces a major or minor chord. Upper keys add the colors you choose. This is also available under **GLO → Harmony**.
+**Auto Harmony is On by default for fresh settings.** An existing saved On/Off choice is preserved. On **HOME → Keyboard**, **K1 Harmony** changes it. Choose a key and seven-note scale in Core; each root produces a major or minor chord. Upper keys add the colors you choose. This is also available under **GLO → Harmony**.
 
 For example, in **E major**, selecting **7** and playing **E → B → D♯** gives **Emaj7 → Bmaj7 → D♯m7**. Auto uses its own major/minor rule with normal fifths; it does not automatically make every scale's seventh-degree chord diminished. Explicit source-song chords retain their written qualities.
 
@@ -143,7 +143,7 @@ For example, in **E major**, selecting **7** and playing **E → B → D♯** gi
 | **Add2 / 11** | Keep the third and add color; 11 includes the seventh and ninth. |
 | **HOLD** | Sustain roots independently of modifier selection. |
 
-**K2 Reset** restores Harmony's factory assignments and turns Harmony Off. To customize upper-key assignments, open **GLO → Harmony → SEL**; K1 selects the modifier, K3 its inversion and K4 its bass tone. HOLD is not an editable modifier.
+**K2 Reset** restores Harmony's factory assignments and turns Harmony On. To customize upper-key assignments, open **GLO → Harmony → SEL**; K1 selects the modifier, K3 its inversion and K4 its bass tone. HOLD is not an editable modifier.
 
 ### The keyboard guide and root lights
 
