@@ -39,12 +39,14 @@ static int cvr_value_valid(const cv_value_t *v)
 }
 static void cvr_capture(cv_value_t *v, unsigned part)
 {
-    unsigned r = dm_cur();
+    unsigned r = cf_sn.ac_on ? cf_sn.ac_rhythm : dm_cur();
+    if(r >= DM_N) r = dm_cur();
     memset(v, 0, sizeof *v);
     v->fx = cs.fx; v->arp = cs.arp; v->bpm = cs.bpm;
     v->tonic = cs.chord.tonic; v->scale = cs.chord.scale; v->quantize = cs.chord.quantize;
     v->idea = cpg.idea; v->auto_on = ch.mode != 0;
     v->beats = DM_RHY[r].beats; v->rhythm = (uint8_t)r; v->kit = (uint8_t)dm_kit(r); v->swing = (uint8_t)dm_swing(r);
+    if(cf_sn.ac_on && cf_sn.ac_rhythm < DM_N){v->kit=cf_sn.ac_kit;v->swing=cf_sn.ac_swing;}
     v->part = (uint8_t)part; v->sound = cf_snd[part]; v->edited = (uint8_t)cfk_edited(part);
     if (cfe_fm6(part)) {
         const uint8_t *p = fm6_patch[part]; v->env_kind = 1;
@@ -193,7 +195,14 @@ static int cvr_ready(unsigned context, const cv_value_t *v)
 static void cvr_apply(const cv_value_t *v, unsigned context)
 {
     switch (context) {
-    case CV_HARMONY: cpg.idea = cf_progression_pick(v->idea, 0); break;
+    case CV_HARMONY:
+        if(cpa_running()) {
+            cpa_plan_t plan; cpa_active_request(&plan);
+            cf_chord_cfg_t cfg=cs.chord;cfg.tonic=v->tonic;cfg.scale=v->scale;
+            if(cpa_prepare_full(&plan,v->idea,cfg,plan.rhythm,plan.mode,plan.repeat_off,0))
+                cpa_publish(&plan,0,1);
+        } else cpg.idea = cf_progression_pick(v->idea, 0);
+        break;
     case CV_ARP: cs.arp = v->arp; cf_send_config(); break;
     case CV_FX: cs.fx = v->fx; cf_fx_recall(&cs.fx); break;
     case CV_SCALE:
@@ -202,7 +211,11 @@ static void cvr_apply(const cv_value_t *v, unsigned context)
     case CV_DRUMS:
         dmr.pos[v->beats] = DM_RHY[v->rhythm].id; dmr.last = 1; dm_view = v->rhythm;
         dmr.kit[dm_uid(v->rhythm)] = v->kit; dmr.swing[dm_uid(v->rhythm)] = v->swing;
-        if (cf_sn.dm_on) dm_play(v->rhythm); /* existing next-bar handoff, no new scheduler */
+        if(cpa_running()) {
+            cpa_plan_t plan;cpa_active_request(&plan);
+            plan.rhythm=v->rhythm;plan.kit=v->kit;plan.swing=v->swing;
+            cpa_publish(&plan,CPA_GROOVE,0);
+        } else if (cf_sn.dm_on) dm_play(v->rhythm); /* existing next-bar handoff, no new scheduler */
         else { cs.beats = v->beats; cs.bpm = v->bpm; dm_view = 0xFF; cf_send_metro(); cf_send_config(); }
         break;
     case CV_SOUND: {
@@ -250,7 +263,8 @@ static void cvr_new(void)
     cvr_remember(cvr.context, value.part);
     cvr.seed++;
     cvr_apply(&value, cvr.context);
-    cf_message(cvr.context == CV_DRUMS && cf_sn.dm_on ? "Drums queued: next bar" : "Variation ready; K4 undo");
+    cf_message(cvr.context == CV_HARMONY && cpa_running() ? "Harmony queued: next bar" :
+        cvr.context == CV_DRUMS && (cf_sn.dm_on || cpa_running()) ? "Drums queued: next bar" : "Variation ready; K4 undo");
 }
 static void cvr_undo(void)
 {

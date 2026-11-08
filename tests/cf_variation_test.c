@@ -195,11 +195,41 @@ static void home_controls(void)
     quiet();cf_home_bank=CF_HB_VARIATION;cvr.context=CV_FX;cu.pop=0;
     ui_button(B_SAVE);CHECK(cu.scr==SCR_FX&&fxpu.mode==FXP_MANAGE);
 }
+static void shared_playback(void)
+{
+    cpa_stop();quiet();cvr_init();cu.scr=SCR_HOME;home_boot_main=1;cf_home_bank=CF_HB_VARIATION;
+    cs.chord.tonic=0;cs.chord.scale=CF_SC_MAJOR;cs.chord.quantize=CF_Q_BASIC;
+    cpg.idea=0;cf_send_config();blocks(4);
+    cpa_plan_t plan;CHECK(cpa_prepare(&plan,0,cs.chord,dm_nth(4,0),CPA_BOTH));
+    cpa_publish(&plan,0,1);cf_post(CFE_ACCOMP,1,0,0);blocks(4);
+    cvr.context=CV_HARMONY;cvr.level=0;cv_value_t expected;
+    cvr_capture(&expected,0);CHECK(cvr_generate(&expected,CV_HARMONY,0,cvr.seed));
+    unsigned original=cf_sn.ac_idea;
+    cvr_new();CHECK(cpa_setup.flags && cpa_setup.plan.idea==expected.idea);
+    CHECK(cpa.plan.idea==original); /* no early audible change */
+    for(unsigned i=0;i<384;i++)cpa_tick1();cf_snapshot();cpa_ui_poll();
+    CHECK(cf_sn.ac_idea==expected.idea && cpg.idea==expected.idea);
+    cvr_undo();CHECK(cpa_setup.flags && cpa_setup.plan.idea==original);
+    for(unsigned i=0;i<384;i++)cpa_tick1();cf_snapshot();cpa_ui_poll();
+    CHECK(cf_sn.ac_idea==original);
+    cvr.context=CV_DRUMS;cvr.level=1;cvr_capture(&expected,0);
+    CHECK(cvr_generate(&expected,CV_DRUMS,1,cvr.seed));
+    unsigned rhythm=cf_sn.ac_rhythm,slot=cf_sn.ac_slot;
+    cvr_new();CHECK((cpa_edit.flags&CPA_GROOVE) && cpa_edit.plan.rhythm==expected.rhythm);
+    CHECK(cpa.plan.rhythm==rhythm && cpa.slot==slot);
+    for(unsigned i=0;i<384;i++)cpa_tick1();cf_snapshot();cpa_ui_poll();
+    CHECK(cf_sn.ac_rhythm==expected.rhythm && dmp.r==expected.rhythm);
+    CHECK(cf_sn.ac_kit==expected.kit && cf_sn.ac_swing==expected.swing);
+    cvr_undo();CHECK(cpa_edit.plan.rhythm==rhythm);
+    for(unsigned i=0;i<384;i++)cpa_tick1();cf_snapshot();
+    CHECK(cf_sn.ac_rhythm==rhythm && dmp.r==rhythm);
+    cpa_stop();quiet();
+}
 int main(int argc,char **argv)
 {
     emu_fw_options(NULL,1,0,1);emu_hal.ready=2;emu_fw_init(0);
     if(argc==5)audio(atoi(argv[2]),(unsigned)atoi(argv[3]),argv[4]);
-    else { quiet();properties();controls();sound();boundaries();queued_controls();home_controls(); }
+    else { quiet();properties();controls();sound();boundaries();queued_controls();home_controls();shared_playback(); }
     printf("variations: %u checks, %u failures\n",checks,failures);
     return failures!=0;
 }

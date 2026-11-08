@@ -141,10 +141,43 @@ static void sixteen_slots(void)
     cfp_panic(); render_blocks(4);
 }
 
+static void drums_only_lights(void)
+{
+    cpa_stop(); sqp_stop(); cfp_panic(); cs_defaults(&cs);
+    cf_harmony_defaults(&ch); ch.mode=CF_H_AUTO;
+    cs.chord.tonic=0;cs.chord.scale=CF_SC_MAJOR;cs.chord.quantize=CF_Q_BASIC;cs.lights=0;
+    cu.scr=SCR_HOME;home_boot_main=1;cf_home_bank=CF_HB_LOOP;cu.keys=0;
+    cpg.idea=0;cpg.explored=1;cf_scene_set(CF_SCENE_PROGRESSIONS);
+    cf_send_config();render_blocks(4);
+    cpa_plan_t plan;CHECK(cpa_prepare(&plan,0,cs.chord,dm_nth(4,0),CPA_DRUMS));
+    cpa_publish(&plan,0,1);cf_post(CFE_ACCOMP,1,0,0);render_blocks(4);
+    CHECK(cf_sn.ac_on && cf_sn.ac_mode==CPA_DRUMS && !cf_sn.sq_dn);
+    for(unsigned screen=0;screen<2;screen++) {
+        cu.scr=screen?SCR_ACC:SCR_HOME;cu.page[SCR_ACC]=CF_ACC_LOOP;
+        unsigned at=cf_sn.ac_slot,next=(at+1)%cf_sn.ac_n;
+        uint32_t current=tone_keys(1u<<(cf_sn.ac_root[at]%12));
+        uint32_t upcoming=tone_keys(1u<<(cf_sn.ac_root[next]%12));
+        cu.now=750;cf_leds();CHECK(led_keys(fm1_led)==(current|upcoming));
+        cu.now=1000;cf_leds();CHECK(led_keys(fm1_led)==current);
+        /* Live roots replace the planned current cue, not the transport's next root. */
+        int root=cf_progression_key(&cs.chord,5);
+        guide_key(root,1);CHECK(cf_sn.out.sounding);
+        CHECK(led_keys(fm1_led)==(tone_keys(1u<<9)&~upcoming));
+        CHECK(led_keys(fm1_led_dim)==(tone_keys(1u<<9)&upcoming));
+        guide_key(root,0);CHECK(led_keys(fm1_led)==current);
+        for(unsigned i=0;i<384;i++)cpa_tick1();cf_snapshot();
+        CHECK(cf_sn.ac_slot!=at && !cf_sn.sq_dn);
+        cu.now=750;cf_leds();
+        CHECK(led_keys(fm1_led)==tone_keys((1u<<(cf_sn.ac_root[cf_sn.ac_slot]%12))|
+            (1u<<(cf_sn.ac_root[(cf_sn.ac_slot+1)%cf_sn.ac_n]%12))));
+    }
+    cpa_stop();render_blocks(4);cu.scr=SCR_HOME;cf_home_bank=CF_HB_CORE;
+}
+
 int main(void)
 {
     emu_fw_options(NULL,1,0,1); emu_hal.ready=2; emu_fw_init(0); render_blocks(64);
-    progression_lights(); accompaniment_lights(); sixteen_slots();
+    progression_lights(); accompaniment_lights(); sixteen_slots(); drums_only_lights();
     printf("LED guide: %u checks, %u failures\n",checks,failures);
     return failures!=0;
 }

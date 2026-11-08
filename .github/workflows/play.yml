@@ -29,6 +29,7 @@ jobs:
       - name: Build and exercise the custom firmware in WebAssembly
         run: |
           python tools/build.py --gen-only
+          node tools/emu/web/test_keymap.mjs
           CR_VERSION="dev-${GITHUB_SHA::7}" sh tools/emu/web/build_web.sh
           node tools/emu/web/smoke_play.mjs
           python tools/make_play_site.py

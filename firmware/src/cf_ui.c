@@ -1805,20 +1805,25 @@ static uint16_t cf_progression_cue(uint16_t *playing)
 {
     const cf_chord_out_t *o = &cf_sn.out;
     *playing = 0;
-    if (!home_stage() ||
+    if (!(home_stage() || cu.scr == SCR_ACC) ||
         !cf_harmony_supported(cs.chord.scale, cs.chord.quantize)) {
         cpg_follow.valid = 0;
         cpg_follow.press = cf_sn.root_press;
         cpg_follow.seq = cf_sn.sq_dser;
         return 0;
     }
-    if (cf_sn.ac_on && cf_sn.ac_mode == CPA_BOTH) {
+    if (cf_sn.ac_on) {
         cpg_follow.valid = 0;
         cpg_follow.press = cf_sn.root_press;
         cpg_follow.seq = cf_sn.sq_dser;
         if(o->sounding && !o->single)*playing|=(uint16_t)(1u<<o->root_pc);
         if(cf_sn.sq_dn && !cf_sn.sq_dsingle)*playing|=(uint16_t)(1u<<(cf_sn.sq_droot%12));
-        if (!cf_sn.ac_n || cf_sn.ac_slot >= cf_sn.ac_n || cf_sn.ac_paused) return 0;
+        if (!cf_sn.ac_n || cf_sn.ac_slot >= cf_sn.ac_n || cf_sn.ac_paused || cf_sn.ac_lost) return 0;
+        /* Drums-only still advances the phrase. Guide its current/next roots
+         * from the shared plan without creating melodic notes. Live roots own
+         * the steady cue while played; the upcoming cue stays clock-driven. */
+        if (cf_sn.ac_mode == CPA_DRUMS && !cf_sn.ac_waiting && !o->sounding)
+            *playing |= (uint16_t)(1u << (cf_sn.ac_root[cf_sn.ac_slot] % 12));
         unsigned next = cf_sn.ac_waiting ? cf_sn.ac_slot : (cf_sn.ac_slot + 1u) % cf_sn.ac_n;
         if (!cf_sn.ac_waiting && !next && cf_sn.ac_repeat_off) return 0;
         return (uint16_t)(1u<<(cf_sn.ac_root[next]%12));

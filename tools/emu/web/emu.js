@@ -37,7 +37,7 @@
     return e;
   };
   const rect = (r, rad, fill, p, extra = {}) => el("rect", { x: r[0], y: r[1], width: r[2], height: r[3], rx: rad, fill, ...extra }, p);
-  const text = (x, y, s, size, fill, p, weight = 800) =>
+  const text = (x, y, s, size, fill, p, weight = 600) =>
     Object.assign(el("text", { x, y, "font-size": size, fill, "text-anchor": "middle", "font-weight": weight }, p), { textContent: s });
   rect([22, 22, 860, 522], 38, C.body, svg, { stroke: "#3A2B22", "stroke-width": 2 });
   rect([52, 306, 800, 198], 20, C.bed);
@@ -55,7 +55,7 @@
     const lab = up ? KEY_LABEL[ui] : "";
     text(cx, r[1] + 58, lab || noteName(k), 8.5, lab ? C.hint : "#8A7C70", g);
     const h = hint("key", k);
-    if (h) text(cx, r[1] + 69, h, 8, C.yellow, g, 700);
+    if (h) text(cx, r[1] + 69, h, 8, C.yellow, g, 600);
     keyEl.push({ cap, glow, led });
   }
   for (let i = 0; i < 14; i++) {
@@ -63,9 +63,9 @@
     const role = BTN_ROLE[i];
     const cap = rect(r, oct ? 6 : 5, C.cap, g, { stroke: C.edge, "stroke-width": 1.5 });
     const t = text(r[0] + r[2] / 2, r[1] + (oct ? 15 : 16), BTN[i], oct ? 9 : 9.5, BTN_COL[BTN[i]] || C.cream, g);
-    if (!oct) text(r[0] + r[2] / 2, r[1] - 5, role, 6.5, C.hint, svg, 700);
+    if (!oct) text(r[0] + r[2] / 2, r[1] - 5, role, 6.5, C.hint, svg, 400);
     const h = hint("btn", i);
-    const ht = h ? text(r[0] + r[2] / 2, oct ? r[1] + r[3] + 10 : r[1] + 29, h, 6.5, C.yellow, g, 700) : null;
+    const ht = h ? text(r[0] + r[2] / 2, oct ? r[1] + r[3] + 10 : r[1] + 29, h, 6.5, C.yellow, g, 600) : null;
     const dot = i === 10 ? el("circle", { cx: r[0] + 6, cy: r[1] + r[3] - 6, r: 3.2, fill: C.led }, g) : null;
     btnEl.push({ cap, t, ht, dot, col: i === 11 ? C.red : i === 10 ? C.orange : C.cream, tcol: BTN_COL[BTN[i]] || C.cream });
   }
@@ -77,7 +77,7 @@
     el("circle", { cx, cy, r: 12, fill: "#3A393A" }, g);
     const ptr = el("line", { x1: cx, y1: cy - 4, x2: cx, y2: cy - 11, stroke: i === 7 ? "#fff" : C.cream, "stroke-width": 2.4, "stroke-linecap": "round" }, g);
     text(cx, cy - 34, ENC[i], 8, C.hint, g, 700);
-    text(cx, cy - 25, ENC_ROLE[i], 7.5, ENC_COL[i], g, 900);
+    text(cx, cy - 25, ENC_ROLE[i], 7.5, ENC_COL[i], g, 600);
     encEl.push({ sel, ptr, a: 0 });
   }
 
