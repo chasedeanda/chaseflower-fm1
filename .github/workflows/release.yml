@@ -178,12 +178,11 @@ jobs:
           files: assets/*
           body_path: release-body.md
 
-      - name: Publish the site (pages.yml)
-        if: ${{ !contains(env.VERSION, '-') }}
+      - name: Refresh the CORD player and installer
         env:
           GH_TOKEN: ${{ github.token }}
           DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
         run: |
           set -euo pipefail
-          gh workflow run pages.yml --repo "$GITHUB_REPOSITORY" --ref "$DEFAULT_BRANCH"
-          echo "::notice::pages.yml started (Actions tab); the site follows in a minute or two"
+          gh workflow run play.yml --repo "$GITHUB_REPOSITORY" --ref "$DEFAULT_BRANCH"
+          echo "::notice::CORD player and latest-release installer deployment started"

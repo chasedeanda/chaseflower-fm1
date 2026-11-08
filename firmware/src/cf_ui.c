@@ -1948,6 +1948,10 @@ static int sq_key_led(uint32_t k, uint8_t *lit, uint8_t *mid, uint8_t *dim, uint
     return 0;
 }
 
+/* PLAY has a second physical emitter, outside the button's orange matrix cell. */
+#ifndef LED_PLAY_GREEN
+#define LED_PLAY_GREEN ((8u << 3) | 1u)
+#endif
 static void cf_leds(void)
 {
     uint8_t lit[FM1_NCOL] = {0}, mid[FM1_NCOL] = {0}, dim[FM1_NCOL] = {0}, faint[FM1_NCOL] = {0};
@@ -1991,10 +1995,6 @@ static void cf_leds(void)
             if (squ.trk == SQ_CHORDS || squ.trk == SQ_LAYER)   /* (ARP: the track's own, lit while on) */
                 cf_led((p->arp >> squ.trk) & 1u ? lit : dim, panel.btn[B_ARP], 1);
         }
-        if (cf_sn.sq_on || cf_sn.ac_on)
-            cf_led((int32_t)(cf_sn.now_ms - cf_sn.beat_ms) < 120 ? lit : mid, panel.btn[B_PLAY], 1);
-        else
-            cf_led(has ? mid : faint, panel.btn[B_PLAY], 1);
         if (cf_sn.sq_rec != 0xFFu)               /* REC: a take lit, its count-in blinking; on a track: ready (dim) */
             cf_led(cf_sn.sq_cin ? (blink ? lit : faint) : lit, panel.btn[B_REC], 1);
         else if (squ.pat < SQ_NPAT)
@@ -2004,14 +2004,15 @@ static void cf_leds(void)
             cf_led(cf_sn.sq_cin || !sqk.seen ? (blink ? lit : faint) : lit, panel.btn[B_REC], 1);
         else
             cf_led(dim, panel.btn[B_REC], 1);
-        if (cf_sn.running)                       /* PLAY: with the beat while it runs; a pattern to play: mid */
-            cf_led((int32_t)(cf_sn.now_ms - cf_sn.beat_ms) < 120 ? lit : mid, panel.btn[B_PLAY], 1);
-        else
-            cf_led((sqk.song && sq_st.song.n) || (sqk.last < SQ_NPAT && sq_has(sqk.last)) || dmr.last ? mid : dim,
-                   panel.btn[B_PLAY], 1);       /* (a rhythm chosen last: PLAY plays it, cf_dmui.c) */
         if (cf_sn.sq_on)                         /* the sequencer plays elsewhere: SEQ up, as ARP is */
             cf_led(mid, panel.btn[B_SEQ], 1);
     }
+    /* One truthful transport color on every screen. Never mix the orange and
+     * green emitters; clock wait/loss pulses orange rather than implying play. */
+    int waiting=cf_sn.ac_on && (cf_sn.ac_waiting || cf_sn.ac_lost);
+    int playing=cf_sn.running && !(cf_sn.ac_on && (cf_sn.ac_paused || waiting));
+    if(playing)lit[LED_PLAY_GREEN>>3]|=(uint8_t)(1u<<(LED_PLAY_GREEN&7u));
+    else cf_led(waiting && !blink ? faint : lit,panel.btn[B_PLAY],1);
     if (cu.arp_on && !sq && !rm)                        /* the arpeggiator plays: ARP lit wherever it opens (not on the
                                                   * sequencer: it does nothing there) */
         cf_led(lit, panel.btn[B_ARP], 1);
