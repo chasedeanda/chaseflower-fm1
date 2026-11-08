@@ -303,6 +303,7 @@
       }
       ex.web_boot();                                     // (not stepped: the page shows the splash's first picture, the
                                                          // scene alone; Start plays the intro)
+      ex.web_step(2100); // Show the native HOME before Start; the worklet boots separately for audio.
       if (/demo/.test(location.search)) { ex.web_keys((1 << 5) | (1 << 9)); ex.web_step(700); }
       if (node) return;
       drawFb(new Uint16Array(mem.buffer, ex.web_fb(), 57600));

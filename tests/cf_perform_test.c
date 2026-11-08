@@ -142,6 +142,7 @@ static void melody_and_controls(void)
     /* Navigation never consumes note keys; scene encoder leaves the transient view. */
     ui_button(B_HOME);CHECK(home_stage()&&cf_home_bank==CF_HB_LOOP);
     ui_button(B_HOME);CHECK(home_stage()&&cf_home_bank==CF_HB_MIX);
+    ui_button(B_HOME);CHECK(home_stage()&&cf_home_bank==CF_HB_VARIATION);
     ui_button(B_HOME);CHECK(home_stage()&&cf_home_bank==CF_HB_LEARN);
     ui_button(B_HOME);CHECK(home_stage()&&cf_home_bank==CF_HB_CORE);
     clean();cf_snapshot();cf_home_bank=CF_HB_PERFORM;ui_knob_turn(0,1);CHECK(cf_evq_w==cf_evq_r);

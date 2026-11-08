@@ -273,10 +273,13 @@ static void cvr_undo(void)
 /* A single pending action; generate against the current settings when idle,
  * so intervening manual edits are not overwritten by an old snapshot. Leaving
  * the page or changing context/amount cancels it. No new menu or storage. */
+static int cvr_page_active(void)
+{ return (cu.scr==SCR_GLO && cu.page[SCR_GLO]==CF_GLO_VARIATION) ||
+         (home_stage() && cf_home_bank==CF_HB_VARIATION); }
 static void cvr_poll(void)
 {
     if (!cvr.pending) return;
-    if (cu.scr != SCR_GLO || cu.page[SCR_GLO] != CF_GLO_VARIATION ||
+    if (!cvr_page_active() ||
         cvr.context != cvr.pending_context || cvr.level != cvr.pending_level || cvr.part != cvr.pending_part) {
         cvr.pending = 0; return;
     }

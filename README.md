@@ -99,7 +99,7 @@ Four added modes—**Converge, Diverge, Low pedal, High pedal**—join the origi
 See [controls, patterns and native previews](docs/ARP.md). This development change
 is not included in the 0.6-chase10 download above.
 
-### The eight HOME pages
+### The nine HOME pages
 
 | Bank | K1 | K2 | K3 | K4 |
 | --- | --- | --- | --- | --- |
@@ -110,9 +110,10 @@ is not included in the 0.6-chase10 download above.
 | **Perform** (development) | One-bar fill | Drop drums | Bring back | Tempo |
 | **Loop** | Mode | First (read-only) | Last (read-only) | Repeat |
 | **Mix** | Chord level | Bass level | Drums level | Bass link On/Off |
+| **Variations** | Context | Amount | Generate | Undo / Cancel |
 | **Keyboard / Learn** | Harmony On/Off | Reset defaults | Inactive | Inactive |
 
-Turn **ALGORITHM** in either direction or tap **HOME** to cycle these eight toolbars.
+Turn **ALGORITHM** in either direction or tap **HOME** to cycle these nine toolbars.
 Harmony/Keyboard is always the last HOME page, immediately before wrapping to Core.
 Switching banks leaves the music playing. SELECT still browses ideas in every bank.
 Loop and Mix share the exact controls and state used by their Sequence tabs.
@@ -123,7 +124,7 @@ For a metronome alongside any groove, use **SEQ → Click**: K1 On/Off, K2 level
 
 ## Know what the keys do (current source)
 
-Tap **HOME** until **KEYBOARD 8/8** appears, just after Mix. All **27 keys**
+Tap **HOME** until **KEYBOARD 9/9** appears, just after Variations. All **27 keys**
 appear in their physical positions: upper chord choices and HOLD, lower root
 notes with scale degrees. Labels follow your actual key, scale, octave and
 Manual/Harmony assignments.
@@ -311,6 +312,16 @@ and USB names remain in use; an unversioned development build can retain an olde
 [0.6-chase7 package](https://github.com/chasedeanda/chaseflower-fm1/releases/download/v0.6-chase7/coralflower-0.6-chase7.fwsc)
 has its own [release notes](docs/releases/0.6-chase7.md) and older controls/scene animations.
 The [upstream browser demo](https://ficusficusov.github.io/CoralFlower/play/) also runs upstream firmware.
+
+## Play CORD in your browser
+
+[Open the custom browser instrument](https://chasedeanda.github.io/cord-fm1/play/).
+Press **Start** to enable sound, then use the on-screen FM-1, computer keys or optional MIDI.
+This development preview runs the firmware in WebAssembly; settings stay in this browser.
+Its footer links the exact source revision. Browser load is not a measurement of FM-1 CPU headroom.
+
+The browser-only deployment comes from `codex/browser-playground` while the latest development
+features are being reviewed. It does not install or flash firmware.
 
 ## More detail
 

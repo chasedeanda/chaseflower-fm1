@@ -174,11 +174,32 @@ static void audio(int attempt,unsigned rate,const char *path)
     }
     CHECK(flash==emu_flash_writes && cfc.out.sounding && dmp.on);fclose(file);
 }
+static void home_controls(void)
+{
+    quiet();cvr_init();cu.scr=SCR_HOME;home_boot_main=1;cf_home_bank=CF_HB_VARIATION;
+    cf_scene_set(CF_SCENE_PROGRESSIONS);cf_motion=0;cu.pop=0;
+    for(int k=0;k<4;k++) {
+        cf_knob_t a={0},b={0};ui_knob_info(k,&a);
+        cu.scr=SCR_GLO;cu.page[SCR_GLO]=CF_GLO_VARIATION;ui_knob_info(k,&b);
+        CHECK(!strcmp(a.name,b.name)&&!strcmp(a.val,b.val)&&a.dis==b.dis);
+        cu.scr=SCR_HOME;
+    }
+    CHECK(CF_HB_VARIATION+1==CF_HB_LEARN && CF_HB_LEARN+1==CF_HB_N);
+    cvr.context=CV_FX;cvr.level=0;cf_fx_t before=cs.fx;unsigned seed=cvr.seed;
+    ui_knob_turn(2,1);CHECK(cvr.seed==seed+1&&cvr.have_previous&&cu.scr==SCR_HOME);
+    ui_knob_turn(3,1);CHECK(!memcmp(&before,&cs.fx,sizeof before));
+    cvr.context=CV_ARP;cf_post(CFE_KEY,7,0,1);blocks(4);
+    ui_knob_turn(2,1);CHECK(cvr.pending==1);cvr_poll();CHECK(cvr.pending==1);
+    ui_knob_turn(3,1);CHECK(!cvr.pending);
+    ui_knob_turn(2,1);CHECK(cvr.pending==1);cf_home_bank=CF_HB_CORE;cvr_poll();CHECK(!cvr.pending);
+    quiet();cf_home_bank=CF_HB_VARIATION;cvr.context=CV_FX;cu.pop=0;
+    ui_button(B_SAVE);CHECK(cu.scr==SCR_FX&&fxpu.mode==FXP_MANAGE);
+}
 int main(int argc,char **argv)
 {
     emu_fw_options(NULL,1,0,1);emu_hal.ready=2;emu_fw_init(0);
     if(argc==5)audio(atoi(argv[2]),(unsigned)atoi(argv[3]),argv[4]);
-    else { quiet();properties();controls();sound();boundaries();queued_controls(); }
+    else { quiet();properties();controls();sound();boundaries();queued_controls();home_controls(); }
     printf("variations: %u checks, %u failures\n",checks,failures);
     return failures!=0;
 }
