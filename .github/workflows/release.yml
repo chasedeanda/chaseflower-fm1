@@ -149,9 +149,12 @@ jobs:
         run: |
           set -euo pipefail
           mkdir assets
-          for f in "coralflower-$VERSION.fwsc" "coralflower-$VERSION-app.bin" SHA256SUMS LICENSE LICENSING.md LICENSES.zip; do
+          cp "release/coralflower-$VERSION.fwsc" "assets/cord-$VERSION.fwsc"
+          cp "release/coralflower-$VERSION-app.bin" "assets/cord-$VERSION-app.bin"
+          for f in LICENSE LICENSING.md LICENSES.zip; do
             cp "release/$f" assets/
           done
+          (cd assets && sha256sum "cord-$VERSION.fwsc" "cord-$VERSION-app.bin" > SHA256SUMS)
           ls -l assets
 
       - name: Release notes (docs/releases/<version>.md, then the install text)
@@ -160,9 +163,9 @@ jobs:
           {
             if [ -f "docs/releases/$VERSION.md" ]; then cat "docs/releases/$VERSION.md"; echo; echo "---"; echo; fi
             sed "s/@VERSION@/$VERSION/g" <<'EOT'
-          Chase FM-1 @VERSION@ for the M-VAVE FM-1, based on CoralFlower (package identity FM-1_930).
+          CORD @VERSION@ for the M-VAVE FM-1, based on CoralFlower (package identity FM-1_930).
 
-          Download `coralflower-@VERSION@.fwsc` from this release. Open https://ficusficusov.github.io/CoralFlower/#own in Chrome or Edge on a computer, connect the FM-1 directly by USB, and save a current backup. Under **Another version, or a build of your own**, choose that `.fwsc` file before pressing Install. Confirm the selected filename: the installer's default firmware is upstream CoralFlower. The separate app `.bin` and source archives are not installer packages.
+          Use the [CORD installer](https://chasedeanda.github.io/cord-fm1/install/) in Chrome or Edge on a computer, connect the FM-1 directly by USB, and save a current backup. It offers the latest published CORD release. You can also download `cord-@VERSION@.fwsc` here and choose it under **Another version, or a build of your own**. The separate app `.bin` and source archives are not installer packages.
 
           `SHA256SUMS` lists the package and the app. The package holds three JieLi AC79 SDK files (Apache-2.0); `LICENSE`, `LICENSING.md` and `LICENSES.zip` carry every licence. Installing firmware is at your own risk; the official M-VAVE firmware can always be reinstalled.
           EOT
@@ -172,7 +175,8 @@ jobs:
         uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64 # v3.0.3
         with:
           tag_name: ${{ github.ref_name }}
-          name: Chase FM-1 ${{ needs.build.outputs.version }}
+          name: CORD ${{ needs.build.outputs.version }}
+          make_latest: true
           prerelease: ${{ contains(needs.build.outputs.version, '-rc') || contains(needs.build.outputs.version, '-alpha') || contains(needs.build.outputs.version, '-beta') }}
           fail_on_unmatched_files: true
           files: assets/*
