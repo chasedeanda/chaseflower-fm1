@@ -279,7 +279,8 @@ static void cf_stage_draw(void)
     cfn_fit(&CFN_12,10,41,m.context,145,FL_INK2);
     str_cpy(bank,CF_HOME_BANK_NAME[m.bank],sizeof bank);
     str_cpy(bank+str_len(bank)," ",sizeof bank-str_len(bank));kint(bank+str_len(bank),m.bank+1,"/");kint(bank+str_len(bank),CF_HB_N,0);
-    fb_clip(156,28,234,46);cfn_text(&CFN_12,230-cfn_width(&CFN_12,bank)+m.bank_dx,41,bank,FL_INK2);fb_unclip();
+    const cfn_font_t *bank_font=m.bank==CF_HB_VARIATION?&CFN_11:&CFN_12;
+    fb_clip(156,28,234,46);cfn_text(bank_font,230-cfn_width(bank_font,bank)+m.bank_dx,41,bank,FL_INK2);fb_unclip();
     if(m.pending[0])cfn_fit(&CFN_12,10,queued?55:59,m.pending,220,m.rec?FL_C(FL_R_ROSE,0):C_ACC(0));
     else cfn_text(&CFN_12,118,59,m.hold?"HOLD":m.live?"NOW":cu_name[0]?"LAST":"READY",FL_INK2);
     if(queued)cfn_fit(&CFN_12,10,68,m.next_setup,220,FL_INK2);

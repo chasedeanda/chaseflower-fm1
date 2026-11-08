@@ -1136,6 +1136,7 @@ static void ui_button(uint32_t b)
         if(cu.scr==SCR_PEDIT){ui_open(SCR_HOME);home_boot_main=1;}else cfd_open();return;
     }
     if(cu.scr==SCR_PEDIT && b==B_SCL){cfd_execute();return;}
+    if(b==B_SAVE && cvr_page_active()){cvr_save();return;}
     if(b==B_SAVE && (cu.scr==SCR_PEDIT || cu.scr==SCR_ACC || cpb_home())){csl_open();return;}
     if(cu.scr==SCR_SONGS) {
         if(b==B_SAVE){cslu.mode=CSL_LIST;return;}

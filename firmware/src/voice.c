@@ -151,9 +151,24 @@ static uint32_t voice_units(const track_t *t)
 /* the budget a part shares: all parts' one (Felucca, one core), or with the second core alive (cr_cpu1.h) part 1's own
  * and part 0's (with parts 2..3, which ChoralRoot leaves silent): each VBUDGET units */
 #if CR_CPU1
-#define VB_SAME(a, b) (!cr_dualcore_active() || ((a) == 1u) == ((b) == 1u))
+#define VB_CORE_SAME(a, b) (!cr_dualcore_active() || ((a) == 1u) == ((b) == 1u))
 #else
-#define VB_SAME(a, b) 1
+#define VB_CORE_SAME(a, b) 1
+#endif
+/* The fixed voice count is not a CPU measurement. Percussion has its own
+ * bounded pool so a sustained chord cannot preempt every new drum hit.
+ * Measured VA caps and the real audio deadline/shed guard still include drums. */
+#ifndef CF_PERCUSSION_BUDGET
+#if (defined(CF_UNIT) || defined(CF_EMU)) && FELUCCA_DRUM
+#define CF_PERCUSSION_BUDGET 1
+#else
+#define CF_PERCUSSION_BUDGET 0
+#endif
+#endif
+#if CF_PERCUSSION_BUDGET
+#define VB_SAME(a,b) (VB_CORE_SAME(a,b) && (!!ENGINES[trk[a].engine]->oneshot == !!ENGINES[trk[b].engine]->oneshot))
+#else
+#define VB_SAME(a,b) VB_CORE_SAME(a,b)
 #endif
 static uint32_t voices_busy_of(const track_t *self)        /* budget units of the sounding voices (not fading) of the
                                                          * parts that share self's budget */

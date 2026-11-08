@@ -89,6 +89,9 @@ jobs:
       - name: Built-in drum bank, stable IDs, sequencer copies and real audio (host HAL)
         run: sh tools/test_drum_bank.sh
 
+      - name: Chord/drum voice isolation and retained overload guard
+        run: sh tools/test_chord_drum_budget.sh
+
       - name: Keyboard guide, inactive knobs and live key ownership
         run: sh tools/test_keyboard.sh
 
