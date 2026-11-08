@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: GPL-3.0-only */
-/* CoreMIDI for the emulator: a virtual source "ChoralRoot FM-1" (the firmware's MIDI out, the packets
- * usb.c would send on EP1 IN) and a virtual destination "ChoralRoot FM-1 In" (bytes from a host, packed
+/* CoreMIDI for the emulator: a virtual source "CORD FM-1" (the firmware's MIDI out, the packets
+ * usb.c would send on EP1 IN) and a virtual destination "CORD FM-1 In" (bytes from a host, packed
  * into USB-MIDI event packets as a USB host driver would, then usb.c midi_in_event -> midi_enqueue).
  * The legacy MIDIPacketList API: simple, and still supported. --midi-log prints every event. */
 #include <CoreMIDI/CoreMIDI.h>
@@ -113,7 +113,7 @@ static void read_proc(const MIDIPacketList *pl, void *ref, void *src_ref)
     (void)src_ref;
     if (!seen_input) {
         seen_input = 1;
-        printf("MIDI: a host is sending to \"ChoralRoot FM-1 In\"\n");
+        printf("MIDI: a host is sending to \"CORD FM-1 In\"\n");
     }
     for (i = 0; i < pl->numPackets; i++) {
         for (j = 0; j < p->length; j++)
@@ -133,11 +133,11 @@ int emu_midi_open(int log)
 {
     OSStatus e;
     logging = log;
-    e = MIDIClientCreate(CFSTR("ChoralRoot FM-1 emulator"), notify_proc, NULL, &client);
+    e = MIDIClientCreate(CFSTR("CORD FM-1 emulator"), notify_proc, NULL, &client);
     if (e == noErr)
-        e = MIDISourceCreate(client, CFSTR("ChoralRoot FM-1"), &src);
+        e = MIDISourceCreate(client, CFSTR("CORD FM-1"), &src);
     if (e == noErr)
-        e = MIDIDestinationCreate(client, CFSTR("ChoralRoot FM-1 In"), read_proc, NULL, &dst);
+        e = MIDIDestinationCreate(client, CFSTR("CORD FM-1 In"), read_proc, NULL, &dst);
     if (e != noErr) {
         printf("MIDI: CoreMIDI failed (%d); no MIDI%s\n", (int)e, log ? " (events still logged)" : "");
         return -1;
@@ -146,7 +146,7 @@ int emu_midi_open(int log)
         MIDIObjectSetIntegerProperty(src, kMIDIPropertyUniqueID, 0x43524631);   /* "CRF1" */
         MIDIObjectSetIntegerProperty(dst, kMIDIPropertyUniqueID, 0x43524649);   /* "CRFI" */
     }
-    printf("MIDI: virtual source \"ChoralRoot FM-1\" (out), destination \"ChoralRoot FM-1 In\" (in)\n");
+    printf("MIDI: virtual source \"CORD FM-1\" (out), destination \"CORD FM-1 In\" (in)\n");
     return 0;
 }
 

@@ -20,6 +20,7 @@ hero = hero.replace('images/grow.gif', 'images/cord-playing.gif').replace('width
 hero = hero.replace('CoralFlower', 'CORD')
 hero = hero.replace('href="play/"', 'href="../play/"').replace('src="images/', 'src="../images/')
 tools = source[source.index('        <details class="fold" id="backup"'):source.index('  <!-- 7 FAQ')]
+tools = tools.replace('CoralFlower', 'CORD')
 tools = '<section class="section"><div class="container container--narrow"><h2 class="display-2">Files, backups and recovery</h2><div class="tools">' + tools
 # Preserve the updater's complete module, including all validation and backup guards.
 module = re.search(r'<script type="module">[\s\S]*?</script>', source)[0].replace('CoralFlower', 'CORD')

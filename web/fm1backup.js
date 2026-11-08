@@ -53,18 +53,18 @@ export function objectName(id) {
   if (id === 22) return "FM TONE patches";
   if (isSample(id)) return `sample slot ${id - 31}`;
   if (id >= 40 && id <= 49) return `loop slot ${id - 39}`;
-  if (id === 30) return "CoralFlower settings";
-  if (CF_SONG_IDS.includes(id)) return `ChaseFlower saved Song ${id - 80}`;
-  if (id === CF_DRAFT_ID) return "ChaseFlower working draft";
-  if (id === CF_REC_PREF_ID) return "ChaseFlower recording preferences";
-  if (CF_TAKE_IDS.includes(id)) return "ChaseFlower recording " + "ABC"[id - 71];
-  if (id === CF_PREFS_ID) return "ChaseFlower favorites and appearance";
-  if (id === CF_FX_ID) return "ChaseFlower FX presets";
-  if (id === CF_HARM_ID) return "ChaseFlower Auto harmony";
-  if (id === 31) return "CoralFlower loop";
-  if (CF_SEQ_IDS.includes(id)) return "CoralFlower patterns and song";
-  if (CF_EDIT_IDS.includes(id)) return "CoralFlower unsaved sound edits";
-  if (id === CF_PSND_ID || CF_TWK_IDS.includes(id)) return "CoralFlower pattern sounds";
+  if (id === 30) return "CORD settings";
+  if (CF_SONG_IDS.includes(id)) return `CORD saved Song ${id - 80}`;
+  if (id === CF_DRAFT_ID) return "CORD working draft";
+  if (id === CF_REC_PREF_ID) return "CORD recording preferences";
+  if (CF_TAKE_IDS.includes(id)) return "CORD recording " + "ABC"[id - 71];
+  if (id === CF_PREFS_ID) return "CORD favorites and appearance";
+  if (id === CF_FX_ID) return "CORD FX presets";
+  if (id === CF_HARM_ID) return "CORD Auto harmony";
+  if (id === 31) return "CORD loop";
+  if (CF_SEQ_IDS.includes(id)) return "CORD patterns and song";
+  if (CF_EDIT_IDS.includes(id)) return "CORD unsaved sound edits";
+  if (id === CF_PSND_ID || CF_TWK_IDS.includes(id)) return "CORD pattern sounds";
   return `object ${id}`;
 }
 // the names of a list of ids, each once (the sequencer's six parts read as one)
@@ -126,8 +126,8 @@ export function bkManifest(a) {
 }
 const bkBase64 = (bytes) => { let s = ""; for (const b of bytes) s += String.fromCharCode(b); return btoa(s); };
 // CoralFlower answers ChoralRoot's protocol on ChoralRoot's objects (its cr_backup.c), RESTART included: its own family
-// for the file name (coralflower-backup-YYYYMMDD.json), the same handling as ChoralRoot everywhere else
-export const backupFamily = (firmware) => (/^coralflower/i.test(firmware || "") ? "coralflower" : /^choralroot/i.test(firmware || "") ? "choralroot" :
+// for compatibility; public downloads use cord-backup-YYYYMMDD.json, the same handling as ChoralRoot everywhere else
+export const backupFamily = (firmware) => (/^(?:coralflower|cord)\b/i.test(firmware || "") ? "coralflower" : /^choralroot/i.test(firmware || "") ? "choralroot" :
   /^felucca/i.test(firmware || "") ? "felucca" : "other");
 export function readBackup(file) {
   if (typeof file === "string") file = JSON.parse(file);
@@ -262,7 +262,7 @@ export async function restartDevice(request) {
   bkCheck(a[0]);
 }
 export const backupFileName = (firmware, date = new Date()) =>
-  `${backupFamily(firmware) === "other" ? "fm1" : backupFamily(firmware)}-backup-${date.toISOString().slice(0, 10).replace(/-/g, "")}.json`;
+  `${backupFamily(firmware) === "coralflower" ? "cord" : backupFamily(firmware) === "other" ? "fm1" : backupFamily(firmware)}-backup-${date.toISOString().slice(0, 10).replace(/-/g, "")}.json`;
 
 // Installer connection: no editor page or watcher owns this input simultaneously.
 export class BackupConnection {

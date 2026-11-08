@@ -1,5 +1,7 @@
 # ChaseFlower 0.6-chase2 — USB recording candidate
 
+> Current CORD builds identify as **CORD FM-1** for USB MIDI and **CORD In** for USB audio. The older ChaseFlower names below describe the historical chase2 release. Re-select the CORD device in your DAW after updating.
+
 This build enables six-channel UAC1 recording alongside USB MIDI. The boot-only `0.6-chase1` was successfully
 installed and booted by Chase. **The new audio build has passed host tests and the actual JieLi firmware build;
 physical audio enumeration, sound quality, CPU timing and GarageBand recording are still unverified.**

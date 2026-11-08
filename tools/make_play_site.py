@@ -18,7 +18,7 @@ shutil.copytree(root/'LICENSES',out/'LICENSES',dirs_exist_ok=True)
 sha=subprocess.check_output(['git','rev-parse','HEAD'],cwd=root,text=True).strip()
 source=f'https://github.com/chasedeanda/cord-fm1/tree/{sha}'
 text=(play/'index.html').read_text()
-head=text[:text.index('<body>')].replace('Play CoralFlower in your browser','Play CORD in your browser').replace('The real CoralFlower firmware','Custom CORD firmware')
+head=text[:text.index('<body>')].replace('Play CoralFlower in your browser','Play CORD in your browser').replace('CoralFlower','CORD').replace('../images/home.png','../images/cord-playing.gif')
 main=text[text.index('<main id="main">'):text.index('  <section class="section scope-accent final"')]
 main=main.replace('Play it in your browser','Play CORD').replace('This is the real CoralFlower firmware, running in your browser with sound.','Your custom FM-1 firmware, running in your browser with sound.')
 main=main.replace('<p class="lead">Your custom FM-1 firmware, running in your browser with sound. Tap or click the keys, or use your computer keyboard.</p>', '<p class="lead">Your custom FM-1 firmware, running in your browser with sound. Tap or click the keys, or use your computer keyboard.</p><div class="actions"><a class="btn btn--primary" href="../install/">Install latest release</a><a class="btn btn--secondary" href="../install/#own">Install your own file</a></div>')

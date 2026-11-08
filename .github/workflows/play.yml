@@ -37,6 +37,7 @@ jobs:
           python tools/make_play_site.py
           python tools/test_package_cord_release.py
           python tools/package_cord_release.py
+          python tools/audit_public_release.py --site build/play-site
         env:
           GITHUB_TOKEN: ${{ github.token }}
       - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9

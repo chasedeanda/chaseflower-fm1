@@ -159,9 +159,9 @@ static void midi_out_event(uint32_t pkt)            /* from the audio ISR */
 #include "usb_audio_stream.c"
 #define CFG_LEN 211
 static const uint8_t DEV_DESC[18] = {18, 1, 0x00, 0x02, 0xEF, 0x02, 0x01, 64, 0x09, 0x12, FELUCCA_USB_PID & 0xFF,
-                                     FELUCCA_USB_PID >> 8, 0x23, 0x03, 1, 2, 0, 1};   /* misc/IAD, 3.23 */
+                                     FELUCCA_USB_PID >> 8, 0x26, 0x03, 1, 2, 0, 1};   /* CORD 3.26: new public USB strings */
 static const uint8_t DEV_DESC44[18] = {18, 1, 0x00, 0x02, 0xEF, 0x02, 0x01, 64, 0x09, 0x12, FELUCCA_USB_PID & 0xFF,
-                                       FELUCCA_USB_PID >> 8, 0x22, 0x03, 1, 2, 0, 1};  /* 3.22: 44.1 kHz only (0.18's) */
+                                       FELUCCA_USB_PID >> 8, 0x25, 0x03, 1, 2, 0, 1};  /* CORD 3.25: 44.1 kHz only */
 static const uint8_t CFG_DESC[] = {
     9, 2, CFG_LEN & 0xFF, CFG_LEN >> 8, 4, 1, 0, 0x80, 50,   /* 211 bytes, four interfaces */
     8, 0x0B, 0, 2, 1, 1, 0, 0,                          /* IAD: MIDI (IF 0-1) */
@@ -186,7 +186,7 @@ static uint8_t ua_dev44;                                /* the device descriptor
 #if FELUCCA_CDC
 #define CFG_LEN_CDC 175
 static const uint8_t DEV_DESC_CDC[18] = {18, 1, 0x00, 0x02, 0xEF, 0x02, 0x01, 64, 0x09, 0x12, FELUCCA_USB_PID & 0xFF,
-                                         FELUCCA_USB_PID >> 8, 0x21, 0x03, 1, 2, 0, 1};   /* misc/IAD, 3.21 */
+                                         FELUCCA_USB_PID >> 8, 0x24, 0x03, 1, 2, 0, 1};   /* CORD 3.24: MIDI + console */
 static const uint8_t CFG_DESC_CDC[] = {
     9, 2, CFG_LEN_CDC, 0, 4, 1, 0, 0x80, 50,
     8, 0x0B, 0, 2, 1, 1, 0, 0,                          /* IAD: MIDI (IF 0-1) */
@@ -310,7 +310,7 @@ static int get_desc(uint32_t wvalue, const uint8_t **d, uint16_t *l)
 /* the device's strings: 1 the maker, 2 the product (the MIDI port's name: tools/fm1_install.py and web/fm1ota.js
  * match "FM-1"; 16 characters at most: usb_str), 3 the recording device, 4..9 its channel names
  * (usb_audio_desc.h). Built from ASCII into usb_str on request (one control transfer at a time) */
-static const char *const USB_STRS[] = {0, "ChaseFlower", "ChaseFlower FM-1", "ChaseFlower In",
+static const char *const USB_STRS[] = {0, "CORD", "CORD FM-1", "CORD In",
                                        "Master L", "Master R", "Chord L", "Chord R", "Bass L", "Bass R"};
 #define USB_NSTR (FELUCCA_UAC ? sizeof USB_STRS / sizeof USB_STRS[0] : 3u)
 static uint8_t usb_str[2 + 2 * 16];

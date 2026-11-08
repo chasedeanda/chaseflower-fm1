@@ -60,6 +60,7 @@ const GUARD_CASES = [                            // ChoralRoot's tests/install_t
   ["FM-1_900", null, "refuse", "unknown"], ["FM-1_920", null, "refuse", "unknown"], ["FM-1_500", null, "refuse", "unknown"],
   ["FM-1_910", "SOMETHING 3.0", "refuse", "unknown"], ["ota-FM-1_920", null, "loader", "loader"],
   ["FM-1_930", "CoralFlower 0.1", "allow", "coralflower"], ["FM-1_930", "CoralFlower 1.0-rc1", "allow", "coralflower"],
+  ["FM-1_930", "CORD 1.0", "allow", "coralflower"], ["FM-1_930", "CORDX 1.0", "refuse", "unknown"],
   ["FM-1_930", "CORALFLOWER 0.2", "allow", "coralflower"], ["FM-1_930", "CoralFlowerX 1", "refuse", "unknown"],
   ["FM-1_930", null, "allow", "coralflower"], ["FM-1_930", "", "allow", "coralflower"],   // an early CoralFlower: no INFO
   ["FM-1_931", null, "refuse", "unknown"], ["FM-1_9300", null, "refuse", "unknown"], ["FM-1_929", null, "refuse", "unknown"],
@@ -71,8 +72,8 @@ const GUARD_CASES = [                            // ChoralRoot's tests/install_t
   ok(classifyFirmware("FM-1_930", "CoralFlower 0.1").name === "CoralFlower 0.1", "classifyFirmware: CoralFlower is named by its INFO text");
   ok(classifyFirmware("FM-1_930", null).name === "CoralFlower (an early build without backup support)" && CF_EARLY === classifyFirmware("FM-1_930", null).name,
     "classifyFirmware: FM-1_930 without INFO -> allow, \"CoralFlower (an early build without backup support)\"");
-  ok(refusalText("Sloop").includes("then install CoralFlower.") && refusalText("Sloop").includes("https://github.com/Quixotic7/MvaveFM1Unbricker") &&
-     !/ChoralRoot/.test(refusalText("Sloop")), "refusalText: names CoralFlower, links the recovery tools");
+  ok(refusalText("Sloop").includes("then install CORD.") && refusalText("Sloop").includes("https://github.com/Quixotic7/MvaveFM1Unbricker") &&
+     !/ChoralRoot/.test(refusalText("Sloop")), "refusalText: names CORD, links the recovery tools");
   const py = spawnSync("python3", ["-c", [
     "import json, sys", `sys.path.insert(0, ${JSON.stringify(join(ROOT, "tools"))})`, "import fm1_install as I",
     "cases = json.loads(sys.argv[1])",
@@ -85,9 +86,10 @@ const GUARD_CASES = [                            // ChoralRoot's tests/install_t
     ok(JSON.stringify(got) === JSON.stringify(want), "tools/fm1_install.py classify_firmware == fm1ota.js classifyFirmware (verdict, kind, name)");
     ok(fam.join() === "coralflower,choralroot,felucca,other", "tools/fm1_install.py family: coralflower, choralroot, felucca, other");
   }
+  ok(backupFamily("CORD 1.0") === "coralflower" && /^cord-backup-\d{8}\.json$/.test(backupFileName("CORD 1.0")), "CORD alias uses the compatible family and CORD backup filename");
   ok(backupFamily("CoralFlower 0.1") === "coralflower" && backupFamily("ChoralRoot 0.21") === "choralroot" && backupFamily("FELUCCA v1.0") === "felucca" &&
-     backupFamily("MELODEE v1") === "other" && /^coralflower-backup-\d{8}\.json$/.test(backupFileName("CoralFlower 0.1")),
-     "fm1backup.js backupFamily: coralflower (coralflower-backup-YYYYMMDD.json), the others as before");
+     backupFamily("MELODEE v1") === "other" && /^cord-backup-\d{8}\.json$/.test(backupFileName("CoralFlower 0.1")),
+     "fm1backup.js backupFamily: coralflower (cord-backup-YYYYMMDD.json), the others as before");
 }
 
 /* ------------------------------------------------------------- (b) the shape --- */
@@ -470,14 +472,14 @@ async function readyPage(dev, opts = {}) {
   ok(/^start /m.test(p.$.log.textContent) && /^write \d+/m.test(p.$.log.textContent) && /install: coralflower-test\.fwsc/.test(p.$.log.textContent), "install: the log lists the steps");
 }
 {
-  // CoralFlower over CoralFlower: backed up (coralflower-backup-*.json), no restore offered, the new version read back
+  // CoralFlower over CoralFlower: backed up (cord-backup-*.json), no restore offered, the new version read back
   const before = backupSide("CoralFlower 0.3.1", CF_BACKUP_IDS, cfData()), after = backupSide("CoralFlower 0.2", CR_BACKUP_IDS, crData());
   const dev = new FakeFM1(image, { identity: "FM-1_930", bk: (id, boots) => (id.startsWith("ota-") ? null : boots < 3 ? before : after) });
   const p = await readyPage(dev);
   await p.$.go.fire("click");
-  ok(p.downloads.length === 1 && /^coralflower-backup-\d{8}\.json$/.test(p.downloads[0].name) && !p.confirms.length && !before.log.length && !after.log.length,
+  ok(p.downloads.length === 1 && /^cord-backup-\d{8}\.json$/.test(p.downloads[0].name) && !p.confirms.length && !before.log.length && !after.log.length,
     `CoralFlower over CoralFlower: backed up first (${p.downloads[0]?.name}), no question, no restore`);
-  ok(/^backup CoralFlower 0\.3\.1: user sounds 1-16, CoralFlower settings, CoralFlower loop, CoralFlower patterns and song$/m.test(p.$.log.textContent),
+  ok(/^backup CoralFlower 0\.3\.1: user sounds 1-16, CORD settings, CORD loop, CORD patterns and song$/m.test(p.$.log.textContent),
     "CoralFlower over CoralFlower: the backup holds the sequencer's six parts, named once in the log");
   ok(p.$.status.textContent === en.done && dev.identity === "FM-1_930" && dev.bad === 0 && p.$["done-line"].textContent === "Done. Your FM-1 now runs CoralFlower 0.2.",
     "CoralFlower over CoralFlower: installed, and the new version read back (\"now runs CoralFlower 0.2\")");
@@ -705,8 +707,8 @@ async function readyPage(dev, opts = {}) {
   await until(() => blobText);
   URL.createObjectURL = realCreate;
   const file = blobText && JSON.parse(blobText);
-  ok(p.downloads.length === 1 && /^coralflower-backup-/.test(p.downloads[0].name) && p.$["backup-status"].textContent.startsWith(en.backupSaved) && file && file.firmware === "CoralFlower 0.1" &&
-     file.objects.length === CR_BACKUP_IDS.length, "Back up: coralflower-backup-*.json with CoralFlower's objects");
+  ok(p.downloads.length === 1 && /^cord-backup-/.test(p.downloads[0].name) && p.$["backup-status"].textContent.startsWith(en.backupSaved) && file && file.firmware === "CoralFlower 0.1" &&
+     file.objects.length === CR_BACKUP_IDS.length, "Back up: cord-backup-*.json with CoralFlower's objects");
   const blank = backupSide("CoralFlower 0.1", CR_BACKUP_IDS);
   dev.bk = () => blank;
   p.$["restore-file"].files = [{ text: async () => "{\"format\":\"other\"}" }];
@@ -739,7 +741,7 @@ async function readyPage(dev, opts = {}) {
   await p.$["restore-go"].fire("click");
   await until(() => p.$["backup-status"].textContent.startsWith(en.restored));
   ok(!on05.objs.has(31) && [6, 30, 50, 51, 52, 53, 54, 55].every((id) => cfData().find(([i]) => i === id)[1].every((b, k) => b === on05.objs.get(id)?.[k])) &&
-     on05.restarts === 1 && p.$["backup-status"].textContent.endsWith("(not used by this firmware, kept in the file: CoralFlower loop)"),
+     on05.restarts === 1 && p.$["backup-status"].textContent.endsWith("(not used by this firmware, kept in the file: CORD loop)"),
      "a 0.6 backup on 0.5: 31 refused and skipped, the sound bank, settings, patterns and song restored, RESTART");
 }
 {
@@ -764,15 +766,15 @@ async function readyPage(dev, opts = {}) {
   await p.$["restore-file"].fire("change");
   await p.$["restore-go"].fire("click");
   ok(cfData().every(([id, v]) => blank.objs.get(id)?.every((b, i) => b === v[i])) && blank.restarts === 1 &&
-     p.$["backup-status"].textContent.startsWith(en.restored) && p.$["backup-status"].textContent.endsWith("CoralFlower loop, CoralFlower patterns and song"),
+     p.$["backup-status"].textContent.startsWith(en.restored) && p.$["backup-status"].textContent.endsWith("CORD loop, CORD patterns and song"),
      "Restore on 0.3.1: the patterns and song back, named once");
   const old = backupSide("CoralFlower 0.3", CF_BACKUP_IDS.filter((id) => id < 50));
   dev.bk = () => old;
   await p.$["restore-go"].fire("click");
-  ok(!old.log.some((id) => id >= 50) && old.objs.get(30) && p.$["backup-status"].textContent.endsWith(en.restoreSkipped + "CoralFlower patterns and song)"),
+  ok(!old.log.some((id) => id >= 50) && old.objs.get(30) && p.$["backup-status"].textContent.endsWith(en.restoreSkipped + "CORD patterns and song)"),
      "Restore on 0.3: the rest restored, the patterns kept in the file and named once as not used");
-  ok(objectNames([50, 6, 51, 55]) === "CoralFlower patterns and song, user sounds 1-16", "objectNames: each name once, in order");
-  ok(objectNames([57, 30, 56, 58]) === "CoralFlower unsaved sound edits, CoralFlower settings", "objectNames: the three sounds' edits named once (0.4.2)");
+  ok(objectNames([50, 6, 51, 55]) === "CORD patterns and song, user sounds 1-16", "objectNames: each name once, in order");
+  ok(objectNames([57, 30, 56, 58]) === "CORD unsaved sound edits, CORD settings", "objectNames: the three sounds' edits named once (0.4.2)");
 }
 
 // the return to the official V15 (validateStockPackage stands in for the real file, which is not in the repo)
@@ -796,7 +798,7 @@ async function readyPage(dev, opts = {}) {
   };
   let r = await run(false);
   ok(r.wrong && r.valid, "stock: a file of the wrong size refused, the V15 (stand-in) accepted, in its own section");
-  ok(r.p.downloads.length === 1 && /^coralflower-backup-/.test(r.p.downloads[0].name) && r.p.confirms.length === 1 && r.p.confirms[0] === en.stockConfirm &&
+  ok(r.p.downloads.length === 1 && /^cord-backup-/.test(r.p.downloads[0].name) && r.p.confirms.length === 1 && r.p.confirms[0] === en.stockConfirm &&
      r.dev.upgrades === 0 && r.p.$["stock-status"].textContent === en.cancelled, "stock: the backup saved first; declined -> nothing written");
   r = await run(true);
   ok(r.p.$["stock-status"].textContent === en.done && r.dev.identity === "FM-1_015" && r.dev.bad === 0 && r.p.$["stock-done"].hidden === false &&
