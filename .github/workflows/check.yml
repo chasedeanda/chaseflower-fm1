@@ -48,7 +48,9 @@ jobs:
         run: python3 tests/resource_audit_test.py
 
       - name: CORD public branding and release provenance
-        run: python3 tools/audit_public_release.py
+        run: |
+          python3 tools/audit_public_release.py
+          python3 tools/test_hub_submission.py
 
       - name: The unit compiles (an ARM target, every include present)
         run: |

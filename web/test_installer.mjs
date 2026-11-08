@@ -48,7 +48,11 @@ async function until(cond, ms = 4000) {         // real time: the page's own wai
 }
 
 /* ------------------------------------------------------ (a) the classification --- */
-const GUARD_CASES = [                            // ChoralRoot's tests/install_test.py table, and CoralFlower's rows
+const GUARD_CASES = [
+  ["FM-1_936", "CoralFlower 1.0.2", "allow", "coralflower"],
+  ["FM-1_936", "CORD 1.0.2", "allow", "coralflower"],
+  ["FM-1_936", null, "refuse", "unknown"],
+  ["ota-FM-1_936", null, "loader", "loader"],                            // ChoralRoot's tests/install_test.py table, and CoralFlower's rows
   ["FM-1_015", null, "allow", "stock"], ["FM-1_014", null, "allow", "stock"],
   ["FM-1_920", "ChoralRoot 0.12", "allow", "choralroot"], ["FM-1_920", "ChoralRoot 1.0-rc1", "allow", "choralroot"],
   ["FM-1_910", "FELUCCA v1.0", "allow", "felucca"], ["FM-1_910", "FELUCCA v1.0.1", "allow", "felucca"],
@@ -804,6 +808,17 @@ async function readyPage(dev, opts = {}) {
   ok(r.p.$["stock-status"].textContent === en.done && r.dev.identity === "FM-1_015" && r.dev.bad === 0 && r.p.$["stock-done"].hidden === false &&
      r.p.$["stock-done-data"].textContent === en.stockDnSaved.replace("{file}", r.p.downloads[0].name) && r.p.$.status.textContent === "" && r.p.$.bar.value === 0,
      "stock: confirmed -> backup, FM-1_015, the done panel names the backup; the install card left idle");
+}
+
+// CORD's independent package ID: stock install, old CORD update and loader resume.
+for (const identity of ["FM-1_015", "FM-1_930", "ota-FM-1_936"]) {
+  const cord = makePkg({ product: "FM-1_936" });
+  const dev = new FakeFM1(logicalImage(cord), { identity, loader: "ota-FM-1_936", final: "FM-1_936" });
+  const p = await readyPage(dev, { pkg: cord });
+  ok(p.$.pkg.className === "pkg ok" && !p.$.go.disabled, `CORD 936 package accepted from ${identity}`);
+  await p.$.go.fire("click");
+  ok(p.$.status.textContent === en.done && dev.identity === "FM-1_936" && dev.bad === 0,
+     `CORD 936 install/resume from ${identity}: verified the selected package identity`);
 }
 
 /* ------------------------------ (f) the real package builder, when the SDK files are here --- */
