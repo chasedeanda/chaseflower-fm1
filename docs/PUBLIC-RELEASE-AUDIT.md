@@ -34,6 +34,7 @@ The inherited `web/index.html` remains a licensed source template for the reused
 
 - Complete installer simulation suite passes, including package structure/checksums, backup before install, allowed/refused firmware, interrupted updates, restore and recovery. CORD is accepted as a compatibility alias; existing CoralFlower cases still pass.
 - Backup round trips cover CoralFlower → CoralFlower, CoralFlower → CORD, CORD → CoralFlower and CORD → CORD. Recordings remain byte-identical and restore ordering is preserved. Browser and Python behavior is covered.
+- The optional native SDL desktop emulator could not be built in this environment because SDL2 headers are absent. Its port/window label changes were reviewed, but desktop runtime verification remains open. The firmware and browser build paths do not require SDL2.
 - USB protocol, descriptors, packet/resampler/drift tests and 64 real-render audio comparisons pass at both capture rates, including Auto Harmony. Exact UTF-16 product/audio strings are checked.
 - `tools/audit_public_release.py` checks public labels, retained compatibility identifiers, attribution, required licence files and the pinned SHA-256 of all three bundled JieLi SDK files. CI also audits generated player/installer pages and the hosted package checksum.
 - A limited signature scan of tracked text found no private-key blocks or supported GitHub/OpenAI token patterns. This is not a guarantee that every possible secret format is absent; matching values are never printed.
