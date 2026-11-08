@@ -21,7 +21,7 @@ text=(play/'index.html').read_text()
 head=text[:text.index('<body>')].replace('Play CoralFlower in your browser','Play CORD in your browser').replace('The real CoralFlower firmware','Custom CORD firmware')
 main=text[text.index('<main id="main">'):text.index('  <section class="section scope-accent final"')]
 main=main.replace('Play it in your browser','Play CORD').replace('This is the real CoralFlower firmware, running in your browser with sound.','Your custom FM-1 firmware, running in your browser with sound.')
-header=f'''<body><header class="site-header"><div class="container site-header__row"><a class="brand" href="./">CORD · FM-1</a><nav class="site-nav"><a href="https://github.com/chasedeanda/cord-fm1/releases">Firmware releases</a><a href="{source}">Source</a></nav></div></header>'''
+header=f'''<body class="cord-player"><header class="site-header"><div class="container site-header__row"><a class="brand" href="./">CORD · FM-1</a><nav class="site-nav"><a href="https://github.com/chasedeanda/cord-fm1/releases">Firmware releases</a><a href="{source}">Source</a></nav></div></header>'''
 footer=f'''</main><footer class="site-footer"><div class="container"><p>Development preview · <a href="{source}">{sha[:7]}</a>. Browser performance does not measure device CPU headroom.</p><p>Built on CoralFlower, ChoralRoot FM-1, Felucca and Melodee. <a href="../LICENSE">GPL-3.0</a> · <a href="../LICENSING.md">Credits and licences</a>.</p></div></footer><script src="keymap.js"></script><script src="emu.js"></script></body></html>'''
 # Keep the build script's cache-busting query strings.
 import re

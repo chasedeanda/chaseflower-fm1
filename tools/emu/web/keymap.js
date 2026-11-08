@@ -1,17 +1,36 @@
 // SPDX-License-Identifier: GPL-3.0-only
 // CoralFlower's browser emulator: the computer keyboard, by KeyboardEvent.code (physical US-layout positions).
-// The 27 keys as a tracker's piano: the lower ("white") keys on Z X C V B N M and Q W E R T Y U I O, the upper
-// ("black") keys on the row above each (S D F H J and 2 3 4 6 7 9). kind: key (firmware key 0..26: MIDI 53 + k),
-// btn (EMU_B_* label index), turn (role, detents), cycle (the knob the arrows turn).
+// Lower roots run across Q–O with R = C4. Numbers select upper chord modifiers.
+// A reaches F3; P and Z–B extend the lower row. Backtick is HOLD.
 globalThis.FM1 = {
   KEYMAP: [
-    ["KeyZ", "key", 0, "Z"], ["KeyS", "key", 1, "S"], ["KeyX", "key", 2, "X"], ["KeyD", "key", 3, "D"],
-    ["KeyC", "key", 4, "C"], ["KeyF", "key", 5, "F"], ["KeyV", "key", 6, "V"], ["KeyB", "key", 7, "B"],
-    ["KeyH", "key", 8, "H"], ["KeyN", "key", 9, "N"], ["KeyJ", "key", 10, "J"], ["KeyM", "key", 11, "M"],
-    ["KeyQ", "key", 12, "Q"], ["Digit2", "key", 13, "2"], ["KeyW", "key", 14, "W"], ["Digit3", "key", 15, "3"],
-    ["KeyE", "key", 16, "E"], ["Digit4", "key", 17, "4"], ["KeyR", "key", 18, "R"], ["KeyT", "key", 19, "T"],
-    ["Digit6", "key", 20, "6"], ["KeyY", "key", 21, "Y"], ["Digit7", "key", 22, "7"], ["KeyU", "key", 23, "U"],
-    ["KeyI", "key", 24, "I"], ["Digit9", "key", 25, "9"], ["KeyO", "key", 26, "O"],
+    ["KeyA", "key", 0, "A"],
+    ["KeyQ", "key", 2, "Q"],
+    ["KeyW", "key", 4, "W"],
+    ["KeyE", "key", 6, "E"],
+    ["KeyR", "key", 7, "R"],
+    ["KeyT", "key", 9, "T"],
+    ["KeyY", "key", 11, "Y"],
+    ["KeyU", "key", 12, "U"],
+    ["KeyI", "key", 14, "I"],
+    ["KeyO", "key", 16, "O"],
+    ["KeyP", "key", 18, "P"],
+    ["KeyZ", "key", 19, "Z"],
+    ["KeyX", "key", 21, "X"],
+    ["KeyC", "key", 23, "C"],
+    ["KeyV", "key", 24, "V"],
+    ["KeyB", "key", 26, "B"],
+    ["Digit1", "key", 1, "1"],
+    ["Digit2", "key", 3, "2"],
+    ["Digit3", "key", 5, "3"],
+    ["Digit4", "key", 8, "4"],
+    ["Digit5", "key", 10, "5"],
+    ["Digit6", "key", 13, "6"],
+    ["Digit7", "key", 15, "7"],
+    ["Digit8", "key", 17, "8"],
+    ["Digit9", "key", 20, "9"],
+    ["Digit0", "key", 22, "0"],
+    ["Backquote", "key", 25, "`"],
     ["F1", "btn", 0, "F1"], ["F2", "btn", 1, "F2"], ["F3", "btn", 2, "F3"], ["F4", "btn", 3, "F4"],
     ["F5", "btn", 4, "F5"], ["F6", "btn", 5, "F6"], ["Home", "btn", 6, "HOME"], ["F7", "btn", 6, "F7"],
     ["F8", "btn", 7, "F8"], ["F9", "btn", 8, "F9"], ["F10", "btn", 9, "F10"], ["Space", "btn", 10, "SPACE"],
@@ -27,8 +46,8 @@ globalThis.FM1 = {
   BTN_ROLE: ["EFFECTS", "CHORD", "ENVELOPE", "BASS", "SOUND", "GLOBAL", "HOME", "SAVE", "ARP", "SEQUENCER", "PLAY", "REC", "OCT−", "OCT+"],
   // EMU_E_* knobs and their roles
   ENC: ["SELECT", "ALGORITHM", "PRESETS", "KNOB 1", "KNOB 2", "KNOB 3", "KNOB 4", "MASTER"],
-  ENC_ROLE: ["BASS SOUND", "ALGORITHM", "CHORD SOUND", "K1", "K2", "K3", "K4", "VOLUME"],
-  KEY_LABEL: ["OP1", "OP2", "OP3", "OP4", "OP5", "OP6", "PIT", "GLO", "MONO", "POLY", ""],
+  ENC_ROLE: ["IDEAS / SELECT", "PAGES", "CHORD SOUND", "K1", "K2", "K3", "K4", "VOLUME"],
+  KEY_LABEL: ["6", "7", "9", "SUS2", "SUS4", "ADD2", "11", "ADD9", "MAJOR", "MINOR", "HOLD"],
   noteName(k) {
     const N = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"], m = 53 + k;
     return N[m % 12] + (Math.floor(m / 12) - 1);

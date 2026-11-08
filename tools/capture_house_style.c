@@ -40,14 +40,37 @@ int main(int argc,char **argv)
         char name[32];snprintf(name,sizeof name,"motion-%03u",frame);shot(argv[2],name);
         if(frame==40)shot(argv[2],"home");
     }
+    static const char *const banks[]={"core","sound","texture","home-groove","perform","loop","mix","variations","keyboard"};
+    for(unsigned bank=0;bank<CF_HB_N;bank++){
+        cf_home_bank=bank;cu.pop=0;blocks(FS/CTL/20);shot(argv[2],banks[bank]);
+    }
+    cf_home_bank=CF_HB_CORE;
     cu.scr=SCR_ACC;cu.page[SCR_ACC]=CF_ACC_GROOVE;blocks(FS/CTL/4);shot(argv[2],"groove");
+    cu.page[SCR_ACC]=CF_ACC_CLICK;shot(argv[2],"click");
     ui_button(B_HOME);ui_button(B_FX);ui_select(9);ui_button(B_SCL);
     for(unsigned f=0;f<8;f++){blocks(FS/CTL/20);cf_ui_draw();}shot(argv[2],"effects");
     cfl_open();blocks(FS/CTL/4);shot(argv[2],"lab");
+    for(unsigned page=0;page<4;page++){
+        static const char *const names[]={"lab-notes","lab-intervals","lab-compare","lab-next"};
+        clu.tab=page;
+        if(page==CFL_COMPARE){clu.target=3;clu.comparison=1;clu.compare_valid=0;}
+        if(page==CFL_NEXT)clu.target=0;
+        cu.pop=0;shot(argv[2],names[page]);
+    }
     cfd_open();blocks(FS/CTL/4);shot(argv[2],"editor");
+    for(unsigned page=0;page<5;page++){
+        static const char *const names[]={"edit-chord","edit-timing","edit-voicing","edit-bass","edit-phrase"};
+        cu.page[SCR_PEDIT]=page;cu.pop=0;shot(argv[2],names[page]);
+    }
+    ui_button(B_HOME);ui_button(B_ENV);cu.pop=0;shot(argv[2],"envelope");
+    ui_button(B_HOME);ui_button(B_LFO);cu.pop=0;shot(argv[2],"bass");
     ui_button(B_HOME);ui_button(B_ARP);ui_knob_turn(0,1);
     for(unsigned f=0;f<20;f++){blocks(FS/CTL/20);cf_ui_draw();}shot(argv[2],"arp");
     cu.scr=SCR_GLO;cu.page[SCR_GLO]=0;blocks(FS/CTL/4);shot(argv[2],"display");
+    static const char *const settings[]={"display","midi","channels","play-settings","reset","library","diagnostics","harmony","global-variation","accompany","browse","recording-policy","legacy"};
+    for(unsigned page=0;page<CF_GLO_NPAGES;page++){
+        cu.page[SCR_GLO]=page;cu.pop=0;shot(argv[2],settings[page]);
+    }
     ui_button(B_HOME);ui_button(B_PLAY);blocks(FS/CTL*4);
     csl_open();csl_save_current();
     for(unsigned f=0;f<1200 && csl_tx.pending;f++){
@@ -55,6 +78,6 @@ int main(int argc,char **argv)
     }
     if(csl_tx.pending){fprintf(stderr,"Song did not reach its saved state\n");return 1;}
     cu.pop=0;shot(argv[2],"songs");
-    printf("Captured %s: 160 playback frames and eight screens\n",CF_SKIN_NAME[cf_skin]);
+    printf("Captured %s: 160 playback frames and full guide gallery\n",CF_SKIN_NAME[cf_skin]);
     return 0;
 }

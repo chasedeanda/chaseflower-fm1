@@ -12,7 +12,12 @@ from PIL import Image, ImageDraw
 ROOT = Path(__file__).resolve().parents[1]
 BUILD = ROOT / 'build/house-style-readme'
 OUT = ROOT / 'docs/images/house-style'
-SCREENS = ('home', 'groove', 'effects', 'lab', 'editor', 'arp', 'display', 'songs')
+SCREENS = ('home', 'groove', 'effects', 'lab', 'editor', 'arp', 'display', 'songs',
+           'core', 'sound', 'texture', 'home-groove', 'perform', 'loop', 'mix', 'variations', 'keyboard',
+           'click', 'lab-notes', 'lab-intervals', 'lab-compare', 'lab-next',
+           'edit-chord', 'edit-timing', 'edit-voicing', 'edit-bass', 'edit-phrase', 'envelope', 'bass',
+           'midi', 'channels', 'play-settings', 'reset', 'library', 'diagnostics', 'harmony',
+           'global-variation', 'accompany', 'browse', 'recording-policy', 'legacy')
 
 
 def main():
@@ -58,7 +63,7 @@ def main():
         'animation': {'file': 'mascots-playing.gif', 'frames': 160, 'fps': 20,
                       'duration_ms': 8000, 'source': 'native framebuffer during actual progression playback'},
     }, indent=2) + '\n')
-    print(f'Saved 16 native screenshots and an eight-second mascot preview to {OUT}')
+    print(f'Saved {len(SCREENS)*2} native screenshots and an eight-second mascot preview to {OUT}')
 
 
 if __name__ == '__main__':
