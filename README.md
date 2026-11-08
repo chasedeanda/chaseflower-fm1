@@ -4,7 +4,7 @@
 
 Start with a progression, choose a sound and press PLAY. Add drums, shape the bass, turn a chord into an arpeggio, or take over with your own playing. CORD puts the controls you reach for on the HOME screen, with a live chord display and a little Devil or Cat keeping you company.
 
-**[▶ Play in your browser](https://chasedeanda.github.io/cord-fm1/play/)** · **[Download firmware](https://github.com/chasedeanda/cord-fm1/releases)** · **[Install](#install-on-your-fm-1)** · **[Quick start](#make-your-first-loop)**
+**[▶ Play in your browser](https://chasedeanda.github.io/cord-fm1/play/)** · **[Download firmware](https://github.com/chasedeanda/cord-fm1/releases)** · **[Install now](https://chasedeanda.github.io/cord-fm1/install/)** · **[Quick start](#make-your-first-loop)**
 
 <p align="center">
   <img src="docs/images/house-style/mascots-playing.gif" width="640" alt="Actual firmware playback: Devil in Ember and Cat in Plum, with changing chords, phrase playheads and animated beat rings">
@@ -65,6 +65,8 @@ Click or tap the panel, drag or scroll knobs, or use these computer keys:
 | **Esc** | Leave panel keyboard focus |
 
 Right-click a panel key/button to hold it. **Enable MIDI** offers optional MIDI input/output in supporting browsers. The player is a way to try the instrument; installing firmware is a separate action.
+
+The **PLAY** button is green while the transport runs and orange when stopped. Orange blinks while waiting for external clock or after clock loss. **REC** stays red while recording and blinks red during count-in. The browser shows the same transport colors.
 
 ## The controls
 
@@ -481,8 +483,8 @@ Turn SELECT in GLO to select a page. K1–K4 edit the labels shown underneath.
 
 1. **Back up first.** Keep a current backup of sounds, settings and recordings, and a known-working firmware package.
 2. Download the **`.fwsc`** asset from the [CORD releases page](https://github.com/chasedeanda/cord-fm1/releases). Read that release's notes for its exact features.
-3. Open the [installer's custom-build section](https://ficusficusov.github.io/CoralFlower/#own) in Chrome or Edge on a computer. Connect the FM-1 with a USB data cable.
-4. Expand **Another version, or a build of your own**, choose your downloaded `.fwsc` file and check the filename before installing. The installer's default package is upstream CoralFlower.
+3. Open the [CORD installer](https://chasedeanda.github.io/cord-fm1/install/) in Chrome or Edge on a computer. Connect the FM-1 with a USB data cable.
+4. The page selects the latest published CORD release and verifies its checksum. Press **Install CORD … now**, or expand **Another version, or a build of your own** to select your own `.fwsc`. Check the selected version/filename before installing.
 5. Keep the cable connected and the page open until the updater finishes and the FM-1 restarts.
 
 A `.bin` app image or GitHub source ZIP is not an installer package. The compatible `CoralFlower` INFO prefix and `FM-1_930` package identity remain in use. Use the updated backup tools for recent recordings and FX data; older clients may not recognize newer backup objects.

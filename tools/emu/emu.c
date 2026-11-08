@@ -393,6 +393,7 @@ static void draw_btn(canvas_t *c, int i)
     rect_t r = BTNR[i];
     int lv = led_state(emu_hal.btn_id[i]), oct = i >= EMU_B_OCTDN;
     uint32_t col = i == EMU_B_REC ? C_RED : i == EMU_B_PLAY ? C_ORANGE : C_WHITE;
+    if(i==EMU_B_PLAY && led_green()){col=C_GREEN;lv=2;}
     const char *h = keymap_hint(KM_BTN, i);
     rrect(c, r, oct ? 6 : 5, C_CAP, 1);
     if (lv)

@@ -174,10 +174,38 @@ static void drums_only_lights(void)
     cpa_stop();render_blocks(4);cu.scr=SCR_HOME;cf_home_bank=CF_HB_CORE;
 }
 
+static int led_at(const uint8_t *level,unsigned pos)
+{return (level[pos>>3]>>(pos&7u))&1u;}
+static void transport_colors(void)
+{
+    cpa_stop();sqp_stop();dmp_stop();cfp_panic();cs_defaults(&cs);cs.clock_in=0;
+    cu.keys=0;sqk.on=0;cf_send_config();render_blocks(4);
+    unsigned orange=cu_led_pos[panel.btn[B_PLAY]],red=cu_led_pos[panel.btn[B_REC]];
+    /* These are different physical outputs, not an RGB value on one cell. */
+    CHECK(orange!=LED_PLAY_GREEN && FM1_KEYMAP[LED_PLAY_GREEN&7u][LED_PLAY_GREEN>>3]<0);
+    for(unsigned screen=0;screen<SCR_N;screen++) {
+        cu.scr=screen;cf_sn.running=0;cf_sn.ac_on=0;cf_sn.sq_on=0;cf_sn.sq_rec=255;cu.now=500;cf_leds();
+        CHECK(led_at(fm1_led,orange) && !led_at(fm1_led,LED_PLAY_GREEN));
+        cf_sn.running=1;cf_leds();
+        CHECK(led_at(fm1_led,LED_PLAY_GREEN) && !led_at(fm1_led,orange));
+        CHECK(!led_at(fm1_led_dim,orange) && !led_at(fm1_led_dim2,orange) && !led_at(fm1_led_faint,orange));
+        cf_sn.ac_on=1;cf_sn.ac_waiting=1;cu.now=500;cf_leds();
+        CHECK(!led_at(fm1_led,LED_PLAY_GREEN) && !led_at(fm1_led,orange) && led_at(fm1_led_faint,orange));
+        cu.now=750;cf_leds();CHECK(led_at(fm1_led,orange) && !led_at(fm1_led,LED_PLAY_GREEN));
+        cf_sn.ac_waiting=0;cf_sn.ac_lost=1;cf_leds();CHECK(led_at(fm1_led,orange) && !led_at(fm1_led,LED_PLAY_GREEN));
+        cf_sn.ac_lost=0;cf_sn.ac_paused=1;cf_leds();CHECK(led_at(fm1_led,orange) && !led_at(fm1_led,LED_PLAY_GREEN));
+        cf_sn.ac_paused=0;cf_sn.ac_on=0;
+    }
+    cu.scr=SCR_HOME;sqk.on=1;sqk.seen=1;cf_sn.sq_cin=1;cu.now=500;cf_leds();
+    CHECK(!led_at(fm1_led,red) && led_at(fm1_led_faint,red));
+    cu.now=750;cf_leds();CHECK(led_at(fm1_led,red));
+    cf_sn.sq_cin=0;cu.now=500;cf_leds();CHECK(led_at(fm1_led,red));
+    sqk.on=0;render_blocks(4);cf_leds();
+}
 int main(void)
 {
     emu_fw_options(NULL,1,0,1); emu_hal.ready=2; emu_fw_init(0); render_blocks(64);
-    progression_lights(); accompaniment_lights(); sixteen_slots(); drums_only_lights();
+    progression_lights(); accompaniment_lights(); sixteen_slots(); drums_only_lights(); transport_colors();
     printf("LED guide: %u checks, %u failures\n",checks,failures);
     return failures!=0;
 }

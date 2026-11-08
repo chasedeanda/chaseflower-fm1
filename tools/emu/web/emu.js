@@ -114,8 +114,8 @@
       e.glow.setAttribute("opacity", v === 2 ? 0.16 : 0);
     }
     for (let i = 0; i < 14; i++) {
-      const e = btnEl[i], v = L[27 + i];
-      e.cap.setAttribute("fill", v === 2 ? e.col : v === 3 ? mix(e.col, 0.68) : v === 1 ? mix(e.col, 0.38) : C.cap);
+      const e = btnEl[i], green = i === 10 && L[41], v = green ? 2 : L[27 + i], col = green ? C.green : e.col;
+      e.cap.setAttribute("fill", v === 2 ? col : v === 3 ? mix(col, 0.68) : v === 1 ? mix(col, 0.38) : C.cap);
       e.t.setAttribute("fill", v === 2 ? "#111" : v === 1 || v === 3 ? C.cream : e.tcol);
       if (e.ht) e.ht.setAttribute("fill", v === 2 ? "#333" : C.hint);
     }
