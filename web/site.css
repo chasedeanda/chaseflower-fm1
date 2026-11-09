@@ -566,3 +566,20 @@ kbd.m { color: var(--color-text-muted); background: transparent; box-shadow: ins
 .cord-player { --font-display: var(--font-text); }
 .cord-player #panel text { font-family: var(--font-text); letter-spacing: 0; }
 .cord-player .brand, .cord-player .display-2 { font-weight: 600; }
+
+/* The shareable CORD play guide: short steps first, deeper reference on demand. */
+.cord-guide { scroll-margin-top: 1rem; }
+.cord-guide__steps { list-style: none; padding: 0; margin: 0; }
+.cord-guide .card h3 { font: 600 var(--fs-lg) / var(--lh-snug) var(--font-text); }
+.cord-guide .card p { color: var(--color-text-muted); }
+.cord-guide b { color: var(--color-text); }
+.cord-guide__tip { margin-top: var(--space-m); padding: var(--space-m); border-left: 3px solid var(--color-accent); background: var(--color-surface); border-radius: var(--radius-s); }
+.cord-guide__fold { margin-top: var(--space-l); }
+.cord-guide__pages { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); gap: var(--space-xs) var(--space-m); margin: 0; }
+.cord-guide__pages dt { font-weight: 600; color: var(--color-text); }
+.cord-guide__pages dd { margin: 0; }
+.cord-guide__more { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-m); margin-top: var(--space-l); }
+.cord-guide__more p { flex: 1 1 20rem; color: var(--color-text-muted); }
+.cord-player .play__head .actions { justify-content: center; }
+.cord-player .site-nav { flex-wrap: wrap; }
+@media (max-width: 39.99rem) { .cord-guide__pages { grid-template-columns: minmax(0, 1fr); gap: var(--space-3xs); } .cord-guide__pages dd { margin-bottom: var(--space-xs); } }
