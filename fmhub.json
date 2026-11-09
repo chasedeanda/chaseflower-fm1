@@ -6,6 +6,6 @@
   ],
   "play": "https://chasedeanda.github.io/cord-fm1/play/",
   "cheat": "https://github.com/chasedeanda/cord-fm1#make-your-first-loop",
-  "image": "docs/images/house-style/devil-core.png",
+  "image": "https://raw.githubusercontent.com/chasedeanda/cord-fm1/refs/heads/main/docs/images/mascots/devil-core.png",
   "color": "#FF7A00"
 }
