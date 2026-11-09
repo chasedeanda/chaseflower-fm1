@@ -1,6 +1,6 @@
 # CORD · FM-1
 
-**CORD 1.0.2** · [Install the latest release](https://chasedeanda.github.io/cord-fm1/install/) · [1.0.2 release notes](docs/releases/1.0.2.md)
+**CORD 1.0.3** · [Install the latest release](https://chasedeanda.github.io/cord-fm1/install/) · [1.0.3 release notes](docs/releases/1.0.3.md)
 
 **A chord instrument, groovebox and songwriting companion for the M-VAVE FM-1.**
 
@@ -489,7 +489,7 @@ Turn SELECT in GLO to select a page. K1–K4 edit the labels shown underneath.
 4. The page selects the latest published CORD release and verifies its checksum. Press **Install CORD … now**, or expand **Another version, or a build of your own** to select your own `.fwsc`. Check the selected version/filename before installing.
 5. Keep the cable connected and the page open until the updater finishes and the FM-1 restarts.
 
-A `.bin` app image or GitHub source ZIP is not an installer package. The compatible `CoralFlower` INFO prefix remains in use. CORD 1.0.2 and later use their own `FM-1_936` package identity; earlier CORD releases used CoralFlower’s `FM-1_930`. Use the updated backup tools for recent recordings and FX data; older clients may not recognize newer backup objects.
+A `.bin` app image or GitHub source ZIP is not an installer package. The compatible `CoralFlower` INFO prefix remains in use. CORD 1.0.3 and later use `FM-1_26730001`, checked against the Hub’s live reserved-range checker. CORD 1.0.2 used `FM-1_936` (inside sloopDX’s reserved range); earlier releases used CoralFlower’s `FM-1_930`. Use the updated backup tools for recent recordings and FX data; older clients may not recognize newer backup objects.
 
 ## When something isn't working
 

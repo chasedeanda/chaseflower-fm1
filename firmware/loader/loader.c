@@ -3,7 +3,7 @@
 /* Felucca update loader (device side). Runs from RAM, started by the SPL from
  * an update record, with interrupts off: USB is polled from the main loop.
  * It is a USB-MIDI device "Felucca Update" (1209:0002) that answers the
- * M-UPGRADE update protocol as "ota-FM-1_936" (hosts look for "ota-"), and
+ * M-UPGRADE update protocol as "ota-FM-1_26730001" (hosts look for "ota-"), and
  * writes the app area only (ldr_core.c). The UBOOT soft key works here too.
  * Single compilation unit. */
 #include <stdint.h>
@@ -13,7 +13,7 @@
 #define FELUCCA_OTA_DRYRUN 0
 #define FELUCCA_USB_PID 0x0002
 #ifndef FELUCCA_ID
-#define FELUCCA_ID "ota-FM-1_936"
+#define FELUCCA_ID "ota-FM-1_26730001"
 #endif
 #define RING_PUBLISH() __asm__ volatile("" ::: "memory")
 #include "fm1_time.h"

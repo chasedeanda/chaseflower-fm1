@@ -49,6 +49,10 @@ async function until(cond, ms = 4000) {         // real time: the page's own wai
 
 /* ------------------------------------------------------ (a) the classification --- */
 const GUARD_CASES = [
+  ["FM-1_26730001", "CoralFlower 1.0.3", "allow", "coralflower"],
+  ["FM-1_26730001", "CORD 1.0.3", "allow", "coralflower"],
+  ["FM-1_26730001", null, "refuse", "unknown"],
+  ["ota-FM-1_26730001", null, "loader", "loader"],
   ["FM-1_936", "CoralFlower 1.0.2", "allow", "coralflower"],
   ["FM-1_936", "CORD 1.0.2", "allow", "coralflower"],
   ["FM-1_936", null, "refuse", "unknown"],
@@ -810,15 +814,18 @@ async function readyPage(dev, opts = {}) {
      "stock: confirmed -> backup, FM-1_015, the done panel names the backup; the install card left idle");
 }
 
-// CORD's independent package ID: stock install, old CORD update and loader resume.
-for (const identity of ["FM-1_015", "FM-1_930", "ota-FM-1_936"]) {
-  const cord = makePkg({ product: "FM-1_936" });
-  const dev = new FakeFM1(logicalImage(cord), { identity, loader: "ota-FM-1_936", final: "FM-1_936" });
+// Current and previous CORD packages: exact target verification, legacy updates and resume.
+for (const product of ["FM-1_936", "FM-1_26730001"]) {
+ for (const identity of ["FM-1_015", "FM-1_930", "FM-1_936", `ota-${product}`]) {
+  const cord = makePkg({ product });
+  const dev = new FakeFM1(logicalImage(cord), { identity, loader: `ota-${product}`, final: product,
+    bk: (id) => id === "FM-1_936" ? backupSide("CoralFlower 1.0.2", CR_BACKUP_IDS, crData()) : null });
   const p = await readyPage(dev, { pkg: cord });
-  ok(p.$.pkg.className === "pkg ok" && !p.$.go.disabled, `CORD 936 package accepted from ${identity}`);
+  ok(p.$.pkg.className === "pkg ok" && !p.$.go.disabled, `CORD ${product} package accepted from ${identity}`);
   await p.$.go.fire("click");
-  ok(p.$.status.textContent === en.done && dev.identity === "FM-1_936" && dev.bad === 0,
-     `CORD 936 install/resume from ${identity}: verified the selected package identity`);
+  ok(p.$.status.textContent === en.done && dev.identity === product && dev.bad === 0,
+     `CORD ${product} install/resume from ${identity}: verified selected package identity`);
+ }
 }
 
 /* ------------------------------ (f) the real package builder, when the SDK files are here --- */

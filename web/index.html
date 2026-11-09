@@ -442,7 +442,7 @@ import { Updater, classifyFirmware, refusalText } from "./fm1ota.js";
 import { BackupConnection, captureBackup, restoreBackup, deviceInfo, restartDevice, readBackup, backupFamily, backupFileName, objectNames } from "./fm1backup.js";
 
 const $ = (id) => document.getElementById(id);
-const PRODUCT = "FM-1_936";                      // CORD (tools/build.py); legacy 930 packages remain installable
+const PRODUCT = "FM-1_26730001";                      // CORD (tools/build.py); legacy 930/936 packages remain installable
 const MODEL = PRODUCT.split("_")[0];
 const LOADER_MARK = "FELUCCA-LOADER-1";          // Felucca's update loader (tools/fm1pkg_make.py ota.bin): never a vendor one
 const PKG_FLASH = 0x93000, PKG_APP_BASE = 0x4000; // the FM-1 flash layout of every fm1pkg_make.py package
@@ -639,7 +639,7 @@ const hasText = (bytes, text) => {
 function checkPackage(bytes) {
   if (!bytes || bytes.length < 20 * 48 + 0x400 || bytes.length > PKG_MAX) throw coded("pkgNotFm1");
   const product = productOf(bytes);
-  if (product !== PRODUCT && product !== "FM-1_930") {
+  if (product !== PRODUCT && product !== "FM-1_930" && product !== "FM-1_936") {
     if (/^FM-1_0\d\d$/.test(product)) throw coded("pkgStock", product);
     if (/^FM-1_\d+$/.test(product)) throw coded("pkgIdentity", product);
     throw coded("pkgNotFm1");

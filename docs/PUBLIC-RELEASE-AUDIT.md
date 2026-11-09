@@ -1,6 +1,6 @@
 # CORD public-release audit
 
-Follow-up: [Firmware Hub preparation](FIRMWARE-HUB-SUBMISSION.md) changes CORD’s package identity to `FM-1_936` in 1.0.2 and adds UC25HQ80 support. The retained-identity findings below describe 1.0.1.
+Follow-up: [Firmware Hub preparation](FIRMWARE-HUB-SUBMISSION.md) adds UC25HQ80 support in 1.0.2 and uses `FM-1_26730001` in 1.0.3. The intermediate 1.0.2 identity `FM-1_936` was absent from the table but conflicts with sloopDX’s reserved range; the replacement passed the live range checker on 9 November 2026. The retained-identity findings below describe 1.0.1.
 
 Reviewed 8 November 2026, starting from the published CORD 1.0 source (`712bcd8`). The fixes below are included in 1.0.1. CORD is a fork of CoralFlower; this audit preserves upstream authorship rather than relabelling their work.
 

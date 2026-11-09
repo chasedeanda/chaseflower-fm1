@@ -163,7 +163,7 @@ jobs:
           {
             if [ -f "docs/releases/$VERSION.md" ]; then cat "docs/releases/$VERSION.md"; echo; echo "---"; echo; fi
             sed "s/@VERSION@/$VERSION/g" <<'EOT'
-          CORD @VERSION@ for the M-VAVE FM-1, based on CoralFlower (package identity FM-1_936).
+          CORD @VERSION@ for the M-VAVE FM-1, based on CoralFlower (package identity FM-1_26730001).
 
           Use the [CORD installer](https://chasedeanda.github.io/cord-fm1/install/) in Chrome or Edge on a computer, connect the FM-1 directly by USB, and save a current backup. It offers the latest published CORD release. You can also download `cord-@VERSION@.fwsc` here and choose it under **Another version, or a build of your own**. The separate app `.bin` and source archives are not installer packages.
 
