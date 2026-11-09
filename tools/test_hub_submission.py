@@ -26,10 +26,10 @@ assert png[:8] == b'\x89PNG\r\n\x1a\n'
 w,h = struct.unpack('>II',png[16:24])
 assert w == h and 240 <= w <= 1024
 loader = read('firmware/loader/loader.c')
-assert '#define FELUCCA_ID "ota-FM-1_936"' in loader
+assert '#define FELUCCA_ID "ota-FM-1_26730001"' in loader
 assert 'f\'-DFELUCCA_ID="ota-{PRODUCT}"\'' in read('tools/build.py')
-assert 'PRODUCT = "FM-1_936"' in read('tools/build.py')
-assert '#define FELUCCA_ID "FM-1_936"' in read('firmware/src/coralflower.c')
+assert 'PRODUCT = "FM-1_26730001"' in read('tools/build.py')
+assert '#define FELUCCA_ID "FM-1_26730001"' in read('firmware/src/coralflower.c')
 assert 'ldr_flash_known = FL_JEDEC_OK(fl_jedec_ram());' in loader
 for path in ['firmware/src/cf_shim.c','firmware/src/cr_shim.c','firmware/src/project.c']:
     assert 'flash_ok = FL_JEDEC_OK(FL_FAR(fl_jedec_ram)());' in read(path)

@@ -27,7 +27,7 @@ check('"CORD", "CORD FM-1", "CORD In"' in usb, 'USB product, maker and audio nam
 check('"Chase FM-1"' not in read('firmware/src/cf_boot.c'), 'Optional legacy boot does not show the old product name')
 check('"coralflower-fm1"' in read('tools/emu/web/emu.js'), 'Existing browser save namespace is retained')
 check('file.format !== "felucca-backup"' in read('web/fm1backup.js'), 'Legacy backup envelope is retained')
-check('PRODUCT = "FM-1_936"' in read('tools/build.py'), 'CORD has its own update package identity')
+check('PRODUCT = "FM-1_26730001"' in read('tools/build.py'), 'CORD has its own update package identity')
 check('#define FELUCCA_VERSION "CoralFlower ' in read('firmware/src/coralflower.c'), 'Legacy firmware INFO family remains updater-compatible')
 for path in ['web/fm1backup.js', 'tools/fm1_install.py']:
     check('cord' in read(path) and '-backup-' in read(path), path + ': CORD backup filename is present')

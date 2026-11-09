@@ -1,11 +1,11 @@
 {
-  "what": "CORD turns your FM-1 into an instant songwriting companion. Pick a chord progression, press PLAY, and start playing along with drums, bass and chords. Adjust the progression, sounds and groove to build a backing track for practicing, jamming or writing your next song.",
+  "what": "Pick a chord progression, press Play, and play along with drums, bass and chords. Adjust the progression, sounds and groove to build backing tracks for practicing, jamming and writing songs.",
   "author": "Chase DeAnda",
   "kinds": [
     "chords"
   ],
   "play": "https://chasedeanda.github.io/cord-fm1/play/",
   "cheat": "https://github.com/chasedeanda/cord-fm1#make-your-first-loop",
-  "image": "https://raw.githubusercontent.com/chasedeanda/cord-fm1/refs/heads/main/docs/images/mascots/devil-core.png",
+  "image": "docs/images/mascots/devil-core.png",
   "color": "#FF7A00"
 }
