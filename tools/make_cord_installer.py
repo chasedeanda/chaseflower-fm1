@@ -24,7 +24,8 @@ tools = tools.replace('CoralFlower', 'CORD')
 tools = '<section class="section"><div class="container container--narrow"><h2 class="display-2">Files, backups and recovery</h2><div class="tools">' + tools
 # Preserve the updater's complete module, including all validation and backup guards.
 module = re.search(r'<script type="module">[\s\S]*?</script>', source)[0].replace('CoralFlower', 'CORD')
-module = module.replace('"firmware/releases.json"', '"../firmware/releases.json"').replace('"firmware/"', '"../firmware/"')
+# Release manifests change independently of the page and can remain cached at a CDN edge.
+module = module.replace('"firmware/releases.json"', '"../firmware/releases.json?refresh=" + Date.now()').replace('"firmware/"', '"../firmware/"')
 module = module.replace('installV: "Install on your FM-1"', 'installV: "Install {name} now"').replace('installNone: "Install on your FM-1"', 'installNone: "Install latest release"')
 page_script = source[source.index('<script>\n/* The page:'):source.index('</body>', source.index('<script>\n/* The page:'))]
 header = '<body class="cord-player"><header class="site-header"><div class="container site-header__row"><a class="brand" href="../play/">CORD · FM-1</a><nav class="site-nav"><a href="../play/">Play in browser</a><a href="https://github.com/chasedeanda/cord-fm1/releases">Releases</a></nav></div></header><main>'
