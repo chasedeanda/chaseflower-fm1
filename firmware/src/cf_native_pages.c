@@ -16,7 +16,7 @@ _Static_assert(sizeof(cfn_page_t)<1200,"native page model stays bounded");
 static cfn_page_t cfn_page_last;
 static uint8_t cfn_page_valid;
 static unsigned cfn_page_draws;
-static const char *const CFN_GLOBAL[]={"Display","MIDI","Channels","Play","Reset","Sound library","Diagnostics","Harmony","Variation","Accompany","Browse","Recordings","Tools"};
+static const char *const CFN_GLOBAL[]={"Display","MIDI","Channels","Play","Reset","Sound library","Diagnostics","Harmony","Variation","Accompany","Browse","Recordings","Tools","Engine Locks"};
 static void cfn_string(char *dst,const char *src,unsigned n){str_cpy(dst,src,n);}
 #define NP(field,text) cfn_string(m->field,text,sizeof m->field)
 static void cfn_diag_row(cfn_page_t *m,unsigned row,const char *label,uint32_t a,const char *mid,uint32_t b,const char *unit)

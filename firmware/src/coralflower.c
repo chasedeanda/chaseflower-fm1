@@ -1,3 +1,4 @@
+#define CF_ENGINE 1
 /* SPDX-License-Identifier: GPL-3.0-only
  * Copyright (C) 2026 CoralFlower contributors; ChoralRoot FM-1 contributors; Felucca by Leo Kuroshita, Hügelton
  * Instruments */

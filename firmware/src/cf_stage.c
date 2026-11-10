@@ -203,6 +203,19 @@ static void cf_stage_model(cf_stage_model_t *m)
         memset(&m->mascot,0,sizeof m->mascot);
         memset(m->emphasis,0,sizeof m->emphasis);m->cursor_width=0;
     }
+    if(cf_home_bank==CF_HB_ENGINE){
+        str_cpy(m->idea,"Heavenly Gaze",sizeof m->idea);
+        if(!cge.loaded)str_cpy(m->context,"SEL loads scene / PLAY starts",sizeof m->context);
+        else {
+            str_cpy(m->context,cge_stage_name(),sizeof m->context);
+            char b[24];kint(b,cge.bar+1,"/16  ");str_cpy(m->context+str_len(m->context)," ",sizeof m->context-str_len(m->context));
+            str_cpy(m->context+str_len(m->context),b,sizeof m->context-str_len(m->context));
+            char lock[12]={'H',cge.locks&1?'*':'-', ' ', 'S',cge.locks&2?'*':'-', ' ', 'G',cge.locks&4?'*':'-', ' ', 'F',cge.locks&8?'*':'-',0};
+            str_cpy(m->context+str_len(m->context),lock,sizeof m->context-str_len(m->context));
+            if(cge.pending)str_cpy(m->pending,"Engine combination pending",sizeof m->pending);
+        }
+    }
+
 }
 /* Preserve the complete spelling for unusually long altered/slash names.
  * Only horizontal glyph coordinates are compressed in the bounded nameplate. */

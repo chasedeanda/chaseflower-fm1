@@ -137,7 +137,12 @@ static const char *const ALG_NAME[CF_NALGS] = {"Top", "Top Lock", "Side", "Side 
 #define CF_GLO_BROWSE 10u
 #define CF_GLO_RECORDINGS 11u
 #define CF_GLO_LEGACY 12u
-#define CF_GLO_NPAGES 13u
+#define CF_GLO_ENGINE_LOCKS 13u
+#define CF_GLO_NPAGES 14u
+static int cge_prepare(cpa_plan_t *,cf_chord_cfg_t,unsigned,unsigned);
+static int cge_snapshot(cf_song_t *);
+static void cge_direct(unsigned),cge_sound_poll(void),cge_poll(void),cge_init(void),cge_load(void);
+
 static const char *const CF_LEGACY_NAME[]={"Recordings","Metronome","Drum grid"};
 
 static const cf_progression_t *cf_progression_current(void)
@@ -220,6 +225,7 @@ static void cpa_ui_record(void);
 #include "cf_draft_ui.c"
 #include "cf_lab_ui.c"
 #include "cf_library_ui.c"
+#include "cf_engine_ui.c"
 #include "cf_variation.c"                         /* one-page variation and undo */
 
 /* SELECT on Progressions: apply the idea's setup, without touching sounds,
@@ -445,6 +451,10 @@ static void ui_knob_info(int k, cf_knob_t *o)
     case SCR_SQED: sq_knob_info(k, o); break;
     case SCR_GLO:
         switch (cu.page[SCR_GLO]) {
+        case CF_GLO_ENGINE_LOCKS: {
+            static const char *const names[]={"HARMONY","SOUND","GROOVE","FX"};
+            kfmt(o->name,12,names[k]);kfmt(o->val,14,cge.locks&(1u<<k)?"Locked":"Open");break;
+        }
         case CF_GLO_RECORDINGS:
             if (!k) { kfmt(o->name,12,"AUTO DEL"); kfmt(o->val,14,sq_pref.protect?"Off":"On"); }
             break;
@@ -724,6 +734,7 @@ static void ui_knob_turn(int k, int d)
     case SCR_SQED: sq_knob_turn(k, d); break;
     case SCR_GLO:
         switch (cu.page[SCR_GLO]) {
+        case CF_GLO_ENGINE_LOCKS: if(d && (d&1))cge.locks^=1u<<k; break;
         case CF_GLO_RECORDINGS:
             if (!k && d) { sq_pref.protect=d<0; sq_pref_dirty=1;
                 cf_message(sq_pref.protect?"Full: new takes are refused":"New takes replace the oldest"); }
@@ -873,6 +884,7 @@ static void cv_turned(int d)
 
 static void ui_select(int d)                     /* SELECT: the bass sound, or a screen's page */
 {
+    if(home_stage() && cf_home_bank==CF_HB_ENGINE)return;
     if(cu.scr==SCR_LAB){cfl_select(d);return;}
     cf_nav_dir=d<0?-1:1;
     if(cu.scr==SCR_SONGS){csl_select(d);return;}
@@ -1130,6 +1142,7 @@ static void ui_button(uint32_t b)
         if(b==B_SAVE){cla_request(0);csl_open();return;}
         cla_request(0);
     }
+    if(b==B_SCL && home_stage() && cf_home_bank==CF_HB_ENGINE){cge_load();return;}
     if(b==B_SCL && cpb_home()){cfl_open();return;}
     if(b==B_SCL && cu.scr==SCR_GLO && cu.page[SCR_GLO]==CF_GLO_HARMONY){ui_open(SCR_SEL);return;}
     if(b==B_EDIT && (cu.scr==SCR_PEDIT || cu.scr==SCR_ACC || cpb_home())) {
@@ -2200,7 +2213,7 @@ static void cf_edited(uint32_t part)
 /* ------------------------------------------------------------------ init --- */
 static void cf_ui_init(void)
 {
-    cf_sound_browse_defaults();
+    cf_sound_browse_defaults();cge_init();
     cpg.idea = CF_P_NONE; cpg.repeat_off=0; cpg.click_generation=cpa.click_generation;
     cpb_load();
     if (!cfs_loaded)                             /* (cf_splash read the settings record: they stay) */
@@ -2290,7 +2303,7 @@ static void cf_ui_frame(void)                    /* ui_leds: the snapshot, the p
     cu.frames++;
     cf_diag_poll(now);
     cf_snapshot();
-    cpa_ui_poll();
+    cpa_ui_poll();cge_poll();
     cfd_ui_poll();
     cfl_poll();
     sq_tempo_poll();

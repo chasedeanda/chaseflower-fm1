@@ -7,6 +7,7 @@
 enum { CF_P_ALL, CF_P_FAMILIAR, CF_P_EMOTIONAL, CF_P_DREAMY, CF_P_DARK,
        CF_P_UPLIFTING, CF_P_JAZZY, CF_P_ENERGETIC, CF_P_EXPERIMENTAL, CF_P_NTAGS };
 #define CF_P_MAX 16
+#define CF_P_ENGINE 253u
 #define CF_P_DRAFT 254u
 #define CF_P_NONE 255u
 typedef struct {
@@ -17,6 +18,7 @@ typedef struct {
     uint8_t n, degree[CF_P_MAX]; /* zero-based scale degrees */
 } cf_progression_t;
 
+void cf_progression_engine_register(const cf_progression_t *p,const cf_source_chord_t *source);
 void cf_progression_draft_register(const cf_progression_t *p,const cf_source_chord_t *source);
 const cf_source_chord_t *cf_progression_source(const cf_progression_t *p);
 int cf_progression_root(const cf_progression_t *p, unsigned slot, int scale, int tonic);

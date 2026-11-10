@@ -115,6 +115,9 @@ jobs:
       - name: Signature 8 exact patches, stable IDs, filters and real-engine fixtures
         run: sh tools/test_signature8.sh
 
+      - name: CORD Engine arrangement, regeneration and four-cycle real audio trace
+        run: sh tools/test_engine.sh
+
       - name: Contextual variations, undo and safe playback boundaries (host HAL)
         run: sh tools/test_variations.sh
 

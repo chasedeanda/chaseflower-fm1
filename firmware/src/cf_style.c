@@ -11,7 +11,7 @@ static void cfn_controls(const char label[4][12],const char value[4][14],const u
     for(int k=0;k<4;k++) {
         int x=k*60;char name[12],text[14];
         str_cpy(name,label[k],sizeof name);str_cpy(text,value[k],sizeof text);
-        for(unsigned j=1;name[j];j++)if(name[j]>='A' && name[j]<='Z')name[j]+='a'-'A';
+        for(unsigned j=1;name[0] && j<sizeof name && name[j];j++)if(name[j]>='A' && name[j]<='Z')name[j]+='a'-'A';
         /* The Tempo label carries the unit; retain EXT and WAIT clock states. */
         unsigned n=str_len(text);if(n>=4 && !memcmp(text+n-4," BPM",4))text[n-4]=0;
         fb_clip(x+3,201,x+57,240);

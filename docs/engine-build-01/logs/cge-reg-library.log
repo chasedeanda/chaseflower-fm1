@@ -1,0 +1,10 @@
+boot: normal reset power-on failed 0 pending 1 counted 0 prev_stage 0 (none)
+saved Song record: 1388 bytes; index: 192 bytes; pending transaction: 8 bytes
+Songs library: 2136 checks, 0 failures
+object 0 (512-byte entries): 1 changes without an erase
+object 1 (512-byte entries): 1 changes without an erase
+object 2 (512-byte entries): 1 changes without an erase
+object 3 (512-byte entries): 1 changes without an erase
+object 4 (512-byte entries): 1 changes without an erase
+object 5 (512-byte entries): 1 changes without an erase
+st_log: 1500 steps (0 saves as changes, 780 whole, 679 refused: no room without an erase), 6230 power cuts (1519 cut again at the power-on), 54660 checks, 0 failed

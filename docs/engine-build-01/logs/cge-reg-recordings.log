@@ -1,0 +1,18 @@
+boot: normal reset power-on failed 0 pending 1 counted 0 prev_stage 0 (none)
+recordings: 101 checks, 0 failures
+object 0 (512-byte entries): 1 changes without an erase
+object 1 (512-byte entries): 1 changes without an erase
+object 2 (512-byte entries): 1 changes without an erase
+object 3 (512-byte entries): 1 changes without an erase
+st_log: 1500 steps (0 saves as changes, 774 whole, 688 refused: no room without an erase), 7444 power cuts (2284 cut again at the power-on), 45334 checks, 0 failed
+recording flash ranges: PASS
+PASS: recordings: reordered backup restores archives first and preserves all three takes
+PASS: recordings: Python restorer handles the same reordered backup ()
+PASS: recordings: reordered backup restores archives first and preserves all three takes
+PASS: recordings: Python restorer handles the same reordered backup ()
+PASS: recordings: reordered backup restores archives first and preserves all three takes
+PASS: recordings: Python restorer handles the same reordered backup ()
+PASS: recordings: reordered backup restores archives first and preserves all three takes
+PASS: recordings: Python restorer handles the same reordered backup ()
+PASS: CORD dated backup filename
+PASS: CORD labels for every fork-owned backup object

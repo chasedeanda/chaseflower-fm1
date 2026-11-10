@@ -51,6 +51,7 @@ static void csl_save_current(void)
     for(unsigned p=0;p<2;p++)if(trk[p].xf_on || trk[p].eng_req!=trk[p].engine){cf_message("Wait for sound change to finish");return;}
     cfd_ui_poll();cf_song_t song;
     if(cpg.idea==CF_P_DRAFT && cfwd.have)song=cfwd.song;
+    else if(cpg.idea==CF_P_ENGINE){if(!cge_snapshot(&song)){cf_message("Engine snapshot unavailable");return;}}
     else if(!cf_song_clone(&song,cf_progression_current())){cf_message("No progression to save");return;}
     song.tonic=cs.chord.tonic;song.scale=cs.chord.scale;song.bpm=cs.bpm;
     song.rhythm=cpg.rhythm<DM_N?DM_RHY[cpg.rhythm].id:cpg.rhythm==CPA_CLICK?65534:65535;

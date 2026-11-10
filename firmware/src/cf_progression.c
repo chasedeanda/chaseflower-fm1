@@ -182,6 +182,9 @@ static const struct { uint16_t id; cf_source_chord_t chord[8]; } CF_SOURCE[] = {
     /* What I Want (with Tate McRae): Bm A E; preserve Dorian's major IV. */
     {135, {{0x89u,0,0,-1}, {0x91u,6,0,-1}, {0x91u,3,0,-1}}},
 };
+static const cf_progression_t *cfp_engine_view;
+static const cf_source_chord_t *cfp_engine_source;
+void cf_progression_engine_register(const cf_progression_t *p,const cf_source_chord_t *s){cfp_engine_view=p;cfp_engine_source=s;}
 static const cf_progression_t *cfp_draft_view;
 static const cf_source_chord_t *cfp_draft_source;
 void cf_progression_draft_register(const cf_progression_t *p,const cf_source_chord_t *source)
@@ -189,6 +192,7 @@ void cf_progression_draft_register(const cf_progression_t *p,const cf_source_cho
 const cf_source_chord_t *cf_progression_source(const cf_progression_t *p)
 {
     if (!p) return 0;
+    if(p==cfp_engine_view)return cfp_engine_source;
     if(p==cfp_draft_view)return cfp_draft_source;
     for (unsigned i=0; i<sizeof CF_SOURCE/sizeof CF_SOURCE[0]; i++)
         if (CF_SOURCE[i].id==p->id) return CF_SOURCE[i].chord;
@@ -226,15 +230,17 @@ const char *cf_progression_tag(int tag)
         "Uplifting", "Jazzy", "Energetic", "Experimental"};
     return names[tag >= 0 && tag < CF_P_NTAGS ? tag : 0];
 }
-_Static_assert(sizeof CF_PROGRESSIONS/sizeof CF_PROGRESSIONS[0]<CF_P_DRAFT,"reserved draft index");
+_Static_assert(sizeof CF_PROGRESSIONS/sizeof CF_PROGRESSIONS[0]<CF_P_ENGINE,"reserved draft index");
 unsigned cf_progression_count(void) { return sizeof CF_PROGRESSIONS / sizeof CF_PROGRESSIONS[0]; }
 const cf_progression_t *cf_progression_get(unsigned index)
 {
+    if(index==CF_P_ENGINE)return cfp_engine_view;
     if(index==CF_P_DRAFT)return cfp_draft_view;
     return index < cf_progression_count() ? &CF_PROGRESSIONS[index] : 0;
 }
 uint8_t cf_progression_pick(unsigned current, int turn)
 {
+    if(current==CF_P_ENGINE && !turn && cfp_engine_view)return CF_P_ENGINE;
     if(current==CF_P_DRAFT && !turn && cfp_draft_view)return CF_P_DRAFT;
     int n = (int)cf_progression_count();
     int pos = current < (unsigned)n ? (int)current : 0;

@@ -20,6 +20,7 @@ static void cpa_explore(void)
 static int cfd_prepare(cpa_plan_t *,cf_chord_cfg_t,unsigned,unsigned,unsigned,unsigned);
 static int cpa_prepare_full(cpa_plan_t *plan, unsigned idea, cf_chord_cfg_t cfg, unsigned rhythm, unsigned mode, unsigned repeat_off, unsigned click_start)
 {
+    if(idea==CF_P_ENGINE)return cge_prepare(plan,cfg,rhythm,mode);
     if(idea==CF_P_DRAFT)return cfd_prepare(plan,cfg,rhythm,mode,repeat_off,click_start);
     const cf_progression_t *p = cf_progression_get(idea);
     uint32_t stamp[CF_H_SLOTS]; uint16_t slots;
@@ -79,6 +80,10 @@ static int cpa_prepare(cpa_plan_t *p,unsigned idea,cf_chord_cfg_t cfg,unsigned r
 static void cpa_publish(const cpa_plan_t *p, unsigned flags, int setup)
 {
     if (!cpa_valid(p)) return;
+    if(p->idea==CF_P_ENGINE){
+        if(flags&CPA_GROOVE)cge_direct(CGE_GROOVE);
+        if((flags&CPA_NOTES) && (p->tonic!=cpa.plan.tonic || p->scale!=cpa.plan.scale))cge_direct(CGE_HARMONY);
+    }
     fm1_irq_off();
     if (setup) { cpa_setup.plan = *p; cpa_setup.flags = 1; }
     else if (cpa.on && (p->idea == cpa.plan.idea || (((flags|cpa_edit.flags)&CPA_PHRASE) && p->idea==CF_P_DRAFT))) {
@@ -120,6 +125,7 @@ static void cpa_ui_poll(void)
 }
 static void cpa_home_key(int k, int d)
 {
+    cge_direct(CGE_HARMONY);
     static const uint8_t modes[] = {CF_SC_MAJOR, CF_SC_DORIAN, CF_SC_PHRYGIAN, CF_SC_LYDIAN,
                                    CF_SC_MIXOLYDIAN, CF_SC_MINOR, CF_SC_LOCRIAN};
     cpa_plan_t p; cpa_active_request(&p);
@@ -133,6 +139,7 @@ static void cpa_home_key(int k, int d)
 }
 static void cpa_ui_rhythm(int d)
 {
+    cge_direct(CGE_GROOVE);
     cpa_plan_t p; unsigned beats = cs.beats, r = cpg.rhythm;
     if (cpa_running()) { cpa_active_request(&p); beats = p.beats; r = p.rhythm; }
     unsigned n = dm_count(beats), pos = r == CPA_OFF ? 0 : r == CPA_CLICK ? 1 : dm_place(r) + 2;
