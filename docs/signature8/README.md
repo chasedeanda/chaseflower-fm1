@@ -2,13 +2,15 @@
 
 Eight original, fixed-recipe programs are implemented from [the supplied brief](BRIEF.md). Artist references describe the research team's aesthetic targets; they do not claim artist patch settings or audio similarity. No commercial samples, new engine, old-patch edit, Aquanode transposition change or release is included.
 
-## Preview controls
+## Default collection and controls
 
-Open **GLO → Sound library**. Set **K1 Chord** (or K3 Layer) to **Signature 8**. PRESETS now browses exactly eight new sounds in the supplied bank order. Bass has no Signature entries and safely keeps its current sound. Selecting a filter itself never loads a patch. Return to **All** to restore normal discovery.
+Signature 8 now leads ordinary chord/layer browsing in the supplied order: **EMBER KEYS → GHOST CHOIR → NOIR TINES → APOLLO VEIL → FROSTWIRE → OFFBEAT DUB → CEDAR MALLET → RAZOR PULSE**. Fresh/default settings load **EMBER KEYS** for Chords and **GHOST CHOIR** for Layer; Bass retains DEEP SUB. Existing saved sounds and complete Song recalls keep their selected identities.
 
-**Primary** is an additional opt-in curated discovery view: the eight pilot programs plus the existing library with the twelve specified duplicate entries omitted. All original entries and their saved indices remain in **All** and their style banks; primary filtering does not delete or replace them. These two curated views are reversible session-local filters. The existing eight style-bank IDs, Existing and User retain their values.
+At boot, **GLO → Sound library** defaults Chords and Layer to **Primary**, a curated view beginning with the eight new programs and continuing through the existing library with the twelve specified factory duplicates omitted. Bass defaults to **All**. Choose **Signature 8** for just the eight, **All** for the full library, or a style bank. Each style bank includes its assigned Signature program. K4 explicitly restores All. Filter changes never load a patch; filters are session-local.
 
-The new programs retain their one-of-eight style-bank association in metadata. They are hidden from ordinary All/style browsing during this pilot; explicit global-index recall and complete saved Songs remain valid. Device names contain no artist names. Sounds load dry; the optional FX recipes are preview examples, not baked into the patches or auto-recalled by selecting a sound.
+The eight lead both live and pattern sound browsing. This is a presentation order: the canonical global indices used in settings, patterns and stored sound references remain unchanged. Original patches remain addressable, including the duplicates. Saved user replacements are retained.
+
+Device names contain no artist names. The recipes have neutral built-in FX; the optional fixed FX are audition examples. Loading a sound preserves the player's existing shared FX, as before.
 
 ## Fixed recipes and integration
 
@@ -41,11 +43,11 @@ See [all measurements](levels.csv) and [source/file identity manifest](render-ma
 
 ## Compatibility and budget evidence
 
-- 495 focused assertions cover exact FM bytes, all VA pair ranges, eight-entry ordering/bank association, UI filter no-load behavior, empty Bass selection, prepared blobs, save/recall and drum-clock stress. Four-bar chord/drum workloads complete for each pilot without voice-shed counter increments in the host fixture.
-- Existing library/VA regressions pass **47,046,636 / 230,966 checks**, respectively. Songs save/recall passes **2,136 checks** and **6,230 simulated power cuts** (54,660 storage checks). AddressSanitizer passes the focused 495-check suite.
+- 891 focused assertions cover exact FM bytes, all VA pair ranges, eight-entry ordering/bank association, UI filter no-load behavior, empty Bass selection, prepared blobs, save/recall and drum-clock stress. Four-bar chord/drum workloads complete for each pilot without voice-shed counter increments in the host fixture.
+- Existing library/VA regressions pass **47,046,684 / 230,966 checks**, respectively. Songs save/recall passes **2,136 checks** and **6,230 simulated power cuts** (54,660 storage checks). AddressSanitizer passes the focused patch/voice suite and the 270-check native HOME suite. Default-order, browse-map and saved-selection tests bring the focused suite to 891 checks; HOME bank/audio isolation also passes.
 - Portable legacy fingerprint covers every original FM/VA factory descriptor, all 97 original FM factory voices, all 93 original VA programs and old no-user global list entries. Independently compiled main snapshot and current firmware fingerprints match. The existing library regression additionally exercises five user/binding fixtures.
 - USB idle/capture comparisons at 44.1/48 kHz verify identical speaker samples for all eight programs, plus capture/main sample agreement at 44.1 kHz. This uses the real capture renderer with a mock USB controller, not a real host/device timing measurement.
-- Paired actual JieLi links against main `519f7aa`: XIP **545,168 → 546,768 bytes (+1,600)**; ordinary RAM **90,208 → 90,208**, POOL **316,792 → 316,792**, RAM code **3,128 → 3,128**. Remaining XIP 26,672 B, ordinary RAM 8,096 B, POOL 27,272 B. Build checks for layout, RAM code and protected regions pass. Linker-summary alignment accounting is retained in the build logs.
+- Paired actual JieLi links against main `519f7aa`: XIP **545,168 → 546,832 bytes (+1,664)**; ordinary RAM **90,208 → 90,208**, POOL **316,792 → 316,792**, RAM code **3,128 → 3,128**. Remaining XIP 26,608 B, ordinary RAM 8,096 B, POOL 27,272 B. Build checks for layout, RAM code and protected regions pass. Linker-summary alignment accounting is retained in the build logs.
 
 [Linked-build evidence](linked-builds.json) records both app identities. These are default local verification app builds; no firmware release/package was published. Physical CPU/deadline/USB latency and listening remain measurements for baseline issue #94, not claims inferred from host speed. No new synthesis buffers or voices were allocated.
 
@@ -59,4 +61,4 @@ sh tools/test_chase3.sh
 python3 tools/render_signature8.py
 ```
 
-The CI includes the focused checks; optional audition generation uses the same renderer without network or device writes. Source implementation and complete technical report are the deliverable; #96 and #98 remain the next work after this pilot.
+The CI includes the focused checks; optional audition generation uses the same renderer without network or device writes. Source implementation and complete technical report are the deliverable. Issues #96 and #98 are deferred at the owner’s request and are outside this PR.

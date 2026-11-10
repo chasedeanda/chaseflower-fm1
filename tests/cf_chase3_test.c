@@ -128,7 +128,7 @@ static void banks(void)
                 uint32_t e, p; cf_snd_at(part, i, &e, &p);
                 count += cf_bank_match(part, e, p);
             }
-            CHECK(count == (part == CF_PART_BASS ? 3u : 12u));
+            CHECK(count == (part == CF_PART_BASS ? 3u : 13u));
             for (uint32_t i = 0; i < count + 2; i++) {
                 CHECK(cf_snd_step(part, i & 1u ? -1 : 1));
                 CHECK(cf_entry_bank(cf_snd[part].engine, cf_snd[part].pos) == b);

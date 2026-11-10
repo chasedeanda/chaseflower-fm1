@@ -39,6 +39,19 @@ static const unsigned fac[]={97,93,98,94,95,96,99,97};
 static const char *fxnames[]={"Velvet","Wide Drift","Silver Plate","Deep Space","Phase Sweep","Slap","Silver Plate","Bite"};
 static void load(unsigned i){cf_pool_load(0,engines[i],pool_pos_factory(engines[i],fac[i]));settle();}
 static void invariants(void){
+ CHECK(!strcmp(cf_snd[0].name,"EMBER KEYS"));CHECK(!strcmp(cf_snd[2].name,"GHOST CHOIR"));
+ CHECK(cf_bank[0]==SIG8_PRIMARY_FILTER && cf_bank[1]==0 && cf_bank[2]==SIG8_PRIMARY_FILTER);
+ for(unsigned part=0;part<3;part++)for(unsigned j=0;j<cf_snd_count(part);j++)
+  CHECK(cf_snd_browse_rank(part,cf_snd_browse_index(part,j))==j);
+ for(unsigned j=0;j<8;j++){
+  uint32_t e,p;cf_snd_at(0,cf_snd_browse_index(0,j),&e,&p);
+  CHECK(e==engines[j]&&pool_entry(e,p).fk==fac[j]);
+  CHECK(!strcmp(cf_snd[0].name,names[j]));CHECK(cf_snd_step(0,1));
+ }
+ /* Presentation rotation never changes persisted old indices. */
+ CHECK(cf_snd_find(0,ENGI_FM6,"ORGAN"));uint32_t old=cf_snd_pos(0);cs.snd[0]=old;cs.snd_layer=cf_snd_pos(2);cfs_loaded=1;
+ cf_ui_init();CHECK(!strcmp(cf_snd[0].name,"ORGAN")&&cf_snd_pos(0)==old);
+ cfs_loaded=0;
  CHECK(FM6_NSLOT==128);CHECK(NELEM(FM6_PRESETS)==100);CHECK(VA_NPRESETS==98);
  cf_bank[0]=SIG8_FILTER;unsigned found=0;
  for(unsigned k=0;k<cf_snd_count(0);k++){uint32_t e,p;cf_snd_at(0,k,&e,&p);if(cf_bank_match(0,e,p)){
@@ -64,7 +77,7 @@ static void invariants(void){
  cf_bank[1]=SIG8_FILTER;CHECK(!cf_snd_step(1,1));CHECK(cf_snd_gen[1]==gen);CHECK(!memcmp(state,cf_snd,sizeof state));
  cf_bank[0]=SIG8_PRIMARY_FILTER;for(unsigned i=0;i<8;i++)CHECK(cf_bank_match(0,engines[i],pool_pos_factory(engines[i],fac[i])));
  CHECK(!cf_bank_match(0,ENGI_FM6,pool_pos_factory(ENGI_FM6,CHASE_FM_BASE+16)));
- cf_bank[0]=0;for(unsigned i=0;i<8;i++)CHECK(!cf_bank_match(0,engines[i],pool_pos_factory(engines[i],fac[i])));
+ cf_bank[0]=0;for(unsigned i=0;i<8;i++)CHECK(cf_bank_match(0,engines[i],pool_pos_factory(engines[i],fac[i])));
 }
 static void drum_stress(void){
  for(unsigned i=0;i<8;i++){
