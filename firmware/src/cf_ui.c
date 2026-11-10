@@ -473,7 +473,7 @@ static void ui_knob_info(int k, cf_knob_t *o)
             if (k < 3u) {
                 static const char *const PART[3] = {"CHORDS", "BASS", "LAYER"};
                 kfmt(o->name, 12, PART[k]);
-                kfmt(o->val, 14, CHASE_BANK_NAMES[cf_bank[k]]);
+                kfmt(o->val, 14, SIG8_BANK_NAMES[cf_bank[k]]);
             } else {
                 kfmt(o->name, 12, "RESET");
                 kfmt(o->val, 14, "All banks");
@@ -749,7 +749,7 @@ static void ui_knob_turn(int k, int d)
             if(k==3) cfd.rate=(uint8_t)clampi(cfd.rate+(d>0?1:-1),0,2);
             break;
         case 5:
-            if (k < 3u) cf_bank[k] = (uint8_t)clampi(cf_bank[k] + d, 0, 10);
+            if (k < 3u) cf_bank[k] = (uint8_t)clampi(cf_bank[k] + d, 0, SIG8_FILTER_MAX);
             else cf_bank[0] = cf_bank[1] = cf_bank[2] = 0;
             break;
         case 0:
@@ -2200,6 +2200,7 @@ static void cf_edited(uint32_t part)
 /* ------------------------------------------------------------------ init --- */
 static void cf_ui_init(void)
 {
+    cf_sound_browse_defaults();
     cpg.idea = CF_P_NONE; cpg.repeat_off=0; cpg.click_generation=cpa.click_generation;
     cpb_load();
     if (!cfs_loaded)                             /* (cf_splash read the settings record: they stay) */
@@ -2228,8 +2229,8 @@ static void cf_ui_init(void)
     if (cfs_loaded) {                            /* the sounds the parts had before the power-off */
         cf_snd_load_index(CF_PART_CHORD, cs.snd[0]);
         cf_snd_load_index(CF_PART_BASS, cs.snd[1]);
-    } else {                                     /* a new unit: FM ORGAN for the chords (the owner's pick), a round bass */
-        if (!cf_snd_find(CF_PART_CHORD, ENGI_FM6, "ORGAN"))
+    } else {                                     /* a new unit: Signature 8 chords, a round bass */
+        if (!cf_snd_find(CF_PART_CHORD, ENGI_FM6, "EMBER KEYS"))
             cf_snd_load_index(CF_PART_CHORD, 1);
 #if FELUCCA_VA
         if (!cf_snd_find(CF_PART_BASS, ENGI_VA, "DEEP SUB"))
@@ -2238,10 +2239,10 @@ static void cf_ui_init(void)
     }
     cs.snd[0] = (uint16_t)cf_snd_pos(CF_PART_CHORD);
     cs.snd[1] = (uint16_t)cf_snd_pos(CF_PART_BASS);
-    if (cs.snd_layer != 0xFFFFu)                 /* the LAYER's sound; a new unit's: a soft lead, else the second sound */
+    if (cs.snd_layer != 0xFFFFu)                 /* saved Layer identity; fresh settings use GHOST CHOIR */
         cf_snd_load_index(CF_PART_LAYER, cs.snd_layer);
 #if FELUCCA_VA
-    else if (!cf_snd_find(CF_PART_LAYER, ENGI_VA, "SOFT LEAD"))
+    else if (!cf_snd_find(CF_PART_LAYER, ENGI_VA, "GHOST CHOIR"))
 #else
     else
 #endif

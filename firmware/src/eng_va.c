@@ -506,6 +506,7 @@ static const uint8_t VAP_REESE[] = {OSC(0, SAW, 70, 0, -14), OSC(1, SAW, 70, 0, 
 /* {CUT, RES, FENV, DRIVE, MIX, DTN, ATK, REL}: the macros as the patch has them (cr_va_test checks) */
 #if CHASE_LIBRARY
 #include "chase_va_defs.h"
+#include "signature8_va_defs.h"
 #endif
 static const preset_t VA_PRESETS[] = {
     {"LUSH PAD", {70, 14, 10, 0, 64, 0, 86, 98}, {86, 90, 120, 98}, 0, 0, FX(0, 60, 20, 70), PAT(5)},
@@ -547,6 +548,7 @@ static const preset_t VA_PRESETS[] = {
     {"REESE BASS", {50, 16, 10, 30, 64, 0, 2, 50}, {2, 90, 120, 50}, 0, 1, FX(0, 0, 10, 10), PAT(2)},
 #if CHASE_LIBRARY
 #include "chase_va_rows.h"
+#include "signature8_va_rows.h"
 #endif
 };
 static const uint8_t *const VA_PRESET_EDITS[] = {VAP_LUSH, VAP_WARM, VAP_GLASS, VAP_SLOWSTR, VAP_ENSEMBLE, VAP_BRASS,
@@ -556,11 +558,13 @@ static const uint8_t *const VA_PRESET_EDITS[] = {VAP_LUSH, VAP_WARM, VAP_GLASS, 
     VAP_FATBASS, VAP_ACID, VAP_WOODBASS, VAP_REESE,
 #if CHASE_LIBRARY
 #include "chase_va_ptrs.h"
+#include "signature8_va_ptrs.h"
 #endif
 };
 _Static_assert(NELEM(VA_PRESETS) == NELEM(VA_PRESET_EDITS), "a patch per VA preset");
 #if CHASE_LIBRARY
-_Static_assert(NELEM(VA_PRESETS) == CHASE_VA_BASE + CHASE_VA_N, "append-only VA factory IDs");
+_Static_assert(SIG8_VA_BASE == CHASE_VA_BASE + CHASE_VA_N, "Signature VA IDs append after legacy");
+_Static_assert(NELEM(VA_PRESETS) == SIG8_VA_BASE + SIG8_VA_N, "append-only VA factory IDs");
 #endif
 #define VA_NPRESETS ((uint32_t)NELEM(VA_PRESETS))
 #undef O_

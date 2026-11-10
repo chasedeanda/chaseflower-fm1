@@ -1412,7 +1412,7 @@ static void view_library(int x)
             count += (uint32_t)cf_bank_match(p, e, pos);
         }
         fb_text(&CF_FONT_UI, x + 2, y, PART[p], FL_INK3, 1);
-        fb_text(&CF_FONT_UI, x + 56, y, CHASE_BANK_NAMES[cf_bank[p]], FL_INK, 1);
+        fb_text(&CF_FONT_UI, x + 56, y, SIG8_BANK_NAMES[cf_bank[p]], FL_INK, 1);
         kint(n, (int)count, 0);
         fb_text(&CF_FONT_UI, x + 192, y, n, C_ACC(0), 1);
     }

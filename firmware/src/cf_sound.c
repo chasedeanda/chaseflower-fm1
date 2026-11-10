@@ -73,6 +73,7 @@ static int cf_fac_part(uint32_t e, uint32_t f)   /* factory preset f of engine e
 #if CHASE_LIBRARY
     if (e == ENGI_FM6 && f >= CHASE_FM_BASE) return 0;
 #if FELUCCA_VA
+    if (e == ENGI_VA && f >= SIG8_VA_BASE) return 0;
     if (e == ENGI_VA && f >= CHASE_VA_BASE) return CHASE_VA_BASS[f - CHASE_VA_BASE];
 #endif
 #else
@@ -105,6 +106,8 @@ static int cf_ent_extra(uint32_t e, uint32_t pos)
     pool_ent_t en = pool_entry(e, pos);
     if (en.fk == PF_NONE) return 0;
 #if CHASE_LIBRARY
+    if (e == ENGI_FM6 && en.fk >= SIG8_FM_BASE) return 2u + SIG8_FM_BANK[en.fk - SIG8_FM_BASE];
+    if (e == ENGI_VA && en.fk >= SIG8_VA_BASE) return 2u + SIG8_VA_BANK[en.fk - SIG8_VA_BASE];
     /* Append later FM voices after the original FM and VA additions: saved global indices stay put. */
     if (e == ENGI_FM6 && en.fk >= CHASE_FM_BASE + CHASE_FM_LEGACY_N) return 2;
 #endif
@@ -113,22 +116,49 @@ static int cf_ent_extra(uint32_t e, uint32_t pos)
 }
 /* Browsing filters are session-local: changing one never changes the sound being played or saved. */
 static uint8_t cf_bank[3];
+static void cf_sound_browse_defaults(void)
+{
+    cf_bank[0] = cf_bank[2] = SIG8_PRIMARY_FILTER;
+    cf_bank[1] = 0;
+}
 static uint32_t cf_entry_bank(uint32_t e, uint32_t pos)
 {
     pool_ent_t en = pool_entry(e, pos);
 #if CHASE_LIBRARY
     if (en.fk != PF_NONE) {
+        if (e == ENGI_FM6 && en.fk >= SIG8_FM_BASE) return SIG8_FM_BANK[en.fk - SIG8_FM_BASE];
         if (e == ENGI_FM6 && en.fk >= CHASE_FM_BASE) return CHASE_FM_BANK[en.fk - CHASE_FM_BASE];
 #if FELUCCA_VA
+        if (e == ENGI_VA && en.fk >= SIG8_VA_BASE) return SIG8_VA_BANK[en.fk - SIG8_VA_BASE];
         if (e == ENGI_VA && en.fk >= CHASE_VA_BASE) return CHASE_VA_BANK[en.fk - CHASE_VA_BASE];
 #endif
     }
 #endif
     return en.kind == PK_USER ? 10u : 9u;
 }
+#if CHASE_LIBRARY
+/* Membership is keyed by immutable factory IDs, never by bank or persisted list position. */
+static int cf_signature_entry(uint32_t e, pool_ent_t en)
+{
+    return en.kind != PK_INIT && ((e == ENGI_FM6 && en.fk >= SIG8_FM_BASE && en.fk < SIG8_FM_BASE + SIG8_FM_N) ||
+        (e == ENGI_VA && en.fk >= SIG8_VA_BASE && en.fk < SIG8_VA_BASE + SIG8_VA_N));
+}
+static int cf_primary_duplicate(uint32_t e, pool_ent_t en)
+{
+    static const uint8_t ids[] = {17,18,20,36,52,34,35,43,42,57,49,60};
+    if (e != ENGI_FM6 || en.kind != PK_FACTORY) return 0;
+    for (uint32_t i=0; i<NELEM(ids); i++) if (en.fk == CHASE_FM_BASE + ids[i] - 1u) return 1;
+    return 0;
+}
+#endif
 static int cf_bank_match(uint32_t part, uint32_t e, uint32_t pos)
 {
     uint32_t b = cf_bank[part % 3u];
+    pool_ent_t en = pool_entry(e, pos);
+#if CHASE_LIBRARY
+    if (b == SIG8_FILTER) return cf_signature_entry(e, en);
+    if (b == SIG8_PRIMARY_FILTER) return !cf_primary_duplicate(e, en);
+#endif
     if (!b) return 1;
     if (b == 10u) return pool_entry(e, pos).kind == PK_USER;
     return b == cf_entry_bank(e, pos);
@@ -141,7 +171,7 @@ static void cf_list_build(void)
     cf_lst.ok = 1;
     cf_lst.gen = up_gen;
     cf_lst.n[0] = cf_lst.n[1] = 0;
-    for (pass = 0; pass < 3u; pass++)
+    for (pass = 0; pass < 11u; pass++)
     for (i = 0; i < CF_NENG; i++) {
         uint32_t e = CF_ENGINES[i], np = pool_count(e);
         for (pos = 0; pos < np && pos < 256u; pos++) {
@@ -427,7 +457,7 @@ static void cf_snd_build(uint32_t part, uint32_t e, uint32_t pos, cf_stage_t *s)
                 uint8_t pk[FM6_PACKED], v[FP_SIZE + 1u];
                 if (s->user && s->p[P_E7] >= (int16_t)FM6_NFACTORY && s->p[P_E7] < (int16_t)(FM6_NFACTORY + 27u))
                     s->p[P_E7] = (int16_t)(s->p[P_E7] + FM6_NROM);
-                fm6_slot_get((uint32_t)clamp(s->p[P_E7], 0, FM6_NSLOT - 1), pk);
+                fm6_preset_get(!s->user && pe.kind == PK_FACTORY ? s->preset : PF_NONE, (uint32_t)clamp(s->p[P_E7], 0, FM6_NSLOT - 1), pk);
                 fm6_unpack(pk, v);
                 fm6_blob_make(v, FM6_FNDEF, s->blob);
             }
@@ -604,9 +634,20 @@ static void cf_snd_load_index(uint32_t part, uint32_t idx)
     cf_snd_at(part, idx, &e, &pos);
     cf_pool_load(part, e, pos);
 }
+/* Signature 8 leads browsing; canonical pool/global positions stay append-only for storage. */
+static uint32_t cf_snd_browse_index(uint32_t part, uint32_t at)
+{
+    uint32_t n = cf_snd_count(part), lead = (part & 1u) ? 0u : SIG8_FM_N + SIG8_VA_N;
+    return n ? (at + n - lead) % n : 0;
+}
+static uint32_t cf_snd_browse_rank(uint32_t part, uint32_t index)
+{
+    uint32_t n = cf_snd_count(part), lead = (part & 1u) ? 0u : SIG8_FM_N + SIG8_VA_N;
+    return n ? (index + lead) % n : 0;
+}
 static int cf_snd_step(uint32_t part, int32_t d)
 {
-    int32_t n = (int32_t)cf_snd_count(part), i = (int32_t)cf_snd_pos(part);
+    int32_t n = (int32_t)cf_snd_count(part), i = (int32_t)cf_snd_browse_rank(part, cf_snd_pos(part));
     int32_t dir = d < 0 ? -1 : 1, steps = d < 0 ? -d : d, found = 0;
     if (n <= 0 || !steps) return 0;
     if (steps > n) steps = n;
@@ -615,12 +656,12 @@ static int cf_snd_step(uint32_t part, int32_t d)
         for (tries = 0; tries < n; tries++) {
             uint32_t e, pos;
             i = (i + dir + n) % n;
-            cf_snd_at(part, (uint32_t)i, &e, &pos);
+            cf_snd_at(part, cf_snd_browse_index(part, (uint32_t)i), &e, &pos);
             if (cf_bank_match(part, e, pos)) { found = 1; break; }
         }
         if (tries == n) return 0;
     }
-    if (found) cf_snd_load_index(part, (uint32_t)i);
+    if (found) cf_snd_load_index(part, cf_snd_browse_index(part, (uint32_t)i));
     return found;
 }
 /* a sound by its name in an engine's factory list (the defaults), 0 when not there */

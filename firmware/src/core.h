@@ -17,6 +17,7 @@
 #endif
 #if CHASE_LIBRARY
 #include "chase_meta.h"
+#include "signature8_meta.h"
 #endif
 
 /* ------------------------------------------------------------ sizes --- */

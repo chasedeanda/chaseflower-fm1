@@ -213,7 +213,7 @@ CORD includes FM and virtual-analog sounds, chord and linked bass parts, and eig
 | **Wood & Water** | Mallets, plucks and reed-like synths | Wood |
 | **Chill Circuit** | Soft electronic chords, moving pads and bass | Chill |
 
-In **GLO → Sound library**, K1/K2/K3 filter chord/bass/layer banks; K4 returns all filters to **All**. Filtering leaves the loaded sound alone until you choose another. Filters reset to All at power-on; saved sound selections remain.
+In **GLO → Sound library**, K1/K2/K3 filter chord/bass/layer banks; K4 returns all filters to **All**. Filtering leaves the loaded sound alone until you choose another. At power-on, chord/layer discovery defaults to Primary with Signature 8 first; Bass uses All. Saved sound selections remain.
 
 <p align="center">
   <img src="docs/images/house-style/devil-envelope.png" width="240" alt="Envelope editor with attack, decay, sustain and release">
@@ -508,6 +508,10 @@ A `.bin` app image or GitHub source ZIP is not an installer package. The compati
 | **Recording slots are full** | Clear a selected take deliberately, or enable AUTO DEL to replace the oldest after a successful new take. |
 
 Diagnostics can show timing, voice shedding, memory and USB counters. Host/browser CPU values are not device measurements. [Diagnostics guide](docs/DIAGNOSTICS.md) · [Report an issue](https://github.com/chasedeanda/cord-fm1/issues)
+
+## Signature 8 development pilot
+
+This development branch puts [eight fixed-recipe Signature sounds](docs/signature8/README.md) first in chord/layer browsing. Fresh settings start on EMBER KEYS (Chords) and GHOST CHOIR (Layer); existing saved sound selections and IDs are preserved. **GLO → Sound library** defaults to Primary; Signature 8 isolates the eight and All retains the full library. These source changes are separate from the published 1.0.3 package.
 
 ## Build the firmware
 

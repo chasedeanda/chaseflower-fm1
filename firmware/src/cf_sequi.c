@@ -1474,12 +1474,13 @@ static void sq_home_put(const cf_sref_t k[3])
 static void sq_snd_turn(uint32_t pat, uint32_t part, int d)
 {
     uint32_t n = cf_snd_count(part), home = (part == CF_PART_LAYER ? cs.snd_layer : cs.snd[part]) % (n ? n : 1u);
-    uint32_t e, pos, at = 0, m = n + 1u;          /* at: 0 HOME, k the row's (home + k - 1) */
+    uint32_t e, pos, at = 0, m = n + 1u;          /* 0 HOME, then the sound's presentation row */
+    home = cf_snd_browse_rank(part, home);
     cf_snd_t mt;
     if (!n || pat >= SQ_NPAT)
         return;
     if (cfps_where(pat, part, &e, &pos))
-        at = (cf_snd_index(part, e, pos) + n - home) % n + 1u;
+        at = (cf_snd_browse_rank(part, cf_snd_index(part, e, pos)) + n - home) % n + 1u;
     {   /* HOME remains reachable in every bank; filter only concrete sound choices. */
         int steps = d < 0 ? -d : d, dir = d < 0 ? -1 : 1;
         if (steps > (int)m) steps = (int)m;
@@ -1489,7 +1490,7 @@ static void sq_snd_turn(uint32_t pat, uint32_t part, int d)
             for (tries = 0; tries < m; tries++) {
                 at = (uint32_t)((int32_t)at + dir + (int32_t)m) % m;
                 if (!at) break;
-                cf_snd_at(part, (home + at - 1u) % n, &e, &pos);
+                cf_snd_at(part, cf_snd_browse_index(part, (home + at - 1u) % n), &e, &pos);
                 if (cf_bank_match(part, e, pos)) break;
             }
         }
@@ -1499,7 +1500,7 @@ static void sq_snd_turn(uint32_t pat, uint32_t part, int d)
         cfps_set(pat, part, 0);
         return;
     }
-    cf_snd_at(part, (home + at - 1u) % n, &e, &pos);
+    cf_snd_at(part, cf_snd_browse_index(part, (home + at - 1u) % n), &e, &pos);
     cf_snd_meta(e, pos, &mt);
     cfps_set(pat, part, &mt);
 }
