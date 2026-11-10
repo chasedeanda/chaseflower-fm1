@@ -1,0 +1,7 @@
+boot: normal reset power-on failed 0 pending 1 counted 0 prev_stage 0 (none)
+variations: 154555 checks, 0 failures
+variations: 2 checks, 0 failures
+variations: 165 checks, 0 failures
+variations: 2 checks, 0 failures
+variations: 165 checks, 0 failures
+PASS: queued variations preserve identical physical/six-channel USB audio while waiting at both rates.

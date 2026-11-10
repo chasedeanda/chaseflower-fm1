@@ -1,0 +1,7 @@
+boot: normal reset power-on failed 0 pending 1 counted 0 prev_stage 0 (none)
+native pages and motion: 1265 checks / 592 routes, 0 failures
+native pages and motion: 5 checks / 0 routes, 0 failures
+native pages and motion: 5 checks / 0 routes, 0 failures
+native pages and motion: 5 checks / 0 routes, 0 failures
+native pages and motion: 5 checks / 0 routes, 0 failures
+PASS: Motion On/Off preserve identical physical audio, six USB channels and MIDI at both rates.

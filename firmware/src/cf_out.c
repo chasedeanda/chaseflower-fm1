@@ -701,6 +701,7 @@ static void cf_audio_block(uint32_t n)
         if (!cpa.on) cfm_tick(n, pulses);
         cf_clock_out();
     }
+    cge_block(n);
 }
 
 /* ISR-owned scalar activity mailbox; no retained sample buffer or new clock. */

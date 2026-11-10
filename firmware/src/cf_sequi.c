@@ -1381,6 +1381,7 @@ static int sq_snd_tweaked(uint32_t o1, uint32_t part)   /* owner o1 (0 HOME, pat
 }
 static void sq_snd_poll(void)
 {
+    cge_sound_poll();if(cge_active())return;
     uint32_t cur = sq_cur_pat(), nx = sqp.on ? sq_next_pat() : 0xFFu, part, e, pos, ne, np, follow = 0;
     for (part = 0; part < 3u; part++) {
         cf_stage_t *s = &cf_stage[part];

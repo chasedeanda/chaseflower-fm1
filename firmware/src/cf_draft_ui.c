@@ -41,7 +41,7 @@ static int cfd_commit(const cf_song_t *s)
 }
 static void cfd_clone(unsigned idea)
 {
-    cf_song_t s;if(!cf_song_clone(&s,cf_progression_get(idea)))return;
+    cf_song_t s;if(idea==CF_P_ENGINE){if(!cge_snapshot(&s))return;}else if(!cf_song_clone(&s,cf_progression_get(idea)))return;
     s.tonic=cs.chord.tonic;s.scale=cf_harmony_supported(cs.chord.scale,CF_Q_BASIC)?cs.chord.scale:s.scale;s.bpm=cs.bpm;
     s.rhythm=cpg.rhythm<DM_N?DM_RHY[cpg.rhythm].id:cpg.rhythm==CPA_CLICK?65534:65535;
     s.kit=cpg.rhythm<DM_N?dm_kit(cpg.rhythm):0;s.swing=cpg.rhythm<DM_N?dm_swing(cpg.rhythm):0;

@@ -1064,6 +1064,9 @@ static void mix_part_out(track_t *t, int32_t *b, int32_t *side, uint8_t side_on,
         if (t->trim && lv)                              /* the sound's trim (ChoralRoot), after LEVEL: 0.5 dB steps */
             lv = clamp(lv + t->trim, 1, 127);
         lvl = LEVEL_Q12[lv];
+#if CF_ENGINE
+        lvl = (lvl * (int32_t)cge_mix_gain((unsigned)(t-trk)) + 16384) >> 15;
+#endif
 #if FELUCCA_VA
         pan = va_pan(t, pan);                           /* eng_va.c: VA's matrix PAN */
 #endif

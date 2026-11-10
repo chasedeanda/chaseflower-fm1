@@ -1,0 +1,5 @@
+boot: normal reset power-on failed 0 pending 1 counted 0 prev_stage 0 (none)
+native editor: 3144 checks, 0 failures
+object 0 (512-byte entries): 209 changes without an erase
+object 1 (256-byte entries): 225 changes without an erase
+st_log: 1500 steps (1307 saves as changes, 124 whole, 11 refused: no room without an erase), 2059 power cuts (201 cut again at the power-on), 10690 checks, 0 failed

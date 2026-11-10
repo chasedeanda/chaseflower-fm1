@@ -1,0 +1,1249 @@
+{
+  "schema": "cord-engine-scenes-v1-research",
+  "source_revision": "519f7aa2747f6eb1447210974d85e9066342af2d",
+  "length_bars": 16,
+  "meter": "4/4",
+  "ppqn": 96,
+  "harmonic_layout": "four original chords; two bars each; repeat eight-bar harmonic phrase twice; 16-bar orchestration changes across repetition",
+  "not_transcriptions": true,
+  "groove_id_note": "Stable DM_RHY[].id (not array index). Rocksteady ID 64 is proposed new work, not currently present.",
+  "scene_definitions": [
+    {
+      "id": 1,
+      "slug": "FELT_NIGHT",
+      "name": "Felt Night",
+      "reference": {
+        "artist": "Nils Frahm",
+        "work": "Keep",
+        "release": "Felt (2011)",
+        "source": "https://www.nilsfrahm.com/works/felt/"
+      },
+      "bpm": 72,
+      "key": "C",
+      "mode": "Ionian",
+      "sound": "EMBER KEYS",
+      "bass_sound": null,
+      "groove_id": null,
+      "fx_recipe": "Velvet",
+      "phase_profile": "intimate",
+      "chord_articulation": "held",
+      "defaults": {
+        "energy": 26,
+        "movement": 12,
+        "variation": 18
+      },
+      "chords": [
+        {
+          "symbol": "Cmaj9",
+          "notes_midi": [
+            48,
+            52,
+            55,
+            59,
+            62
+          ]
+        },
+        {
+          "symbol": "Am9",
+          "notes_midi": [
+            45,
+            48,
+            52,
+            55,
+            59
+          ]
+        },
+        {
+          "symbol": "Fmaj9",
+          "notes_midi": [
+            41,
+            45,
+            48,
+            52,
+            55
+          ]
+        },
+        {
+          "symbol": "G6add9",
+          "notes_midi": [
+            43,
+            47,
+            50,
+            52,
+            57
+          ]
+        }
+      ],
+      "bars_chord_index": [
+        0,
+        0,
+        1,
+        1,
+        2,
+        2,
+        3,
+        3,
+        0,
+        0,
+        1,
+        1,
+        2,
+        2,
+        3,
+        3
+      ],
+      "arrangement_role": "original inspired backing track — not an arrangement transcription"
+    },
+    {
+      "id": 2,
+      "slug": "HEAVENLY_GAZE",
+      "name": "Heavenly Gaze",
+      "reference": {
+        "artist": "Cocteau Twins",
+        "work": "Heaven or Las Vegas",
+        "release": "Heaven or Las Vegas (1990)",
+        "source": "https://cocteautwins.com/cocteau-twins-equipment-and-sounds.html"
+      },
+      "bpm": 104,
+      "key": "E",
+      "mode": "Ionian",
+      "sound": "GHOST CHOIR",
+      "bass_sound": "TAPE SUB",
+      "groove_id": 56,
+      "fx_recipe": "Wide Drift",
+      "phase_profile": "dreampop",
+      "chord_articulation": "held",
+      "defaults": {
+        "energy": 55,
+        "movement": 42,
+        "variation": 25
+      },
+      "chords": [
+        {
+          "symbol": "Eadd9",
+          "notes_midi": [
+            52,
+            56,
+            59,
+            66
+          ]
+        },
+        {
+          "symbol": "Bsus4",
+          "notes_midi": [
+            47,
+            52,
+            54,
+            59
+          ]
+        },
+        {
+          "symbol": "C#m7",
+          "notes_midi": [
+            49,
+            52,
+            56,
+            59
+          ]
+        },
+        {
+          "symbol": "Amaj9",
+          "notes_midi": [
+            45,
+            49,
+            52,
+            56,
+            59
+          ]
+        }
+      ],
+      "bars_chord_index": [
+        0,
+        0,
+        1,
+        1,
+        2,
+        2,
+        3,
+        3,
+        0,
+        0,
+        1,
+        1,
+        2,
+        2,
+        3,
+        3
+      ],
+      "arrangement_role": "original inspired backing track — not an arrangement transcription",
+      "regenerate_candidates": {
+        "harmonies": [
+          [
+            {
+              "symbol": "Eadd9",
+              "notes_midi": [
+                52,
+                56,
+                59,
+                66
+              ]
+            },
+            {
+              "symbol": "Bsus4",
+              "notes_midi": [
+                47,
+                52,
+                54,
+                59
+              ]
+            },
+            {
+              "symbol": "C#m7",
+              "notes_midi": [
+                49,
+                52,
+                56,
+                59
+              ]
+            },
+            {
+              "symbol": "Amaj9",
+              "notes_midi": [
+                45,
+                49,
+                52,
+                56,
+                59
+              ]
+            }
+          ],
+          [
+            {
+              "symbol": "Emaj9",
+              "notes_midi": [
+                52,
+                56,
+                59,
+                63,
+                66
+              ]
+            },
+            {
+              "symbol": "Bsus4",
+              "notes_midi": [
+                47,
+                52,
+                54,
+                59
+              ]
+            },
+            {
+              "symbol": "C#m9",
+              "notes_midi": [
+                49,
+                52,
+                56,
+                59,
+                63
+              ]
+            },
+            {
+              "symbol": "Aadd9",
+              "notes_midi": [
+                45,
+                49,
+                52,
+                59
+              ]
+            }
+          ],
+          [
+            {
+              "symbol": "E6add9",
+              "notes_midi": [
+                52,
+                56,
+                59,
+                61,
+                66
+              ]
+            },
+            {
+              "symbol": "Badd11",
+              "notes_midi": [
+                47,
+                51,
+                52,
+                54
+              ]
+            },
+            {
+              "symbol": "C#m11",
+              "notes_midi": [
+                49,
+                52,
+                56,
+                59,
+                63,
+                66
+              ]
+            },
+            {
+              "symbol": "Amaj7",
+              "notes_midi": [
+                45,
+                49,
+                52,
+                56
+              ]
+            }
+          ]
+        ],
+        "chord_sounds": [
+          "GHOST CHOIR",
+          "BREATH PAD",
+          "TAPE STRINGS"
+        ],
+        "bass_sounds": [
+          "TAPE SUB",
+          "WARM TRIANGL",
+          "DEEP SINE"
+        ],
+        "grooves": [
+          56,
+          1
+        ],
+        "fx_recipes": [
+          "Wide Drift",
+          "Deep Space",
+          "Orbit"
+        ]
+      }
+    },
+    {
+      "id": 3,
+      "slug": "BUTTERFLY_CLUB",
+      "name": "Butterfly Club",
+      "reference": {
+        "artist": "Herbie Hancock",
+        "work": "Butterfly",
+        "release": "Thrust (1974)",
+        "source": "https://www.herbiehancock.com/music/discography/album/thrust/"
+      },
+      "bpm": 86,
+      "key": "Ab",
+      "mode": "Ionian",
+      "sound": "NOIR TINES",
+      "bass_sound": "ROUND FINGER",
+      "groove_id": 61,
+      "fx_recipe": "Silver Plate",
+      "phase_profile": "neosoul",
+      "chord_articulation": "syncopated",
+      "defaults": {
+        "energy": 52,
+        "movement": 54,
+        "variation": 30
+      },
+      "chords": [
+        {
+          "symbol": "Fm9",
+          "notes_midi": [
+            53,
+            56,
+            60,
+            63,
+            67
+          ]
+        },
+        {
+          "symbol": "Bbm9",
+          "notes_midi": [
+            46,
+            49,
+            53,
+            56,
+            60
+          ]
+        },
+        {
+          "symbol": "Eb13",
+          "notes_midi": [
+            51,
+            55,
+            58,
+            61,
+            65,
+            72
+          ]
+        },
+        {
+          "symbol": "Abmaj9",
+          "notes_midi": [
+            44,
+            48,
+            51,
+            55,
+            58
+          ]
+        }
+      ],
+      "bars_chord_index": [
+        0,
+        0,
+        1,
+        1,
+        2,
+        2,
+        3,
+        3,
+        0,
+        0,
+        1,
+        1,
+        2,
+        2,
+        3,
+        3
+      ],
+      "arrangement_role": "original inspired backing track — not an arrangement transcription"
+    },
+    {
+      "id": 4,
+      "slug": "APOLLO_DRIFT",
+      "name": "Apollo Drift",
+      "reference": {
+        "artist": "Brian Eno",
+        "work": "An Ending (Ascent)",
+        "release": "Apollo: Atmospheres and Soundtracks (1983)",
+        "source": "https://www.musicradar.com/news/the-40-greatest-synth-sounds-of-all-time-no-28-brian-eno-an-ending-ascent"
+      },
+      "bpm": 68,
+      "key": "D",
+      "mode": "Ionian",
+      "sound": "APOLLO VEIL",
+      "bass_sound": null,
+      "groove_id": null,
+      "fx_recipe": "Deep Space",
+      "phase_profile": "ambient",
+      "chord_articulation": "held",
+      "defaults": {
+        "energy": 20,
+        "movement": 18,
+        "variation": 12
+      },
+      "chords": [
+        {
+          "symbol": "Dmaj9",
+          "notes_midi": [
+            50,
+            54,
+            57,
+            61,
+            64
+          ]
+        },
+        {
+          "symbol": "Bm11",
+          "notes_midi": [
+            47,
+            50,
+            54,
+            57,
+            61,
+            64
+          ]
+        },
+        {
+          "symbol": "Gmaj9",
+          "notes_midi": [
+            43,
+            47,
+            50,
+            54,
+            57
+          ]
+        },
+        {
+          "symbol": "Aadd9",
+          "notes_midi": [
+            45,
+            49,
+            52,
+            59
+          ]
+        }
+      ],
+      "bars_chord_index": [
+        0,
+        0,
+        1,
+        1,
+        2,
+        2,
+        3,
+        3,
+        0,
+        0,
+        1,
+        1,
+        2,
+        2,
+        3,
+        3
+      ],
+      "arrangement_role": "original inspired backing track — not an arrangement transcription"
+    },
+    {
+      "id": 5,
+      "slug": "PLASTIC_MATTER",
+      "name": "Plastic Matter",
+      "reference": {
+        "artist": "SOPHIE",
+        "work": "Faceshopping",
+        "release": "OIL OF EVERY PEARL'S UN-INSIDES (2018)",
+        "source": "https://blog.scienceandmediamuseum.org.uk/sophie-music-and-legacy/"
+      },
+      "bpm": 150,
+      "key": "C#",
+      "mode": "Aeolian",
+      "sound": "FROSTWIRE",
+      "bass_sound": "DARK PULSE",
+      "groove_id": 34,
+      "fx_recipe": "Bite",
+      "phase_profile": "hyperpop",
+      "chord_articulation": "stab",
+      "defaults": {
+        "energy": 72,
+        "movement": 62,
+        "variation": 42
+      },
+      "chords": [
+        {
+          "symbol": "C#madd9",
+          "notes_midi": [
+            49,
+            52,
+            56,
+            63
+          ]
+        },
+        {
+          "symbol": "Amaj7",
+          "notes_midi": [
+            45,
+            49,
+            52,
+            56
+          ]
+        },
+        {
+          "symbol": "Emaj9",
+          "notes_midi": [
+            52,
+            56,
+            59,
+            63,
+            66
+          ]
+        },
+        {
+          "symbol": "Bsus4",
+          "notes_midi": [
+            47,
+            52,
+            54,
+            59
+          ]
+        }
+      ],
+      "bars_chord_index": [
+        0,
+        0,
+        1,
+        1,
+        2,
+        2,
+        3,
+        3,
+        0,
+        0,
+        1,
+        1,
+        2,
+        2,
+        3,
+        3
+      ],
+      "arrangement_role": "original inspired backing track — not an arrangement transcription"
+    },
+    {
+      "id": 6,
+      "slug": "HOT_MILK_CLUB",
+      "name": "Hot Milk Club",
+      "reference": {
+        "artist": "Jackie Mittoo & The Soul Vendors",
+        "work": "Hot Milk",
+        "release": "Studio One single (1968)",
+        "source": "https://jamaicamusicatlas.com/entity/riddim/hot-milk-riddim"
+      },
+      "bpm": 82,
+      "key": "G",
+      "mode": "Mixolydian",
+      "sound": "OFFBEAT DUB",
+      "bass_sound": "DUB SUB",
+      "groove_id": 64,
+      "fx_recipe": "Slap",
+      "phase_profile": "rocksteady",
+      "chord_articulation": "offbeat",
+      "defaults": {
+        "energy": 52,
+        "movement": 72,
+        "variation": 23
+      },
+      "chords": [
+        {
+          "symbol": "G7",
+          "notes_midi": [
+            43,
+            47,
+            50,
+            53
+          ]
+        },
+        {
+          "symbol": "Cmaj7",
+          "notes_midi": [
+            48,
+            52,
+            55,
+            59
+          ]
+        },
+        {
+          "symbol": "Dm7",
+          "notes_midi": [
+            50,
+            53,
+            57,
+            60
+          ]
+        },
+        {
+          "symbol": "G9",
+          "notes_midi": [
+            43,
+            47,
+            50,
+            53,
+            57
+          ]
+        }
+      ],
+      "bars_chord_index": [
+        0,
+        0,
+        1,
+        1,
+        2,
+        2,
+        3,
+        3,
+        0,
+        0,
+        1,
+        1,
+        2,
+        2,
+        3,
+        3
+      ],
+      "arrangement_role": "original inspired backing track — not an arrangement transcription"
+    },
+    {
+      "id": 7,
+      "slug": "INTERLOCK_WOOD",
+      "name": "Interlock Wood",
+      "reference": {
+        "artist": "Steve Reich",
+        "work": "Mallet Quartet — I. Fast",
+        "release": "Mallet Quartet (2009)",
+        "source": "https://stevereich.com/composition/mallet-quartet/"
+      },
+      "bpm": 112,
+      "key": "C",
+      "mode": "Ionian",
+      "sound": "CEDAR MALLET",
+      "bass_sound": null,
+      "groove_id": null,
+      "fx_recipe": "Clean",
+      "phase_profile": "mallet",
+      "chord_articulation": "arp_eighth",
+      "defaults": {
+        "energy": 48,
+        "movement": 85,
+        "variation": 24
+      },
+      "chords": [
+        {
+          "symbol": "C6add9",
+          "notes_midi": [
+            48,
+            52,
+            55,
+            57,
+            62
+          ]
+        },
+        {
+          "symbol": "Dm9",
+          "notes_midi": [
+            50,
+            53,
+            57,
+            60,
+            64
+          ]
+        },
+        {
+          "symbol": "Em7",
+          "notes_midi": [
+            52,
+            55,
+            59,
+            62
+          ]
+        },
+        {
+          "symbol": "Gsus4add9",
+          "notes_midi": [
+            43,
+            48,
+            50,
+            57
+          ]
+        }
+      ],
+      "bars_chord_index": [
+        0,
+        0,
+        1,
+        1,
+        2,
+        2,
+        3,
+        3,
+        0,
+        0,
+        1,
+        1,
+        2,
+        2,
+        3,
+        3
+      ],
+      "arrangement_role": "original inspired backing track — not an arrangement transcription",
+      "implementation_note": "Single chord arpeggio in initial engine; no claim of authentic two-part marimba canon. Independent interlock layer is later scope."
+    },
+    {
+      "id": 8,
+      "slug": "NEON_START",
+      "name": "Neon Start",
+      "reference": {
+        "artist": "The Cars",
+        "work": "Let’s Go",
+        "release": "Candy-O (1979)",
+        "source": "https://midi.org/dave-smith-and-sequential-circuits"
+      },
+      "bpm": 126,
+      "key": "A",
+      "mode": "Ionian",
+      "sound": "RAZOR PULSE",
+      "bass_sound": "CLEAN MONO",
+      "groove_id": 29,
+      "fx_recipe": "Bite",
+      "phase_profile": "synthpop",
+      "chord_articulation": "quarter_stabs",
+      "defaults": {
+        "energy": 66,
+        "movement": 65,
+        "variation": 33
+      },
+      "chords": [
+        {
+          "symbol": "Aadd9",
+          "notes_midi": [
+            45,
+            49,
+            52,
+            59
+          ]
+        },
+        {
+          "symbol": "F#m7",
+          "notes_midi": [
+            42,
+            45,
+            49,
+            52
+          ]
+        },
+        {
+          "symbol": "Dmaj9",
+          "notes_midi": [
+            50,
+            54,
+            57,
+            61,
+            64
+          ]
+        },
+        {
+          "symbol": "E7add9",
+          "notes_midi": [
+            52,
+            56,
+            59,
+            62,
+            66
+          ]
+        }
+      ],
+      "bars_chord_index": [
+        0,
+        0,
+        1,
+        1,
+        2,
+        2,
+        3,
+        3,
+        0,
+        0,
+        1,
+        1,
+        2,
+        2,
+        3,
+        3
+      ],
+      "arrangement_role": "original inspired backing track — not an arrangement transcription",
+      "implementation_note": "RAZOR PULSE is a sync LEAD. The first Engine pilot does not add independently generated lead lines; future layer-role implementation is required before claiming a two-part synth-pop arrangement."
+    }
+  ],
+  "phase_profiles": {
+    "intimate": [
+      {
+        "bars": [
+          1,
+          4
+        ],
+        "chord": 82,
+        "bass": 0,
+        "drums": 0,
+        "arp": "off"
+      },
+      {
+        "bars": [
+          5,
+          8
+        ],
+        "chord": 90,
+        "bass": 0,
+        "drums": 0,
+        "arp": "off"
+      },
+      {
+        "bars": [
+          9,
+          12
+        ],
+        "chord": 100,
+        "bass": 0,
+        "drums": 0,
+        "arp": "off"
+      },
+      {
+        "bars": [
+          13,
+          16
+        ],
+        "chord": 78,
+        "bass": 0,
+        "drums": 0,
+        "arp": "off"
+      }
+    ],
+    "dreampop": [
+      {
+        "bars": [
+          1,
+          4
+        ],
+        "chord": 82,
+        "bass": 0,
+        "drums": 0,
+        "arp": "off"
+      },
+      {
+        "bars": [
+          5,
+          8
+        ],
+        "chord": 90,
+        "bass": 66,
+        "drums": 68,
+        "arp": "off"
+      },
+      {
+        "bars": [
+          9,
+          12
+        ],
+        "chord": 95,
+        "bass": 85,
+        "drums": 88,
+        "arp": "movement_ge_65"
+      },
+      {
+        "bars": [
+          13,
+          14
+        ],
+        "chord": 90,
+        "bass": 65,
+        "drums": 55,
+        "arp": "off"
+      },
+      {
+        "bars": [
+          15,
+          16
+        ],
+        "chord": 80,
+        "bass": 0,
+        "drums": 0,
+        "arp": "off"
+      }
+    ],
+    "neosoul": [
+      {
+        "bars": [
+          1,
+          4
+        ],
+        "chord": 80,
+        "bass": 45,
+        "drums": 0,
+        "arp": "off"
+      },
+      {
+        "bars": [
+          5,
+          8
+        ],
+        "chord": 90,
+        "bass": 80,
+        "drums": 70,
+        "arp": "off"
+      },
+      {
+        "bars": [
+          9,
+          12
+        ],
+        "chord": 95,
+        "bass": 90,
+        "drums": 88,
+        "arp": "movement_ge_75"
+      },
+      {
+        "bars": [
+          13,
+          14
+        ],
+        "chord": 85,
+        "bass": 75,
+        "drums": 60,
+        "arp": "off"
+      },
+      {
+        "bars": [
+          15,
+          16
+        ],
+        "chord": 75,
+        "bass": 50,
+        "drums": 20,
+        "arp": "off"
+      }
+    ],
+    "ambient": [
+      {
+        "bars": [
+          1,
+          4
+        ],
+        "chord": 65,
+        "bass": 0,
+        "drums": 0,
+        "arp": "off"
+      },
+      {
+        "bars": [
+          5,
+          8
+        ],
+        "chord": 76,
+        "bass": 0,
+        "drums": 0,
+        "arp": "off"
+      },
+      {
+        "bars": [
+          9,
+          12
+        ],
+        "chord": 85,
+        "bass": 0,
+        "drums": 0,
+        "arp": "off"
+      },
+      {
+        "bars": [
+          13,
+          16
+        ],
+        "chord": 65,
+        "bass": 0,
+        "drums": 0,
+        "arp": "off"
+      }
+    ],
+    "hyperpop": [
+      {
+        "bars": [
+          1,
+          4
+        ],
+        "chord": 65,
+        "bass": 60,
+        "drums": 65,
+        "arp": "off"
+      },
+      {
+        "bars": [
+          5,
+          8
+        ],
+        "chord": 90,
+        "bass": 75,
+        "drums": 80,
+        "arp": "off"
+      },
+      {
+        "bars": [
+          9,
+          12
+        ],
+        "chord": 100,
+        "bass": 95,
+        "drums": 100,
+        "arp": "movement_ge_75"
+      },
+      {
+        "bars": [
+          13,
+          14
+        ],
+        "chord": 75,
+        "bass": 70,
+        "drums": 40,
+        "arp": "off"
+      },
+      {
+        "bars": [
+          15,
+          16
+        ],
+        "chord": 55,
+        "bass": 0,
+        "drums": 0,
+        "arp": "off"
+      }
+    ],
+    "rocksteady": [
+      {
+        "bars": [
+          1,
+          4
+        ],
+        "chord": 76,
+        "bass": 60,
+        "drums": 55,
+        "arp": "off"
+      },
+      {
+        "bars": [
+          5,
+          8
+        ],
+        "chord": 85,
+        "bass": 72,
+        "drums": 68,
+        "arp": "off"
+      },
+      {
+        "bars": [
+          9,
+          12
+        ],
+        "chord": 92,
+        "bass": 78,
+        "drums": 80,
+        "arp": "off"
+      },
+      {
+        "bars": [
+          13,
+          14
+        ],
+        "chord": 82,
+        "bass": 65,
+        "drums": 60,
+        "arp": "off"
+      },
+      {
+        "bars": [
+          15,
+          16
+        ],
+        "chord": 70,
+        "bass": 50,
+        "drums": 45,
+        "arp": "off"
+      }
+    ],
+    "mallet": [
+      {
+        "bars": [
+          1,
+          4
+        ],
+        "chord": 60,
+        "bass": 0,
+        "drums": 0,
+        "arp": "on_eighth"
+      },
+      {
+        "bars": [
+          5,
+          8
+        ],
+        "chord": 72,
+        "bass": 0,
+        "drums": 0,
+        "arp": "on_eighth"
+      },
+      {
+        "bars": [
+          9,
+          12
+        ],
+        "chord": 90,
+        "bass": 0,
+        "drums": 0,
+        "arp": "on_eighth"
+      },
+      {
+        "bars": [
+          13,
+          16
+        ],
+        "chord": 60,
+        "bass": 0,
+        "drums": 0,
+        "arp": "on_eighth"
+      }
+    ],
+    "synthpop": [
+      {
+        "bars": [
+          1,
+          4
+        ],
+        "chord": 80,
+        "bass": 60,
+        "drums": 50,
+        "arp": "off"
+      },
+      {
+        "bars": [
+          5,
+          8
+        ],
+        "chord": 90,
+        "bass": 75,
+        "drums": 80,
+        "arp": "off"
+      },
+      {
+        "bars": [
+          9,
+          12
+        ],
+        "chord": 100,
+        "bass": 88,
+        "drums": 100,
+        "arp": "movement_ge_75"
+      },
+      {
+        "bars": [
+          13,
+          14
+        ],
+        "chord": 90,
+        "bass": 70,
+        "drums": 70,
+        "arp": "off"
+      },
+      {
+        "bars": [
+          15,
+          16
+        ],
+        "chord": 78,
+        "bass": 40,
+        "drums": 35,
+        "arp": "off"
+      }
+    ]
+  },
+  "rocksteady_new_groove": {
+    "stable_id": 64,
+    "name": "Rockstdy",
+    "meter": "4/4",
+    "bars": 2,
+    "suggested_bpm": 82,
+    "kit": "DMK_DUB",
+    "swing": 12,
+    "lanes": {
+      "kick": [
+        "x.......x.......",
+        "x.......x.....x."
+      ],
+      "snare": [
+        "....x.......x...",
+        "....x.......x..."
+      ],
+      "closed_hat": [
+        "..x...x...x...x.",
+        "..x...x...x...x."
+      ],
+      "rim": [
+        "............x...",
+        "............x..."
+      ]
+    },
+    "note": "Original generalized rocksteady pattern. Do not copy audio/samples from the reference recording."
+  }
+}

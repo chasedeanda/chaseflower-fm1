@@ -1,0 +1,10 @@
+progression library: 80519 checks, 0 failures
+boot: normal reset power-on failed 0 pending 1 counted 0 prev_stage 0 (none)
+suggestions: 933 checks, 0 failures
+boot: normal reset power-on failed 0 pending 1 counted 0 prev_stage 0 (none)
+LED guide: 197 checks, 0 failures
+suggestions: 4454 checks, 0 failures
+suggestions: 4454 checks, 0 failures
+suggestions: 4454 checks, 0 failures
+suggestions: 4454 checks, 0 failures
+PASS: complete catalog, automatic setup, HOME controls, live highlighting and identical audio with/without drawing at both rates.

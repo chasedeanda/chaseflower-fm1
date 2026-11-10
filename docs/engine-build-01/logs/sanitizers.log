@@ -1,0 +1,4 @@
+boot: normal reset power-on failed 0 pending 1 counted 0 prev_stage 0 (none)
+ENGINE_RENDER,baseline,peak=6497,clips=0,voices=11,rms=1389.166,host_cpu_seconds=2.884491,audio_seconds=147.692698
+ENGINE_RENDER,interactive,peak=6497,clips=0,voices=12,rms=1513.342,host_cpu_seconds=3.452130,audio_seconds=147.692698
+CORD Engine: 850 checks, 0 failures

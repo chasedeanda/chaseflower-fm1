@@ -1,0 +1,7 @@
+boot: normal reset power-on failed 0 pending 1 counted 0 prev_stage 0 (none)
+diagnostics: 52 checks, 0 failures
+.....
+----------------------------------------------------------------------
+Ran 5 tests in 0.012s
+
+OK
