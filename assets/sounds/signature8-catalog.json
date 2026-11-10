@@ -1,0 +1,90 @@
+[
+  {
+    "id": "SIG8-001",
+    "name": "EMBER KEYS",
+    "bank_id": 1,
+    "engine": "FM6",
+    "factory_index": 97,
+    "optional_fx": "Velvet",
+    "license": "GPL-3.0-only",
+    "recipe_source": "docs/signature8/BRIEF.md",
+    "default_fx": "dry"
+  },
+  {
+    "id": "SIG8-002",
+    "name": "GHOST CHOIR",
+    "bank_id": 2,
+    "engine": "VA",
+    "factory_index": 93,
+    "optional_fx": "Wide Drift",
+    "license": "GPL-3.0-only",
+    "recipe_source": "docs/signature8/BRIEF.md",
+    "default_fx": "dry"
+  },
+  {
+    "id": "SIG8-003",
+    "name": "NOIR TINES",
+    "bank_id": 3,
+    "engine": "FM6",
+    "factory_index": 98,
+    "optional_fx": "Silver Plate",
+    "license": "GPL-3.0-only",
+    "recipe_source": "docs/signature8/BRIEF.md",
+    "default_fx": "dry"
+  },
+  {
+    "id": "SIG8-004",
+    "name": "APOLLO VEIL",
+    "bank_id": 4,
+    "engine": "VA",
+    "factory_index": 94,
+    "optional_fx": "Deep Space",
+    "license": "GPL-3.0-only",
+    "recipe_source": "docs/signature8/BRIEF.md",
+    "default_fx": "dry"
+  },
+  {
+    "id": "SIG8-005",
+    "name": "FROSTWIRE",
+    "bank_id": 5,
+    "engine": "VA",
+    "factory_index": 95,
+    "optional_fx": "Phase Sweep",
+    "license": "GPL-3.0-only",
+    "recipe_source": "docs/signature8/BRIEF.md",
+    "default_fx": "dry"
+  },
+  {
+    "id": "SIG8-006",
+    "name": "OFFBEAT DUB",
+    "bank_id": 6,
+    "engine": "VA",
+    "factory_index": 96,
+    "optional_fx": "Slap",
+    "license": "GPL-3.0-only",
+    "recipe_source": "docs/signature8/BRIEF.md",
+    "default_fx": "dry"
+  },
+  {
+    "id": "SIG8-007",
+    "name": "CEDAR MALLET",
+    "bank_id": 7,
+    "engine": "FM6",
+    "factory_index": 99,
+    "optional_fx": "Silver Plate",
+    "license": "GPL-3.0-only",
+    "recipe_source": "docs/signature8/BRIEF.md",
+    "default_fx": "dry"
+  },
+  {
+    "id": "SIG8-008",
+    "name": "RAZOR PULSE",
+    "bank_id": 8,
+    "engine": "VA",
+    "factory_index": 97,
+    "optional_fx": "Bite",
+    "license": "GPL-3.0-only",
+    "recipe_source": "docs/signature8/BRIEF.md",
+    "default_fx": "dry"
+  }
+]

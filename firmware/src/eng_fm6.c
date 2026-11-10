@@ -54,6 +54,7 @@ typedef struct {
 #define FM6_CHASE_SLOT (FM6_NFAC + FM6_BANK_N + FM6_NXROM)
 #if CHASE_LIBRARY
 #include "chase_fm_data.h"
+#include "signature8_fm_data.h"
 #define FM6_NSLOT (FM6_CHASE_SLOT + CHASE_FM_N)
 _Static_assert(FM6_NSLOT <= 128u, "FM6 slots must survive the signed user-parameter store");
 #else
@@ -285,6 +286,19 @@ static void fm6_slot_get(uint32_t s, uint8_t *pk)
         memcpy(pk, FM6_INIT, FM6_PACKED);
 }
 
+/* Signature factory IDs are independent of PTCH's full 0..127 legacy namespace.
+ * Their complete voices travel through the existing checked patch blob. */
+static void fm6_preset_get(uint32_t preset, uint32_t slot, uint8_t *pk)
+{
+#if CHASE_LIBRARY
+    if (preset >= SIG8_FM_BASE && preset < SIG8_FM_BASE + SIG8_FM_N) {
+        memcpy(pk, SIG8_FM_PATCHES[preset - SIG8_FM_BASE], FM6_PACKED);
+        return;
+    }
+#endif
+    fm6_slot_get(slot, pk);
+}
+
 static void fm6_load_slot(uint32_t tr, uint32_t s)
 {
     uint8_t pk[FM6_PACKED], v[FP_SIZE + 1u];
@@ -338,6 +352,14 @@ static void fm6_track_loaded(const track_t *ct)
         t->p[P_E7] = (int16_t)(t->p[P_E7] + FM6_NROM);   /* (Felucca's B1..B27 -> B1..B27) */
     memcpy(fm6_fn[tr], FM6_FNDEF, FM6_NFN);
     fm6_load_slot(tr, (uint32_t)clamp(t->p[P_E7], 0, FM6_NSLOT - 1));
+#if CHASE_LIBRARY
+    if (!pend && !t->user && t->preset >= SIG8_FM_BASE && t->preset < SIG8_FM_BASE + SIG8_FM_N && t->p[P_E7] == 0) {
+        uint8_t pk[FM6_PACKED], v[FP_SIZE + 1u];
+        fm6_preset_get(t->preset, 0, pk);
+        fm6_unpack(pk, v);
+        fm6_put_patch(tr, v, 1);
+    }
+#endif
 }
 
 /* power-on: every track the init voice (what a project stores for the tracks that never played FM6), the
@@ -1210,10 +1232,12 @@ static const preset_t FM6_PRESETS[] = {
     FM6_PR("ICE PAD", FM6_NFAC + FM6_BANK_N + 5, 0, FX(0, 50, 30, 80)),
 #if CHASE_LIBRARY
 #include "chase_fm_rows.h"
+#include "signature8_fm_rows.h"
 #endif
 };
 #if CHASE_LIBRARY
-_Static_assert(NELEM(FM6_PRESETS) == CHASE_FM_BASE + CHASE_FM_N, "append-only FM factory IDs");
+_Static_assert(SIG8_FM_BASE == CHASE_FM_BASE + CHASE_FM_N, "Signature FM IDs append after legacy");
+_Static_assert(NELEM(FM6_PRESETS) == SIG8_FM_BASE + SIG8_FM_N, "append-only FM factory IDs");
 #endif
 #undef FM6_PR
 #undef FM6_NM
@@ -1325,7 +1349,12 @@ static void fm6_blob_preset(track_t *t, uint32_t k)       /* factory preset k: i
     if (tr >= NTRK || k >= NELEM(FM6_PRESETS))
         return;
     memcpy(fm6_fn[tr], FM6_FNDEF, FM6_NFN);
-    fm6_load_slot(tr, (uint32_t)clamp(FM6_PRESETS[k].e[7], 0, FM6_NSLOT - 1));
+    uint8_t pk[FM6_PACKED], v[FP_SIZE + 1u];
+    uint32_t slot = (uint32_t)clamp(FM6_PRESETS[k].e[7], 0, FM6_NSLOT - 1);
+    fm6_preset_get(k, slot, pk);
+    fm6_unpack(pk, v);
+    fm6_put_patch(tr, v, 1);
+    fm6_slot[tr] = (uint8_t)slot;
 }
 
 /* ------------------------------------------------- ChoralRoot: deep pages --- */

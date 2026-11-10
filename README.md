@@ -509,6 +509,10 @@ A `.bin` app image or GitHub source ZIP is not an installer package. The compati
 
 Diagnostics can show timing, voice shedding, memory and USB counters. Host/browser CPU values are not device measurements. [Diagnostics guide](docs/DIAGNOSTICS.md) · [Report an issue](https://github.com/chasedeanda/cord-fm1/issues)
 
+## Signature 8 development pilot
+
+This development branch adds [eight fixed-recipe sound prototypes](docs/signature8/README.md) in a reversible **GLO → Sound library → Signature 8** filter. Existing sounds and saved IDs are preserved. This pilot is separate from the published 1.0.3 package.
+
 ## Build the firmware
 
 For development, clone current main and use the pinned generator dependencies and JieLi toolchain. On Apple Silicon, start Docker Desktop; the device compiler runs in a Linux x86-64 container.

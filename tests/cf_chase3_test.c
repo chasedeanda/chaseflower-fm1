@@ -96,6 +96,12 @@ static void legacy_rows(void)
                 uint32_t ne, np; cf_snd_at(part, at++, &ne, &np);
                 CHECK(ne == ENGI_FM6 && pool_entry(ne, np).fk == f);
             }
+            if (part == CF_PART_CHORD) for (uint32_t bank=1; bank<=8; bank++) {
+                uint32_t e=(bank==1||bank==3||bank==7)?ENGI_FM6:ENGI_VA;
+                uint32_t f=bank==1?97:bank==2?93:bank==3?98:bank==4?94:bank==5?95:bank==6?96:bank==7?99:97;
+                uint32_t ne,np; cf_snd_at(part,at++,&ne,&np);
+                CHECK(ne==e && pool_entry(ne,np).fk==f);
+            }
             CHECK(at == cf_snd_count(part));
         }
         for (eord = 0; eord < CF_NENG; eord++) {
@@ -267,7 +273,7 @@ static void library_render(const char *dir, int extras)
     for (uint32_t engine=0; engine<(extras ? 1u : 2u); engine++) {
         uint32_t e=engine ? ENGI_VA : ENGI_FM6, base=engine ? CHASE_VA_BASE : CHASE_FM_BASE;
         uint32_t first=extras ? CHASE_FM_BASE+CHASE_FM_LEGACY_N : base;
-        uint32_t end=!extras && !engine ? CHASE_FM_BASE+CHASE_FM_LEGACY_N : ENGINES[e]->npresets;
+        uint32_t end=engine ? CHASE_VA_BASE+CHASE_VA_N : extras ? CHASE_FM_BASE+CHASE_FM_N : CHASE_FM_BASE+CHASE_FM_LEGACY_N;
         for (k=first; k<end; k++) {
             p=engine && CHASE_VA_BASS[k-base] ? 1 : 0;
             clear_notes(); cf_pool_load(p,e,pool_pos_factory(e,k));

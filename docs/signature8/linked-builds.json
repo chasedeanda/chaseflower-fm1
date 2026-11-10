@@ -1,0 +1,19 @@
+{
+  "baseline": {
+    "source": "/private/tmp/signature8-baseline",
+    "size": "size: .text 528612 B, .ram_text 3000 B, .c1_text 128 B (RAMTEXT 3128 of 24576), .data 13428 B, .bss 76780 B; XIP 545168 B of 573440 (95.1%), RAM 90208 B of 98304 (91.8%), POOL 316792 B of 344064 (92.1%), NOINIT 216 B of 15664 (1.4%)",
+    "app_sha256": "37b09bd054ba7e452e8c897e5e5030c236c876787cd15359bf9cb9d83483db29",
+    "errors": []
+  },
+  "signature8": {
+    "source": "/Users/chase/.codex/worktrees/signature-eight/FM1 Custom Firmware",
+    "size": "size: .text 530212 B, .ram_text 3000 B, .c1_text 128 B (RAMTEXT 3128 of 24576), .data 13428 B, .bss 76780 B; XIP 546768 B of 573440 (95.3%), RAM 90208 B of 98304 (91.8%), POOL 316792 B of 344064 (92.1%), NOINIT 216 B of 15664 (1.4%)",
+    "app_sha256": "eb8a9028bad73e66c083a32d109b40df1a3e98421830036e48530ce412fc3fac",
+    "errors": []
+  },
+  "flags": "default build_app, pi32v2 -Os, same SDK/toolchain; no release/package publication",
+  "ordinary_ram_delta": 0,
+  "pool_delta": 0,
+  "xip_delta": 1600,
+  "ram_code_delta": 0
+}

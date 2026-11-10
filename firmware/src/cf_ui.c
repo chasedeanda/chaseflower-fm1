@@ -473,7 +473,7 @@ static void ui_knob_info(int k, cf_knob_t *o)
             if (k < 3u) {
                 static const char *const PART[3] = {"CHORDS", "BASS", "LAYER"};
                 kfmt(o->name, 12, PART[k]);
-                kfmt(o->val, 14, CHASE_BANK_NAMES[cf_bank[k]]);
+                kfmt(o->val, 14, SIG8_BANK_NAMES[cf_bank[k]]);
             } else {
                 kfmt(o->name, 12, "RESET");
                 kfmt(o->val, 14, "All banks");
@@ -749,7 +749,7 @@ static void ui_knob_turn(int k, int d)
             if(k==3) cfd.rate=(uint8_t)clampi(cfd.rate+(d>0?1:-1),0,2);
             break;
         case 5:
-            if (k < 3u) cf_bank[k] = (uint8_t)clampi(cf_bank[k] + d, 0, 10);
+            if (k < 3u) cf_bank[k] = (uint8_t)clampi(cf_bank[k] + d, 0, SIG8_FILTER_MAX);
             else cf_bank[0] = cf_bank[1] = cf_bank[2] = 0;
             break;
         case 0:
