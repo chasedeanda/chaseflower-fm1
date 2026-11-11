@@ -1,8 +1,14 @@
-/* SPDX-License-Identifier: GPL-3.0-only; generated from supplied scene JSON. */
-static const struct { uint8_t n,note[6]; } CGE_NOTES[3][4] = {{{4,{52,56,59,66}},{4,{47,52,54,59}},{4,{49,52,56,59}},{5,{45,49,52,56,59}}},{{5,{52,56,59,63,66}},{4,{47,52,54,59}},{5,{49,52,56,59,63}},{4,{45,49,52,59}}},{{5,{52,56,59,61,66}},{4,{47,51,52,54}},{6,{49,52,56,59,63,66}},{4,{45,49,52,56}}}};
-static const char *const CGE_CHORD_SOUND[] = {"GHOST CHOIR","BREATH PAD","TAPE STRINGS"};
-static const char *const CGE_BASS_SOUND[] = {"TAPE SUB","WARM TRIANGL","DEEP SINE"};
-static const char *const CGE_FX_NAMES[] = {"Wide Drift","Deep Space","Orbit"};
-static const uint8_t CGE_GROOVES[] = {56,1};
-static const uint8_t CGE_PROFILE[5][4] = {{4,82,0,28},{8,90,66,68},{12,95,85,88},{14,90,65,55},{16,80,0,0}};
-static const uint8_t CGE_DEFAULTS[] = {55,42,25};
+/* SPDX-License-Identifier: GPL-3.0-only; generated G1 palettes, not authored songs. */
+typedef struct {
+    const char *name,*chord[3],*bass[3],*fx[3];
+    uint8_t bpm,groove[4],weight[8],gain[4][3],defaults[4];
+} cge_vibe_t;
+static const cge_vibe_t CGE_VIBES[2]={
+    {"Haze",{"GHOST CHOIR","BREATH PAD","TAPE STRINGS"},{"TAPE SUB","WARM TRIANGL","DEEP SINE"},{"Wide Drift","Deep Space","Orbit"},104,{56,57,55,58},{2,3,5,0,0,0,0,1},{{82,20,25},{90,60,62},{95,78,78},{84,43,45}},{52,35,55,35}},
+    {"Drive",{"TAPE STRINGS","GENTLE SYNC","RAZOR PULSE"},{"CLEAN MONO","DEEP SINE","TAPE SUB"},{"Orbit","Bite","Phase Sweep"},122,{60,59,4,1},{3,0,0,0,4,1,5,0},{{78,60,64},{88,78,82},{94,90,95},{82,64,68}},{66,60,25,45}},
+};
+/* Stable catalog ID plus independent role indices; a bounded audio mailbox. */
+typedef struct {
+    uint16_t id;
+    uint8_t vibe,groove,chord,bass,fx,feel;
+} cge_take_t;

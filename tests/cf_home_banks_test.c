@@ -25,7 +25,7 @@ static void navigation(void)
     cf_set_t settings=cs;unsigned queue=cf_evq_w,flash=emu_flash_writes,patterns=cfs_fnv(&sq_st,sizeof sq_st);cf_chord_out_t sounding=cf_sn.out;
     for(unsigned i=0;i<CF_HB_N*6u;i++) {
         CHECK(home_stage() && cf_home_bank==i%CF_HB_N);ui_button(B_HOME);cf_ui_draw();
-        if(cf_home_bank!=CF_HB_LEARN && cf_home_bank!=CF_HB_ENGINE)CHECK(body==musical_body_hash());
+        if(cf_home_bank!=CF_HB_LEARN && cf_home_bank!=CF_HB_ENGINE && cf_home_bank!=CF_HB_FLOW)CHECK(body==musical_body_hash());
         CHECK(!memcmp(&cs,&settings,sizeof cs) && cf_evq_w==queue && emu_flash_writes==flash);
         CHECK(cfs_fnv(&sq_st,sizeof sq_st)==patterns && !memcmp(&cf_sn.out,&sounding,sizeof sounding));
     }
@@ -39,7 +39,7 @@ static void navigation(void)
     ui_button(B_HOME);CHECK(home_stage() && cf_home_bank==CF_HB_CORE);
     for(unsigned view=1;view<HV_N;view++){cu.scr=SCR_GLO;cu.page[SCR_GLO]=0;home_view_select((int)view);ui_button(B_GLO);CHECK(home_view()==view);cf_ui_draw();ui_button(B_HOME);CHECK(home_stage() && cf_home_bank==0);}
     for(unsigned bank=0;bank<CF_HB_N;bank++) {
-        cf_home_bank=bank;unsigned idea=cpg.idea;ui_select(1);CHECK((bank==CF_HB_ENGINE?cpg.idea==idea:cpg.idea!=idea) && cf_home_bank==bank);
+        cf_home_bank=bank;unsigned idea=cpg.idea;ui_select(1);CHECK(((bank==CF_HB_ENGINE || bank==CF_HB_FLOW)?cpg.idea==idea:cpg.idea!=idea) && cf_home_bank==bank);
         ui_presets(1);CHECK(cs.snd[0]==cf_snd_pos(0) && cf_home_bank==bank);
     }
     /* Off cancels a bank tween and On cannot replay it. */

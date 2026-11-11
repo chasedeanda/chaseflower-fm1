@@ -203,18 +203,36 @@ static void cf_stage_model(cf_stage_model_t *m)
         memset(&m->mascot,0,sizeof m->mascot);
         memset(m->emphasis,0,sizeof m->emphasis);m->cursor_width=0;
     }
-    if(cf_home_bank==CF_HB_ENGINE){
-        str_cpy(m->idea,"Heavenly Gaze",sizeof m->idea);
-        if(!cge.loaded)str_cpy(m->context,"SEL loads scene / PLAY starts",sizeof m->context);
-        else {
+    if((cf_home_bank==CF_HB_ENGINE || cf_home_bank==CF_HB_FLOW) && !m->rec && !cf_sn.sq_on && !sqk.on){
+        str_cpy(m->idea,cge.loaded?cge_view.name:"CORD",sizeof m->idea);
+        if(!cge.loaded){
+            str_cpy(m->context,CGE_VIBES[cge.vibe_request].name,sizeof m->context);
+            char hint[24];kint(hint,CGE_VIBES[cge.vibe_request].bpm," BPM suggested");
+            str_cpy(m->next_setup,hint,sizeof m->next_setup);str_cpy(m->pending,"PLAY starts Engine",sizeof m->pending);
+        }else{
             m->engine_bar=cge.bar+1;
-            str_cpy(m->context,"Pilot ",sizeof m->context);
-            str_cpy(m->context+str_len(m->context),cge_stage_name(),sizeof m->context-str_len(m->context));
+            char key[4];cf_pc_name(cs.chord.tonic,&cu_spell,key);
+            str_cpy(m->context,CGE_VIBES[cge.current.vibe].name,sizeof m->context);
             str_cpy(m->context+str_len(m->context)," ",sizeof m->context-str_len(m->context));
-            char lock[9]={'H',cge.locks&1?'*':'-', 'S',cge.locks&2?'*':'-', 'G',cge.locks&4?'*':'-', 'F',cge.locks&8?'*':'-',0};
-            str_cpy(m->context+str_len(m->context),lock,sizeof m->context-str_len(m->context));
-            if(cge.pending)str_cpy(m->pending,"Next 1/16: pilot take",sizeof m->pending);
-            else if(cge_arp_pending())str_cpy(m->pending,"Next chord: Feel / Play It",sizeof m->pending);
+            str_cpy(m->context+str_len(m->context),key,sizeof m->context-str_len(m->context));
+            str_cpy(m->context+str_len(m->context)," ",sizeof m->context-str_len(m->context));
+            str_cpy(m->context+str_len(m->context),cs.chord.scale==CF_SC_MAJOR?"Major":cs.chord.scale==CF_SC_MINOR?"Minor":cf_progression_mode(cs.chord.scale),sizeof m->context-str_len(m->context));
+            str_cpy(m->context+str_len(m->context)," ",sizeof m->context-str_len(m->context));
+            str_cpy(m->context+str_len(m->context),CGE_DIRECTION_NAME[cge.direction],sizeof m->context-str_len(m->context));
+            str_cpy(m->next_setup,"ID ",sizeof m->next_setup);kint(m->next_setup+3,cge.current.id," / ");
+            char lock[11]={'H',cge.locks&1?'*':'-','S',cge.locks&2?'*':'-','G',cge.locks&4?'*':'-','F',cge.locks&8?'*':'-','L',cge.locks&16?'*':'-',0};
+            str_cpy(m->next_setup+str_len(m->next_setup),lock,sizeof m->next_setup-str_len(m->next_setup));
+            if(cge.pending){
+                str_cpy(m->pending,"Next 1/16: ",sizeof m->pending);
+                str_cpy(m->pending+str_len(m->pending),cge.pending&CGE_VIBE?CGE_VIBES[cge.next.vibe].name:cge.pending==CGE_DIRECTION?CGE_DIRECTION_NAME[cge.direction_request]:cge.request_kind==2?"Jam change":"Fresh Take",sizeof m->pending-str_len(m->pending));
+            }else if(cge_arp_pending())str_cpy(m->pending,"Next chord: Feel / Play It",sizeof m->pending);
+            else if(cf_home_bank==CF_HB_FLOW){
+                if(cge.direction==CGE_REPEAT)str_cpy(m->pending,"Repeat: same 16 bars",sizeof m->pending);
+                else if(!cge.surprise)str_cpy(m->pending,"Jam: no variation",sizeof m->pending);
+                else if((cge.locks&(CGE_GROOVE|CGE_FX))==(CGE_GROOVE|CGE_FX) && ((cge.locks&CGE_FEEL) || cge.arp_request==CGE_ARP_ON))str_cpy(m->pending,"Nothing to change",sizeof m->pending);
+                else {unsigned next=cge.cycle+1;if(cge.surprise<50 && (next&1))next++;
+                    str_cpy(m->pending,"Next loop ",sizeof m->pending);kint(m->pending+10,next+1," / 1/16");}
+            }
         }
     }
 

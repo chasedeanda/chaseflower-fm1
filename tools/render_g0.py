@@ -63,8 +63,9 @@ def check_arp(rows,beats,gate=70,mode='up',octaves=1,swing=50):
         if same_slot and swing==50:assert abs(int(b['sample'])-int(a['sample'])-interval)<=2*CTL
     first=[r for r in ons if int(r['cycle'])==0 and int(r['bar'])<=2]
     pitches=[int(r['note']) for r in first]
-    assert pitches[0]==(66 if mode=='down' else 52)
-    assert (max(pitches)>66)==(octaves==2)
+    planned=list(map(int,first[0]['planned_notes'].split()))
+    assert pitches[0]==(max(planned) if mode=='down' else min(planned))
+    assert (max(pitches)>max(planned))==(octaves==2)
     if swing!=50:
         intervals=[int(b['sample'])-int(a['sample']) for a,b in zip(first,first[1:])]
         assert max(intervals)-min(intervals)>FS*0.1

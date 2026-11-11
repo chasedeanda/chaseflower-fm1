@@ -1,29 +1,34 @@
 /* SPDX-License-Identifier: GPL-3.0-only
- * Build 01: bounded shared-clock controller. All plans, sound blobs, effect
- * choices and embellishment flags are prepared in the foreground. */
+ * G1: bounded shared-clock consumer; selection/preparation stays in foreground. */
 #include "cf_engine_data.h"
 enum { CGE_HARMONY=1, CGE_SOUND=2, CGE_GROOVE=4, CGE_FX=8 };
+enum { CGE_FEEL=16, CGE_VIBE=32, CGE_DIRECTION=64 };
+enum { CGE_REPEAT, CGE_JAM };
+enum { CGE_R_HARMONY, CGE_R_GROOVE, CGE_R_CHORD, CGE_R_BASS, CGE_R_FX, CGE_R_FEEL, CGE_NRNG };
 enum { CGE_ARP_AUTO, CGE_ARP_ON, CGE_ARP_OFF };
 static struct {
     uint8_t loaded, energy, feel, space, locks;
-    uint8_t index[4], request[4], commit[4], previous[4], pending, undo;
+    cge_take_t current,next,previous;
+    uint8_t pending,undo,direction,direction_request,surprise,vibe_request,pin,request_kind;
+    uint8_t tempo_pin,key_pin,initial_pins,requeue,flow_manual;
     uint8_t bar, arp, bass_gate, drum_gate, sound_taken, fx_taken;
     uint8_t feel_applied, arp_request, arp_applied, energy_applied;
     cf_arp_t manual_arp;
-    uint16_t profile[5][3], gain[3], target[3], last_target[3], ramp_left[3];
-    uint32_t cycle, generation;
+    uint16_t profile[2][4][3], gain[3], target[3], last_target[3], ramp_left[3];
+    uint32_t cycle,generation,session_seed,rng[CGE_NRNG],planned_cycle,request_ms,commit_ms;
     cf_fx_t fx;
 } cge;
+/* One bounded prepared phrase, not an audio buffer or second sequencer. Keeping
+ * it separate lets manual Core edits retain their existing chord/bar queue. */
+static cpa_plan_t cge_prepared_plan;
 static int cge_active(void){return cpa.on && cpa.plan.idea==CF_P_ENGINE;}
 static void cge_live_takeover(void)
 {if(cge_active()){cpa_arp_off();sqp_chord_off();sqp_bass_off();}}
 static int cge_arp_wanted(void){return cge_active()?cge.arp:cfp_cfg.arp_on;}
-static int cge_commit_allowed(unsigned category,int bar)
-{return !cge_active() || !(cge.pending&category) || (bar && cge.bar==15);}
 /* Only the scheduled owner consumes this state, at a two-bar chord onset. */
 static void cge_articulation(void)
 {
-    cge.feel_applied=cge.feel;cge.arp_applied=cge.arp_request;
+    cge.feel_applied=cge.feel;cge.arp_applied=cge.arp_request;cge.current.feel=cge.feel;
     cge.manual_arp=cfp_cfg.arp;
     cge.arp=cge.arp_applied==CGE_ARP_ON ||
         (cge.arp_applied==CGE_ARP_AUTO && cge.feel_applied>=65);
@@ -50,35 +55,59 @@ static void cge_tick1(void)
 static int cge_bass_enabled(void){return !cge_active() || cge.bass_gate;}
 static int cge_drums_enabled(void){return !cge_active() || cge.drum_gate;}
 static unsigned cge_phase(void)
-{unsigned p=0;while(p<4 && cge.bar+1u>CGE_PROFILE[p][0])p++;return p;}
+{return cge.bar/4u;}
 static void cge_targets(void)
 {
     unsigned p=cge_phase();
-    for(unsigned k=0;k<3;k++)cge.target[k]=cge.profile[p][k];
+    for(unsigned k=0;k<3;k++)cge.target[k]=cge.profile[cge.current.vibe][p][k];
 }
 static void cge_gates(void)
 {
     unsigned p=cge_phase();cge.energy_applied=cge.energy;
     /* Energy owns gain, not the clocked note owners. Turning up from zero
      * must recover the current bed/groove without waiting for another bar. */
-    cge.bass_gate=CGE_PROFILE[p][2]!=0;
-    cge.drum_gate=CGE_PROFILE[p][3]!=0;
+    cge.bass_gate=CGE_VIBES[cge.current.vibe].gain[p][1]!=0;
+    cge.drum_gate=CGE_VIBES[cge.current.vibe].gain[p][2]!=0;
 }
 static void cge_start(void)
 {
     if(!cge_active())return;
-    cge.bar=0;cge.cycle=0;cge_articulation();
+    cge.bar=0;cge.cycle=0;cge.planned_cycle=UINT32_MAX;cge_articulation();
+    cfa_sq[0].rng=cge.session_seed^0xC0FD0001u;cfa_sq[0].rnd_last=255;
     cge_targets();cge_gates();
     for(unsigned k=0;k<3;k++)cge.gain[k]=cge.target[k];
 }
 static void cge_stop(void)
-{cge.arp=0;for(unsigned k=0;k<3;k++)cge.target[k]=32768;}
+{cge.arp=0;cge.pending=0;cge.requeue=0;cge.next=cge.current;cge.direction_request=cge.direction;
+ for(unsigned k=0;k<3;k++)cge.target[k]=32768;}
 /* Uses the existing staged sound loader; defined after cf_sound.c. */
 static int cge_sound_boundary(void);
 static int cge_bar(int onset)
 {
     if(!cge_active())return 0;
     cge.bar=(cge.bar+1u)%16u;if(!cge.bar)cge.cycle++;
+    if(!cge.bar){cfa_sq[0].rng=cge.session_seed^0xC0FD0001u;cfa_sq[0].rnd_last=255;}
+    int sound=0;
+    if(!cge.bar && cge.pending){
+        unsigned flags=cge.pending;
+        if(flags&~CGE_DIRECTION){cge.previous=cge.current;cge.undo=1;}
+        if(flags&CGE_HARMONY){
+            cge.current.id=cge.next.id;
+            for(unsigned i=0;i<8;i++){cpa.plan.slot[i]=cge_prepared_plan.slot[i];cpa.plan.degree[i]=cge_prepared_plan.degree[i];}
+            cpa.plan.tonic=cge_prepared_plan.tonic;cpa.plan.scale=cge_prepared_plan.scale;cpa.plan.nb=cge_prepared_plan.nb;
+        }
+        if(flags&CGE_SOUND){sound=cge_sound_boundary();cge.current.chord=cge.next.chord;cge.current.bass=cge.next.bass;}
+        if(flags&CGE_GROOVE){cge.current.groove=cge.next.groove;cpa.plan.rhythm=cge_prepared_plan.rhythm;
+            cpa.plan.kit=cge_prepared_plan.kit;cpa.plan.swing=cge_prepared_plan.swing;}
+        if(flags&CGE_FX){cfx_target=cge.fx;cfx_pending=cfx_ready=1;cge.current.fx=cge.next.fx;cge.fx_taken=1;}
+        if(flags&CGE_FEEL)cge.feel=cge.next.feel;
+        if(flags&CGE_VIBE)cge.current.vibe=cge.next.vibe;
+        if(flags&CGE_DIRECTION)cge.direction=cge.direction_request;
+        /* These plans retain the player's committed key/scale/meter. Publish
+         * the new phrase identity without rebuilding the live-key chord model. */
+        if(flags&(CGE_HARMONY|CGE_GROOVE))cpa.revision++;
+        cge.pending=0;cge.generation++;cge.commit_ms=cf_now_ms; /* telemetry only */
+    }
     unsigned bass=cge.bass_gate;cge_targets();cge_gates();
     if(!onset && bass!=cge.bass_gate){
         const cpa_slot_t *s=&cpa.plan.slot[cpa.slot];
@@ -89,13 +118,6 @@ static int cge_bar(int onset)
     if(!(cge.bar&1u)) {
         cge_articulation();
     }
-    if(cge.bar)return 0;
-    if(cge.pending){memcpy(cge.previous,cge.index,4);cge.undo=1;}
-    if(cge.pending&CGE_HARMONY){cge.index[0]=cge.commit[0];cge.pending&=~CGE_HARMONY;}
-    int sound=0;
-    if(cge.pending&CGE_SOUND){sound=cge_sound_boundary();if(sound){cge.index[1]=cge.commit[1];cge.pending&=~CGE_SOUND;}}
-    if(cge.pending&CGE_GROOVE){cge.index[2]=cge.commit[2];cge.pending&=~CGE_GROOVE;}
-    if(cge.pending&CGE_FX){cfx_target=cge.fx;cfx_pending=cfx_ready=1;cge.index[3]=cge.commit[3];cge.pending&=~CGE_FX;cge.fx_taken=1;}
     return sound;
 }
 static void cge_block(uint32_t n)

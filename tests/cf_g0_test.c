@@ -68,11 +68,10 @@ static void control_boundaries(void)
 }
 static void pending_takes(void)
 {
-    start();ticks(6*384);cge_regenerate(0);cge_regenerate(0);
-    CHECK(cge.pending && !cge.undo);ticks(9*384);CHECK(cge.pending && !cge.index[0]);
-    ticks(384);CHECK(!cge.pending && cge.index[0]==2 && cge.undo);
-    cge_regenerate(1);ticks(16*384);CHECK(!cge.index[0] && !cge.index[1] && !cge.index[2] && !cge.index[3]);
-    /* User edits cancel only that category while the other categories wait. */
+    start();cge_take_t first=cge.current;ticks(6*384);cge_regenerate(0);cge_regenerate(0);cge_take_t latest=cge.next;
+    CHECK(cge.pending && !cge.undo);ticks(9*384);CHECK(cge.pending && cge.current.id==first.id);
+    ticks(384);CHECK(!cge.pending && !memcmp(&cge.current,&latest,sizeof latest) && cge.undo);
+    cge_regenerate(1);ticks(16*384);CHECK(!memcmp(&cge.current,&first,sizeof first));
     cge_regenerate(0);cs.fx.v[CFX_DELAY][2]^=1;cf_fx_apply(&cs.fx);cge_poll();cf_fx_t fx=cs.fx;
     CHECK(cge.locks&CGE_FX);ticks(16*384);CHECK(!memcmp(&fx,&cs.fx,sizeof fx));
     cge.locks=0;cge_regenerate(0);cu.scr=SCR_HOME;cf_home_bank=CF_HB_TEXTURE;
@@ -102,8 +101,9 @@ static void capture(const char *kind,unsigned value,const char *raw,const char *
     cge.feel=0;cge.space=100;
     if(!strcmp(kind,"patch") || !strcmp(kind,"patchdry")){
         if(!strcmp(kind,"patchdry"))cge.space=0;
-        CHECK(value<2);unsigned e=cge_sound_engine[0][value],f=cge_sound_factory[0][value];
+        CHECK(value<2);unsigned e=cge_sound_engine[0][0][value],f=cge_sound_factory[0][0][value];
         cf_pool_load(0,e,pool_pos_factory(e,f));cs.snd[0]=cf_snd_pos(0);
+        blocks(2); /* settle the stopped patch load before the captured onset */
     }else if(!strcmp(kind,"energy")){cge.energy=value;cge_gain_prepare();}
     else if(!strcmp(kind,"space"))cge.space=value;
     else if(!strcmp(kind,"feel"))cge.feel=value;
@@ -116,7 +116,7 @@ static void capture(const char *kind,unsigned value,const char *raw,const char *
         cf_send_config();blocks(1);
     }
     FILE *r=fopen(raw,"wb"),*f=fopen(events,"w");CHECK(r && f);if(!r || !f)return;
-    fprintf(f,"sample,cycle,bar,tick,stage,status,note,velocity,feel,feel_applied,play_it,play_it_applied,space,chord_gain,bass_gain,drum_gain\n");
+    fprintf(f,"sample,cycle,bar,tick,stage,status,note,velocity,feel,feel_applied,play_it,play_it_applied,space,chord_gain,bass_gain,drum_gain,planned_notes\n");
     cpa_ui_play();midi_enable();cpa_realtime(0xFA);
     int32_t out[CTL*2];unsigned sample=0,held[2][128]={{0}},overlap=0,ons[16]={0},last=999;
     while(cge.cycle<4){
@@ -136,7 +136,8 @@ static void capture(const char *kind,unsigned value,const char *raw,const char *
         while(mo_r!=mo_w){
             uint32_t q=midi_out_q[mo_r++%MQ];unsigned st=q>>8&255,n=q>>16&127,v=q>>24&127,ch=st&15;
             if((st&0xf0)==0x90 || (st&0xf0)==0x80){
-                fprintf(f,"%u,%u,%u,%u,%s,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u\n",sample,cge.cycle,cge.bar+1,cpa.t,cge_stage_name(),st,n,v,cge.feel,cge.feel_applied,cge.arp_request,cge.arp_applied,cge.space,cge.gain[0],cge.gain[1],cge.gain[2]);
+                char planned[48]={0};const cpa_slot_t *p=&cpa.plan.slot[cpa.slot];for(unsigned i=0;i<p->n;i++){char text[8];snprintf(text,sizeof text,"%s%u",i?" ":"",p->note[i]);strcat(planned,text);}
+                fprintf(f,"%u,%u,%u,%u,%s,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%s\n",sample,cge.cycle,cge.bar+1,cpa.t,cge_stage_name(),st,n,v,cge.feel,cge.feel_applied,cge.arp_request,cge.arp_applied,cge.space,cge.gain[0],cge.gain[1],cge.gain[2],planned);
                 if(ch<2){if((st&0xf0)==0x90 && v){overlap+=held[ch][n];held[ch][n]=1;if(!ch)ons[cge.bar]++;}else held[ch][n]=0;}
             }
         }

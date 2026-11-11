@@ -141,7 +141,9 @@ static const char *const ALG_NAME[CF_NALGS] = {"Top", "Top Lock", "Side", "Side 
 #define CF_GLO_NPAGES 14u
 static int cge_prepare(cpa_plan_t *,cf_chord_cfg_t,unsigned,unsigned);
 static int cge_snapshot(cf_song_t *);
-static void cge_direct(unsigned),cge_sound_poll(void),cge_poll(void),cge_init(void),cge_load(void);
+static void cge_direct(unsigned),cge_sound_poll(void),cge_poll(void),cge_init(void);
+static int cge_load(void);
+static void cge_key_edit(void);
 
 static const char *const CF_LEGACY_NAME[]={"Recordings","Metronome","Drum grid"};
 
@@ -595,6 +597,7 @@ static void cf_harmony_turn(int k, int d)
 
 static void ui_knob_turn(int k, int d)
 {
+    if(d && cu.scr==SCR_HOME && cf_home_bank==CF_HB_CORE && (k==1 || k==2))cge.key_pin=1;
     if(d && (cu.scr==SCR_ENV || cu.scr==SCR_EDIT || cu.scr==SCR_BASS))cge_direct(CGE_SOUND);
     if(cu.scr==SCR_LAB){cfl_turn(k,d);return;}
     cu.knob_ms[k] = cu.now ? cu.now : 1u;
@@ -711,7 +714,7 @@ static void ui_knob_turn(int k, int d)
     case SCR_ARP:
         if (cu.page[SCR_ARP] != 1) {
             if (k == 0){
-                if(cge_selected() && cu.page[SCR_ARP]==0)cge.arp_request=(uint8_t)clampi(cge.arp_request+(d>0?1:-1),0,2);
+                if(cge_selected() && cu.page[SCR_ARP]==0)cge_play_it((unsigned)clampi(cge.arp_request+(d>0?1:-1),0,2));
                 else cu.arp_on = (uint8_t)(d > 0);
             }
             else if (k == 1)
@@ -889,7 +892,7 @@ static void cv_turned(int d)
 
 static void ui_select(int d)                     /* SELECT: the bass sound, or a screen's page */
 {
-    if(home_stage() && cf_home_bank==CF_HB_ENGINE)return;
+    if(home_stage() && (cf_home_bank==CF_HB_ENGINE || cf_home_bank==CF_HB_FLOW))return;
     if(cu.scr==SCR_LAB){cfl_select(d);return;}
     cf_nav_dir=d<0?-1:1;
     if(cu.scr==SCR_SONGS){csl_select(d);return;}
@@ -1149,7 +1152,13 @@ static void ui_button(uint32_t b)
         if(b==B_SAVE){cla_request(0);csl_open();return;}
         cla_request(0);
     }
-    if(b==B_SCL && home_stage() && cf_home_bank==CF_HB_ENGINE){cge_load();return;}
+    if(b==B_SCL && home_stage() && cf_home_bank==CF_HB_ENGINE){if(cge_selected())cge_regenerate(0);else cge_load();return;}
+    if(b==B_SCL && home_stage() && cf_home_bank==CF_HB_FLOW){cge_pin_toggle();return;}
+    if(b==B_PLAY && home_stage() && (cf_home_bank==CF_HB_ENGINE || cf_home_bank==CF_HB_FLOW) &&
+       !cpa_running() && !cpa_commanded && !sqp.on && !sqk.on){
+        if((cge_selected() && cge.vibe_request==cge.current.vibe) || cge_load())cpa_ui_play();
+        return;
+    }
     if(b==B_SCL && cpb_home()){cfl_open();return;}
     if(b==B_SCL && cu.scr==SCR_GLO && cu.page[SCR_GLO]==CF_GLO_HARMONY){ui_open(SCR_SEL);return;}
     if(b==B_EDIT && (cu.scr==SCR_PEDIT || cu.scr==SCR_ACC || cpb_home())) {
