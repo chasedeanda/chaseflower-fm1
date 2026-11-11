@@ -31,6 +31,8 @@ static struct {
 static int cge_arp_wanted(void),cge_bass_enabled(void),cge_drums_enabled(void),cge_arp_push(void);
 static void cge_start(void),cge_stop(void),cge_block(uint32_t),cge_arp_pop(int);
 static int cge_bar(int);
+static void cge_tick1(void);
+static int cge_chord_gap(void),cge_commit_allowed(unsigned,int);
 static int cpa_running(void) { return cpa.on; }
 static int cpa_valid(const cpa_plan_t *p)
 {
@@ -104,6 +106,9 @@ static void cpa_emit(void)
        !memcmp(cfa_sq[0].note,s->note,s->n)) {cpa_tie_from=0;return;}
     cpa_tie_from=0;
     cpa_arp_off();
+    if(cpa.plan.idea==CF_P_ENGINE && cpa_live_chord()){
+        sqp_chord_off();sqp_bass_off();sqp.dn=s->n;return;
+    }
     uint32_t gt = cfp.nb || cfa.on ? 0 : sqp_glide_ticks();
     if (cpa.plan.mode == CPA_DRUMS) {
         sqp_chord_off(); sqp_bass_off(); sqp.dn = 0; return;
@@ -135,6 +140,7 @@ static void cpa_arp_config(void)
 {
     if(!cpa.on)return;
     if(cpa.paused || cpa.clock_wait){cpa_arp_off();return;}
+    if(cpa.plan.idea==CF_P_ENGINE)return; /* scheduled settings wait for the next onset */
     if(cfa_sq[0].on!=cge_arp_wanted() && sqp.dn){cpa_tie_from=0;cpa_emit();}
     else if(cfa_sq[0].on){cfa_t *saved=cfa_at;cfa_at=&cfa_sq[0];int pushed=cge_arp_push();cfa_config(1);cge_arp_pop(pushed);cfa_at=saved;}
 }
@@ -147,7 +153,7 @@ static void cpa_arp_service(void)
     }
     /* Disabling ARP during a live takeover must still return to the current
      * scheduled chord on release, rather than waiting for its next slot. */
-    if(sqp.dn && (cge_arp_wanted()?!cfa_sq[0].n:!sqp.n)){cpa_tie_from=0;cpa_emit();}
+    if(sqp.dn && !cge_chord_gap() && (cge_arp_wanted()?!cfa_sq[0].n:!sqp.n)){cpa_tie_from=0;cpa_emit();}
 }
 static void cpa_groove(int reset)
 {
@@ -215,13 +221,13 @@ static void cpa_tick1(void)
                 if(!bar && cpa_edit.flags){cpa.plan.rhythm=r;cpa.plan.mode=mode;cpa.plan.kit=kit;cpa.plan.swing=swing;cpa.plan.repeat_off=repeat;cpa.plan.click_start=0;}
                 cpa_commit();onset=2;
             }
-            if ((cpa_edit.flags & CPA_NOTES) && onset) {
+            if ((cpa_edit.flags & CPA_NOTES) && onset && cge_commit_allowed(1,bar)) {
                 const cpa_plan_t *p = &cpa_edit.plan;
                 for (unsigned i = 0; i < cpa.plan.n; i++) cpa.plan.slot[i] = p->slot[i];
                 cpa.plan.tonic = p->tonic; cpa.plan.scale = p->scale; cpa.plan.nb = p->nb;
                 cpa_edit.flags &= ~CPA_NOTES; cpa_commit();
             }
-            if (bar && (cpa_edit.flags & CPA_GROOVE)) {
+            if (bar && (cpa_edit.flags & CPA_GROOVE) && cge_commit_allowed(4,bar)) {
                 cpa.plan.rhythm = cpa_edit.plan.rhythm;
                 cpa.plan.mode = cpa_edit.plan.mode;
                 cpa.plan.kit = cpa_edit.plan.kit; cpa.plan.swing = cpa_edit.plan.swing;
@@ -244,6 +250,7 @@ static void cpa_tick1(void)
         if (onset || revoice) cpa_emit();
     }
     const cpa_slot_t *gate=&cpa.plan.slot[cpa.slot];
+    cge_tick1();
     if(gate->gate<100 && !gate->tie && cpa.elapsed>=(uint32_t)gate->ticks*gate->gate/100u) {
         cpa_arp_off();sqp_chord_off();sqp_bass_off();sqp.dn=0;
     }

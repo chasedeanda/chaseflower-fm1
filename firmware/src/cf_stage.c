@@ -92,7 +92,7 @@ typedef struct {
     char value[4][14],label[4][12];
     uint8_t live,hold,slot,first,count,total,skin,motion,battery,halo,rec,bank,disabled[4],emphasis[4],cursor_width;
     uint8_t pulse,halo_ink,activity,activity_step;
-    uint8_t moment,build,bloom;
+    uint8_t moment,build,bloom,engine_bar;
     uint16_t matches;
     int8_t bank_dx,chord_dy;
     cfm_pose_t mascot;
@@ -207,12 +207,14 @@ static void cf_stage_model(cf_stage_model_t *m)
         str_cpy(m->idea,"Heavenly Gaze",sizeof m->idea);
         if(!cge.loaded)str_cpy(m->context,"SEL loads scene / PLAY starts",sizeof m->context);
         else {
-            str_cpy(m->context,cge_stage_name(),sizeof m->context);
-            char b[24];kint(b,cge.bar+1,"/16  ");str_cpy(m->context+str_len(m->context)," ",sizeof m->context-str_len(m->context));
-            str_cpy(m->context+str_len(m->context),b,sizeof m->context-str_len(m->context));
-            char lock[12]={'H',cge.locks&1?'*':'-', ' ', 'S',cge.locks&2?'*':'-', ' ', 'G',cge.locks&4?'*':'-', ' ', 'F',cge.locks&8?'*':'-',0};
+            m->engine_bar=cge.bar+1;
+            str_cpy(m->context,"Pilot ",sizeof m->context);
+            str_cpy(m->context+str_len(m->context),cge_stage_name(),sizeof m->context-str_len(m->context));
+            str_cpy(m->context+str_len(m->context)," ",sizeof m->context-str_len(m->context));
+            char lock[9]={'H',cge.locks&1?'*':'-', 'S',cge.locks&2?'*':'-', 'G',cge.locks&4?'*':'-', 'F',cge.locks&8?'*':'-',0};
             str_cpy(m->context+str_len(m->context),lock,sizeof m->context-str_len(m->context));
-            if(cge.pending)str_cpy(m->pending,"Engine combination pending",sizeof m->pending);
+            if(cge.pending)str_cpy(m->pending,"Next 1/16: pilot take",sizeof m->pending);
+            else if(cge_arp_pending())str_cpy(m->pending,"Next chord: Feel / Play It",sizeof m->pending);
         }
     }
 
@@ -279,7 +281,8 @@ static void cf_stage_draw(void)
     if(m.pulse){unsigned r=cue?m.pulse*3u/4u:m.pulse;cfn_circle(57,ring_y,(int)r,m.halo_ink);}
     cfm_draw(&pose);
     char window[20],status[48],bank[24];
-    if(m.slot<m.total){kint(window,m.slot+1,"/");kint(window+str_len(window),m.total,0);}
+    if(m.engine_bar){window[0]='0'+m.engine_bar/10;kint(window+1,m.engine_bar%10,"/16");}
+    else if(m.slot<m.total){kint(window,m.slot+1,"/");kint(window+str_len(window),m.total,0);}
     else{kint(window,m.first+1,"-");kint(window+str_len(window),m.first+m.count,"/");kint(window+str_len(window),m.total,0);}
     str_cpy(status,m.status,sizeof status);str_cpy(status+str_len(status)," ",sizeof status-str_len(status));str_cpy(status+str_len(status),window,sizeof status-str_len(status));
     int status_x=210-cfn_width(&CFN_12,status);

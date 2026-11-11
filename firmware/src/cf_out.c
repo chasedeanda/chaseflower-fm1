@@ -823,7 +823,9 @@ static void cf_snapshot(void)
     v->onset_ms=av->onset_ms;v->interval_ms=av->interval_ms;v->root=av->root;v->mask=av->mask;
     v->mode=av->mode;v->latched=av->latched;v->strum_n=av->sn;v->strum_i=av->si;
     v->source=av==&cfa_k?0:av==&cfa_sq[1]?3:cpa.on?1:2;
+    int pushed=av==&cfa_sq[0]?cge_arp_push():0;
     v->oct=cfp_cfg.arp.oct;v->rate=cfp_cfg.arp.rate;v->gate=cfp_cfg.arp.gate;v->swing=cfp_cfg.arp.swing;
+    cge_arp_pop(pushed);
     memcpy(v->trace,av->trace,sizeof v->trace);memcpy(v->note,av->note,sizeof v->note);memcpy(v->order,av->order,sizeof v->order);memcpy(v->strum,av->snote,sizeof v->strum);
     cf_sn.ext_clock = cfx_in.active;
     cf_sn.ext_bpm = cfx_in.bpm;

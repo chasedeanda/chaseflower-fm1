@@ -139,6 +139,7 @@ static volatile uint32_t cfx_quiet;  /* blocks since the chain's output was last
                                       * on the unit) never lands in a reverb's or a delay's tail */
 static cf_fx_t cfx_set;              /* the chain as the ISR uses it (cf_fx_apply copies cs.fx in, IRQ off) */
 static uint8_t cfx_ready;
+static uint16_t cfx_space=32768; /* transient Engine wet multiplier; never written to settings */
 static cf_fx_t cfx_target;
 static volatile uint8_t cfx_pending, cfx_bypass;
 static int32_t cfx_blend = 32768;  /* 0 dry, 32768 processed; a preset swaps only at dry */
@@ -280,8 +281,10 @@ static void cfx_mix(int32_t *l, int32_t *r, uint32_t e, uint32_t n, int32_t boos
 {
     int32_t w = cfx.wg[e], dg, wg;
     uint32_t i;
-    if (w != cfx.wt[e])
-        cfx.wg[e] = w = w + (cfx.wt[e] - w) / 8 + (cfx.wt[e] > w ? 1 : cfx.wt[e] < w ? -1 : 0);
+    int32_t target=cfx.wt[e];
+    if(e==CFX_REVERB || e==CFX_DELAY || e==CFX_CHORUS)target=CFX_MUL(target,cfx_space,15);
+    if (w != target)
+        cfx.wg[e] = w = w + (target - w) / 8 + (target > w ? 1 : target < w ? -1 : 0);
     dg = 32768 - w / 2;
     wg = CFX_MUL(blend ? w / 2 : w, boost_q8, 8);
     for (i = 0; i < n; i++) {

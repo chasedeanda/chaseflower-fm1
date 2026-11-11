@@ -3,17 +3,50 @@
  * choices and embellishment flags are prepared in the foreground. */
 #include "cf_engine_data.h"
 enum { CGE_HARMONY=1, CGE_SOUND=2, CGE_GROOVE=4, CGE_FX=8 };
+enum { CGE_ARP_AUTO, CGE_ARP_ON, CGE_ARP_OFF };
 static struct {
-    uint8_t loaded, energy, movement, variation, locks;
+    uint8_t loaded, energy, feel, space, locks;
     uint8_t index[4], request[4], commit[4], previous[4], pending, undo;
     uint8_t bar, arp, bass_gate, drum_gate, sound_taken, fx_taken;
-    uint8_t movement_applied, variation_applied, energy_applied;
+    uint8_t feel_applied, arp_request, arp_applied, energy_applied;
+    cf_arp_t manual_arp;
     uint16_t profile[5][3], gain[3], target[3], last_target[3], ramp_left[3];
     uint32_t cycle, generation;
     cf_fx_t fx;
 } cge;
 static int cge_active(void){return cpa.on && cpa.plan.idea==CF_P_ENGINE;}
+static void cge_live_takeover(void)
+{if(cge_active()){cpa_arp_off();sqp_chord_off();sqp_bass_off();}}
 static int cge_arp_wanted(void){return cge_active()?cge.arp:cfp_cfg.arp_on;}
+static int cge_commit_allowed(unsigned category,int bar)
+{return !cge_active() || !(cge.pending&category) || (bar && cge.bar==15);}
+/* Only the scheduled owner consumes this state, at a two-bar chord onset. */
+static void cge_articulation(void)
+{
+    cge.feel_applied=cge.feel;cge.arp_applied=cge.arp_request;
+    cge.manual_arp=cfp_cfg.arp;
+    cge.arp=cge.arp_applied==CGE_ARP_ON ||
+        (cge.arp_applied==CGE_ARP_AUTO && cge.feel_applied>=65);
+}
+static int cge_gated(void)
+{return cge_active() && !cge.arp && cge.feel_applied>=25;}
+static int cge_chord_gap(void)
+{return cge_gated() && cpa.elapsed%192u>=192u*70u/100u;}
+static void cge_tick1(void)
+{
+    if(!cge_gated() || cpa_live_chord() || cla_active() || cpa.plan.mode==CPA_DRUMS)return;
+    unsigned t=cpa.elapsed%192u;
+    if(t==192u*70u/100u)sqp_chord_off();
+    else if(!t && cpa.elapsed){
+        const cpa_slot_t *s=&cpa.plan.slot[cpa.slot];
+        sqp_chord_off();
+        for(unsigned i=0;i<s->n;i++){
+            sqp.note[i]=s->note[i];
+            if(!cfp_holds(0,s->note[i]))cfp_on(0,s->note[i],cfp_cfg.vel);
+        }
+        sqp.n=s->n;
+    }
+}
 static int cge_bass_enabled(void){return !cge_active() || cge.bass_gate;}
 static int cge_drums_enabled(void){return !cge_active() || cge.drum_gate;}
 static unsigned cge_phase(void)
@@ -26,13 +59,15 @@ static void cge_targets(void)
 static void cge_gates(void)
 {
     unsigned p=cge_phase();cge.energy_applied=cge.energy;
-    cge.bass_gate=cge.energy_applied && CGE_PROFILE[p][2];
-    cge.drum_gate=cge.energy_applied && CGE_PROFILE[p][3];
+    /* Energy owns gain, not the clocked note owners. Turning up from zero
+     * must recover the current bed/groove without waiting for another bar. */
+    cge.bass_gate=CGE_PROFILE[p][2]!=0;
+    cge.drum_gate=CGE_PROFILE[p][3]!=0;
 }
 static void cge_start(void)
 {
     if(!cge_active())return;
-    cge.bar=0;cge.cycle=0;cge.arp=0;cge.movement_applied=cge.movement;cge.variation_applied=cge.variation;
+    cge.bar=0;cge.cycle=0;cge_articulation();
     cge_targets();cge_gates();
     for(unsigned k=0;k<3;k++)cge.gain[k]=cge.target[k];
 }
@@ -44,7 +79,6 @@ static int cge_bar(int onset)
 {
     if(!cge_active())return 0;
     cge.bar=(cge.bar+1u)%16u;if(!cge.bar)cge.cycle++;
-    cge.variation_applied=cge.variation;
     unsigned bass=cge.bass_gate;cge_targets();cge_gates();
     if(!onset && bass!=cge.bass_gate){
         const cpa_slot_t *s=&cpa.plan.slot[cpa.slot];
@@ -53,24 +87,20 @@ static int cge_bar(int onset)
             sqp_bass_on(s->bass,cfp_cfg.bass_on?s->nb:0,s->ticks-cpa.elapsed,0);
     }
     if(!(cge.bar&1u)) {
-        cge.movement_applied=cge.movement;
-        if(cge.pending&CGE_HARMONY){cge.index[0]=cge.commit[0];cge.pending&=~CGE_HARMONY;}
+        cge_articulation();
     }
-    uint8_t old=cge.arp;
-    cge.arp=cge.movement_applied>=65 && cge.bar>=8 && cge.bar<12;
+    if(cge.bar)return 0;
+    if(cge.pending){memcpy(cge.previous,cge.index,4);cge.undo=1;}
+    if(cge.pending&CGE_HARMONY){cge.index[0]=cge.commit[0];cge.pending&=~CGE_HARMONY;}
     int sound=0;
     if(cge.pending&CGE_SOUND){sound=cge_sound_boundary();if(sound){cge.index[1]=cge.commit[1];cge.pending&=~CGE_SOUND;}}
     if(cge.pending&CGE_GROOVE){cge.index[2]=cge.commit[2];cge.pending&=~CGE_GROOVE;}
     if(cge.pending&CGE_FX){cfx_target=cge.fx;cfx_pending=cfx_ready=1;cge.index[3]=cge.commit[3];cge.pending&=~CGE_FX;cge.fx_taken=1;}
-    /* Never replace a manual action, extend an existing fill, or undo Drop. */
-    if(cge.cycle && cge.drum_gate && !cf_moment.pending && !cf_moment.fill && !cf_moment.dropped &&
-       ((cge.bar==11 && cge.variation_applied>=50 && cge.energy>=50) ||
-        (cge.bar==7 && cge.variation_applied>=75 && cge.energy>=70)))
-        cf_perf_queue(CFPERF_FILL);
-    return old!=cge.arp || sound;
+    return sound;
 }
 static void cge_block(uint32_t n)
 {
+    cfx_space=cge_active()?cge.space*32768u/100u:32768u;
     if(cge_active())cge_targets();else for(unsigned k=0;k<3;k++)cge.target[k]=32768;
     /* Every changed target gets its own linear 50ms control-rate ramp. */
     for(unsigned k=0;k<3;k++){
@@ -93,7 +123,12 @@ static int cge_arp_push(void)
 {
     if(!cge_active())return 0;
     cge_arp_save=cfp_cfg.arp;cge_arp_save_on=cfp_cfg.arp_on;
-    cfp_cfg.arp_on=cge.arp;cfp_cfg.arp.rate=4;cfp_cfg.arp.oct=1;cfp_cfg.arp.gate=70;cfp_cfg.arp.latch=0;
+    cfp_cfg.arp_on=cge.arp;
+    if(cge.arp_applied==CGE_ARP_ON)cfp_cfg.arp=cge.manual_arp;
+    else {
+        cfp_cfg.arp.rate=4;cfp_cfg.arp.oct=1;cfp_cfg.arp.gate=70;cfp_cfg.arp.latch=0;
+        if(CF_ARP_STRUMMING(cfp_cfg.arp.mode))cfp_cfg.arp.mode=CF_ARP_UP;
+    }
     return 1;
 }
 static void cge_arp_pop(int pushed)
