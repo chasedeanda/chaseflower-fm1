@@ -19,7 +19,7 @@ static void cfarp_notename(unsigned note,char *dst,unsigned size)
 }
 static void cfarp_model(cfarp_model_t *m)
 {
-    memset(m,0,sizeof *m);m->current=255;m->skin=cf_skin;m->page=cu.page[SCR_ARP]&1;
+    memset(m,0,sizeof *m);m->current=255;m->skin=cf_skin;m->page=cu.page[SCR_ARP]%(cge_selected()?3:2);
     const cf_arp_view_t *a=&cf_sn.arp_view;
     uint8_t note[CF_MAX_NOTES];unsigned n=a->n,mode=a->n?a->mode:cs.arp.mode;
     unsigned oct=a->n?a->oct:cs.arp.oct,root=a->root;uint32_t mask=a->mask;
@@ -80,6 +80,10 @@ static void cfarp_model(cfarp_model_t *m)
         if(cf_motion && !m->strum && a->interval_ms){unsigned age=cf_sn.now_ms-a->onset_ms;m->travel=(uint8_t)(age>=a->interval_ms?11:age*12/a->interval_ms);}
     } else {str_cpy(m->now,"--",sizeof m->now);str_cpy(m->position,a->on?"Waiting":"Preview / Off",sizeof m->position);}
     str_cpy(m->owner,m->run?(a->latched?"Latch holding":cf_sn.out.hold && a->source==0?"HOLD":a->source==1?"Progression":a->source==2?"Chord track":a->source==3?"Layer track":"Live keys"):"Play a chord",sizeof m->owner);
+    if(cge_selected()){
+        str_cpy(m->owner,cge_articulation_name(),sizeof m->owner);
+        str_cpy(m->position,cge_arp_pending()?"Next chord":CGE_ARP_NAMES[cge.arp_applied],sizeof m->position);
+    }
     if(m->strum){kint(m->detail,cs.arp.strum_ms," ms / sustain");}
     else {kint(m->detail,gate,"% gate / ");kint(m->detail+str_len(m->detail),swing,"% swing");}
     for(unsigned k=0;k<4;k++){cf_knob_t info;memset(&info,0,sizeof info);ui_knob_info(k,&info);str_cpy(m->label[k],info.name,sizeof m->label[k]);str_cpy(m->value[k],info.val,sizeof m->value[k]);m->disabled[k]=info.dis;}
@@ -91,7 +95,7 @@ static void cfarp_draw(void)
     cfarp_model_t m;cfarp_model(&m);
     if(cfarp_valid && !fb_full && !memcmp(&m,&cfarp_last,sizeof m))return;
     cfarp_last=m;cfarp_valid=1;cfarp_draws++;fb_unclip();fb_fill(FL_BG);
-    cfn_text(&CFN_12,10,18,m.page?"ARP / Timing 2/2":"ARP / Pattern 1/2",FL_INK2);
+    cfn_text(&CFN_12,10,18,cge_selected()?(m.page==2?"ARP / Live keys 3/3":m.page?"ARP / Timing 2/3":"ARP / Play It 1/3"):m.page?"ARP / Timing 2/2":"ARP / Pattern 1/2",FL_INK2);
     char tempo[16];kint(tempo,m.bpm,m.external?" EXT":" BPM");
     cfn_text(&CFN_12,230-cfn_width(&CFN_12,tempo),18,tempo,C_ACC(0));
     cfn_fit(&CFN_32,10,50,m.chord,144,FL_INK);

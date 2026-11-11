@@ -30,17 +30,24 @@ static void cge_remember_edits(void)
 static void cge_direct(unsigned category)
 {
     if(!cge_selected())return;
+    fm1_irq_off();
     cge.locks|=category;cge.pending&=~category;
     for(unsigned i=0;i<4;i++)if(category&(1u<<i))cge.request[i]=cge.index[i];
     if(category&CGE_SOUND)for(unsigned p=0;p<2;p++)if(cf_stage[p].pat==CF_P_ENGINE)cf_stage[p].ready=0;
+    if(category&CGE_FX)cge.fx_taken=0;
+    fm1_irq_on();
+    /* Reconcile an already committed sound before a new manual edit; no
+     * later foreground metadata update may overwrite that edit. */
+    if(category&CGE_SOUND)cge_sound_poll();
 }
 static void cge_gain_prepare(void)
 {
-    uint16_t next[5][3];unsigned e=cge.energy,e0=CGE_DEFAULTS[0];
+    uint16_t next[5][3];unsigned e=cge.energy;
     for(unsigned p=0;p<5;p++)for(unsigned k=0;k<3;k++){
-        uint32_t gain=k?CGE_PROFILE[p][k+1]*e*32768u/(100u*e0):
-            CGE_PROFILE[p][1]*(3u*e0+2u*e)*32768u/(500u*e0);
-        next[p][k]=(uint16_t)(gain>32768?32768:gain);
+        /* Keep the existing 60/40 chord-bed curve; normalize both roles to
+         * the full dial, so bass/drums never saturate before Energy 100. */
+        unsigned amount=k?5u*e:300u+2u*e;
+        next[p][k]=(uint16_t)(CGE_PROFILE[p][k+1]*amount*32768u/50000u);
     }
     fm1_irq_off();memcpy(cge.profile,next,sizeof next);fm1_irq_on();
 }
@@ -68,7 +75,7 @@ static int cge_resolve_assets(void)
 }
 static int cge_prepare(cpa_plan_t *plan,cf_chord_cfg_t cfg,unsigned rhythm,unsigned mode)
 {
-    if(!cge.loaded || !cf_harmony_supported(cfg.scale,CF_Q_BASIC))return 0;
+    if(!cge.loaded || cs.beats!=4 || !cf_harmony_supported(cfg.scale,CF_Q_BASIC))return 0;
     memset(plan,0,sizeof *plan);plan->idea=CF_P_ENGINE;plan->n=8;plan->tonic=cfg.tonic;plan->scale=cfg.scale;
     plan->beats=4;plan->rhythm=cpa_compatible(rhythm,4);plan->mode=mode;
     if(plan->rhythm<DM_N){plan->kit=dm_kit(plan->rhythm);plan->swing=dm_swing(plan->rhythm);}
@@ -132,10 +139,10 @@ static void cge_load(void)
 {
     if(cpa_running()){cf_message("Stop PLAY to load Engine");return;}
     if(cr_safe || cfs_restore_lock || sqk.on || cf_sn.sq_on || cf_sn.sq_rec!=255){cf_message("Stop recording/replay first");return;}
+    if(cs.beats!=4){cf_message("Pilot requires 4/4");return;}
     if(!cge_resolve_assets())return;
-    cge_init();cge.loaded=1;cge.energy=CGE_DEFAULTS[0];cge.movement=CGE_DEFAULTS[1];cge.variation=CGE_DEFAULTS[2];cge_gain_prepare();
-    cs.chord.tonic=4;cs.chord.scale=CF_SC_MAJOR;cs.chord.quantize=CF_Q_BASIC;cs.chord.octave=0;
-    cs.bpm=104;cs.beats=4;cs.bass_on=1;cpg.idea=CF_P_ENGINE;cpg.rhythm=cge_rhythm[0];cpg.mode=CPA_BOTH;cpg.repeat_off=0;
+    cge_init();cge.loaded=1;cge.energy=CGE_DEFAULTS[0];cge.feel=CGE_DEFAULTS[1];cge.space=100;cge_gain_prepare();
+    cpg.idea=CF_P_ENGINE;cpg.rhythm=cge_rhythm[0];cpg.mode=CPA_BOTH;cpg.repeat_off=0;
     for(unsigned p=0;p<2;p++){
         unsigned e=cge_sound_engine[p][0],f=cge_sound_factory[p][0];cf_pool_load(p,e,pool_pos_factory(e,f));cs.snd[p]=cf_snd_pos(p);
     }
@@ -163,6 +170,7 @@ static void cge_request_apply(void)
         memcpy(cge.commit,cge.request,4);cge.fx=fx;cge.pending=mask;
         fm1_irq_on();
     }else{
+        if(mask){memcpy(cge.previous,cge.index,4);cge.undo=1;}
         if(mask&CGE_SOUND){fm1_irq_off();cge_sound_boundary();fm1_irq_on();cge_sound_poll();}
         if(mask&CGE_FX){cs.fx=fx;cf_fx_recall(&cs.fx);}
         cpg.rhythm=rhythm;memcpy(cge.index,cge.request,4);memcpy(cge.commit,cge.request,4);cge.pending=0;
@@ -174,14 +182,13 @@ static void cge_regenerate(int undo)
 {
     if(!cge_selected()){cf_message("SEL loads Heavenly Gaze");return;}
     if(cr_safe || cfs_restore_lock || sqk.on || cf_sn.sq_rec!=255){cf_message("Finish recording first");return;}
-    if(undo){if(!cge.undo){cf_message("No Engine Undo");return;}memcpy(cge.request,cge.previous,4);cge.undo=0;}
+    if(undo){if(!cge.undo){cf_message("No Back One yet");return;}for(unsigned i=0;i<4;i++)cge.request[i]=cge.locks&(1u<<i)?cge.index[i]:cge.previous[i];}
     else {
         if(cge.locks==15){cf_message("Everything locked");return;}
-        memcpy(cge.previous,cge.request,4);cge.undo=1;
         static const uint8_t counts[]={3,3,2,3};for(unsigned i=0;i<4;i++)if(!(cge.locks&(1u<<i)))cge.request[i]=(cge.request[i]+1u)%counts[i];
         cge.generation++;
     }
-    cge_request_apply();cf_message(cge.pending?"Engine changes pending":"Engine combination ready");
+    cge_request_apply();cf_message(cge.pending?"Next 1/16 / pilot take":"Pilot take ready");
 }
 static void cge_poll(void)
 {
@@ -207,17 +214,23 @@ static int cge_snapshot(cf_song_t *s)
 }
 static void cge_knob_info(int k,cf_knob_t *o)
 {
-    static const char *const names[]={"ENERGY","MOVEMENT","VARIATION","REGEN/UNDO"};kfmt(o->name,12,names[k]);
-    if(k<3)kint(o->val,k==0?cge.energy:k==1?cge.movement:cge.variation,0);
-    else kfmt(o->val,14,cge.pending?"Pending":"+ / -");
+    static const char *const names[]={"ENERGY","FEEL","SPACE","FRESH TAKE"};kfmt(o->name,12,names[k]);
+    if(k<3)kint(o->val,k==0?cge.energy:k==1?cge.feel:cge.space,k==1 && cge_active() && cge.feel!=cge.feel_applied?" Next":0);
+    else kfmt(o->val,14,cge.pending?"Next 1/16":"-Back 1");
     if(!cge.loaded && k<3)o->dis=1;
 }
 static void cge_knob_turn(int k,int d)
 {
     if(!d)return;if(k==3){cge_regenerate(d<0);return;}if(!cge.loaded){cf_message("SEL loads Heavenly Gaze");return;}
-    uint8_t *v=k==0?&cge.energy:k==1?&cge.movement:&cge.variation;*v=clampi(*v+d,0,100);
+    uint8_t *v=k==0?&cge.energy:k==1?&cge.feel:&cge.space;*v=clampi(*v+d,0,100);
     if(k==0)cge_gain_prepare();
 }
+static const char *const CGE_ARP_NAMES[]={"Auto","On","Off"};
+static int cge_arp_pending(void)
+{return cge_active() && (cge.arp_request!=cge.arp_applied || cge.feel!=cge.feel_applied ||
+    (cge.arp_request==CGE_ARP_ON && memcmp(&cs.arp,&cge.manual_arp,sizeof cs.arp)));}
+static const char *cge_articulation_name(void)
+{return cge.arp?"ARP":cge.feel_applied>=25?"Gated":"Held";}
 static const char *cge_stage_name(void)
 {return cge.bar<4?"Intro":cge.bar<8?"Groove":cge.bar<12?"Lift":"Return";}
 

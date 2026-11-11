@@ -9,6 +9,8 @@ s=next(x for x in p['scene_definitions'] if x['id']==2)
 assert p['length_bars']==16 and p['ppqn']==96 and s['slug']=='HEAVENLY_GAZE'
 assert s['bars_chord_index']==[i//2%4 for i in range(16)]
 r=s['regenerate_candidates'];rows=[]
+# G0 changes only the pilot opening: pulse immediately; bass still joins bar 5.
+p['phase_profiles']['dreampop'][0]['drums']=28
 for chords in r['harmonies']:
  assert len(chords)==4
  rows.append('{'+','.join('{%d,{%s}}'%(len(c['notes_midi']),','.join(map(str,c['notes_midi']))) for c in chords)+'}')

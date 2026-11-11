@@ -448,11 +448,13 @@ static int cfp_same(const uint8_t *a, int n, const uint8_t *b, int m)
 }
 
 /* the parts follow the chord model. how: 0 a fresh strike (a root key went down), 1 a change under held keys */
+static void cge_live_takeover(void);
 static void cfp_sync(int how)
 {
     const cf_chord_out_t *o = &cfc.out;
     uint8_t nb[2];
     int m = o->sounding && !cfp_bo ? o->n : 0;   /* (the bass alone: no chord) */
+    if(m && !cfp.n && cfp_cp==0)cge_live_takeover();
     int mb = cfp_cp ? 0 : cfp_bo ? cfp_bass_alone(nb) : cfp_bass_notes(nb);   /* (the LAYER: no bass) */
     /* RETRIG Off: a chord changed while the last one still sounds under held keys (another chord button, another
      * root) moves its voices there with no new attack, at the Glide time (0: at once) */

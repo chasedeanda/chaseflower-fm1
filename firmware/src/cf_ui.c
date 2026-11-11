@@ -420,9 +420,11 @@ static void ui_knob_info(int k, cf_knob_t *o)
         break;
     }
     case SCR_ARP:
-        if (cu.page[SCR_ARP] == 0) {             /* Pattern: ON/OFF MODE OCTAVE RATE */
+        if (cu.page[SCR_ARP] != 1) {             /* Pattern; Engine also exposes the independent live-key switch. */
             switch (k) {
-            case 0: kfmt(o->name, 12, "ON/OFF"); kfmt(o->val, 14, cu.arp_on ? "On" : "Off"); break;
+            case 0:
+                kfmt(o->name,12,cge_selected()?(cu.page[SCR_ARP]==0?"PLAY IT":"LIVE KEYS"):"ON/OFF");
+                kfmt(o->val,14,cge_selected() && cu.page[SCR_ARP]==0?CGE_ARP_NAMES[cge.arp_request]:cu.arp_on?"On":"Off");break;
             case 1: kfmt(o->name, 12, "MODE"); kfmt(o->val, 14, CF_ARP_SHORT[cs.arp.mode % CF_ARP_NMODES]); break;
             case 2: kfmt(o->name, 12, "OCTAVE"); kint(o->val, cs.arp.oct, 0); break;
             default:
@@ -593,6 +595,7 @@ static void cf_harmony_turn(int k, int d)
 
 static void ui_knob_turn(int k, int d)
 {
+    if(d && (cu.scr==SCR_ENV || cu.scr==SCR_EDIT || cu.scr==SCR_BASS))cge_direct(CGE_SOUND);
     if(cu.scr==SCR_LAB){cfl_turn(k,d);return;}
     cu.knob_ms[k] = cu.now ? cu.now : 1u;
     cu.knob_last = (uint8_t)k;
@@ -706,9 +709,11 @@ static void ui_knob_turn(int k, int d)
         break;
     }
     case SCR_ARP:
-        if (cu.page[SCR_ARP] == 0) {
-            if (k == 0)
-                cu.arp_on = (uint8_t)(d > 0);
+        if (cu.page[SCR_ARP] != 1) {
+            if (k == 0){
+                if(cge_selected() && cu.page[SCR_ARP]==0)cge.arp_request=(uint8_t)clampi(cge.arp_request+(d>0?1:-1),0,2);
+                else cu.arp_on = (uint8_t)(d > 0);
+            }
             else if (k == 1)
                 cs.arp.mode = (uint8_t)clampi(cs.arp.mode + d, 0, CF_ARP_NMODES - 1);
             else if (k == 2)
@@ -953,6 +958,7 @@ static void ui_select(int d)                     /* SELECT: the bass sound, or a
         cu.sel_btn = (uint8_t)wrapi(cu.sel_btn + d, nb);
         return;
     }
+    if(d)cge_direct(CGE_SOUND);
     if (!cf_snd_step(CF_PART_BASS, d)) return;
     if (cs.env_link)
         cf_env_follow();
@@ -969,6 +975,7 @@ static void ui_presets(int d)                    /* PRESETS: the chord sound (a 
         sq_presets(d);                           /* (the pattern's own sound for the frame's track: 0.5) */
         return;
     }
+    if(d)cge_direct(CGE_SOUND);
     if (!cf_snd_step(CF_PART_CHORD, d)) return;
     if (cs.env_link)                             /* linked: the bass takes the new sound's envelope */
         cf_env_follow();
@@ -988,7 +995,7 @@ static void ui_algo(int d)                       /* ALGORITHM: scene, effect, or
     }
 #endif
     if(cu.scr==SCR_LAB){cfl_tab(d);return;}
-    if(cu.scr==SCR_ARP){cu.page[SCR_ARP]=(uint8_t)wrapi(cu.page[SCR_ARP]+d,2);return;}
+    if(cu.scr==SCR_ARP){cu.page[SCR_ARP]=(uint8_t)wrapi(cu.page[SCR_ARP]+d,cge_selected()?3:2);return;}
     cf_nav_dir=d<0?-1:1;
     if(cu.scr==SCR_SONGS)return;
     if(cu.scr==SCR_PEDIT){if(!cfdu.conflict&&!cfdu.confirm)cu.page[SCR_PEDIT]=wrapi(cu.page[SCR_PEDIT]+d,CFD_NTAB);return;}
@@ -1526,6 +1533,7 @@ static void ui_note_key_aged(int key, int down, int age_ms);
 /* HOME's PRESETS / SELECT changed the sound you hear (0.5): the current pattern's own, if it has one, else HOME's */
 static void ui_snd_heard(uint32_t part)
 {
+    if(part<2)cge_direct(CGE_SOUND);
     uint32_t cur = sq_cur_pat();
     if (cur < SQ_NPAT && cfps.r[cur][part].own) {
         cfps_set(cur, part, &cf_snd[part]);

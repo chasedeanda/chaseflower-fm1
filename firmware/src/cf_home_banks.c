@@ -128,6 +128,7 @@ static int cf_home_bank_turn(int k,int d)
     }
     if (cf_home_bank==CF_HB_SOUND) {
         if (k<2) {
+            cge_direct(CGE_SOUND);
             if (cf_snd_step((unsigned)k,d)) {
                 if (cs.env_link) cf_env_follow();
                 ui_snd_heard((unsigned)k);
@@ -136,7 +137,7 @@ static int cf_home_bank_turn(int k,int d)
     } else if (cf_home_bank==CF_HB_TEXTURE) {
         static const unsigned fx[]={CFX_REVERB,CFX_DELAY,CFX_CHORUS};
         if (k==3) cpa_glide(d);
-        else { unsigned e=fx[k]; cs.fx.v[e][2]=(uint8_t)clampi(cs.fx.v[e][2]+d,0,100); cf_fx_apply(&cs.fx); }
+        else { cge_direct(CGE_FX); unsigned e=fx[k]; cs.fx.v[e][2]=(uint8_t)clampi(cs.fx.v[e][2]+d,0,100); cf_fx_apply(&cs.fx); }
     } else {
         if (k==0 || k==2) cf_home_groove(k,d);
         else if (k==1) sq_level_set(SQ_DRUMS,cs.level_drums+d*2);

@@ -118,6 +118,9 @@ jobs:
       - name: CORD Engine arrangement, regeneration and four-cycle real audio trace
         run: sh tools/test_engine.sh
 
+      - name: G0 scheduled ARP, Feel boundaries, Space and level-matched patch audition
+        run: sh tools/test_g0.sh
+
       - name: Contextual variations, undo and safe playback boundaries (host HAL)
         run: sh tools/test_variations.sh
 
