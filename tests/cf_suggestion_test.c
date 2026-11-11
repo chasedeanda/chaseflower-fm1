@@ -16,7 +16,7 @@ static void render_blocks(unsigned n)
 }
 static void drum_transitions(void)
 {
-    cs_defaults(&cs); cu.scr=SCR_HOME; cf_scene_set(CF_SCENE_PROGRESSIONS);
+    cs_defaults(&cs); cu.scr=SCR_HOME; cf_home_bank=CF_HB_CORE; cf_scene_set(CF_SCENE_PROGRESSIONS);
     cpg.idea=0; dm_view=0xFF;
     ch.mode=CF_H_AUTO; cf_send_config(); cf_send_metro(); render_blocks(4);
     cf_post(CFE_KEY,7,0,1); dm_play(dm_nth(4,0)); render_blocks(4);
@@ -100,7 +100,7 @@ static void render_audio(int browse, unsigned rate, const char *path)
     int32_t mix[CTL*2];
     cf_intro_on=0; cf_boot_go=0; cu.pop=POP_NONE;
     cf_harmony_defaults(&ch); ch.mode=CF_H_AUTO; ch.slot[0]=CF_MOD_13;
-    cu.scr=SCR_HOME; cf_scene_set(CF_SCENE_PROGRESSIONS);
+    cu.scr=SCR_HOME; cf_home_bank=CF_HB_CORE; cf_scene_set(CF_SCENE_PROGRESSIONS);
     cf_send_config();
     for(unsigned b=0;b<64;b++) audio_block(mix,CTL);
     cf_post(CFE_KEY,1,0,1); cf_post(CFE_KEY,1,0,0); /* select 13 explicitly */
@@ -133,7 +133,7 @@ static void render_audio(int browse, unsigned rate, const char *path)
 }
 static void shots(const char *dir)
 {
-    cf_intro_on=0; cu.pop=POP_NONE; cu.scr=SCR_HOME; cf_scene_set(CF_SCENE_PROGRESSIONS);
+    cf_intro_on=0; cu.pop=POP_NONE; cu.scr=SCR_HOME; cf_home_bank=CF_HB_CORE; cf_scene_set(CF_SCENE_PROGRESSIONS);
     ch.mode=CF_H_AUTO; cs.retrig=CF_RT_MOVE;
     static const unsigned picks[]={0,9,19,40,44,49,52,54,55,78,100,102,109,110,111,112,113,114,115,116,118,119,121,122,123,124,125,126,127,128,129};
     for(unsigned i=0;i<sizeof picks/sizeof *picks;i++) {

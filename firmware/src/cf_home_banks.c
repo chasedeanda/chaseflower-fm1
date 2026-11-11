@@ -38,6 +38,7 @@ static void cf_perform_turn(unsigned action)
 static int cf_home_bank_info(int k, cf_knob_t *o)
 {
     if(cf_home_bank==CF_HB_ENGINE){cge_knob_info(k,o);return 1;}
+    if(cf_home_bank==CF_HB_FLOW){cge_flow_info(k,o);return 1;}
     if (cf_home_bank == CF_HB_CORE) return 0;
     if(cf_home_bank==CF_HB_VARIATION){cvr_knob_info(k,o);return 1;}
     if(cf_home_bank==CF_HB_LOOP || cf_home_bank==CF_HB_MIX) {
@@ -98,6 +99,7 @@ static int cf_home_bank_info(int k, cf_knob_t *o)
 }
 static void cf_home_groove(int k,int d)
 {
+    if(d)cge_direct(CGE_GROOVE);
     if (sqk.on) return;
     unsigned r=cf_home_rhythm();
     if (r>=DM_N) { cf_message("Choose a rhythm in Core"); return; }
@@ -115,6 +117,7 @@ static void cf_home_groove(int k,int d)
 static int cf_home_bank_turn(int k,int d)
 {
     if(cf_home_bank==CF_HB_ENGINE){cge_knob_turn(k,d);return 1;}
+    if(cf_home_bank==CF_HB_FLOW){cge_flow_turn(k,d);return 1;}
     if (cf_home_bank==CF_HB_CORE) return 0;
     if(cf_home_bank==CF_HB_VARIATION){cvr_knob_turn(k,d);return 1;}
     if(cf_home_bank==CF_HB_LOOP || cf_home_bank==CF_HB_MIX) {

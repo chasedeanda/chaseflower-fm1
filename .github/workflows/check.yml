@@ -121,6 +121,9 @@ jobs:
       - name: G0 scheduled ARP, Feel boundaries, Space and level-matched patch audition
         run: sh tools/test_g0.sh
 
+      - name: G1 catalog, musical memory, Repeat/Jam and live Vibe switching
+        run: sh tools/test_g1.sh
+
       - name: Contextual variations, undo and safe playback boundaries (host HAL)
         run: sh tools/test_variations.sh
 

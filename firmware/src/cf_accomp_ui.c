@@ -82,7 +82,7 @@ static void cpa_publish(const cpa_plan_t *p, unsigned flags, int setup)
     if (!cpa_valid(p)) return;
     if(p->idea==CF_P_ENGINE){
         if(flags&CPA_GROOVE)cge_direct(CGE_GROOVE);
-        if((flags&CPA_NOTES) && (p->tonic!=cpa.plan.tonic || p->scale!=cpa.plan.scale))cge_direct(CGE_HARMONY);
+        if((flags&CPA_NOTES) && (p->tonic!=cpa.plan.tonic || p->scale!=cpa.plan.scale))cge_key_edit();
     }
     fm1_irq_off();
     if (setup) { cpa_setup.plan = *p; cpa_setup.flags = 1; }
@@ -125,7 +125,7 @@ static void cpa_ui_poll(void)
 }
 static void cpa_home_key(int k, int d)
 {
-    cge_direct(CGE_HARMONY);
+    cge_key_edit();
     static const uint8_t modes[] = {CF_SC_MAJOR, CF_SC_DORIAN, CF_SC_PHRYGIAN, CF_SC_LYDIAN,
                                    CF_SC_MIXOLYDIAN, CF_SC_MINOR, CF_SC_LOCRIAN};
     cpa_plan_t p; cpa_active_request(&p);
@@ -165,6 +165,7 @@ static void cpa_ui_mode(int d)
 }
 static void cpa_tempo(int d)
 {
+    if(d)cge.tempo_pin=1;
     if (cs.clock_in == 1u) { cf_message("Tempo follows MIDI clock"); return; }
     cs.bpm = clampi(cs.bpm + d, 30, 300); cf_send_metro();
 }

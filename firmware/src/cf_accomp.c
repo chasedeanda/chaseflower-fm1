@@ -32,7 +32,7 @@ static int cge_arp_wanted(void),cge_bass_enabled(void),cge_drums_enabled(void),c
 static void cge_start(void),cge_stop(void),cge_block(uint32_t),cge_arp_pop(int);
 static int cge_bar(int);
 static void cge_tick1(void);
-static int cge_chord_gap(void),cge_commit_allowed(unsigned,int);
+static int cge_chord_gap(void);
 static int cpa_running(void) { return cpa.on; }
 static int cpa_valid(const cpa_plan_t *p)
 {
@@ -221,13 +221,13 @@ static void cpa_tick1(void)
                 if(!bar && cpa_edit.flags){cpa.plan.rhythm=r;cpa.plan.mode=mode;cpa.plan.kit=kit;cpa.plan.swing=swing;cpa.plan.repeat_off=repeat;cpa.plan.click_start=0;}
                 cpa_commit();onset=2;
             }
-            if ((cpa_edit.flags & CPA_NOTES) && onset && cge_commit_allowed(1,bar)) {
+            if ((cpa_edit.flags & CPA_NOTES) && onset) {
                 const cpa_plan_t *p = &cpa_edit.plan;
                 for (unsigned i = 0; i < cpa.plan.n; i++) cpa.plan.slot[i] = p->slot[i];
                 cpa.plan.tonic = p->tonic; cpa.plan.scale = p->scale; cpa.plan.nb = p->nb;
                 cpa_edit.flags &= ~CPA_NOTES; cpa_commit();
             }
-            if (bar && (cpa_edit.flags & CPA_GROOVE) && cge_commit_allowed(4,bar)) {
+            if (bar && (cpa_edit.flags & CPA_GROOVE)) {
                 cpa.plan.rhythm = cpa_edit.plan.rhythm;
                 cpa.plan.mode = cpa_edit.plan.mode;
                 cpa.plan.kit = cpa_edit.plan.kit; cpa.plan.swing = cpa_edit.plan.swing;
@@ -247,7 +247,12 @@ static void cpa_tick1(void)
             cpa_groove(reset);
             if(dmp.on)cf_perf_bar(dmp_fill_style(dmp.r));
         }
-        if (onset || revoice) cpa_emit();
+        if (onset || revoice) {
+            /* The scheduled ARP takes its first gate from the onset grid.
+             * Publish that tick before emission, as on the first PLAY. */
+            if(cpa.plan.idea==CF_P_ENGINE)cf_grid.g24=24u+cpa.q2/8u;
+            cpa_emit();
+        }
     }
     const cpa_slot_t *gate=&cpa.plan.slot[cpa.slot];
     cge_tick1();

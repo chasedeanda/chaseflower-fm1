@@ -141,7 +141,9 @@ static const char *const ALG_NAME[CF_NALGS] = {"Top", "Top Lock", "Side", "Side 
 #define CF_GLO_NPAGES 14u
 static int cge_prepare(cpa_plan_t *,cf_chord_cfg_t,unsigned,unsigned);
 static int cge_snapshot(cf_song_t *);
-static void cge_direct(unsigned),cge_sound_poll(void),cge_poll(void),cge_init(void),cge_load(void);
+static void cge_direct(unsigned),cge_sound_poll(void),cge_poll(void),cge_init(void);
+static int cge_load(void);
+static void cge_key_edit(void);
 
 static const char *const CF_LEGACY_NAME[]={"Recordings","Metronome","Drum grid"};
 
@@ -181,7 +183,7 @@ static void kint(char *b, int v, const char *unit)
  * HV_FLOWER retains its legacy numeric identity for saved records; it now means the selected scene. */
 enum { HV_FLOWER, HV_CHORD, HV_KEYS, HV_DIAG, HV_N };
 #define HV_SHIFT 6u
-static uint8_t home_boot_main; /* session-only: scene-free boot starts at Progressions */
+static uint8_t home_boot_main; /* session-only: bypass the saved alternate HOME view */
 static uint32_t home_view(void)
 {
     if (home_boot_main) return HV_FLOWER;
@@ -233,6 +235,10 @@ static void cpa_ui_record(void);
 static void cf_progression_choose(unsigned next)
 {
     next=cf_progression_pick(next,0);
+    if(cge_active() && next<cf_progression_count()){
+        if(!cge_choose_progression(next) && cge_notice)cf_message(cge_notice);
+        return;
+    }
     if (sqk.on || cf_sn.sq_rec != 0xFFu) {
         cf_message("Finish recording to browse");
         return;
@@ -595,6 +601,7 @@ static void cf_harmony_turn(int k, int d)
 
 static void ui_knob_turn(int k, int d)
 {
+    if(d && cu.scr==SCR_HOME && cf_home_bank==CF_HB_CORE && (k==1 || k==2))cge.key_pin=1;
     if(d && (cu.scr==SCR_ENV || cu.scr==SCR_EDIT || cu.scr==SCR_BASS))cge_direct(CGE_SOUND);
     if(cu.scr==SCR_LAB){cfl_turn(k,d);return;}
     cu.knob_ms[k] = cu.now ? cu.now : 1u;
@@ -711,7 +718,7 @@ static void ui_knob_turn(int k, int d)
     case SCR_ARP:
         if (cu.page[SCR_ARP] != 1) {
             if (k == 0){
-                if(cge_selected() && cu.page[SCR_ARP]==0)cge.arp_request=(uint8_t)clampi(cge.arp_request+(d>0?1:-1),0,2);
+                if(cge_selected() && cu.page[SCR_ARP]==0)cge_play_it((unsigned)clampi(cge.arp_request+(d>0?1:-1),0,2));
                 else cu.arp_on = (uint8_t)(d > 0);
             }
             else if (k == 1)
@@ -889,7 +896,14 @@ static void cv_turned(int d)
 
 static void ui_select(int d)                     /* SELECT: the bass sound, or a screen's page */
 {
-    if(home_stage() && cf_home_bank==CF_HB_ENGINE)return;
+    if(home_stage() && cf_home_bank==CF_HB_FLOW){
+        if(cge_pins_open)cge_pin_move(d);
+        return;
+    }
+    if(home_stage() && (cge_selected() || (cf_home_bank==CF_HB_ENGINE && !cpa_running()))){
+        cge_preview_turn(d);
+        return;
+    }
     if(cu.scr==SCR_LAB){cfl_select(d);return;}
     cf_nav_dir=d<0?-1:1;
     if(cu.scr==SCR_SONGS){csl_select(d);return;}
@@ -987,6 +1001,7 @@ static void ui_algo(int d)                       /* ALGORITHM: scene, effect, or
 #if !CF_SCENES
     if(home_stage()) {
         if(!d)return;
+        if(cge_pins_open){cge_pin_move(d);return;}
         cf_nav_dir=d<0?-1:1;
         cf_home_bank=(uint8_t)wrapi((int)cf_home_bank+d%CF_HB_N,CF_HB_N);
         cf_home_bank_ms=cf_motion?(cu.now?cu.now:1u):0;
@@ -1047,7 +1062,12 @@ static void ui_open(uint32_t scr)
     if (sq_screen(was) && !sq_screen(scr) && scr != SCR_SEQ)
         ui_ctx_from_track(squ.trk);
     cu.scr = (uint8_t)(scr == was && scr != SCR_HOME ? SCR_HOME : scr);
-    if (cu.scr == SCR_HOME && was != SCR_HOME) { cf_home_bank = CF_HB_CORE; cf_home_bank_ms = 0; }
+    if(cu.scr!=SCR_HOME){cge_pins_open=0;cge_preview=255;}
+    if (cu.scr == SCR_HOME && was != SCR_HOME) {
+        int from_jam=cf_home_bank==CF_HB_ENGINE || cf_home_bank==CF_HB_FLOW;
+        cf_home_bank=from_jam && (was==SCR_ARP || was==SCR_LAB)?CF_HB_ENGINE:CF_HB_CORE;
+        cf_home_bank_ms=0;
+    }
     if(cu.scr==SCR_ACC && was!=SCR_ACC)cf_acc_page_ms=0;
     if (cu.scr == SCR_SEQ && was != SCR_SEQ)
         dm_seq_to = 0;                           /* (the carousel starts on the SEQUENCER: SEQ twice opens it, as before) */
@@ -1149,7 +1169,15 @@ static void ui_button(uint32_t b)
         if(b==B_SAVE){cla_request(0);csl_open();return;}
         cla_request(0);
     }
-    if(b==B_SCL && home_stage() && cf_home_bank==CF_HB_ENGINE){cge_load();return;}
+    if(b==B_SCL && home_stage() && cf_home_bank==CF_HB_FLOW){cge_pin_select();return;}
+    if(b==B_SCL && home_stage() && (cge_selected() || cf_home_bank==CF_HB_ENGINE) && cge_preview_apply())return;
+    if(b==B_SCL && home_stage() && cf_home_bank==CF_HB_ENGINE){cfl_open();return;}
+    if(b==B_PLAY && home_stage() && (cf_home_bank==CF_HB_ENGINE || cf_home_bank==CF_HB_FLOW) &&
+       !cpa_running() && !cpa_commanded && !sqp.on && !sqk.on){
+        cge_notice=0;
+        if((cge_selected() && cge.vibe_request==cge.current.vibe) || cge_load())cpa_ui_play();
+        return;
+    }
     if(b==B_SCL && cpb_home()){cfl_open();return;}
     if(b==B_SCL && cu.scr==SCR_GLO && cu.page[SCR_GLO]==CF_GLO_HARMONY){ui_open(SCR_SEL);return;}
     if(b==B_EDIT && (cu.scr==SCR_PEDIT || cu.scr==SCR_ACC || cpb_home())) {
@@ -1256,14 +1284,16 @@ static void ui_button(uint32_t b)
     switch (b) {
     case B_HOME:
         if (home_stage()) {
+            if(cge_pins_open){cge_pins_open=0;break;}
             cf_nav_dir=1;
             cf_home_bank = (uint8_t)((cf_home_bank + 1u) % CF_HB_N);
             cf_home_bank_ms = cf_motion ? (cu.now ? cu.now : 1u) : 0u;
             if (cu.pop == POP_SOUND_CHORD || cu.pop == POP_SOUND_BASS) cu.pop = POP_NONE;
         } else {
+            if(cu.scr==SCR_HOME)cf_home_bank=CF_HB_CORE;
             ui_open(SCR_HOME); home_boot_main = 1;
             cf_scene_set(CF_SCENE_PROGRESSIONS);
-            cf_home_bank = CF_HB_CORE; cf_home_bank_ms = 0;
+            cf_home_bank_ms = 0;
         }
         break;
     case B_SCL:                                  /* (the drum machine: SEL takes the rhythm's own KIT and SWING back) */
@@ -1284,7 +1314,9 @@ static void ui_button(uint32_t b)
         else if (cu.scr == SCR_FX) ui_open(SCR_HOME);
         else { cfx_sync(); fxpu.mode = FXP_BROWSE; cfxu.view = CFX_MACROS; ui_open(SCR_FX); }
         break;
-    case B_ARP: ui_open(SCR_ARP); break;         /* (its ON/OFF is K1 there, as an effect's: the owner's) */
+    case B_ARP:
+        if(home_stage() && (cf_home_bank==CF_HB_ENGINE || cf_home_bank==CF_HB_FLOW))cu.page[SCR_ARP]=0;
+        ui_open(SCR_ARP); break;
     case B_SEQ:                                  /* METRONOME, again the SEQUENCER (or the drum machine: the METRONOME's
                                                   * carousel), again HOME */
         if(cu.scr==SCR_ACC) {ui_open(SCR_HOME);home_boot_main=1;}
@@ -2230,7 +2262,7 @@ static void cf_ui_init(void)
     csl_load();
     cvr_init();
     home_boot_main = !CF_SCENES;
-    cf_home_bank = CF_HB_CORE; cf_home_bank_ms = 0;
+    cf_home_bank = CF_SCENES?CF_HB_CORE:CF_HB_ENGINE; cf_home_bank_ms = 0;
     cu.scr = SCR_HOME;
     cu.sel_btn = sel_first();
     cf_led_init();

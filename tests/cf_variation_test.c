@@ -184,7 +184,7 @@ static void home_controls(void)
         CHECK(!strcmp(a.name,b.name)&&!strcmp(a.val,b.val)&&a.dis==b.dis);
         cu.scr=SCR_HOME;
     }
-    CHECK(CF_HB_VARIATION+1==CF_HB_ENGINE && CF_HB_ENGINE+1==CF_HB_LEARN && CF_HB_LEARN+1==CF_HB_N);
+    CHECK(CF_HB_VARIATION+1==CF_HB_ENGINE && CF_HB_ENGINE+1==CF_HB_FLOW && CF_HB_FLOW+1==CF_HB_LEARN && CF_HB_LEARN+1==CF_HB_N);
     cvr.context=CV_FX;cvr.level=0;cf_fx_t before=cs.fx;unsigned seed=cvr.seed;
     ui_knob_turn(2,1);CHECK(cvr.seed==seed+1&&cvr.have_previous&&cu.scr==SCR_HOME);
     ui_knob_turn(3,1);CHECK(!memcmp(&before,&cs.fx,sizeof before));

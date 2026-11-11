@@ -27,7 +27,7 @@ static void empty(void)
 static void record_flow(unsigned rate)
 {
     empty(); sq_pref.protect=1; ua_reset(); ua.cap_alt=1; ua.cap_hold=0; ua_rate_set(rate);
-    cu.scr=SCR_HOME; home_boot_main=1; cf_scene_set(CF_SCENE_PROGRESSIONS);
+    cu.scr=SCR_HOME; home_boot_main=1; cf_home_bank=CF_HB_CORE; cf_scene_set(CF_SCENE_PROGRESSIONS);
     cpg.idea=0; cpg.rhythm=dm_nth(4,0); cpg.mode=CPA_BOTH;
     cs.bpm=120; cs.beats=4; cs.chord.tonic=0; cs.chord.scale=CF_SC_MAJOR;
     cs.chord.quantize=CF_Q_BASIC; cs.clock_in=0; ch.mode=CF_H_AUTO; cu.arp_on=0;

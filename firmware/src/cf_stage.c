@@ -87,12 +87,12 @@ static void cfn_shift_panel(int dx,int y0,int y1)
 #include "cf_mascot.c"
 #include "cf_keyboard_learn.c"
 typedef struct {
-    char chord[24],degree[12],notes[48],idea[40],sound[16],context[48],status[24],pending[48],next_setup[48];
+    char chord[24],degree[12],notes[48],idea[40],sound[16],context[48],status[24],pending[48],next_setup[48],applied[64];
     char rail[4][24],numeral[4][12];
     char value[4][14],label[4][12];
     uint8_t live,hold,slot,first,count,total,skin,motion,battery,halo,rec,bank,disabled[4],emphasis[4],cursor_width;
     uint8_t pulse,halo_ink,activity,activity_step;
-    uint8_t moment,build,bloom,engine_bar;
+    uint8_t moment,build,bloom,engine_page,engine_bar,beat,focus,level[4],pin_mask;
     uint16_t matches;
     int8_t bank_dx,chord_dy;
     cfm_pose_t mascot;
@@ -105,10 +105,150 @@ static unsigned cf_stage_draws;
 static uint16_t cf_stage_energy;
 static uint32_t cf_stage_tick,cf_stage_chord_ms;
 static char cf_stage_symbol[24];
+static const char *cf_stage_change_name(unsigned change)
+{
+    static const char *const names[]={"","Fresh Take","Back One","Vibe","Direction","Groove","Feel","FX","Progression"};
+    return names[change];
+}
+
+static void cf_stage_append(char *line,unsigned capacity,const char *text)
+{
+    unsigned len=str_len(line);
+    str_cpy(line+len,text,capacity-len);
+}
+
+static int cf_stage_progression_preview(cf_stage_model_t *m)
+{
+    if(cge_preview>=cf_progression_count() || m->bank==CF_HB_FLOW)return 0;
+    str_cpy(m->pending,"Preview: ",sizeof m->pending);
+    cf_stage_append(m->pending,sizeof m->pending,cf_progression_get(cge_preview)->name);
+    str_cpy(m->next_setup,cge_active()?"SEL queues for bar 1":"SEL chooses progression",sizeof m->next_setup);
+    return 1;
+}
+
+static void cf_stage_engine_model(cf_stage_model_t *m)
+{
+    int flow=m->bank==CF_HB_FLOW,active=cf_sn.ac_on && cf_sn.ac_idea==CF_P_ENGINE;
+    int loaded=cge_selected();
+    unsigned vibe=loaded?cge.current.vibe:cge.vibe_request;
+    unsigned direction=loaded?cge.direction:cge.direction_request;
+    m->engine_page=1;
+    m->focus=flow?cge_flow_focus:cge_engine_focus;
+    str_cpy(m->idea,loaded?cge_view.name:CGE_VIBES[vibe].name,sizeof m->idea);
+    m->pending[0]=m->next_setup[0]=0;
+    static const char *const labels[2][4]={
+        {"1 Energy","2 Feel","3 Space","4 Take"},
+        {"1 Vibe","2 Mode","3 Surprise","4 Pins"}
+    };
+    for(unsigned i=0;i<4;i++)str_cpy(m->label[i],labels[flow][i],sizeof m->label[i]);
+    if(flow) {
+        m->level[2]=cge.surprise;
+    } else {
+        m->level[0]=cge.energy;m->level[1]=cge.feel;m->level[2]=cge.space;
+    }
+
+    char key[4];
+    unsigned tonic=active?cf_sn.ac_tonic:cs.chord.tonic;
+    unsigned scale=active?cf_sn.ac_scale:cs.chord.scale;
+    cf_pc_name(tonic,&cu_spell,key);
+    const char *mode=scale==CF_SC_MAJOR?"Major":scale==CF_SC_MINOR?"Minor":cf_progression_mode(scale);
+    m->context[0]=0;
+    if(loaded) {
+        cf_stage_append(m->context,sizeof m->context,CGE_VIBES[vibe].name);
+        cf_stage_append(m->context,sizeof m->context," / ");
+        cf_stage_append(m->context,sizeof m->context,key);
+        cf_stage_append(m->context,sizeof m->context," ");
+        cf_stage_append(m->context,sizeof m->context,mode);
+        cf_stage_append(m->context,sizeof m->context," / ");
+    }
+    cf_stage_append(m->context,sizeof m->context,CGE_DIRECTION_NAME[direction]);
+    if(cs.clock_in==1)str_cpy(m->sound,"MIDI clock",sizeof m->sound);
+    else kint(m->sound,cs.bpm," BPM");
+
+    if(active && !cf_sn.ac_waiting) {
+        m->engine_bar=cge.bar+1;
+        if(cf_sn.beats_done)m->beat=1+(cf_sn.beats_done-1)%4;
+        str_cpy(m->notes,"Feel ",sizeof m->notes);
+        kint(m->notes+5,cge.feel_applied,"% / ");
+        cf_stage_append(m->notes,sizeof m->notes,cge_articulation_name());
+        cf_stage_append(m->notes,sizeof m->notes," / ARP ");
+        cf_stage_append(m->notes,sizeof m->notes,CGE_ARP_NAMES[cge.arp_applied]);
+        unsigned rhythm=cf_sn.ac_rhythm,fx=cfx_identify(&cs.fx);
+        const char *effect=cfx_bypass || !cs.fx.on?"Off":fx<FXP_FACTORY_N?FXP_FACTORY[fx].name:
+            fx<FXP_FACTORY_N+FXP_SLOTS?fxp_bank.slot[fx-FXP_FACTORY_N].name:"Custom";
+        str_cpy(m->applied,"Groove ",sizeof m->applied);
+        cf_stage_append(m->applied,sizeof m->applied,cf_sn.perf_dropped?"Dropped":rhythm<DM_N?DM_RHY[rhythm].name:"Off");
+        cf_stage_append(m->applied,sizeof m->applied," / FX ");
+        cf_stage_append(m->applied,sizeof m->applied,effect);
+        if(!m->moment && !cf_sn.perf_pending && !cf_sn.ac_paused && !cf_sn.ac_lost)
+            str_cpy(m->status,"Playing",sizeof m->status);
+    } else {
+        str_cpy(m->notes,flow?"K1 picks Haze or Drive":"Turn SELECT to browse progressions",sizeof m->notes);
+        if(!cf_sn.ac_on && cs.clock_in!=1)str_cpy(m->status,"Ready",sizeof m->status);
+    }
+
+    if(cf_stage_progression_preview(m))return;
+    unsigned pending=cge.pending;
+    if(active && pending) {
+        unsigned change=cge_change(pending);
+        const char *name=cf_stage_change_name(change);
+        if(change==CGE_CHANGE_VIBE)name=CGE_VIBES[cge.next.vibe].name;
+        if(change==CGE_CHANGE_DIRECTION)name=CGE_DIRECTION_NAME[cge.direction_request];
+        if(change==CGE_CHANGE_GROOVE)name=DM_RHY[cge_prepared_plan.rhythm].name;
+        if(change==CGE_CHANGE_FEEL)name="New Feel";
+        if(change==CGE_CHANGE_FX)name=FXP_FACTORY[cge_fx_id[cge.next.vibe][cge.next.fx]].name;
+        if(change==CGE_CHANGE_PICK)name=cge_progression_name(cge.next.id);
+        str_cpy(m->pending,"At bar 1: ",sizeof m->pending);
+        cf_stage_append(m->pending,sizeof m->pending,name);
+    }
+    if(cge_arp_pending()) {
+        unsigned next=(cge.bar/2u+1u)*2u%16u+1u;
+        char *line=m->pending[0]?m->next_setup:m->pending;
+        str_cpy(line,"At bar ",sizeof m->pending);
+        kint(line+7,next,": ");
+        if(cge.arp_request!=cge.arp_applied) {
+            cf_stage_append(line,sizeof m->pending,"ARP ");
+            cf_stage_append(line,sizeof m->pending,CGE_ARP_NAMES[cge.arp_request]);
+        } else if(cge.feel!=cge.feel_applied) {
+            cf_stage_append(line,sizeof m->pending,"Feel ");
+            kint(line+str_len(line),cge.feel,"%");
+        } else cf_stage_append(line,sizeof m->pending,"ARP settings");
+    }
+    if(cge_notice) {
+        char *line=m->pending[0]?m->next_setup:m->pending;
+        str_cpy(line,cge_notice,sizeof m->pending);
+    }
+    if(m->next_setup[0])return;
+    if(active && !m->pending[0] && direction==CGE_JAM && (!cge.surprise || !cge_jam_choices())) {
+        str_cpy(m->pending,!cge.surprise?"Jam paused / Surprise 0%":"Jam blocked by pins",sizeof m->pending);
+        str_cpy(m->next_setup,!cge.surprise?"Flow K3: turn up Surprise":"Flow > Pins: free Groove or FX",sizeof m->next_setup);
+        return;
+    }
+    if(flow && m->focus==3) {
+        str_cpy(m->next_setup,"SEL or K4 opens Pins",sizeof m->next_setup);
+    } else if(!active) {
+        str_cpy(m->next_setup,cf_sn.ac_on?"Press PLAY to stop":"Press PLAY to start",sizeof m->next_setup);
+    } else if(cge.last_change) {
+        str_cpy(m->next_setup,cf_stage_change_name(cge.last_change),sizeof m->next_setup);
+        cf_stage_append(m->next_setup,sizeof m->next_setup," applied");
+    } else if(flow) {
+        const char *hint=direction==CGE_REPEAT?"Repeat holds this loop":!cge.surprise?"Jam changes off":
+            cge.surprise<50?"Jam changes every 2 loops":"Jam changes each loop";
+        str_cpy(m->next_setup,hint,sizeof m->next_setup);
+    } else {
+        str_cpy(m->next_setup,"SELECT browse / SEL Chord Lab",sizeof m->next_setup);
+    }
+}
 static void cf_stage_model(cf_stage_model_t *m)
 {
-    memset(m,0,sizeof *m);name_update();
+    memset(m,0,sizeof *m);
     m->bank=cf_home_bank;
+    if(m->bank==CF_HB_FLOW && cge_pins_open) {
+        m->engine_page=2;m->focus=cge.pin;m->pin_mask=cge.locks;m->skin=cf_skin;
+        str_cpy(m->status,cf_acc_transport(),sizeof m->status);
+        return;
+    }
+    name_update();
     if(m->bank==CF_HB_LEARN)cf_learn_model(&m->learn);
     m->bank_dx=(int8_t)(cf_tween_offset(cf_home_bank_ms,160,10)*(cf_nav_dir<0?-1:1));
     m->live=cu_name_live;m->hold=cf_sn.out.hold;m->skin=cf_skin;m->motion=cf_motion;m->battery=(uint8_t)cf_batt();
@@ -203,21 +343,16 @@ static void cf_stage_model(cf_stage_model_t *m)
         memset(&m->mascot,0,sizeof m->mascot);
         memset(m->emphasis,0,sizeof m->emphasis);m->cursor_width=0;
     }
-    if(cf_home_bank==CF_HB_ENGINE){
-        str_cpy(m->idea,"Heavenly Gaze",sizeof m->idea);
-        if(!cge.loaded)str_cpy(m->context,"SEL loads scene / PLAY starts",sizeof m->context);
-        else {
-            m->engine_bar=cge.bar+1;
-            str_cpy(m->context,"Pilot ",sizeof m->context);
-            str_cpy(m->context+str_len(m->context),cge_stage_name(),sizeof m->context-str_len(m->context));
-            str_cpy(m->context+str_len(m->context)," ",sizeof m->context-str_len(m->context));
-            char lock[9]={'H',cge.locks&1?'*':'-', 'S',cge.locks&2?'*':'-', 'G',cge.locks&4?'*':'-', 'F',cge.locks&8?'*':'-',0};
-            str_cpy(m->context+str_len(m->context),lock,sizeof m->context-str_len(m->context));
-            if(cge.pending)str_cpy(m->pending,"Next 1/16: pilot take",sizeof m->pending);
-            else if(cge_arp_pending())str_cpy(m->pending,"Next chord: Feel / Play It",sizeof m->pending);
+    int engine=cf_sn.ac_on && cf_sn.ac_idea==CF_P_ENGINE;
+    if((m->bank==CF_HB_ENGINE || m->bank==CF_HB_FLOW) && !m->rec && !cf_sn.sq_on && !sqk.on && (!cf_sn.ac_on || engine))
+        cf_stage_engine_model(m);
+    else if(!m->rec && !cf_sn.sq_on && !sqk.on) {
+        if(engine && !cf_sn.ac_waiting)m->engine_bar=cge.bar+1;
+        if(!cf_stage_progression_preview(m) && engine && cge.request_kind==CGE_PICK && (cge.pending&CGE_HARMONY)) {
+            str_cpy(m->pending,"At bar 1: ",sizeof m->pending);
+            cf_stage_append(m->pending,sizeof m->pending,cge_progression_name(cge.next.id));
         }
     }
-
 }
 /* Preserve the complete spelling for unusually long altered/slash names.
  * Only horizontal glyph coordinates are compressed in the bounded nameplate. */
@@ -243,6 +378,93 @@ static void cf_stage_chord(const char *name,int y,uint8_t ink)
     if(w>114){int small=cfn_width(&CFN_32,name);if(small>114)small=114;cfn_squeezed(&CFN_32,175-small/2,y,name,114,ink);return;}
     cfn_text(&CFN_64,x,y,root,ink);cfn_text(&CFN_32,x+cfn_width(&CFN_64,root),y-15,name+n,ink);
 }
+static void cf_stage_engine_tabs(unsigned current,const char *status)
+{
+    static const char *const tabs[]={"Jam","Flow","Pins"};
+    for(unsigned i=0;i<3;i++) {
+        int x=8+46*(int)i;
+        if(i==current)fb_rect(x,4,42,19,FL_BG2);
+        cfn_center(&CFN_12,x+21,17,tabs[i],i==current?C_ACC(0):FL_INK2);
+    }
+    cfn_text(&CFN_12,230-cfn_width(&CFN_12,status),17,status,FL_INK);
+    fb_hline(10,25,220,FL_BG3);
+}
+static void cf_stage_pins_draw(const cf_stage_model_t *m)
+{
+    cf_stage_engine_tabs(2,m->status);
+    cfn_text(&CFN_16,10,45,"Keep what you like",FL_INK);
+    cfn_text(&CFN_12,10,60,"Pinned settings stay as you set them.",FL_INK2);
+    for(unsigned i=0;i<5;i++) {
+        int y=68+23*(int)i;
+        int pinned=m->pin_mask&(1u<<i),selected=i==m->focus;
+        if(selected){fb_rect(8,y,224,22,FL_BG2);fb_rect(8,y,3,22,C_ACC(0));}
+        cfn_text(&CFN_14,17,y+16,CGE_PIN_NAME[i],FL_INK);
+        cfn_text(&CFN_14,165,y+16,pinned?"Pinned":"Free",pinned?C_ACC(0):FL_INK2);
+    }
+    int pinned=m->pin_mask&(1u<<m->focus);
+    cfn_text(&CFN_12,10,199,pinned?"SEL frees selected setting":"SEL pins selected setting",C_ACC(0));
+    fb_hline(10,208,220,FL_BG3);
+    cfn_text(&CFN_12,10,227,"K4 selects",FL_INK2);
+    cfn_text(&CFN_12,139,227,"HOME: Flow",FL_INK);
+}
+static void cf_stage_engine_draw(const cf_stage_model_t *m)
+{
+    int flow=m->bank==CF_HB_FLOW;
+    cf_stage_engine_tabs(flow,m->status);
+    cfn_fit(&CFN_16,10,41,m->idea,220,FL_INK);
+    cfn_fit(&CFN_12,10,56,m->context,157,FL_INK2);
+    cfn_text(&CFN_12,230-cfn_width(&CFN_12,m->sound),56,m->sound,FL_INK2);
+
+    cfm_pose_t pose=m->mascot;
+    pose.sx=pose.sx*5/8;pose.sy=pose.sy*5/8;pose.y-=21*256;
+    pose.burst=0;
+    fb_clip(0,60,115,109);
+    cfm_draw(&pose);
+    fb_unclip();
+    if(m->engine_bar || m->live) {
+        fb_clip(116,57,238,108);
+        cf_stage_chord(m->chord,103,m->live?FL_INK:FL_INK2);
+        fb_unclip();
+    }
+    if(m->engine_bar) {
+        char bar[16]="Bar ";
+        kint(bar+4,m->engine_bar," / 16");
+        cfn_text(&CFN_16,10,120,bar,FL_INK);
+        for(unsigned i=0;i<4;i++)
+            fb_rect(175+i*15,110,10,9,i+1==m->beat?C_ACC(0):FL_BG3);
+    }
+    for(unsigned i=0;i<16;i++) {
+        int x=10+(int)i*13+(int)(i/4)*4;
+        uint8_t ink=i+1==m->engine_bar?C_ACC(0):i+1<m->engine_bar?FL_INK2:FL_BG3;
+        fb_rect(x,125,11,6,ink);
+    }
+    cfn_fit(&CFN_12,10,145,m->notes,220,FL_INK);
+    cfn_fit(&CFN_12,10,158,m->applied,220,FL_INK);
+    if(m->pending[0])fb_rect(6,162,228,32,FL_BG2);
+    cfn_fit(&CFN_14,10,176,m->pending,220,C_ACC(0));
+    cfn_fit(&CFN_12,10,191,m->next_setup,220,FL_INK);
+
+    fb_hline(10,198,220,FL_BG3);
+    for(unsigned i=0;i<4;i++) {
+        int x=(int)i*60;
+        if(i)fb_vline(x,203,34,FL_BG3);
+        if(m->focus==i)fb_rect(x+2,202,56,37,FL_BG2);
+        cfn_center(&CFN_11,x+30,212,m->label[i],m->focus==i?C_ACC(0):FL_INK2);
+        uint8_t ink=m->disabled[i]?FL_INK2:FL_INK;
+        if(!flow && i==3) {
+            cfn_center(&CFN_11,x+30,224,"CW Fresh",ink);
+            cfn_center(&CFN_11,x+30,236,"CCW Back",ink);
+        } else {
+            const cfn_font_t *face=cfn_width(&CFN_14,m->value[i])<=54?&CFN_14:&CFN_11;
+            cfn_center(face,x+30,230,m->value[i],ink);
+        }
+        if((flow && i==2) || (!flow && i<3)) {
+            fb_rect(x+7,235,46,3,FL_BG3);
+            fb_rect(x+7,235,46*m->level[i]/100,3,m->disabled[i]?FL_INK2:C_ACC(0));
+        }
+    }
+}
+
 static void cf_stage_draw(void)
 {
     cf_stage_model_t m;cf_stage_model(&m);
@@ -273,6 +495,12 @@ static void cf_stage_draw(void)
         }
         if(!cu.pop)cf_present();return;
     }
+    if(m.engine_page) {
+        if(m.engine_page==2)cf_stage_pins_draw(&m);
+        else cf_stage_engine_draw(&m);
+        if(!cu.pop)cf_present();
+        return;
+    }
     int queued=m.next_setup[0]!=0,cue=m.pending[0]!=0;
     cfm_pose_t pose=m.mascot;
     if(cue){pose.sx=pose.sx*3/4;pose.sy=pose.sy*3/4;pose.y+=9*256;}
@@ -281,7 +509,7 @@ static void cf_stage_draw(void)
     if(m.pulse){unsigned r=cue?m.pulse*3u/4u:m.pulse;cfn_circle(57,ring_y,(int)r,m.halo_ink);}
     cfm_draw(&pose);
     char window[20],status[48],bank[24];
-    if(m.engine_bar){window[0]='0'+m.engine_bar/10;kint(window+1,m.engine_bar%10,"/16");}
+    if(m.engine_bar)kint(window,m.engine_bar,"/16");
     else if(m.slot<m.total){kint(window,m.slot+1,"/");kint(window+str_len(window),m.total,0);}
     else{kint(window,m.first+1,"-");kint(window+str_len(window),m.first+m.count,"/");kint(window+str_len(window),m.total,0);}
     str_cpy(status,m.status,sizeof status);str_cpy(status+str_len(status)," ",sizeof status-str_len(status));str_cpy(status+str_len(status),window,sizeof status-str_len(status));

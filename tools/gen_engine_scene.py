@@ -1,26 +1,34 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: GPL-3.0-only
-"""Emit only the authored Build 01 pilot; other scene data remains unexposed."""
-import json,sys
+"""Generate the exact G1 palettes; the progression catalog stays untouched."""
+import json
+import sys
 from pathlib import Path
 root=Path(__file__).resolve().parents[1]
-p=json.loads((root/'assets/engine/scenes-v1.json').read_text())
-s=next(x for x in p['scene_definitions'] if x['id']==2)
-assert p['length_bars']==16 and p['ppqn']==96 and s['slug']=='HEAVENLY_GAZE'
-assert s['bars_chord_index']==[i//2%4 for i in range(16)]
-r=s['regenerate_candidates'];rows=[]
-# G0 changes only the pilot opening: pulse immediately; bass still joins bar 5.
-p['phase_profiles']['dreampop'][0]['drums']=28
-for chords in r['harmonies']:
- assert len(chords)==4
- rows.append('{'+','.join('{%d,{%s}}'%(len(c['notes_midi']),','.join(map(str,c['notes_midi']))) for c in chords)+'}')
-text='/* SPDX-License-Identifier: GPL-3.0-only; generated from supplied scene JSON. */\n'
-text+='static const struct { uint8_t n,note[6]; } CGE_NOTES[3][4] = {'+','.join(rows)+'};\n'
-for key,values in [('CHORD_SOUND',r['chord_sounds']),('BASS_SOUND',r['bass_sounds']),('FX_NAMES',r['fx_recipes'])]:
- text+='static const char *const CGE_'+key+'[] = {'+','.join(json.dumps(x) for x in values)+'};\n'
-text+='static const uint8_t CGE_GROOVES[] = {'+','.join(map(str,r['grooves']))+'};\n'
-text+='static const uint8_t CGE_PROFILE[5][4] = {'+','.join('{%d,%d,%d,%d}'%(x['bars'][1],x['chord'],x['bass'],x['drums']) for x in p['phase_profiles']['dreampop'])+'};\n'
-text+='static const uint8_t CGE_DEFAULTS[] = {%d,%d,%d};\n'%(s['defaults']['energy'],s['defaults']['movement'],s['defaults']['variation'])
+vibes=json.loads((root/'assets/engine/vibes-g1.json').read_text())
+assert [v['name'] for v in vibes]==['Haze','Drive']
+def ar(x):
+    if isinstance(x,str):return json.dumps(x)
+    if isinstance(x,list):return '{'+','.join(ar(v) for v in x)+'}'
+    return str(x)
+text='''/* SPDX-License-Identifier: GPL-3.0-only; generated G1 palettes, not authored songs. */
+typedef struct {
+    const char *name,*chord[3],*bass[3],*fx[3];
+    uint8_t bpm,groove[4],weight[8],gain[4][3],defaults[4];
+} cge_vibe_t;
+static const cge_vibe_t CGE_VIBES[2]={
+'''
+for v in vibes:
+    assert len(v['groove'])==4 and len(v['weight'])==8 and len(v['gain'])==4 and len(v['defaults'])==4
+    assert all(len(v[k])==3 for k in ['chord','bass','fx'])
+    text+='    {'+','.join(ar(v[k]) for k in ['name','chord','bass','fx','bpm','groove','weight','gain','defaults'])+'},\n'
+text+='''};
+/* Stable catalog ID plus independent role indices; a bounded audio mailbox. */
+typedef struct {
+    uint16_t id;
+    uint8_t vibe,groove,chord,bass,fx,feel;
+} cge_take_t;
+'''
 out=root/'firmware/src/cf_engine_data.h'
-if '--check' in sys.argv: assert out.read_text()==text,'stale Engine scene data'
-else: out.write_text(text)
+if '--check' in sys.argv:assert out.read_text()==text,'stale G1 profile data'
+else:out.write_text(text)

@@ -90,7 +90,9 @@ static int csl_recall(unsigned slot)
     }
     cf_song_draft_begin(&cfwd,&song);memset(&cfds,0,sizeof cfds);cfd_changed();cfdu.focus=0;
     cfd_view_update();cpg.idea=CF_P_DRAFT;cs.chord.tonic=song.tonic;cs.chord.scale=song.scale;
-    cfd_select_source();cf_send_config();cu_spell_update();cu.scr=SCR_HOME;home_boot_main=1;cu.pop=POP_NONE;return 1;
+    cfd_select_source();cf_send_config();cu_spell_update();
+    cu.scr=SCR_HOME;home_boot_main=1;cf_home_bank=CF_HB_CORE;cf_home_bank_ms=0;cu.pop=POP_NONE;
+    return 1;
 }
 static void csl_execute(void)
 {

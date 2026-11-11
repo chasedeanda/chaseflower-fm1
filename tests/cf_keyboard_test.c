@@ -13,7 +13,7 @@ static void setup(void)
 }
 static void harmony_knobs(void)
 {
-    setup();CHECK(CF_HB_N==10 && CF_HB_PERFORM==4 && CF_HB_LEARN==CF_HB_N-1);
+    setup();CHECK(CF_HB_N==11 && CF_HB_PERFORM==4 && CF_HB_LEARN==CF_HB_N-1);
     ui_button(B_PLAY);blocks(4);CHECK(cpa.on);
     unsigned cfg=cfs_fnv(&cs,sizeof cs),sounds=cfs_fnv(trk,sizeof trk),patterns=cfs_fnv(&sq_st,sizeof sq_st);
     unsigned plan=cfs_fnv(&cpa,sizeof cpa),grooves=cfs_fnv(&dmr,sizeof dmr),queue=cf_evq_w,writes=emu_flash_writes;
