@@ -1,16 +1,18 @@
 # CORD G1 — Haze and Drive
 
-This stacks on G0 [PR #102](https://github.com/chasedeanda/cord-fm1/pull/102), commit `e31c9ae566399e5e6f07c452e7bc430ab0adb7e0`. The combined local development build is **1.0.3-dev.g1**. Combined testing was explicitly requested before hardware review or merge. The remaining fixed scenes, additional Vibes, Break Out, companion layer, new effects/artwork and recording/export are outside G1.
+G1 stacks on G0 commit `e31c9ae566399e5e6f07c452e7bc430ab0adb7e0`. The combined local development build with the revised controls is **1.0.3-dev.g1.1**. [G0 PR #102](https://github.com/chasedeanda/cord-fm1/pull/102)
 
-Choose Haze or Drive on HOME → Flow, then press PLAY. Engine and Flow show the committed Vibe, current progression/title and stable ID, key, chord, 16-bar position and pending boundary. The untouched stopped session defaults to the selected Vibe's suggested tempo (104/122 BPM); Haze defaults to E major when the key is untouched. Existing saved or explicitly selected key, meter and tempo are preserved. The pilot accepts 4/4 only. Saved Sound/Groove/FX settings start pinned; use Flow K4 and SEL to unpin them when auditioning the full Vibe palettes.
+CORD starts on Jam. Press HOME once to open Flow, choose Haze or Drive with K1, then press PLAY. Jam and Flow keep the applied Vibe, progression title, key, chord, bar, Feel, Groove and FX visible alongside queued changes. Jam and Core show the same progression and bar when the band is playing. A fresh session suggests 104 BPM for Haze or 122 BPM for Drive. Haze defaults to E major when the key is untouched. Saved and manually selected key and tempo take priority. The pilot accepts 4/4.
 
 | Page | K1 | K2 | K3 | K4 |
 | --- | --- | --- | --- | --- |
-| Engine | Energy | Feel | Space | Fresh Take clockwise, Back One counterclockwise |
-| Flow | Haze / Drive | Repeat / Jam | Surprise 0–100 | Pin selector; SEL toggles it |
+| Jam | Energy | Feel | Space | Fresh Take clockwise, Back One counterclockwise |
+| Flow | Haze / Drive | Repeat / Jam | Surprise 0–100 | Open Pins (or press SEL) |
 | ARP | Play It Auto / On / Off | Existing mode | Existing octave | Existing rate |
 
-Timing and Live keys remain separate ARP pages. On forces the player's actual ARP settings at a safe chord onset; Off keeps held/gated chords; Auto follows Feel. Repeat also repeats the scheduled Random ARP pattern when that mode is selected. Core, Sound, Texture, Groove, Perform and the other existing banks remain accessible. Fill/Drop/Back stays manual; Drop persists across evolution until Back. REC retains manual ownership, and Engine changes are blocked while recording/replaying.
+Turn SELECT on Jam or Core to preview a compatible progression, then press SEL to choose it. During playback it starts at bar 1 with the same key, sounds, groove, and FX. Without a preview, SEL opens Chord Lab. To inspect all five pins together, open Pins from Flow. K4 highlights an item, SEL changes it between Pinned and Free, and HOME returns to Flow. Saved Sound, Groove and FX settings start pinned. A direct Feel adjustment pins Feel.
+
+On forces the player's ARP settings at the next chord boundary. Off plays held or gated chords. Auto follows Feel. Use ALGORITHM on ARP to reach Timing and Live keys. Fill, Drop, and Back are on Perform. Drop persists until Back.
 
 ## Catalog and musical memory
 
@@ -28,14 +30,14 @@ After generating headers (`python3 tools/build.py --gen-only`), run `sh tools/te
 
 With the reference major-scale fixture, **32 Haze** and **35 Drive** records are eligible. In 64 draws with the fixed seed, Haze reaches 29 distinct IDs and Drive 28. Source masks, slash bass and static Song round trips are checked. Zero-candidate scales are retained without a fallback key/scale change. See the generated catalog CSV for all scales and counts.
 
-The 1,442 focused checks and four-cycle Haze/Drive × Repeat/Jam matrix verify ownership, queued commits, undo, manual key and pin priority, source preservation, exact Repeat events, bounded Jam changes, stable MIDI clock, byte-identical USB-active/idle physical PCM at 44.1 and 48 kHz, and deterministic duplicate renders. The G0 suite and 29 existing regression suites, ASan/UBSan, ARM syntax, installer/parser and device-link checks passed. These are host and link results. They do not establish hardware sound quality or playability.
+The 1,485 focused checks cover startup on Jam, the Pins screen, shared progression selection across Jam and Core, manual ownership, queued commits, undo, key, pin priority and source preservation. The four-cycle Haze/Drive × Repeat/Jam matrix checks Repeat events, bounded Jam changes, MIDI clock and matching physical PCM with USB capture active or idle at 44.1 and 48 kHz. Hardware listening, CPU, stack and voice shedding remain part of the device pass.
 
-| Real device link, same development flags | G0 | G1 | Delta | G1 headroom |
+| Real device link | G0 | G1.1 | Delta | G1.1 headroom |
 | --- | ---: | ---: | ---: | ---: |
-| XIP | 553,972 | 561,120 | +7,148 | 12,320 / 573,440 |
-| Ordinary static RAM | 90,624 | 91,088 | +464 | 7,216 / 98,304 |
+| XIP | 553,972 | 566,112 | +12,140 | 7,328 / 573,440 |
+| Ordinary static RAM | 90,624 | 91,184 | +560 | 7,120 / 98,304 |
 | Synthesis pool | 316,792 | 316,792 | 0 | 27,272 / 344,064 |
 | RAM code | 3,128 | 3,128 | 0 | 21,448 / 24,576 |
 | NOINIT | 216 | 216 | 0 | 15,448 / 15,664 |
 
-The G0 baseline is an unmodified archive built with `--release 1.0.3-dev.g1` so the local development version flag is identical. No tag or GitHub release was created. The [hardware checklist](HARDWARE-CHECKLIST.md) remains pending; hardware CPU, stack high-water, voice shedding, USB continuity and guitarist listening remain unmeasured.
+The G0 baseline uses the same build profile with version string `1.0.3-dev.g1`. [Five-minute hardware checklist](HARDWARE-CHECKLIST.md)

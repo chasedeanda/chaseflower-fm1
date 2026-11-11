@@ -106,7 +106,7 @@ enum { CF_SKIN_TEAL=0, CF_SKIN_STUDIO=1, CF_SKIN_EDITORIAL=2, CF_SKIN_LEGACY_N=3
 static const char *const CF_SKIN_NAME[] = {"Devil", "Cat"};
 static uint8_t cf_skin, cf_motion = 1;
 enum { CF_HB_CORE, CF_HB_SOUND, CF_HB_TEXTURE, CF_HB_GROOVE, CF_HB_PERFORM, CF_HB_LOOP, CF_HB_MIX, CF_HB_VARIATION, CF_HB_ENGINE, CF_HB_FLOW, CF_HB_LEARN, CF_HB_N };
-static const char *const CF_HOME_BANK_NAME[] = {"CORE", "SOUND", "TEXTURE", "GROOVE", "PERFORM", "LOOP", "MIX", "VARIATIONS", "ENGINE", "FLOW", "KEYBOARD"};
+static const char *const CF_HOME_BANK_NAME[] = {"CORE", "SOUND", "TEXTURE", "GROOVE", "PERFORM", "LOOP", "MIX", "VARIATIONS", "JAM", "FLOW", "KEYBOARD"};
 /* Add future toolbars before Learn: Harmony must remain the final HOME page. */
 _Static_assert(CF_HB_LEARN + 1 == CF_HB_N, "Harmony must be the last HOME page");
 static uint8_t cf_home_bank;

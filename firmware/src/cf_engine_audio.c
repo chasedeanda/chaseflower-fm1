@@ -6,11 +6,15 @@ enum { CGE_FEEL=16, CGE_VIBE=32, CGE_DIRECTION=64 };
 enum { CGE_REPEAT, CGE_JAM };
 enum { CGE_R_HARMONY, CGE_R_GROOVE, CGE_R_CHORD, CGE_R_BASS, CGE_R_FX, CGE_R_FEEL, CGE_NRNG };
 enum { CGE_ARP_AUTO, CGE_ARP_ON, CGE_ARP_OFF };
+enum { CGE_FRESH=1, CGE_EVOLVE, CGE_BACK, CGE_PICK };
+enum { CGE_CHANGE_FRESH=1, CGE_CHANGE_BACK, CGE_CHANGE_VIBE, CGE_CHANGE_DIRECTION,
+       CGE_CHANGE_GROOVE, CGE_CHANGE_FEEL, CGE_CHANGE_FX, CGE_CHANGE_PICK };
 static struct {
     uint8_t loaded, energy, feel, space, locks;
     cge_take_t current,next,previous;
     uint8_t pending,undo,direction,direction_request,surprise,vibe_request,pin,request_kind;
     uint8_t tempo_pin,key_pin,initial_pins,requeue,flow_manual;
+    uint8_t last_change;
     uint8_t bar, arp, bass_gate, drum_gate, sound_taken, fx_taken;
     uint8_t feel_applied, arp_request, arp_applied, energy_applied;
     cf_arp_t manual_arp;
@@ -18,6 +22,17 @@ static struct {
     uint32_t cycle,generation,session_seed,rng[CGE_NRNG],planned_cycle,request_ms,commit_ms;
     cf_fx_t fx;
 } cge;
+static unsigned cge_change(unsigned flags)
+{
+    if(cge.request_kind==CGE_BACK && (flags&~CGE_DIRECTION))return CGE_CHANGE_BACK;
+    if(cge.request_kind==CGE_PICK && (flags&CGE_HARMONY))return CGE_CHANGE_PICK;
+    if(flags&CGE_VIBE)return CGE_CHANGE_VIBE;
+    if(!(flags&~CGE_DIRECTION))return CGE_CHANGE_DIRECTION;
+    if(cge.request_kind!=CGE_EVOLVE)return CGE_CHANGE_FRESH;
+    if(flags&CGE_GROOVE)return CGE_CHANGE_GROOVE;
+    if(flags&CGE_FEEL)return CGE_CHANGE_FEEL;
+    return CGE_CHANGE_FX;
+}
 /* One bounded prepared phrase, not an audio buffer or second sequencer. Keeping
  * it separate lets manual Core edits retain their existing chord/bar queue. */
 static cpa_plan_t cge_prepared_plan;
@@ -73,6 +88,7 @@ static void cge_start(void)
 {
     if(!cge_active())return;
     cge.bar=0;cge.cycle=0;cge.planned_cycle=UINT32_MAX;cge_articulation();
+    cge.last_change=0;
     cfa_sq[0].rng=cge.session_seed^0xC0FD0001u;cfa_sq[0].rnd_last=255;
     cge_targets();cge_gates();
     for(unsigned k=0;k<3;k++)cge.gain[k]=cge.target[k];
@@ -106,6 +122,7 @@ static int cge_bar(int onset)
         /* These plans retain the player's committed key/scale/meter. Publish
          * the new phrase identity without rebuilding the live-key chord model. */
         if(flags&(CGE_HARMONY|CGE_GROOVE))cpa.revision++;
+        cge.last_change=cge_change(flags);
         cge.pending=0;cge.generation++;cge.commit_ms=cf_now_ms; /* telemetry only */
     }
     unsigned bass=cge.bass_gate;cge_targets();cge_gates();

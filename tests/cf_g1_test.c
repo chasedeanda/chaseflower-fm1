@@ -79,7 +79,7 @@ static void bounded_evolution(void)
  start();cf_post(CFE_KEY,7,0,1);blocks(8);uint8_t held[CF_MAX_NOTES];unsigned count=cfp.n;memcpy(held,cfp.note,count);
  cge_regenerate(0);ticks(16*384);blocks(64);CHECK(cpa_live_chord() && cfp.n==count && !memcmp(held,cfp.note,count));
  CHECK(!sqp.n && !cfa_sq[0].n);cf_post(CFE_KEY,7,0,0);blocks(8);CHECK(!cpa_live_chord());
- start();cge.direction=cge.direction_request=CGE_JAM;cge.surprise=100;cge.planned_cycle=UINT32_MAX;cge_poll();CHECK(cge.pending && cge.request_kind==2);
+ start();cge.direction=cge.direction_request=CGE_JAM;cge.surprise=100;cge.planned_cycle=UINT32_MAX;cge_poll();CHECK(cge.pending && cge.request_kind==CGE_EVOLVE);
  cge_flow_turn(1,-1);cge_flow_turn(2,-100);CHECK(cge.pending&CGE_DIRECTION);ticks(16*384);CHECK(cge.direction==CGE_REPEAT);
  start();cge.direction=cge.direction_request=CGE_JAM;cge.surprise=100;cge.planned_cycle=UINT32_MAX;
  cf_perf_queue(CFPERF_DROP);ticks(384);for(unsigned i=0;i<4;i++){ticks(16*384);CHECK(cf_moment.dropped);}
@@ -159,11 +159,38 @@ static void screenshot(const char *name)
 }
 static void ui_images(void)
 {
- start();ticks(6*384);cf_home_bank=CF_HB_ENGINE;screenshot("haze-home");
- cf_home_bank=CF_HB_FLOW;cge_flow_turn(0,1);screenshot("vibe-queued");
- ticks(10*384);screenshot("drive-flow");cf_home_bank=CF_HB_ENGINE;screenshot("drive-home");
- cu.scr=SCR_ARP;cu.page[SCR_ARP]=0;ui_knob_turn(0,1);screenshot("arp-queued");ticks(768);screenshot("arp-on");
- cu.scr=SCR_HOME;cf_home_bank=CF_HB_FLOW;cge.pin=4;cge_pin_toggle();screenshot("feel-pin");
+ start();ticks(6*384);screenshot("haze-home");
+ CHECK(cf_stage_last.engine_bar==7 && strstr(cf_stage_last.applied,"DreamPop") && strstr(cf_stage_last.applied,"Wide Drift"));
+ ui_knob_turn(1,65);screenshot("feel-queued");
+ CHECK(!strcmp(cf_stage_last.pending,"At bar 9: Feel 100%") && strstr(cf_stage_last.notes,"Feel 35%"));
+ ticks(768);screenshot("feel-applied");
+ CHECK(!cf_stage_last.pending[0] && strstr(cf_stage_last.notes,"Feel 100%") && cf_stage_last.focus==1);
+ ui_button(B_HOME);CHECK(cf_home_bank==CF_HB_FLOW);
+ ui_knob_turn(0,1);screenshot("vibe-queued");
+ CHECK(!strcmp(cf_stage_last.pending,"At bar 1: Drive") && strstr(cf_stage_last.applied,"DreamPop"));
+ ticks(8*384);screenshot("drive-flow");
+ CHECK(!strcmp(cf_stage_last.next_setup,"Vibe applied") && cf_stage_last.engine_bar==1);
+ ui_algo(-1);CHECK(cf_home_bank==CF_HB_ENGINE);
+ ui_knob_turn(3,-1);screenshot("back-queued");
+ CHECK(!strcmp(cf_stage_last.pending,"At bar 1: Back One"));
+ ticks(16*384);screenshot("back-applied");
+ CHECK(!strcmp(cf_stage_last.next_setup,"Back One applied") && cge.current.vibe==0);
+ ui_button(B_ARP);ui_knob_turn(0,1);screenshot("arp-queued");ticks(768);screenshot("arp-on");
+ ui_button(B_HOME);CHECK(cf_home_bank==CF_HB_ENGINE && cge_active());
+ ui_button(B_SCL);CHECK(cu.scr==SCR_LAB && cge_active());
+ ui_button(B_HOME);CHECK(cf_home_bank==CF_HB_ENGINE && cge_active());
+ ui_button(B_HOME);cge.locks=CGE_FEEL|CGE_GROOVE|CGE_FX;
+ ui_knob_turn(1,1);ticks(16*384);screenshot("jam-pinned");
+ CHECK(!strcmp(cf_stage_last.pending,"Jam blocked by pins"));
+ ui_button(B_SCL);CHECK(cge_pins_open && cge.locks==(CGE_FEEL|CGE_GROOVE|CGE_FX));
+ ui_knob_turn(3,1);ui_knob_turn(3,1);screenshot("pins");
+ CHECK(cf_stage_last.engine_page==2 && cf_stage_last.focus==2 && cf_stage_last.pin_mask&CGE_GROOVE);
+ ui_knob_turn(0,1);CHECK(cge.vibe_request==0);
+ ui_button(B_SCL);screenshot("groove-released");
+ CHECK(cf_stage_last.engine_page==2 && !(cf_stage_last.pin_mask&CGE_GROOVE) && cge_jam_choices()==CGE_GROOVE);
+ ui_button(B_HOME);CHECK(!cge_pins_open && cf_home_bank==CF_HB_FLOW && cge_active());
+ ui_knob_turn(3,-1);CHECK(cge_pins_open && cge.pin==2);
+ ui_button(B_HOME);CHECK(!cge_pins_open);
 }
 static void play_from_flow(void)
 {
@@ -178,10 +205,39 @@ static void play_from_flow(void)
   ui_button(B_PLAY);blocks(2);CHECK(!cpa.on);
  }
 }
+static void manual_progression_ui(void)
+{
+ start();ticks(6*384);
+ cge.locks=CGE_HARMONY;
+ cge_take_t before=cge.current;
+ char title[40];str_cpy(title,cge_view.name,sizeof title);
+ ui_select(1);CHECK(cge_preview<cf_progression_count());
+ unsigned chosen=cf_progression_get(cge_preview)->id;
+ screenshot("progression-preview");
+ CHECK(!strcmp(cf_stage_last.idea,title) && strstr(cf_stage_last.pending,"Preview: "));
+ CHECK(!strcmp(cf_stage_last.next_setup,"SEL queues for bar 1") && !cge.pending);
+ cf_home_bank=CF_HB_CORE;
+ screenshot("progression-core-preview");
+ CHECK(!strcmp(cf_stage_last.idea,title) && cf_stage_last.engine_bar==7 && strstr(cf_stage_last.pending,"Preview: "));
+ ui_button(B_SCL);
+ CHECK(cge_active() && cge.pending==CGE_HARMONY && !cpa_setup.flags && cge.next.id==chosen);
+ unsigned tonic=cpa.plan.tonic,bpm=cs.bpm,scale=cpa.plan.scale;
+ ticks(10*384-1);CHECK(cge.current.id==before.id);
+ ticks(1);screenshot("progression-core-applied");
+ CHECK(cge_active() && cge.current.id==chosen && !strcmp(cf_stage_last.idea,cge_progression_name(chosen)));
+ CHECK(cge.current.groove==before.groove && cge.current.chord==before.chord && cge.current.fx==before.fx);
+ CHECK(cpa.plan.tonic==tonic && cs.bpm==bpm && cpa.plan.scale==scale && (cge.locks&CGE_HARMONY));
+ cf_home_bank=CF_HB_ENGINE;screenshot("progression-applied");
+ CHECK(!strcmp(cf_stage_last.idea,cge_progression_name(chosen)) && !strcmp(cf_stage_last.next_setup,"Progression applied"));
+}
 int main(int argc,char **argv)
 {
  emu_fw_options(NULL,1,0,1);emu_hal.ready=2;emu_fw_init(0);
  if(argc>=9 && !strcmp(argv[1],"--render"))render(argc,argv);
- else {catalog();memory_and_vibe();pins_and_seed();bounded_evolution();play_from_flow();ui_images();}
+ else {
+  CHECK(cf_home_bank==CF_HB_ENGINE);
+  screenshot("jam-ready");CHECK(cf_stage_last.engine_page && !strcmp(cf_stage_last.next_setup,"Press PLAY to start"));
+  catalog();memory_and_vibe();pins_and_seed();bounded_evolution();play_from_flow();ui_images();manual_progression_ui();
+ }
  printf("CORD G1: %u checks, %u failures\n",checks,failures);return failures!=0;
 }

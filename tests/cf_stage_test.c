@@ -104,7 +104,7 @@ static void source_labels(void)
 static void home_feedback(void)
 {
     /* Device UI uptime starts before cf_out_init resets the audio clock. */
-    cf_intro_on=0;cu.scr=SCR_HOME;home_boot_main=1;cu.pop=0;cf_motion=1;
+    cf_intro_on=0;cu.scr=SCR_HOME;home_boot_main=1;cf_home_bank=CF_HB_CORE;cu.pop=0;cf_motion=1;
     cu.now=500000;memset(&cfn_motion,0,sizeof cfn_motion);
     cf_sn.visual_muted=0;cf_sn.visual_peak=16000;cf_sn.visual_ms=100;cf_sn.now_ms=100;
     cfn_motion_frame();cu.now+=60;cf_sn.visual_ms=160;cf_sn.now_ms=160;cfn_motion_frame();

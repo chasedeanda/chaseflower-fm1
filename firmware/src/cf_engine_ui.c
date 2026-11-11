@@ -8,6 +8,8 @@ static cf_chord_cfg_t cge_seen_cfg;
 static uint32_t cge_seen_sound,cge_seen_fx,cge_seen_groove,cge_seen_generation;
 static uint32_t cge_seed_override;
 static uint8_t cge_seed_supplied;
+static const char *cge_notice;
+static uint8_t cge_engine_focus,cge_flow_focus,cge_pins_open,cge_preview;
 static void cge_view_update(void),cge_cancel(void),cge_evolve(void);
 static int cge_selected(void){return cge.loaded && (cge_active() || (cpg.idea==CF_P_ENGINE && !sqp.on && !sqk.on));}
 static uint32_t cge_sound_hash(void)
@@ -53,7 +55,7 @@ static void cge_key_edit(void)
 {
     cge.key_pin=1;
     if(!cge.loaded)return;
-    cge.requeue|=(cge.pending&~CGE_DIRECTION) && cge.request_kind==1;
+    if((cge.pending&~CGE_DIRECTION) && cge.request_kind!=CGE_EVOLVE)cge.requeue=cge.request_kind;
     cge_cancel();cge.planned_cycle=UINT32_MAX;
 }
 static void cge_gain_prepare(void)
@@ -187,13 +189,16 @@ static cf_chord_cfg_t cge_config(unsigned *rhythm,unsigned *mode)
 static int cge_queue(cge_take_t take,unsigned kind)
 {
     cge_sound_poll();unsigned rhythm,mode;cf_chord_cfg_t cfg=cge_config(&rhythm,&mode);
-    if(cge.locks&CGE_HARMONY)take.id=cge.current.id;
+    if(kind!=CGE_PICK && (cge.locks&CGE_HARMONY))take.id=cge.current.id;
     if(cge.locks&CGE_SOUND){take.chord=cge.current.chord;take.bass=cge.current.bass;}
     if(cge.locks&CGE_GROOVE)take.groove=cge.current.groove;else rhythm=cge_rhythm[take.vibe][take.groove];
     if(cge.locks&CGE_FX)take.fx=cge.current.fx;
     if(cge.locks&CGE_FEEL)take.feel=cge.feel;
     cpa_plan_t plan;
-    if(!cge_build(&plan,take.id,cfg,rhythm,mode)){cf_message("No compatible ideas");return 0;}
+    if(!cge_build(&plan,take.id,cfg,rhythm,mode)){
+        if(kind!=CGE_EVOLVE)cge_notice="No compatible ideas";
+        return 0;
+    }
     unsigned flags=0,vibe=take.vibe!=cge.current.vibe;
     if(take.id!=cge.current.id)flags|=CGE_HARMONY;
     if(!(cge.locks&CGE_SOUND) && (vibe || take.chord!=cge.current.chord || take.bass!=cge.current.bass))flags|=CGE_SOUND;
@@ -203,7 +208,12 @@ static int cge_queue(cge_take_t take,unsigned kind)
     if(vibe)flags|=CGE_VIBE;
     if(cge.direction_request!=cge.direction)flags|=CGE_DIRECTION;
     cge_cancel();
-    if(!flags){cf_message("Nothing to change");return 0;}
+    if(!flags){
+        if(kind==CGE_BACK)cge_notice="Earlier take matches this one";
+        else if(kind==CGE_PICK)cge_notice="This progression is playing";
+        else if(kind==CGE_FRESH)cge_notice=(cge.locks&15)==15?"Fresh Take blocked by pins":"Same take drawn / turn K4 again";
+        return 0;
+    }
     if(flags&CGE_SOUND)cge_sound_prepare(&take);
     cf_fx_t fx=FXP_FACTORY[cge_fx_id[take.vibe][take.fx]].fx;
     fm1_irq_off();cge.next=take;cge_prepared_plan=plan;cge.fx=fx;cge.pending=flags;cge.request_kind=kind;
@@ -214,27 +224,28 @@ static int cge_queue(cge_take_t take,unsigned kind)
         if(flags&CGE_SOUND){fm1_irq_off();cge_sound_boundary();fm1_irq_on();cge_sound_poll();}
         if(flags&CGE_FX){cs.fx=fx;cf_fx_recall(&cs.fx);}
         cge.current=take;cge.feel=take.feel;cge.direction=cge.direction_request;
-        cpg.rhythm=rhythm;cge.pending=0;cge.generation++;cge.commit_ms=cf_now_ms;
+        cpg.rhythm=rhythm;cge.last_change=cge_change(flags);cge.pending=0;cge.generation++;cge.commit_ms=cf_now_ms;
         cge_remember_edits();cge_view_update();
     }
     return 1;
 }
 static int cge_generate(unsigned vibe)
 {
-    if(cr_safe || cfs_restore_lock || sqk.on || cf_sn.sq_on || cf_sn.sq_rec!=255){cf_message("Finish recording/replay first");return 0;}
-    if(cpa_running() && !cge_active()){cf_message("Stop PLAY to open Engine");return 0;}
-    if((cge.locks&31)==31 && vibe==cge.current.vibe){cf_message("Nothing to change");return 0;}
+    if(cr_safe || cfs_restore_lock || sqk.on || cf_sn.sq_on || cf_sn.sq_rec!=255){cge_notice="Finish recording/replay first";return 0;}
+    if(cpa_running() && !cge_active()){cge_notice="Press PLAY to stop first";return 0;}
+    if((cge.locks&15)==15 && vibe==cge.current.vibe){cge_notice="Fresh Take blocked by pins";return 0;}
     unsigned rhythm,mode;cf_chord_cfg_t cfg=cge_config(&rhythm,&mode);cge_take_t take=cge.current;take.vibe=vibe;
-    if(!(cge.locks&CGE_HARMONY) && !cge_choose(vibe,cfg,cge.current.id,&take.id,0)){cf_message("No compatible ideas");return 0;}
+    if(!(cge.locks&CGE_HARMONY) && !cge_choose(vibe,cfg,cge.current.id,&take.id,0)){cge_notice="No compatible ideas";return 0;}
     if(!(cge.locks&CGE_GROOVE))take.groove=cge_random(CGE_R_GROOVE,4);
     if(!(cge.locks&CGE_SOUND)){take.chord=cge_random(CGE_R_CHORD,3);take.bass=cge_random(CGE_R_BASS,3);}
     if(!(cge.locks&CGE_FX))take.fx=cge_random(CGE_R_FX,3);
     if(!(cge.locks&CGE_FEEL) && vibe!=cge.current.vibe)take.feel=CGE_VIBES[vibe].defaults[1];
-    cge.vibe_request=vibe;return cge_queue(take,1);
+    cge.vibe_request=vibe;return cge_queue(take,CGE_FRESH);
 }
 static void cge_init(void)
 {
     memset(&cge,0,sizeof cge);for(unsigned k=0;k<3;k++)cge.gain[k]=cge.target[k]=32768;
+    cge_notice=0;cge_pins_open=0;cge_engine_focus=cge_flow_focus=cge_preview=255;
     cge.energy=CGE_VIBES[0].defaults[0];cge.feel=CGE_VIBES[0].defaults[1];cge.space=CGE_VIBES[0].defaults[2];
     cge.direction=cge.direction_request=CGE_JAM;cge.surprise=CGE_VIBES[0].defaults[3];
     cge.planned_cycle=UINT32_MAX;cf_progression_engine_register(&cge_view,cge_source);
@@ -253,9 +264,10 @@ static void cge_activate(void)
 }
 static int cge_load(void)
 {
-    if(cpa_running()){cf_message("Use Fresh Take while playing");return 0;}
-    if(cr_safe || cfs_restore_lock || sqk.on || cf_sn.sq_on || cf_sn.sq_rec!=255){cf_message("Stop recording/replay first");return 0;}
-    if(cs.beats!=4){cf_message("Engine requires 4/4");return 0;}
+    cge_notice=0;
+    if(cpa_running()){cge_notice="Press PLAY to stop first";return 0;}
+    if(cr_safe || cfs_restore_lock || sqk.on || cf_sn.sq_on || cf_sn.sq_rec!=255){cge_notice="Finish recording/replay first";return 0;}
+    if(cs.beats!=4){cge_notice="Choose 4/4 in Core";return 0;}
     if(!cge_resolve_assets())return 0;
     if(cge.loaded){
         if(cpg.idea!=CF_P_ENGINE)cge_activate();
@@ -265,22 +277,79 @@ static int cge_load(void)
     if(!cfs_loaded && !cge.key_pin && cfg.tonic==defaults.chord.tonic && cfg.scale==defaults.chord.scale && vibe==0){cfg.tonic=4;cfg.scale=CF_SC_MAJOR;}
     if(!cfs_loaded && !cge.tempo_pin && bpm==defaults.bpm)bpm=CGE_VIBES[vibe].bpm;
     cge_streams(cge_seed_supplied?cge_seed_override:cf_now_ms^0x434F5244u); /* establish session seed once */
-    uint16_t id;if(!cge_choose(vibe,cfg,0,&id,0)){cf_message("No compatible ideas");return 0;}
+    uint16_t id;if(!cge_choose(vibe,cfg,0,&id,0)){cge_notice="No compatible ideas";return 0;}
     cs.chord=cfg;cs.bpm=bpm;
     cge.loaded=1;cge.energy=CGE_VIBES[vibe].defaults[0];cge.feel=CGE_VIBES[vibe].defaults[1];
     cge.space=CGE_VIBES[vibe].defaults[2];if(!(cge.flow_manual&2))cge.surprise=CGE_VIBES[vibe].defaults[3];cge.direction=cge.direction_request;
     cge.current=(cge_take_t){id,vibe,0,0,0,0,cge.feel};cge.next=cge.current;cge.locks|=cge.initial_pins;
     if(cfs_loaded)cge.locks|=CGE_SOUND|CGE_GROOVE|CGE_FX;
-    cpg.mode=CPA_BOTH;cge_gain_prepare();cge_activate();cf_message("CORD / PLAY");return 1;
+    cpg.mode=CPA_BOTH;cge_gain_prepare();cge_activate();return 1;
 }
+static const char *cge_progression_name(unsigned id)
+{
+    int index=cge_find(id);
+    return index<0?"Progression":cf_progression_get(index)->name;
+}
+
+static int cge_choose_progression(unsigned index)
+{
+    cge_notice=0;
+    if(index>=cf_progression_count())return 0;
+    if(cr_safe || cfs_restore_lock || sqk.on || cf_sn.sq_on || cf_sn.sq_rec!=255){
+        cge_notice="Finish recording/replay first";return 0;
+    }
+    if(!cge_selected() && !cge_load())return 0;
+    const cf_progression_t *record=cf_progression_get(index);
+    unsigned rhythm,mode;
+    cf_chord_cfg_t cfg=cge_config(&rhythm,&mode);
+    if(record->scale!=cfg.scale){cge_notice="Choose a progression in this scale";return 0;}
+    cge_take_t take=cge.current;
+    take.id=record->id;
+    cge.vibe_request=take.vibe;
+    return cge_queue(take,CGE_PICK);
+}
+
+static void cge_preview_turn(int d)
+{
+    if(!d)return;
+    cge_notice=0;
+    unsigned rhythm,mode;
+    cf_chord_cfg_t cfg=cge_config(&rhythm,&mode);
+    int count=cf_progression_count(),step=d<0?-1:1;
+    int index=cge_preview<count?cge_preview:cge_find(cge.current.id);
+    for(int i=0;i<count;i++) {
+        index=index<0?(step>0?0:count-1):wrapi(index+step,count);
+        const cf_progression_t *p=cf_progression_get(index);
+        if(p->scale!=cfg.scale || p->id==cge.current.id)continue;
+        cpa_plan_t plan;
+        if(cge_build(&plan,p->id,cfg,rhythm,mode)){cge_preview=index;return;}
+    }
+    cge_notice="No other compatible progressions";
+}
+
+static int cge_preview_apply(void)
+{
+    if(cge_preview>=cf_progression_count())return 0;
+    unsigned index=cge_preview;
+    cge_preview=255;
+    cge_choose_progression(index);
+    return 1;
+}
+
 static void cge_regenerate(int undo)
 {
-    if(!cge_selected()){cf_message("SEL loads Engine");return;}
-    if(cr_safe || cfs_restore_lock || sqk.on || cf_sn.sq_on || cf_sn.sq_rec!=255){cf_message("Finish recording/replay first");return;}
+    cge_notice=0;cge_preview=255;
+    if(!cge_selected()){cge_notice="Press PLAY to start Engine";return;}
+    if(cr_safe || cfs_restore_lock || sqk.on || cf_sn.sq_on || cf_sn.sq_rec!=255){cge_notice="Finish recording/replay first";return;}
     cge_sound_poll();int ok;
-    if(undo){if(!cge.undo){cf_message("No Back One yet");return;}ok=cge_queue(cge.previous,1);if(ok)cge.vibe_request=cge.next.vibe;}
-    else ok=cge_generate(cge.vibe_request);
-    if(ok)cf_message(cge.pending?"Next 1/16":"Take ready");
+    if(undo){if(!cge.undo){cge_notice="No earlier take yet";return;}ok=cge_queue(cge.previous,CGE_BACK);if(ok)cge.vibe_request=cge.next.vibe;}
+    else cge_generate(cge.vibe_request);
+}
+static unsigned cge_jam_choices(void)
+{
+    unsigned choices=(CGE_GROOVE|CGE_FEEL|CGE_FX)&~cge.locks;
+    if(cge.arp_request==CGE_ARP_ON)choices&=~CGE_FEEL;
+    return choices;
 }
 static void cge_evolve(void)
 {
@@ -288,17 +357,18 @@ static void cge_evolve(void)
     cge.planned_cycle=cge.cycle;
     unsigned next=cge.cycle+1;
     if(cge.pending || cge.direction_request!=CGE_JAM || !cge.surprise || (cge.surprise<50 && (next&1)))return;
-    unsigned legal[3],n=0;if(!(cge.locks&CGE_GROOVE))legal[n++]=CGE_GROOVE;
-    if(!(cge.locks&CGE_FEEL) && cge.arp_request!=CGE_ARP_ON)legal[n++]=CGE_FEEL;
-    if(!(cge.locks&CGE_FX))legal[n++]=CGE_FX;
-    if(!n){cf_message("Nothing to change");return;}
+    unsigned choices=cge_jam_choices(),legal[3],n=0;
+    if(choices&CGE_GROOVE)legal[n++]=CGE_GROOVE;
+    if(choices&CGE_FEEL)legal[n++]=CGE_FEEL;
+    if(choices&CGE_FX)legal[n++]=CGE_FX;
+    if(!n)return;
     unsigned category=legal[(next-1u)%n];cge_take_t take=cge.current;
     if(category==CGE_GROOVE)take.groove=cge_other(CGE_R_GROOVE,4,take.groove);
     else if(category==CGE_FX)take.fx=cge_other(CGE_R_FX,3,take.fx);
     else {unsigned choices[3]={0,CGE_VIBES[take.vibe].defaults[1],100},count=cge.arp_request==CGE_ARP_OFF?2:3;
         unsigned at=cge.feel<25?0:cge.feel<65?1:count==2?1:2;
         take.feel=choices[cge_other(CGE_R_FEEL,count,at)];}
-    cge_queue(take,2);
+    cge_queue(take,CGE_EVOLVE);
 }
 static void cge_poll(void)
 {
@@ -310,7 +380,16 @@ static void cge_poll(void)
     if(fx!=cge_seen_fx){cge_direct(CGE_FX);cge_seen_fx=fx;}
     if(groove!=cge_seen_groove){cge_direct(CGE_GROOVE);cge_seen_groove=groove;}
     cge_view_update();
-    if(cge.requeue){cge.requeue=0;if(!cge_generate(cge.vibe_request))cge.vibe_request=cge.current.vibe;}
+    if(cge.requeue){
+        unsigned kind=cge.requeue;cge.requeue=0;
+        int ok;
+        if(kind==CGE_PICK){
+            int index=cge_find(cge.next.id);
+            ok=index>=0 && cge_choose_progression(index);
+        }else if(kind==CGE_BACK)ok=cge_queue(cge.previous,CGE_BACK);
+        else ok=cge_generate(cge.vibe_request);
+        if(!ok)cge.vibe_request=cge.current.vibe;
+    }
     cge_evolve();
 }
 static int cge_snapshot(cf_song_t *s)
@@ -339,13 +418,16 @@ static int cge_snapshot(cf_song_t *s)
 static void cge_knob_info(int k,cf_knob_t *o)
 {
     static const char *const names[]={"ENERGY","FEEL","SPACE","FRESH TAKE"};kfmt(o->name,12,names[k]);
-    if(k<3)kint(o->val,k==0?cge.energy:k==1?cge.feel:cge.space,k==1 && cge_active() && cge.feel!=cge.feel_applied?" Next":0);
-    else kfmt(o->val,14,cge.pending?"Next 1/16":"-Back 1");
+    if(k<3)kint(o->val,k==0?cge.energy:k==1?cge.feel:cge.space,"%");
+    else kfmt(o->val,14,"New / Back");
     if(!cge.loaded && k<3)o->dis=1;
 }
 static void cge_knob_turn(int k,int d)
 {
-    if(!d)return;if(k==3){cge_regenerate(d<0);return;}if(!cge.loaded){cf_message("SEL loads Engine");return;}
+    if(!d)return;
+    cge_engine_focus=k;cge_notice=0;
+    if(k==3){cge_regenerate(d<0);return;}
+    if(!cge_selected()){cge_notice="Press PLAY to start Engine";return;}
     if(k==1)cge_direct(CGE_FEEL);
     uint8_t *v=k==0?&cge.energy:k==1?&cge.feel:&cge.space;*v=clampi(*v+d,0,100);
     if(k==0)cge_gain_prepare();
@@ -355,7 +437,7 @@ static void cge_play_it(unsigned mode)
 {
     if(mode==cge.arp_request)return;
     cge.arp_request=mode;
-    if(mode==CGE_ARP_ON && cge.request_kind==2 && (cge.pending&CGE_FEEL))cge_cancel();
+    if(mode==CGE_ARP_ON && cge.request_kind==CGE_EVOLVE && (cge.pending&CGE_FEEL))cge_cancel();
     cge.planned_cycle=UINT32_MAX;
 }
 static int cge_arp_pending(void)
@@ -382,30 +464,46 @@ static void cge_view_update(void)
 }
 static const char *const CGE_DIRECTION_NAME[]={"Repeat","Jam"};
 static const char *const CGE_PIN_NAME[]={"Harmony","Sound","Groove","FX","Feel"};
+static void cge_pin_move(int d)
+{
+    if(d)cge.pin=wrapi(cge.pin+(d>0?1:-1),5);
+}
 static void cge_flow_info(int k,cf_knob_t *o)
 {
     static const char *const names[]={"VIBE","DIRECTION","SURPRISE","PIN"};kfmt(o->name,12,names[k]);
     if(k==0)kfmt(o->val,14,CGE_VIBES[cge.vibe_request].name);
     else if(k==1)kfmt(o->val,14,CGE_DIRECTION_NAME[cge.direction_request]);
-    else if(k==2)kint(o->val,cge.surprise,0);
-    else {kfmt(o->val,14,CGE_PIN_NAME[cge.pin]);if(cge.locks&(1u<<cge.pin))str_cpy(o->val+str_len(o->val),"*",sizeof o->val-str_len(o->val));}
+    else if(k==2)kint(o->val,cge.surprise,"%");
+    else {
+        unsigned count=0;
+        for(unsigned i=0;i<5;i++)if(cge.locks&(1u<<i))count++;
+        kint(o->val,count," / 5");
+    }
 }
 static void cge_flow_turn(int k,int d)
 {
     if(!d)return;
+    if(cge_pins_open){if(k==3)cge_pin_move(d);return;}
+    cge_flow_focus=k;cge_notice=0;
     if(k==0){unsigned v=clampi(cge.vibe_request+(d>0?1:-1),0,1);if(v==cge.vibe_request)return;cge.vibe_request=v;
         if(cge.loaded){if(!cge_generate(v))cge.vibe_request=cge.current.vibe;}
         else {cge.energy=CGE_VIBES[v].defaults[0];cge.feel=CGE_VIBES[v].defaults[1];cge.space=CGE_VIBES[v].defaults[2];if(!(cge.flow_manual&2))cge.surprise=CGE_VIBES[v].defaults[3];}}
     else if(k==1){cge.flow_manual|=1;unsigned direction=d>0?CGE_JAM:CGE_REPEAT;if(direction==cge.direction_request)return;cge.direction_request=direction;
-        if(cge.pending && cge.request_kind==2)cge_cancel();
+        if(cge.pending && cge.request_kind==CGE_EVOLVE)cge_cancel();
         if(cge_active()){if(cge.direction_request!=cge.direction)cge.pending|=CGE_DIRECTION;else cge.pending&=~CGE_DIRECTION;}
         else cge.direction=cge.direction_request;cge.planned_cycle=UINT32_MAX;}
-    else if(k==2){cge.flow_manual|=2;unsigned surprise=clampi(cge.surprise+d,0,100);if(surprise==cge.surprise)return;cge.surprise=surprise;if(cge.pending && cge.request_kind==2)cge_cancel();cge.planned_cycle=UINT32_MAX;}
-    else cge.pin=wrapi(cge.pin+(d>0?1:-1),5);
+    else if(k==2){cge.flow_manual|=2;unsigned surprise=clampi(cge.surprise+d,0,100);if(surprise==cge.surprise)return;cge.surprise=surprise;if(cge.pending && cge.request_kind==CGE_EVOLVE)cge_cancel();cge.planned_cycle=UINT32_MAX;}
+    else cge_pins_open=1;
 }
 static void cge_pin_toggle(void)
 {
+    cge_flow_focus=3;cge_notice=0;
     unsigned bit=1u<<cge.pin;
     if(cge.locks&bit){cge.locks&=~bit;cge.initial_pins&=~bit;}else cge_direct(bit);
     cge.planned_cycle=UINT32_MAX;
+}
+static void cge_pin_select(void)
+{
+    if(cge_pins_open)cge_pin_toggle();
+    else {cge_pins_open=1;cge_flow_focus=3;cge_notice=0;}
 }

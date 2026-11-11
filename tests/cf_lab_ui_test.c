@@ -15,7 +15,7 @@ static void blocks(unsigned n){int32_t out[CTL*2];while(n--){audio_block(out,CTL
 static void setup(unsigned idea)
 {
     cpa_stop();sqp_stop();dmp_stop();cfp_panic();sqk.on=0;cu.keys=0;cfds.pending=cfds.unavailable=0;memset(&cfwd,0,sizeof cfwd);cfd_view_update();memset(&cfdu,0,sizeof cfdu);memset(&clu,0,sizeof clu);cfl_plan_cached=0;
-    cu.scr=SCR_HOME;cu.page[SCR_PEDIT]=CFD_HARMONY;home_boot_main=1;cu.pop=POP_NONE;cpg.idea=idea;cpg.rhythm=CPA_OFF;cpg.mode=CPA_BOTH;cpg.repeat_off=0;
+    cu.scr=SCR_HOME;cf_home_bank=CF_HB_CORE;cu.page[SCR_PEDIT]=CFD_HARMONY;home_boot_main=1;cu.pop=POP_NONE;cpg.idea=idea;cpg.rhythm=CPA_OFF;cpg.mode=CPA_BOTH;cpg.repeat_off=0;
     const cf_progression_t *p=cf_progression_get(idea);cs.chord.tonic=p->tonic;cs.chord.scale=p->scale;cs.chord.quantize=CF_Q_BASIC;cs.clock_in=0;cs.beats=p->beats;cs.bpm=120;cs.bass_on=1;
     cf_harmony_defaults(&ch);ch.mode=CF_H_AUTO;cf_send_config();cf_send_metro();flush();cf_motion=0;cf_intro_on=0;cu.now=2000;cu.frame_dt=20;
 }
