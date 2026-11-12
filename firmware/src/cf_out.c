@@ -239,7 +239,7 @@ static void events_block(uint32_t n)
 /* UI -> ISR. One producer (the main loop), one consumer (the audio ISR): the index stores are the publication */
 enum {
     CFE_PERFORM,      /* a: CFPERF_FILL / DROP / BACK, next-bar transient moment */
-    CFE_ACCOMP,       /* a: start/stop; plans published by UI in bounded mailboxes */
+    CFE_ACCOMP,       /* a: stop/start/Studio pause or restart */
     CFE_KEY,          /* a: key 0..26, v: down */
     CFE_CONFIG,       /* the chord settings: cfc_shadow (cf_play.c) */
     CFE_PANIC,
@@ -561,7 +561,8 @@ static void cf_apply(const cf_ev_in_t *e)
         break;
     case CFE_CONFIG: cfp_config(); cpa_arp_config(); break;
     case CFE_ACCOMP:
-        if (e->a) cpa_start();
+        if (e->a >= CGS_PLAY_PAUSE) cgs_live_transport(e->a);
+        else if (e->a) cpa_start();
         else {
             if(cgs_active() && cpa_setup.flags && cpa_setup.plan.studio){
                 cpa_setup.plan=cpa.plan;

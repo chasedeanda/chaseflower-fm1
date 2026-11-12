@@ -406,7 +406,8 @@ static void workspaces_studio(void)
     cpa_stop();
     ui_button(B_GLO);
     ui_button(B_SAVE);
-    ui_button(B_GLO);
+    CHECK(cu.scr==SCR_GLO && !cgu_glow.active);
+    ui_button(B_HOME);
     CHECK(cgs_home());
     ui_button(B_HOME);
     ui_button(B_HOME);
@@ -473,7 +474,7 @@ static void arrangements_studio(void)
 
     cgs.focus=CGS_BASS;
     ui_button(B_GLO);
-    CHECK(cgu.mixer);
+    CHECK(cgu_glow.active);
     ui_capture("mixer");
     ui_button(B_SCL);
     blocks(1);
@@ -481,15 +482,13 @@ static void arrangements_studio(void)
     midi_event(0x90,0,64,96);
     CHECK(cr_mnote[0][64] && trk_voice_of(&trk[0],64));
     midi_event(0x80,0,64,0);
-    ui_algo(1);
-    CHECK(cgs.focus==CGS_DRUMS);
-    ui_button(B_EDIT);
-    ui_algo(-1);
+    ui_note_key_aged(5,1,0); /* A#3 toggles the Drums part */
+    ui_note_key_aged(5,0,0);
     ui_button(B_SCL);
     blocks(1);
     CHECK(!cgs.solo && cgs.mute_applied==(1u<<CGS_DRUMS));
     ui_button(B_GLO);
-    CHECK(!cgu.mixer);
+    CHECK(!cgu_glow.active);
 
     for(unsigned genre=1;genre<CGS_NGENRE;genre++){
         ui_presets(1);
@@ -657,22 +656,7 @@ static void play_and_mixer_studio(void)
     CHECK(trk_voice_of(&trk[CGS_DRUMS],36) && !cfp.n);
     ui_note_key_aged((int)keys[0],0,0);
 
-    ui_button(B_GLO);
-    ui_note_key_aged((int)keys[0],1,0);
-    blocks(1);
-    CHECK(cgs.mute_applied==(1u<<CGS_CHORDS) && !cgs.muted);
-    ui_note_key_aged((int)keys[0],0,0);
-    blocks(1);
-    CHECK(!cgs.mute_applied);
-    ui_note_key_aged((int)keys[5],1,0);
-    blocks(1);
-    CHECK(cgs.mute_applied==(15u^(1u<<CGS_BASS)) && !cgs.solo);
-    ui_capture("mixer-held");
-    ui_button(B_GLO);
-    blocks(1);
-    CHECK(!cgu.mixer && !cgs.mute_applied);
-    ui_note_key_aged((int)keys[5],0,0);
-    CHECK(!cgu.pad_down && cf_grid.gen==grid);
+    CHECK(cf_grid.gen==grid);
     cpa_stop();
     cgu_home();
 }
@@ -682,6 +666,169 @@ static unsigned studio_led(unsigned key)
     unsigned pin=cu_led_pos[14u+key], bit=1u<<(pin&7u), column=pin>>3;
     return (fm1_led[column]&bit)?4u:(fm1_led_dim2[column]&bit)?3u:
         (fm1_led_dim[column]&bit)?2u:(fm1_led_faint[column]&bit)?1u:0u;
+}
+
+static void glow_scan(unsigned elapsed,uint32_t buttons,uint32_t keys)
+{
+    emu_hal.buttons=buttons;
+    emu_hal.keys=keys;
+    emu_fw_tick(fm1_ms+elapsed);
+    cu.now=fm1_ms;
+    cf_ui_input();
+}
+
+static void glow_live_studio(void)
+{
+    studio_start(101);
+    blocks(2);
+    cgs.evolution=0;
+    uint32_t glo=1u<<panel.btn[B_GLO], home=1u<<panel.btn[B_HOME];
+    unsigned white[16],black[11],w=0,b=0;
+    for(unsigned k=0;k<CF_NKEYS;k++){
+        if(cf_key_is_upper(k))black[b++]=k;
+        else white[w++]=k;
+    }
+    CHECK(w==16 && b==11);
+    if(w!=16 || b!=11)return;
+    uint32_t solo=1u<<white[1], fill=1u<<white[CGU_GLO_FILL], kick=1u<<black[6];
+
+    cgu_tab_turn(1);
+    cgu_set_zoom(1);
+    cgu_sound_page(CGU_SENDS);
+    glow_scan(30,0,1u<<white[7]);
+    blocks(1);
+    CHECK(cfp.n);
+    glow_scan(30,glo,1u<<white[7]);
+    CHECK(cgu_glow.active && cgu_glow.view==CGU_GLO_MAP);
+    glow_scan(30,0,0);
+    CHECK(cgu_glow.active);
+    blocks(1);
+    CHECK(!cfp.n); /* a note played before GLO still gets its normal note-off */
+    ui_capture("glow-map");
+    ui_algo(1);
+    ui_capture("glow-state");
+    ui_algo(1);
+    CHECK(cgu_glow.view==CGU_GLO_MAP);
+    unsigned bpm=cs.bpm, level=cgs.level[CGS_DRUMS];
+    ui_select(1);
+    ui_knob_turn(2,1);
+    CHECK(cs.bpm==bpm+1 && cgs.level[CGS_DRUMS]==level);
+    for(unsigned i=0;i<3;i++){
+        glow_scan(475,0,1u<<white[CGU_GLO_TAP]);
+        glow_scan(25,0,0);
+    }
+    CHECK(cs.bpm==120);
+
+    glow_scan(30,0,1u<<black[0]);
+    glow_scan(30,0,0);
+    blocks(1);
+    CHECK(cgs.muted==(1u<<CGS_CHORDS) && cgs.mute_applied==cgs.muted);
+    glow_scan(30,0,kick);
+    glow_scan(30,0,0);
+    CHECK(cgs.drum_mutes==1);
+    sqp_drum_offs();
+    cgs_drums(CGS_KICK|CGS_SNARE,0,16,0);
+    CHECK(sqp.doff==(1u<<PF_S));
+    glow_scan(30,0,1u<<white[CGU_GLO_UNMUTE]);
+    glow_scan(30,0,0);
+    CHECK(!cgs.muted && !cgs.drum_mutes);
+
+    glow_scan(30,0,solo|fill);
+    CHECK(cgs.held_solo==(1u<<CGS_BASS) && cgs.fill_held && !cfp.n);
+    cf_leds();
+    CHECK(studio_led(white[1])==4u && !studio_led(white[15]));
+    glow_scan(30,0,fill);
+    blocks(1);
+    CHECK(!cgs.held_solo && !cgs.mute_applied);
+    sqp_drum_offs();
+    cgs_drums(0,0,16,0);
+    CHECK(sqp.doff&(1u<<PF_S)); /* held fill adds a hit to an empty drum step */
+    ui_capture("glow-fill");
+    glow_scan(30,glo,fill);
+    CHECK(!cgu_glow.active && !cgs.fill_held && cgu_glow.keys==fill);
+    CHECK(cgu.tab==CGU_SOUND && cgs.zoom && cgu.sound_page==CGU_SENDS);
+    sqp_drum_offs();
+    cgs_drums(0,0,16,0);
+    CHECK(!sqp.doff);
+    glow_scan(30,0,0);
+    CHECK(!cgu_glow.keys && !cfp.n);
+
+    ui_button(B_SCL);
+    ui_algo(CGS_NPART+1u-cgu_part(cgs.focus));
+    CHECK(cgu.rack_controls==CGU_RACK_MIX && !cgs.zoom);
+    ui_capture("sound-mix-rack");
+    ui_button(B_SCL);
+    CHECK(cgu.rack_controls==CGU_RACK_MIX && cgs.zoom);
+    for(unsigned i=0;i<CGS_NPART;i++){
+        unsigned part=cgu_part(i);
+        cf_knob_t knob={0};
+        cgu_knob_view(i,&knob,1);
+        CHECK(!strcmp(knob.name,CGS_PART_NAME[part]));
+        level=cgs.level[part];
+        ui_knob_turn(i,1);
+        CHECK(cgs.level[part]==level+1);
+    }
+    ui_capture("sound-mix");
+    ui_button(B_SCL);
+    CHECK(!cgs.zoom && cgu.rack_controls==CGU_RACK_MIX);
+
+    glow_scan(30,glo,solo);
+    CHECK(cgu_glow.active && cgs.held_solo && !cfp.n); /* GLO and a key in the same scan */
+    glow_scan(30,0,solo);
+    CHECK(cgu_glow.active && cgs.held_solo);
+    glow_scan(30,home,solo);
+    CHECK(!cgu_glow.active && !cgs.held_solo && cgu_glow.keys==solo);
+    glow_scan(30,0,0);
+    CHECK(!cgu_glow.keys);
+
+    ticks(17);
+    glow_scan(30,glo,1u<<white[CGU_GLO_PAUSE]);
+    blocks(1);
+    unsigned phase=cpa.q2;
+    CHECK(cpa.paused && cpa.on && !cfm.running && !sqp.n && phase>0);
+    blocks(16);
+    CHECK(cpa.q2==phase);
+    glow_scan(30,0,0);
+    glow_scan(30,0,1u<<white[CGU_GLO_PAUSE]);
+    blocks(1);
+    CHECK(!cpa.paused && cfm.running && cpa.q2>=phase);
+    glow_scan(30,0,0);
+    glow_scan(30,0,1u<<white[CGU_GLO_RESTART]);
+    blocks(1);
+    CHECK(cpa.on && cpa.q2==0 && cpa.slot==0);
+    glow_scan(30,0,1u<<white[CGU_GLO_FILL_BAR]);
+    blocks(1);
+    CHECK(cf_moment.pending==CFPERF_FILL && !cf_moment.fill);
+    ticks(4*SQ_PPQN-cpa.t);
+    CHECK(!cf_moment.pending && cf_moment.fill);
+    ticks(4*SQ_PPQN);
+    CHECK(!cf_moment.fill);
+    glow_scan(30,0,1u<<white[CGU_GLO_DROP]);
+    blocks(1);
+    ticks(4*SQ_PPQN-cpa.t);
+    CHECK(cf_moment.dropped);
+    glow_scan(30,0,0);
+    glow_scan(30,0,1u<<white[CGU_GLO_DROP]);
+    blocks(1);
+    ticks(4*SQ_PPQN-cpa.t);
+    CHECK(!cf_moment.dropped);
+
+    glow_scan(30,0,0);
+    ui_open(SCR_FX);
+    glow_scan(30,glo,0);
+    glow_scan(30,0,0);
+    CHECK(cgu_glow.active && cu.scr==SCR_FX);
+    ui_button(B_PLAY);
+    blocks(1);
+    CHECK(!cgs_active() && cgu_glow.active);
+    ui_button(B_PLAY);
+    blocks(1);
+    CHECK(cgs_active() && cgu_glow.active);
+    glow_scan(30,glo,0);
+    CHECK(!cgu_glow.active && cu.scr==SCR_FX);
+    glow_scan(30,0,0);
+    cpa_stop();
+    cgu_home();
 }
 
 static void sound_and_led_studio(void)
@@ -764,9 +911,9 @@ static void curated_sounds_studio(void)
             }
             trk[p].p[P_REV]=(int16_t)(25+p);
         }
-        ui_algo(-1);
+        ui_algo(CGS_NPART);
         ui_button(B_SCL);
-        CHECK(cgu.rack_controls && cgs.zoom && cgs.focus==CGS_CHORDS);
+        CHECK(cgu.rack_controls==CGU_RACK_LIBRARY && cgs.zoom && cgs.focus==CGS_CHORDS);
         if(genre==CGS_PUNK)ui_capture("sound-library-rack");
         ui_button(B_SCL);
         CHECK(cpa.q2==pulse && cpa.slot==slot && cgu_kit()==kit[genre]);
@@ -1058,6 +1205,7 @@ int main(int argc,char **argv)
         arrangements_studio();
         amp_performance_studio();
         play_and_mixer_studio();
+        glow_live_studio();
         sound_and_led_studio();
         curated_sounds_studio();
         record_clear_studio();

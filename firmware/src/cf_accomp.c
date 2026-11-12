@@ -76,9 +76,8 @@ static void cpa_arp_off(void)
 }
 static int cpa_live_chord(void)
 { return cfp_cp==0 && (cfp.n || cfa_k.n); }
-static void cpa_release(void)
+static void cpa_release_notes(void)
 {
-    cf_perf_reset();
     cpa_arp_off();
     cla_cancel(0);
     sqp_chord_off(); sqp_bass_off(); sqp.dn = 0;
@@ -88,6 +87,11 @@ static void cpa_release(void)
         memset(cgs.gate,0,sizeof cgs.gate);
     }
     sqp_drum_offs();
+}
+static void cpa_release(void)
+{
+    cf_perf_reset();
+    cpa_release_notes();
 }
 static void cpa_stop(void)
 {
@@ -360,6 +364,23 @@ static void cpa_realtime(unsigned status)
         cfm.running = 1; cf_grid.on = 1;
         const cpa_slot_t *s=&cpa.plan.slot[cpa.slot];
         if(s->tie || cpa.elapsed<(uint32_t)s->ticks*s->gate/100u)cpa_emit();
+    }
+}
+
+enum { CGS_PLAY_PAUSE=2, CGS_PLAY_RESTART };
+static void cgs_live_transport(unsigned action)
+{
+    if(!cgs_active() || cfp_cfg.clock_in)return;
+    if(action==CGS_PLAY_RESTART){
+        cf_perf_release_drums();
+        cpa_realtime(0xFAu);
+    } else if(cpa.paused)cpa_realtime(0xFBu);
+    else {
+        cpa_release_notes();
+        cf_perf_release_drums();
+        cpa.paused=1;
+        cfm.running=0;
+        cf_grid.on=0;
     }
 }
 

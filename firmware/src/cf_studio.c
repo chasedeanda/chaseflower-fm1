@@ -24,7 +24,8 @@ static struct {
     uint8_t genre, queued_genre, playing_genre, energy, evolution, solo, kit_pinned, feel, queued_feel, playing_feel, meter;
     uint8_t custom, bank_meter;
     volatile uint8_t pending;
-    uint8_t generation[CGS_NPART], harmony_generation, arp, held_mute, held_solo;
+    uint8_t generation[CGS_NPART], harmony_generation, arp, held_solo;
+    volatile uint8_t drum_mutes, fill_held;
     uint16_t gain[CGS_NPART];
 } cgs;
 static void cgs_sound_boundary(unsigned tag);
@@ -59,7 +60,7 @@ static int cgs_manual(unsigned part)
 static unsigned cgs_mute_mask(void)
 {
     unsigned solo=cgs.solo|cgs.held_solo;
-    return cgs.muted|cgs.held_mute|(solo?(15u&~solo):0u);
+    return cgs.muted|(solo?(15u&~solo):0u);
 }
 static void cgs_start(void)
 {
@@ -107,11 +108,17 @@ static unsigned cgs_velocity(unsigned part,unsigned velocity)
 static void cgs_drums(unsigned hit, unsigned step,unsigned steps,unsigned accent)
 {
     static const uint8_t lanes[]={0,1,3,4,8,5,6,7};
+    static const uint8_t groups[]={0,1,2,2,3,3,3,3};
     static const uint8_t level[]={105,86,53,47,39,69,63,59};
+    if(cf_moment.dropped)return;
+    unsigned punch=cgs.fill_held, half=steps/2u;
+    unsigned style=punch?cf_perf_kit_style(cpa.plan.kit):cf_moment.style;
     for(unsigned i=0;i<sizeof lanes;i++){
         unsigned l=lanes[i];
-        if(!cf_perf_hit(l,step,steps,(hit>>i)&1u))continue;
-        unsigned v=cf_perf_level(l,step,steps,level[i]+accent+(!(step&3u)?7u:0u));
+        if((cgs.drum_mutes>>groups[i])&1u)continue;
+        if(punch ? !cf_perf_fill_hit(style,l,step%half,half) : !cf_perf_hit(l,step,steps,(hit>>i)&1u))continue;
+        unsigned original=level[i]+accent+(!(step&3u)?7u:0u);
+        unsigned v=punch?cf_perf_fill_level(style,l,step%half+half,steps,original):cf_perf_level(l,step,steps,original);
         sqp_lane_kit(l,cpa.plan.kit,cgs_velocity(CGS_DRUMS,v));
         cfp_on(CGS_DRUMS,SQ_LANE_NOTE[l],95);
         sqp.doff|=(uint16_t)(1u<<l);

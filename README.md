@@ -92,6 +92,24 @@ The **PLAY** button is green while the transport runs and orange when stopped. O
 
 Changing screens leaves playback running. A selected row, edit focus or chord name is not an audition: use the displayed PLAY or SEL action to hear it.
 
+### GLO Live in CORD Studio
+
+Press **GLO** to open the live keyboard controls. Press **GLO** or **HOME** to return to the previous page, or press **SAVE** from GLO for Settings. Turn **ALGORITHM** for **Map** or **State**, and turn **SELECT** for tempo.
+
+In **Sound**, turn **ALGORITHM** to select the **Mix** panel and press **SEL** to open it. K1–K4 set the Chords, Bass, Drums and Layer levels.
+
+| Keys in the live mixer | Action |
+| --- | --- |
+| First four black keys | Toggle mute for Chords, Bass, Drums and Layer |
+| First four white keys | Solo those parts while held |
+| Black keys 7–10 | Toggle kick, snare, hats and percussion |
+| C4 / D4 | Pause or resume / restart the Studio groove |
+| E4 / F4 | Unmute all / tap tempo |
+| G4 / A4 | Fill while held / queue a one-bar fill |
+| B4 | Drop or bring back drums at the next bar |
+
+With MIDI clock input, pause, restart and tempo follow the external clock. The keyboard-map layout follows [JIANT FM’s GLO layer](https://juanjiant-bit.github.io/JIANT/manual/shots/layer_glo_active.png).
+
 ## Nine HOME pages
 
 Turn **ALGORITHM** either way, or tap **HOME**, to move through this order. **Harmony / Keyboard is always last**, immediately before Core. SELECT continues browsing progression ideas on every HOME page.

@@ -962,6 +962,12 @@ static void cfn_message_lines(char dst[3][64],const char *src)
 static void cf_ui_draw(void)
 {
     fb_unclip();cfn_motion_frame();
+    if(!cu.upd_left && cgu_glow.active){
+        cf_stage_valid=cf_acc_valid=cfd_valid=cfn_page_valid=cfarp_valid=cfl_valid=csl_screen_valid=0;
+        cgu_glow_draw();
+        return;
+    }
+    cgu_glow_valid=0;
     if(!cu.upd_left && cu.scr==SCR_LAB){cf_stage_valid=cf_acc_valid=cfd_valid=cfn_page_valid=0;cfl_draw();return;}
     cfl_valid=0;
     if(cf_intro_draw(cu.frame_dt)){cf_stage_valid=cf_acc_valid=cfd_valid=cfn_page_valid=0;return;}

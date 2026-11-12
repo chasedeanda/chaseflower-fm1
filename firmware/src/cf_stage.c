@@ -127,7 +127,7 @@ typedef struct {
     uint8_t live,hold,slot,first,count,total,skin,motion,battery,halo,rec,bank,disabled[4],emphasis[4],cursor_width;
     uint8_t pulse,halo_ink,activity,activity_step;
     uint8_t moment,build,bloom,engine_page,engine_bar,beat,focus,level[4],pin_mask;
-    uint8_t workspace,zoom,mixer,genre,solo,muted,shaping,sound_page,knob[4],part_level[4];
+    uint8_t workspace,zoom,genre,solo,muted,shaping,sound_page,knob[4],part_level[4];
     uint8_t signal_peak;
     uint16_t steps[4][2],matches;
     int8_t bank_dx,chord_dy;
@@ -276,6 +276,7 @@ static void cf_stage_engine_model(cf_stage_model_t *m)
     }
 }
 #include "cf_workspace_view.c"
+#include "cf_glow_view.c"
 static void cf_stage_model(cf_stage_model_t *m)
 {
     memset(m,0,sizeof *m);
