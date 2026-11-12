@@ -155,13 +155,13 @@ static const cgs_profile_t CGS_PROFILES[]={
         .id="pop-punk", .name="Pop Punk", .bpm=148,
         .primary=CF_P_DARK, .secondary=CF_P_EMOTIONAL, .family=CGS_GUITAR,
         CGS_KITS(DMK_XBREAK,DMK_ROOM,DMK_XLIVE,DMK_CRUSH,DMK_TIGHT,DMK_BOOM)
-        CGS_PALETTE(CGS_EXTRA_PUNK,STUDIO_VA_STACK_BITE,STUDIO_VA_BREAK_PICK,STUDIO_VA_OCTAVE_CRY)
+        CGS_PALETTE(CGS_EXTRA_PUNK,STUDIO_VA_STACK_BITE,STUDIO_VA_BREAK_PICK,STUDIO_VA_CLEAN_OCTAVE)
         .composer=CGS_COMPOSE_PUNK, .feel_count=4,
-        .bank_duration_scale=1, .evolve_period_scale=1, .layer_floor=64, .start_curated=1,
-        .style={{"Palm mute","Open wall"},{"Pick drive","Octave hook"},{"Feedback","High hook"},{"Heavy pocket","Double kick"}},
+        .bank_duration_scale=1, .evolve_period_scale=1, .layer_floor=60, .start_curated=1,
+        .style={{"Palm mute","Open wall"},{"Pick drive","Octave hook"},{"Picked hook","Octave answer"},{"Heavy pocket","Double kick"}},
         CGS_TONES({"AMP EDGE","POLY KEYS","AMP STACK","BARBED AMP"},
                   {"DOWN PICK","WOOD PLUCK","MUTED WIRE","POWER PICK","RUST PICK"},
-                  {"FROSTWIRE","ROOM KEYS","WIRE LEAD","FRET HOWL"})
+                  {"BRIDGE CHIME","ROOM KEYS","GLASS THREAD","PICK CHIME"})
     },
     {
         .id="lo-fi", .name="Lo-Fi", .bpm=82,
@@ -184,11 +184,11 @@ static const cgs_profile_t CGS_PROFILES[]={
     },
     {
         .id="ambient", .name="Ambient Soundscape", .bpm=64,
-        .primary=CF_P_EXPERIMENTAL, .secondary=CF_P_DREAMY, .family=CGS_EXPERIMENTAL,
+        .primary=CF_P_DREAMY, .secondary=CF_P_UPLIFTING, .family=CGS_EXPERIMENTAL,
         .cabinet=CGS_CAB_ALUMINUM,
         CGS_KITS(DMK_CHILL,DMK_GLASS,DMK_AIR,DMK_DUB,DMK_WOOD,DMK_HAND)
         CGS_PALETTE(CGS_EXTRA_AMBIENT,STUDIO_VA_TIDAL_DRONE,STUDIO_VA_DEEP_ANCHOR,STUDIO_VA_AIR_LATTICE)
-        .bank_duration_scale=2, .evolve_period_scale=2, .layer_floor=60,
+        .bank_duration_scale=2, .evolve_period_scale=2, .layer_floor=60, .start_curated=1,
         .bass_style=CGS_BASS_PEDAL, .layer_style=CGS_LAYER_SWELL, .hold_chords=1, .sparse_drums=1,
         .layer_reply={CGS_LAYER_REPLY_HARMONY,CGS_LAYER_REPLY_NONE},
         .bass={
@@ -196,8 +196,8 @@ static const cgs_profile_t CGS_PROFILES[]={
             {CGS_FLOAT,{{0,CGS_ANCHOR,31},{5,CGS_THIRD,30},{8,CGS_OCTAVE,31},{12,CGS_FIFTH,31},{15,CGS_UPPER,6}}},
         },
         .style={{"Hold","Breathe"},{"Pedal","Slow contour"},{"Swells","Distant notes"},{"Sparse","Texture"}},
-        CGS_TONES({"SLOW ORBIT","APOLLO VEIL","PRISM CLOUD"}, {"LOW TIDE","SLOW BLOOM B","FLOOR SWELL"},
-                  {"MOTION PAD","WATER CHIME","HALO BLOOM"})
+        CGS_TONES({"SLOW ORBIT","PRISM CLOUD","STILL AIR"}, {"FLOOR SWELL","SLOW BLOOM B","LOW TIDE"},
+                  {"MOTION PAD","WATER CHIME","SOFT HALO"})
     },
 };
 #undef CGS_TONES

@@ -991,6 +991,10 @@ static void genre_replies_studio(void)
     blocks(2);
     cgs.evolution=0;
     CHECK(cgs.active[CGS_LAYER].responds==CGS_LAYER_REPLY_HARMONY && cgs.harmony_changed);
+    sq_snd_poll();
+    CHECK(!strcmp(cf_snd[CGS_CHORDS].name,"STILL AIR") && !strcmp(cf_snd[CGS_LAYER].name,"SOFT HALO"));
+    CHECK(sqp.nb==1 && !cgs.gate[CGS_BASS]);
+    unsigned pedal=sqp.bass[0];
     ticks(SQ_PPQN-1u-cpa.t);
     CHECK(!sqp.ln);
     ticks(1);
@@ -998,7 +1002,7 @@ static void genre_replies_studio(void)
     ticks(CGS_BAR-cpa.t);
     unsigned hits=sqp.doff;
     for(unsigned t=1;t<CGS_BAR;t++){cpa_tick1();mo_r=mo_w;hits|=sqp.doff;}
-    CHECK(!(hits&(1u<<PF_R)));
+    CHECK((hits&(1u<<PF_R)) && sqp.nb==1 && sqp.bass[0]==pedal && !cgs.gate[CGS_BASS]);
     const cpa_slot_t *slot=&cpa.plan.slot[cpa.slot];
     unsigned feel=0;
     cgs.harmony_changed=0;
@@ -1009,6 +1013,20 @@ static void genre_replies_studio(void)
 
     studio_start_profile(497,studio_genre_index("pop-punk"));
     blocks(2);
+    sq_snd_poll();
+    CHECK(!strcmp(cf_snd[CGS_LAYER].name,"PICK CHIME"));
+    for(unsigned b=0;b<2;b++){
+        unsigned notes=0;
+        const cgs_clip_t *layer=&cgs.active[CGS_LAYER];
+        for(unsigned step=0;step<CGS_STEPS;step++){
+            unsigned event=layer->event[b][step];
+            if(!event)continue;
+            notes++;
+            CHECK((event>>3)<=6u && ((event&7u)==CGS_ANCHOR || (event&7u)==CGS_FIFTH));
+            CHECK(!(CGS_PUNK_KICK[layer->voice][b]&(1u<<step)));
+        }
+        CHECK(notes==1);
+    }
     cgs.evolution=0;
     ticks(7u*CGS_BAR-cpa.t);
     CHECK(cgs.punk_fill_step>=CGS_STEPS-3u && cgs.punk_fill_step<=CGS_STEPS);
@@ -1593,9 +1611,9 @@ static void curated_sounds_studio(void)
         {"dream-pop",{"CABINET PAD","ROUNDWIRE","GLASS THREAD"},DMK_ROOM},
         {"indie",{"JANGLE ORGAN","PICKUP BASS","GLASS THREAD"},DMK_ROOM},
         {"new-wave",{"PULSE STACK","SYNC RELAY","CRYSTAL STEP"},DMK_XTECH},
-        {"pop-punk",{"BARBED AMP","RUST PICK","FRET HOWL"},DMK_ROOM},
+        {"pop-punk",{"BARBED AMP","RUST PICK","PICK CHIME"},DMK_ROOM},
         {"lo-fi",{"TAPE EP","FELT SUB","DUST TINES"},DMK_TAPE},
-        {"ambient",{"PRISM CLOUD","FLOOR SWELL","HALO BLOOM"},DMK_GLASS},
+        {"ambient",{"STILL AIR","LOW TIDE","SOFT HALO"},DMK_GLASS},
     };
     for(unsigned i=0;i<NELEM(curated);i++){
         unsigned genre=studio_genre_index(curated[i].id);
@@ -1624,7 +1642,9 @@ static void curated_sounds_studio(void)
             if(p<CGS_DRUMS){
                 unsigned voice=CGS_PROFILES[genre].original_voice[p];
                 unsigned position=pool_pos_factory(ENGI_VA,voice);
-                CHECK(voice==131u+genre*CGS_DRUMS+p && strlen(VA_PRESETS[voice].name)<=12u);
+                unsigned expected=131u+genre*CGS_DRUMS+p;
+                if(p==CGS_LAYER && !strcmp(curated[i].id,"pop-punk"))expected=STUDIO_VA_CLEAN_OCTAVE;
+                CHECK(voice==expected && strlen(VA_PRESETS[voice].name)<=12u);
                 CHECK(cgu_sound_rank(p,0,count,(cf_ent_t){ENGI_VA,(uint8_t)position})==cgs_profile_tone_count(p));
                 for(const uint8_t *edit=VA_PRESET_EDITS[voice];*edit!=255u;edit+=2){
                     CHECK(edit[0]<VA_NP);

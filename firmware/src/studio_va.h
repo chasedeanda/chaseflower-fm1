@@ -176,3 +176,17 @@ STUDIO_RECIPE(AIR_LATTICE, "AIR LATTICE", 0, 81, 12, 0, 0, 85, 99, 65, 104,
     ENV2(105, 96, 43, 100), LFO(0, 16, 0, 127, 0), LFO(1, 25, 0, 113, 0), VA_VEL, 59,
     M_(0, VS_ENV1 + 1, VD_LVL1 + 1, 27), M_(1, VS_LFO1, VD_LVL1 + 2, 10),
     M_(2, VS_LFO1 + 1, VD_PIT1 + 1, 5))
+
+/* Studio voicing pass. Keep the earlier factory slots available to saved sounds. */
+STUDIO_RECIPE(PICK_CHIME, "PICK CHIME", 0, 76, 9, 8, 2, 1, 78, 36, 50,
+    OSC(0, TRI, 63, 0, 0), OSC(1, SIN, 25, 12, 0), OSC(2, TRI, 9, 19, 0),
+    ENV2(0, 54, 0, 32), VA_VEL, 78, M_(0, VS_ENV1 + 1, VD_LVL1 + 2, 26))
+STUDIO_RECIPE(CLEAN_OCTAVE, "CLEAN OCTAVE", 0, 72, 8, 3, 0, 17, 76, 43, 76,
+    OSC(0, SIN, 63, 0, 0), OSC(1, SIN, 31, 12, 0), OSC(2, TRI, 8, 24, 0),
+    ENV2(12, 63, 24, 65), VA_VEL, 77, M_(0, VS_ENV1 + 1, VD_LVL1 + 1, 25))
+STUDIO_RECIPE(STILL_AIR, "STILL AIR", 0, 70, 7, 0, 0, 61, 94, 108, 98,
+    OSC(0, TRI, 49, 0, 0), OSC(1, SIN, 31, 0, 0), OSC(2, SIN, 11, 12, 0),
+    ENV2(74, 92, 44, 97), VA_VEL, 59, M_(0, VS_ENV1 + 1, VD_LVL1 + 2, 23))
+STUDIO_RECIPE(SOFT_HALO, "SOFT HALO", 0, 76, 8, 0, 0, 49, 90, 60, 102,
+    OSC(0, SIN, 59, 0, 0), OSC(1, TRI, 22, 12, 0), OSC(2, SIN, 7, 24, 0),
+    ENV2(76, 98, 36, 91), VA_VEL, 64, M_(0, VS_ENV1 + 1, VD_LVL1 + 2, 24))

@@ -160,12 +160,14 @@ static void cgs_drums(unsigned hit, unsigned step,unsigned steps,unsigned accent
     if(cf_moment.dropped)return;
     unsigned punch=cgs.fill_held, half=steps/2u;
     unsigned style=punch?cf_perf_kit_style(cpa.plan.kit):cf_moment.style;
+    int sparse=CGS_PROFILES[cgs.playing_genre].sparse_drums && !punch && !cf_moment.fill;
     for(unsigned i=0;i<sizeof lanes;i++){
         unsigned l=lanes[i];
         if((cgs.drum_mutes>>groups[i])&1u)continue;
         if(punch ? !cf_perf_fill_hit(style,l,step%half,half) : !cf_perf_hit(l,step,steps,(hit>>i)&1u))continue;
         unsigned original=level[i]+accent+(!(step&3u)?7u:0u);
         unsigned v=punch?cf_perf_fill_level(style,l,step%half+half,steps,original):cf_perf_level(l,step,steps,original);
+        if(sparse)v=v*2u/3u;
         sqp_lane_kit(l,cpa.plan.kit,cgs_velocity(CGS_DRUMS,v));
         cfp_on(CGS_DRUMS,SQ_LANE_NOTE[l],95);
         sqp.doff|=(uint16_t)(1u<<l);
@@ -432,6 +434,9 @@ static void cgs_tick(void)
         if(cgs.arp&bit)continue;
         if(p==CGS_DRUMS && cpa.plan.rhythm>=DM_N)continue;
         unsigned event=clip->event[bar][step], feel=clip->feel[bar][step];
+        int pedal=p==CGS_BASS && profile->bass_style==CGS_BASS_PEDAL && !clip->voice;
+        if(pedal && (offset || (step && cpa.elapsed>=ticks)))continue;
+        if(pedal){event=clip->event[bar][0];feel=clip->feel[bar][0];}
         if(p==CGS_BASS && clip->responds){
             event=cgs.bass_event;
             feel=cgs.bass_feel;
@@ -479,7 +484,7 @@ static void cgs_tick(void)
             if(p==CGS_DRUMS){
                 if(cgs.section&CGS_FORM_LIGHT_HATS)event&=~(CGS_HAT|CGS_OPEN);
                 if(cgs.active[CGS_LAYER].responds==CGS_LAYER_REPLY_HARMONY && cgs.harmony_changed &&
-                   cpa.elapsed<(unsigned)cpa.plan.beats*2u*SQ_PPQN && !cf_moment.fill)
+                   cpa.elapsed<SQ_PPQN*2u && !cf_moment.fill)
                     event&=~(CGS_RIM|CGS_HAT|CGS_OPEN);
                 cgs_drums(event,step,steps,feel>>3);
             }
@@ -488,15 +493,15 @@ static void cgs_tick(void)
                 unsigned note=p==CGS_BASS?cgs.pitch.note[cpa.slot][tone]:s->note[tone<s->n?tone:s->n-1];
                 if(p==CGS_BASS && (tone==CGS_PICKUP-1u || tone==CGS_STEP_IN-1u) &&
                     s->ticks-cpa.elapsed>4*CGS_TICKS)note=cgs.pitch.note[cpa.slot][CGS_FIFTH-1u];
-                if(p==CGS_LAYER && profile->composer==CGS_COMPOSE_PUNK){
-                    if(tone==1)note=cgs.pitch.note[cpa.slot][CGS_THIRD-1u];
-                    if(tone==3)note=cgs.pitch.note[cpa.slot][CGS_UPPER-1u];
-                    while(note<profile->layer_floor)note+=12;
+                if(p==CGS_LAYER && (profile->composer==CGS_COMPOSE_PUNK ||
+                                    clip->responds==CGS_LAYER_REPLY_HARMONY)){
+                    unsigned pc=tone==CGS_FIFTH-1u?cgs.pitch.note[cpa.slot][tone]%12u:s->root%12u;
+                    note=profile->layer_floor+pc+(tone==CGS_OCTAVE-1u?12u:0u);
                 } else if(p==CGS_LAYER && note<profile->layer_floor)note+=12;
                 if(p==CGS_LAYER && profile->composer==CGS_COMPOSE_DREAM && clip->voice==3 && note<70)note+=12;
                 if(p==CGS_BASS && clip->responds && cgs.bass_attack && sqp.nb)cgs_release(CGS_BASS);
                 cgs_line(p,note,cgs_velocity(p,48u+2u*(feel>>3)));
-                cgs.gate[p]=(uint8_t)((event>>3)*6u);
+                cgs.gate[p]=pedal?0:(uint8_t)((event>>3)*6u);
             }
         }
     }
@@ -661,13 +666,18 @@ static void cgs_punk_clip(cgs_clip_t *clip,unsigned part,unsigned style,unsigned
                 event[15]|=CGS_LOW_TOM;
             } else if(activity>=48)event[bar?14:10]|=CGS_OPEN;
         } else {
-            static const uint8_t hooks[][2]={{2,4},{3,2},{4,3},{2,3}};
-            unsigned onset=(bar?9u:4u)+(pocket&1u)+shape%3u;
-            if(((kicks>>onset)&1u) && onset<14u)onset++;
-            event[onset]=(uint8_t)(hooks[shape][bar]+((style?7u:19u)<<3));
-            feel[onset]=style?116:91;
-            if((style && activity>=31) || activity>=55){event[onset-3u]=1u+(5u<<3);feel[onset-3u]=98;}
-            if(bar && activity>=44){event[15]=(uint8_t)(hooks[shape][0]+(5u<<3));feel[15]=101;}
+            unsigned first=bar?10u:4u, last=first+4u;
+            unsigned onset=first;
+            while(onset<=last && (kicks&(1u<<onset)))onset+=2u;
+            if(onset>last)continue;
+            unsigned role=(bar^(shape&1u))?CGS_FIFTH:CGS_ANCHOR;
+            if(style && bar)role=CGS_OCTAVE;
+            event[onset]=(uint8_t)(role+((style?5u:6u)<<3));
+            feel[onset]=style?72:80;
+            if(activity>=54 && onset+2u<CGS_STEPS && !(kicks&(1u<<(onset+2u)))){
+                event[onset+2u]=(uint8_t)((role==CGS_ANCHOR?CGS_FIFTH:CGS_ANCHOR)+(3u<<3));
+                feel[onset+2u]=60;
+            }
         }
     }
 }
@@ -687,8 +697,9 @@ static void cgs_pocket_clip(cgs_clip_t *clip, unsigned part, const cgs_profile_t
             if(bar && activity>68){events[15]=4;feel[15]=70;}
         } else if(part==CGS_BASS){
             if(profile->bass_style==CGS_BASS_PEDAL){
+                clip->voice=(uint8_t)style;
                 for(unsigned i=1;i<CGS_STEPS;i++)
-                    if((!style && (!bar || i<9)) || activity<23)events[i]=0;
+                    if(!style || activity<23)events[i]=0;
                 continue;
             }
             if(profile->bass_style==CGS_BASS_OCTAVE_PULSE && activity>=53){
@@ -704,9 +715,9 @@ static void cgs_pocket_clip(cgs_clip_t *clip, unsigned part, const cgs_profile_t
         } else if(part==CGS_LAYER){
             if(profile->layer_style==CGS_LAYER_SWELL){
                 unsigned i=bar?9u+shape:3u+shape;
-                events[i]=(uint8_t)((style?3u:4u)+(31u<<3));
-                feel[i]=91;
-                if(bar && activity>65){events[15]=2u+(21u<<3);feel[15]=65;}
+                events[i]=(uint8_t)((style?3u:CGS_FIFTH)+(31u<<3));
+                feel[i]=style?74:64;
+                if(style && bar && activity>65){events[15]=2u+(21u<<3);feel[15]=61;}
             } else if(profile->layer_style==CGS_LAYER_FRAGMENT){
                 unsigned i=(bar?9u:5u)+shape;
                 events[i]=(uint8_t)((style?4u:2u)+(12u<<3));feel[i]=101;

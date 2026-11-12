@@ -37,7 +37,7 @@ Highlight the Genre unit with **ALGORITHM** or **SEQ** and turn **K1** or **PRES
 | Dream Pop | Sustained or pulsing chords, melodic bass, a soft beat and sparse upper figures |
 | Indie | Chopped or ringing chords, offbeat bass, room drums and a chime line |
 | New Wave | Short chord stabs, octave bass, a machine beat and stepped synth figures |
-| Pop Punk | Palm-muted attacks, open chords, bass riffs locked to the kick, half-time and straight grooves, and a feedback-like Layer |
+| Pop Punk | Palm-muted attacks, open chords, bass riffs locked to the kick, half-time and straight grooves, and a clean picked Layer |
 | Lo-Fi | Soft keys, a late bass pocket, half-time drums and short melodic fragments |
 | Ambient Soundscape | Slow harmony, pedal bass, sparse percussion and evolving swells |
 
@@ -87,9 +87,9 @@ In **Lo-Fi**, **Layer → Fragments** plays a short reply in the first available
 
 In **Dream Pop**, **Layer → Sparse motif** answers gaps in **Soft pulse** chords. With **Sustain**, the motif enters half a quarter-note after a harmonic change, on the next playable grid point. **Arp** keeps its own phrase.
 
-In **Ambient Soundscape**, **Layer → Swells** enters after a harmonic change and leaves room for the harmony to settle. The drummer keeps the kick and leaves out optional rim and hat hits through the first two bars of that harmony. **Distant notes** plays its own phrase.
+In **Ambient Soundscape**, **Bass → Pedal** sustains the low note through the chord, and **Layer → Swells** brings in a soft chord tone after a harmonic change. The drums keep a quiet kick and leave space for a late percussion accent. **Slow contour** and **Distant notes** add more movement.
 
-In **Pop Punk**, the last bar's tom turnaround follows the final shared bass-and-kick riff attack. Pickups and extra Double kick hits keep their own rhythm. Live drum cues take priority.
+In **Pop Punk**, **Layer → Picked hook** plays short root and fifth notes in the gaps of the riff. **Octave answer** gives the second bar a higher reply. The last bar's tom turnaround follows the final shared bass-and-kick riff attack. Pickups and extra Double kick hits keep their own rhythm. Live drum cues take priority.
 
 Style and Activity changes take effect on the next playable grid point. Continuous knobs take single steps when turned slowly and five-unit steps when turned quickly.
 
