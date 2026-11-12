@@ -63,7 +63,7 @@ typedef struct {
 typedef struct {
     const char *name;
     ds_snd_t a[DSS_N], b[DSS_N];
-    uint8_t morph;                               /* the hits' place between A (0) and B (127) */
+    uint8_t morph;                               /* A (0) to B (127), or 128 for accent response */
     uint8_t vary;                                /* each hit's spread (0: none) */
     uint8_t rate, bits;                          /* the kit's grit (lo-fi): every RATE-th sample held (1: none), at BITS
                                                   * bits (0: as is) */
@@ -122,7 +122,7 @@ static void ds_morph(ds_snd_t *s, const ds_snd_t *a, const ds_snd_t *b, int32_t 
 static void ds_strike(ds_voice_t *v, const ds_kit_t *K, uint32_t sn, int32_t st, uint32_t lvl)
 {
     const ds_snd_t *A = &K->a[sn % DSS_N], *B = &K->b[sn % DSS_N];
-    int32_t m = K->morph;
+    int32_t m = K->morph==128 ? (int32_t)(lvl*2u)-70 : K->morph;
     uint32_t vary = K->vary;
     static const uint16_t R_HAT[6] = {4096, 6073, 7374, 10428, 10774, 15961};   /* (drum_voice.c's: the analog hats') */
     static const uint16_t R_CYM[6] = {4096, 5800, 6560, 7530, 8810, 10650};

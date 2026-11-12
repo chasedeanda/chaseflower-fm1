@@ -77,7 +77,7 @@ static void live(const char *dir)
 }
 static void progression(void)
 {
-    setup(CF_ARP_CONVERGE);cu.scr=SCR_HOME;cpg.idea=0;cpg.rhythm=CPA_OFF;cpg.mode=CPA_BOTH;
+    setup(CF_ARP_CONVERGE);cu.scr=SCR_HOME;cf_home_bank=CF_HB_CORE;cpg.idea=0;cpg.rhythm=CPA_OFF;cpg.mode=CPA_BOTH;
     const cf_progression_t *p=cf_progression_get(0);cs.chord.tonic=p->tonic;cs.chord.scale=p->scale;cs.beats=p->beats;
     cf_send_config();blocks(2);ui_button(B_PLAY);blocks(2);ms(150);
     CHECK(cpa.on && cfa_sq[0].n && !sqp.n && sqp.nb && cf_sn.arp_view.source==1);
@@ -109,7 +109,7 @@ static void audio(unsigned rate,const char *path,unsigned drawing)
             cf_snapshot();cu.now=cf_now_ms;if(drawing && b%17==0)cf_ui_draw();
         }
     }
-    key(9,0);cu.scr=SCR_HOME;cpg.idea=0;cpg.rhythm=CPA_OFF;cpg.mode=CPA_BOTH;
+    key(9,0);cu.scr=SCR_HOME;cf_home_bank=CF_HB_CORE;cpg.idea=0;cpg.rhythm=CPA_OFF;cpg.mode=CPA_BOTH;
     const cf_progression_t *idea=cf_progression_get(0);cs.chord.tonic=idea->tonic;cs.chord.scale=idea->scale;cs.beats=idea->beats;
     cf_send_config();blocks(2);ui_button(B_PLAY);blocks(2);cu.scr=SCR_ARP;
     for(unsigned b=0;b<FS*3/CTL;b++) {

@@ -528,7 +528,7 @@ JIELI_TOOLCHAIN="$PWD/../fm1-build/jieli/toolchain" \
 ./build.sh
 ```
 
-The installable output is **`build/coralflower.fwsc`**. Fonts and tables generate as part of the build. Keep the source revision and build checksums with your package. [Mac toolchain details](docs/CHASEFLOWER.md#build-on-an-apple-silicon-mac)
+The installable output is **`build/cord.fwsc`**. Fonts and tables generate as part of the build. Keep the source revision and build checksums with your package. [Mac toolchain details](docs/CHASEFLOWER.md#build-on-an-apple-silicon-mac)
 
 The **Browser playground** GitHub Actions workflow builds and publishes main to [GitHub Pages](https://chasedeanda.github.io/cord-fm1/play/). Its footer links the deployed revision. For local WebAssembly work, install Emscripten and follow the [emulator guide](tools/emu/README.md). `tools/make_play_site.py` packages the custom browser site.
 

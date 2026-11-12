@@ -325,12 +325,15 @@ static void sqp_arp_off(uint32_t tk)
     cfa_at = &cfa_k;
     sqp.aon &= (uint8_t)~(1u << tk);
 }
+static int cge_arp_push(void);
+static void cge_arp_pop(int);
 static void sqp_arp_tick(uint32_t n)             /* every audio block (cf_out.c): their steps, their strums */
 {
     uint32_t i;
     for (i = 0; i < 2u; i++) {
         cfa_at = &cfa_sq[i];
-        cfa_tick(n);
+        int pushed=i==0?cge_arp_push():0;
+        cfa_tick(n);cge_arp_pop(pushed);
     }
     cfa_at = &cfa_k;
 }

@@ -1,0 +1,7 @@
+boot: normal reset power-on failed 0 pending 1 counted 0 prev_stage 0 (none)
+accompaniment: 158365 checks, 0 failures; plan 348 bytes, runtime+mailboxes 1088 bytes
+accompaniment: 3 checks, 0 failures; plan 348 bytes, runtime+mailboxes 1088 bytes
+accompaniment: 3 checks, 0 failures; plan 348 bytes, runtime+mailboxes 1088 bytes
+accompaniment: 3 checks, 0 failures; plan 348 bytes, runtime+mailboxes 1088 bytes
+accompaniment: 3 checks, 0 failures; plan 348 bytes, runtime+mailboxes 1088 bytes
+PASS: accompaniment transport and identical physical output with USB capture/drawing at both rates.

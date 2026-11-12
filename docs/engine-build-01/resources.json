@@ -1,0 +1,21 @@
+{
+  "base_commit": "1eef7c736af1b2903c09022a9ec0f5c9edd7fada",
+  "baseline": {
+    "source": "/Users/chase/.codex/worktrees/signature-eight/FM1 Custom Firmware",
+    "size": "size: .text 530276 B, .ram_text 3000 B, .c1_text 128 B (RAMTEXT 3128 of 24576), .data 13428 B, .bss 76780 B; XIP 546832 B of 573440 (95.4%), RAM 90208 B of 98304 (91.8%), POOL 316792 B of 344064 (92.1%), NOINIT 216 B of 15664 (1.4%)",
+    "app_sha256": "476e88011de83a05cd51a3d2fd4f8b0b29c515eac77784424d22f560b9e8cdef",
+    "errors": []
+  },
+  "dev_version": "1.0.3-dev.engine01",
+  "device_size": "size: .text 536184 B, .ram_text 3000 B, .c1_text 128 B (RAMTEXT 3128 of 24576), .data 13460 B, .bss 77164 B; XIP 552772 B of 573440 (96.4%), RAM 90624 B of 98304 (92.2%), POOL 316792 B of 344064 (92.1%), NOINIT 216 B of 15664 (1.4%)",
+  "checks": [
+    "  ok    .ram_text: 932 insns, no calls",
+    "  ok    image 556580 B (stub 3808 + app 552772); RAM .data+.bss 90636 B of 98304; pool 316792 B of 344064",
+    "  ok    register access: hal/ only (src/, loader/ clean)"
+  ],
+  "xip_delta_bytes": 5940,
+  "ram_delta_bytes": 416,
+  "pool_delta_bytes": 0,
+  "ram_code_delta_bytes": 0,
+  "hardware_runtime_measurements": null
+}

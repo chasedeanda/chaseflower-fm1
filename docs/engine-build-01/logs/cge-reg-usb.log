@@ -1,0 +1,141 @@
+clock simulation: 44100 Hz +0 ppm, 60000 packets, 2646000/2645778 frames produced/consumed, no loss
+clock simulation: 44100 Hz +400 ppm, 60000 packets, 2647058/2646718 frames produced/consumed, no loss
+clock simulation: 44100 Hz -1000 ppm, 60000 packets, 2643354/2643270 frames produced/consumed, no loss
+clock simulation: 48000 Hz +0 ppm, 60000 packets, 2880000/2879760 frames produced/consumed, no loss
+clock simulation: 48000 Hz +400 ppm, 60000 packets, 2881152/2880816 frames produced/consumed, no loss
+clock simulation: 48000 Hz -1000 ppm, 60000 packets, 2877120/2877040 frames produced/consumed, no loss
+cf_usb: 1131166 checks, 0 failures
+render 44100 Hz part 0 clean 0 effects 0: master/chord/bass nonzero frames 50740/51052/0
+cf_usb: 52842 checks, 0 failures
+render 44100 Hz part 0 clean 0 effects 1: master/chord/bass nonzero frames 51165/51052/0
+cf_usb: 52842 checks, 0 failures
+render 44100 Hz part 0 clean 1 effects 0: master/chord/bass nonzero frames 50886/51020/0
+cf_usb: 52842 checks, 0 failures
+render 44100 Hz part 0 clean 1 effects 1: master/chord/bass nonzero frames 51140/51020/0
+cf_usb: 52842 checks, 0 failures
+render 44100 Hz part 1 clean 0 effects 0: master/chord/bass nonzero frames 51167/0/51175
+cf_usb: 52842 checks, 0 failures
+render 44100 Hz part 1 clean 0 effects 1: master/chord/bass nonzero frames 51181/0/51175
+cf_usb: 52842 checks, 0 failures
+render 44100 Hz part 1 clean 1 effects 0: master/chord/bass nonzero frames 51143/0/51143
+cf_usb: 52842 checks, 0 failures
+render 44100 Hz part 1 clean 1 effects 1: master/chord/bass nonzero frames 51149/0/51143
+cf_usb: 52842 checks, 0 failures
+render 44100 Hz part 2 clean 0 effects 0: master/chord/bass nonzero frames 51132/0/0
+cf_usb: 52842 checks, 0 failures
+render 44100 Hz part 2 clean 0 effects 1: master/chord/bass nonzero frames 51161/0/0
+cf_usb: 52842 checks, 0 failures
+render 44100 Hz part 2 clean 1 effects 0: master/chord/bass nonzero frames 51122/0/0
+cf_usb: 52842 checks, 0 failures
+render 44100 Hz part 2 clean 1 effects 1: master/chord/bass nonzero frames 51134/0/0
+cf_usb: 52842 checks, 0 failures
+render 44100 Hz part 3 clean 0 effects 0: master/chord/bass nonzero frames 19990/0/0
+cf_usb: 52842 checks, 0 failures
+render 44100 Hz part 3 clean 0 effects 1: master/chord/bass nonzero frames 41004/0/0
+cf_usb: 52842 checks, 0 failures
+render 44100 Hz part 3 clean 1 effects 0: master/chord/bass nonzero frames 20017/0/0
+cf_usb: 52842 checks, 0 failures
+render 44100 Hz part 3 clean 1 effects 1: master/chord/bass nonzero frames 48035/0/0
+cf_usb: 52842 checks, 0 failures
+render 44100 Hz part 4 clean 0 effects 0: master/chord/bass nonzero frames 7344/0/0
+cf_usb: 52842 checks, 0 failures
+render 44100 Hz part 4 clean 0 effects 1: master/chord/bass nonzero frames 7344/0/0
+cf_usb: 52842 checks, 0 failures
+render 44100 Hz part 4 clean 1 effects 0: master/chord/bass nonzero frames 7344/0/0
+cf_usb: 52842 checks, 0 failures
+render 44100 Hz part 4 clean 1 effects 1: master/chord/bass nonzero frames 7344/0/0
+cf_usb: 52842 checks, 0 failures
+render 44100 Hz part 5 clean 0 effects 0: master/chord/bass nonzero frames 43562/0/0
+cf_usb: 52842 checks, 0 failures
+render 44100 Hz part 5 clean 0 effects 1: master/chord/bass nonzero frames 51129/0/0
+cf_usb: 52842 checks, 0 failures
+render 44100 Hz part 5 clean 1 effects 0: master/chord/bass nonzero frames 45438/0/0
+cf_usb: 52842 checks, 0 failures
+render 44100 Hz part 5 clean 1 effects 1: master/chord/bass nonzero frames 51146/0/0
+cf_usb: 52842 checks, 0 failures
+render 44100 Hz part 6 clean 0 effects 0: master/chord/bass nonzero frames 51200/51052/51176
+cf_usb: 52842 checks, 0 failures
+render 44100 Hz part 6 clean 0 effects 1: master/chord/bass nonzero frames 51200/51052/51176
+cf_usb: 52842 checks, 0 failures
+render 44100 Hz part 6 clean 1 effects 0: master/chord/bass nonzero frames 51168/51020/51144
+cf_usb: 52842 checks, 0 failures
+render 44100 Hz part 6 clean 1 effects 1: master/chord/bass nonzero frames 51168/51020/51144
+cf_usb: 52842 checks, 0 failures
+render 44100 Hz part 7 clean 0 effects 0: master/chord/bass nonzero frames 51167/51090/51178
+cf_usb: 52843 checks, 0 failures
+render 44100 Hz part 7 clean 0 effects 1: master/chord/bass nonzero frames 51181/51090/51178
+cf_usb: 52843 checks, 0 failures
+render 44100 Hz part 7 clean 1 effects 0: master/chord/bass nonzero frames 51143/51058/51146
+cf_usb: 52843 checks, 0 failures
+render 44100 Hz part 7 clean 1 effects 1: master/chord/bass nonzero frames 51149/51058/51146
+cf_usb: 52843 checks, 0 failures
+render 48000 Hz part 0 clean 0 effects 0: master/chord/bass nonzero frames 55302/55576/0
+cf_usb: 1642 checks, 0 failures
+render 48000 Hz part 0 clean 0 effects 1: master/chord/bass nonzero frames 55691/55576/0
+cf_usb: 1642 checks, 0 failures
+render 48000 Hz part 0 clean 1 effects 0: master/chord/bass nonzero frames 55404/55555/0
+cf_usb: 1642 checks, 0 failures
+render 48000 Hz part 0 clean 1 effects 1: master/chord/bass nonzero frames 55655/55555/0
+cf_usb: 1642 checks, 0 failures
+render 48000 Hz part 1 clean 0 effects 0: master/chord/bass nonzero frames 55690/0/55696
+cf_usb: 1642 checks, 0 failures
+render 48000 Hz part 1 clean 0 effects 1: master/chord/bass nonzero frames 55701/0/55696
+cf_usb: 1642 checks, 0 failures
+render 48000 Hz part 1 clean 1 effects 0: master/chord/bass nonzero frames 55658/0/55668
+cf_usb: 1642 checks, 0 failures
+render 48000 Hz part 1 clean 1 effects 1: master/chord/bass nonzero frames 55666/0/55668
+cf_usb: 1642 checks, 0 failures
+render 48000 Hz part 2 clean 0 effects 0: master/chord/bass nonzero frames 55647/0/0
+cf_usb: 1642 checks, 0 failures
+render 48000 Hz part 2 clean 0 effects 1: master/chord/bass nonzero frames 55681/0/0
+cf_usb: 1642 checks, 0 failures
+render 48000 Hz part 2 clean 1 effects 0: master/chord/bass nonzero frames 55636/0/0
+cf_usb: 1642 checks, 0 failures
+render 48000 Hz part 2 clean 1 effects 1: master/chord/bass nonzero frames 55651/0/0
+cf_usb: 1642 checks, 0 failures
+render 48000 Hz part 3 clean 0 effects 0: master/chord/bass nonzero frames 21768/0/0
+cf_usb: 1642 checks, 0 failures
+render 48000 Hz part 3 clean 0 effects 1: master/chord/bass nonzero frames 44632/0/0
+cf_usb: 1642 checks, 0 failures
+render 48000 Hz part 3 clean 1 effects 0: master/chord/bass nonzero frames 21793/0/0
+cf_usb: 1642 checks, 0 failures
+render 48000 Hz part 3 clean 1 effects 1: master/chord/bass nonzero frames 52289/0/0
+cf_usb: 1642 checks, 0 failures
+render 48000 Hz part 4 clean 0 effects 0: master/chord/bass nonzero frames 8115/0/0
+cf_usb: 1642 checks, 0 failures
+render 48000 Hz part 4 clean 0 effects 1: master/chord/bass nonzero frames 8115/0/0
+cf_usb: 1642 checks, 0 failures
+render 48000 Hz part 4 clean 1 effects 0: master/chord/bass nonzero frames 8115/0/0
+cf_usb: 1642 checks, 0 failures
+render 48000 Hz part 4 clean 1 effects 1: master/chord/bass nonzero frames 8115/0/0
+cf_usb: 1642 checks, 0 failures
+render 48000 Hz part 5 clean 0 effects 0: master/chord/bass nonzero frames 47898/0/0
+cf_usb: 1642 checks, 0 failures
+render 48000 Hz part 5 clean 0 effects 1: master/chord/bass nonzero frames 55682/0/0
+cf_usb: 1642 checks, 0 failures
+render 48000 Hz part 5 clean 1 effects 0: master/chord/bass nonzero frames 49492/0/0
+cf_usb: 1642 checks, 0 failures
+render 48000 Hz part 5 clean 1 effects 1: master/chord/bass nonzero frames 55669/0/0
+cf_usb: 1642 checks, 0 failures
+render 48000 Hz part 6 clean 0 effects 0: master/chord/bass nonzero frames 55727/55576/55702
+cf_usb: 1642 checks, 0 failures
+render 48000 Hz part 6 clean 0 effects 1: master/chord/bass nonzero frames 55726/55576/55702
+cf_usb: 1642 checks, 0 failures
+render 48000 Hz part 6 clean 1 effects 0: master/chord/bass nonzero frames 55692/55555/55667
+cf_usb: 1642 checks, 0 failures
+render 48000 Hz part 6 clean 1 effects 1: master/chord/bass nonzero frames 55692/55555/55667
+cf_usb: 1642 checks, 0 failures
+render 48000 Hz part 7 clean 0 effects 0: master/chord/bass nonzero frames 55694/55612/55700
+cf_usb: 1643 checks, 0 failures
+render 48000 Hz part 7 clean 0 effects 1: master/chord/bass nonzero frames 55701/55612/55700
+cf_usb: 1643 checks, 0 failures
+render 48000 Hz part 7 clean 1 effects 0: master/chord/bass nonzero frames 55664/55593/55664
+cf_usb: 1643 checks, 0 failures
+render 48000 Hz part 7 clean 1 effects 1: master/chord/bass nonzero frames 55666/55593/55664
+cf_usb: 1643 checks, 0 failures
+....
+----------------------------------------------------------------------
+Ran 4 tests in 0.001s
+
+OK
+PASS: protocol/packet/resampler/drift checks and 64 render comparisons (including Auto, USB active vs idle, both rates).

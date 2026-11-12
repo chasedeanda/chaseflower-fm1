@@ -4,6 +4,8 @@
 #include "usb_mock.h"
 #define FELUCCA_UAC 1
 #define FELUCCA_CDC 1
+/* Exercise classic HOME bank navigation. Native Studio routes have their own suite. */
+#define CF_STUDIO 0
 #include "../tools/emu/emu_fw.c"
 static void ua_service_paced(uint32_t t0,int isr) { (void)t0;(void)isr;ua_service(); }
 static unsigned checks,failures;
@@ -12,7 +14,7 @@ static void blocks(unsigned n) { int32_t out[CTL*2];while(n--)audio_block(out,CT
 static void controls(void)
 {
 #if !CF_SCENES
-    CHECK(cf_intro_on && cf_intro_draw(16) && cu.scr==SCR_HOME && home_view()==HV_FLOWER);
+    CHECK(cf_intro_on && cf_intro_draw(16) && cu.scr==SCR_HOME && home_view()==HV_FLOWER && cf_home_bank==CF_HB_ENGINE);
     CHECK(cf_scene()==CF_SCENE_PROGRESSIONS && !cf_scene_animated());
     CHECK(sizeof(cs)==188 && sizeof(sq_ev_t)==22 && sizeof(sq_st)==7656 && sizeof(sq_take_rec_t)==2556);
     /* Old scene/backdrop/HOME bits remain valid backup data; boot is musical. */
@@ -36,8 +38,11 @@ static void controls(void)
         for(unsigned page=0;page<screen_pages(screen);page++){cu.page[screen]=(uint8_t)page;cf_ui_draw();}
     }
     cu.scr=SCR_HOME;home_boot_main=1;cf_ui_draw();
-    for(unsigned bank=0;bank<CF_HB_N;bank++){CHECK(cf_home_bank==bank && home_view()==HV_FLOWER);ui_button(B_HOME);}
-    CHECK(cf_home_bank==CF_HB_CORE);
+    for(unsigned offset=0;offset<CF_HB_N;offset++){
+        CHECK(cf_home_bank==(CF_HB_ENGINE+offset)%CF_HB_N && home_view()==HV_FLOWER);
+        ui_button(B_HOME);
+    }
+    CHECK(cf_home_bank==CF_HB_ENGINE);
     cu.scr=SCR_GLO;cu.page[SCR_GLO]=0;ui_knob_turn(1,HV_DIAG);ui_button(B_GLO);
     CHECK(home_view()==HV_DIAG);ui_button(B_HOME);CHECK(home_view()==HV_FLOWER && cf_home_bank==0);
 #else
@@ -51,7 +56,7 @@ static void render(unsigned rate,const char *path)
 {
     FILE *file=fopen(path,"wb");CHECK(file);if(!file)return;
     int32_t out[CTL*2];cf_intro_on=0;cf_boot_go=0;cfb.on=0;cu.pop=POP_NONE;
-    cu.scr=SCR_HOME;cs.seq_hint=0;home_boot_main=0;
+    cu.scr=SCR_HOME;cs.seq_hint=0;home_boot_main=0;cf_home_bank=CF_HB_CORE;
     ch.mode=CF_H_AUTO;cu.arp_on=1;cs.arp.mode=CF_ARP_UP;cf_send_config();blocks(64);
     cf_post(CFE_KEY,1,0,1);cf_post(CFE_KEY,1,0,0);cf_post(CFE_KEY,25,0,1);cf_post(CFE_KEY,25,0,0);
     cf_post(CFE_KEY,7,0,1);cf_post(CFE_KEY,7,0,0);

@@ -15,7 +15,7 @@ static void cf_cord_palette(void)
     for(unsigned i=0;i<32;i++)cf_pal[8+i]=cfn_blend(0x0C0707,0x823012,i*255/31);
     cf_pal[FL_BG]=0x0C0707;cf_pal[FL_INK]=0xFFFFFF;
     cf_pal[48]=0xFFA55B;cf_pal[FL_INK2]=0xFFFFFF;cf_pal[FL_INK3]=0x999999;
-    for(unsigned i=0;i<CFM_ART_COLORS;i++)cf_pal[CFM_PAL_BASE+i]=CFM_ART[0].rgb[i];
+    for(unsigned i=0;i<CFM_ART_COLORS;i++)cf_pal[CFM_PAL_BASE+i]=CFM_BOOT_ART.rgb[i];
     cf_pal[CFN_AA_BASE]=cfn_blend(cf_pal[FL_BG],0xFFFFFF,85);
     cf_pal[CFN_AA_BASE+1]=cfn_blend(cf_pal[FL_BG],0xFFFFFF,170);
     fb_palette(cf_pal,CFN_PAL_N);
@@ -23,7 +23,7 @@ static void cf_cord_palette(void)
 
 static void cf_cord_devil(int top,int w,int h)
 {
-    const cfm_art_t *art=&CFM_ART[0];
+    const cfm_art_t *art=&CFM_BOOT_ART;
     for(int y=0;y<h;y++) {
         int yy=top+y;if((unsigned)yy>=FB_H)continue;
         const uint8_t *row=art->data+art->rows[(unsigned)y*CFM_ART_H/(unsigned)h];

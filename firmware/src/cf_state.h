@@ -105,8 +105,8 @@ enum { CF_SKIN_EMBER, CF_SKIN_PLUM, CF_SKIN_N };
 enum { CF_SKIN_TEAL=0, CF_SKIN_STUDIO=1, CF_SKIN_EDITORIAL=2, CF_SKIN_LEGACY_N=3 };
 static const char *const CF_SKIN_NAME[] = {"Devil", "Cat"};
 static uint8_t cf_skin, cf_motion = 1;
-enum { CF_HB_CORE, CF_HB_SOUND, CF_HB_TEXTURE, CF_HB_GROOVE, CF_HB_PERFORM, CF_HB_LOOP, CF_HB_MIX, CF_HB_VARIATION, CF_HB_LEARN, CF_HB_N };
-static const char *const CF_HOME_BANK_NAME[] = {"CORE", "SOUND", "TEXTURE", "GROOVE", "PERFORM", "LOOP", "MIX", "VARIATIONS", "KEYBOARD"};
+enum { CF_HB_CORE, CF_HB_SOUND, CF_HB_TEXTURE, CF_HB_GROOVE, CF_HB_PERFORM, CF_HB_LOOP, CF_HB_MIX, CF_HB_VARIATION, CF_HB_ENGINE, CF_HB_FLOW, CF_HB_LEARN, CF_HB_N };
+static const char *const CF_HOME_BANK_NAME[] = {"CORE", "SOUND", "TEXTURE", "GROOVE", "PERFORM", "LOOP", "MIX", "VARIATIONS", "JAM", "FLOW", "KEYBOARD"};
 /* Add future toolbars before Learn: Harmony must remain the final HOME page. */
 _Static_assert(CF_HB_LEARN + 1 == CF_HB_N, "Harmony must be the last HOME page");
 static uint8_t cf_home_bank;
@@ -224,7 +224,14 @@ static flc_t fl_cv = {fl_px, FLW, FLH};
 #define C_ACC(s) ((uint8_t)(48 + (s)))
 #define C_SEC(s) ((uint8_t)(52 + (s)))
 #include "cf_mascot_art.h"
-enum { CFN_HALO_0=64, CFN_HALO_1, CFN_HALO_2, CFN_HALO_3, CFM_PAL_BASE=68, CFN_AA_BASE=128, CFN_AA_ROLES=5, CFN_AA_SURFACES=4, CFN_PAL_N=256 };
+enum { CGU_INK_BASE=57, CFN_HALO_0=64, CFN_HALO_1, CFN_HALO_2, CFN_HALO_3, CFM_PAL_BASE=68,
+    CFN_AA_BASE=128, CFN_AA_ROLES=5, CFN_AA_SURFACES=4,
+    CGU_BAND_INK_BASE=CFN_AA_BASE+CFN_AA_ROLES*CFN_AA_SURFACES*2,
+    CGU_PEDAL_BODY=CGU_BAND_INK_BASE+4, CGU_PEDAL_SHADES=8,
+    CGU_METAL=CGU_PEDAL_BODY+4*CGU_PEDAL_SHADES,
+    CGU_GRILLE=CGU_METAL+12, CGU_MATERIAL_AA=CGU_GRILLE+8,
+    CGU_AMP_FACE=CGU_MATERIAL_AA+6*4, CFN_PAL_N=256 };
+_Static_assert(CGU_AMP_FACE+8 <= CFN_PAL_N, "Studio material palette fits");
 static uint32_t cf_pal[CFN_PAL_N];
 static uint32_t cfn_blend(uint32_t bg,uint32_t fg,unsigned alpha)
 {
@@ -318,7 +325,36 @@ static void cf_palette_build(void)
     cf_pal[52] = skin[5]; cf_pal[53] = skin[4]; cf_pal[54] = skin[2]; cf_pal[55] = skin[1];
     cf_pal[56] = skin[6];
     for(unsigned i=0;i<4;i++)cf_pal[CFN_HALO_0+i]=cfn_blend(skin[0],skin[5],12+12*i);
-    for(unsigned i=0;i<CFM_ART_COLORS;i++)cf_pal[CFM_PAL_BASE+i]=CFM_ART[cf_skin%CF_SKIN_N].rgb[i];
+    if(!CF_STUDIO || CF_SCENES)
+        for(unsigned i=0;i<CFM_ART_COLORS;i++)cf_pal[CFM_PAL_BASE+i]=CFM_ART[cf_skin%CF_SKIN_N].rgb[i];
+    cf_pal[CGU_INK_BASE]=0xffb464;   /* Chords */
+    cf_pal[CGU_INK_BASE+1]=0x79d5ea; /* Bass */
+    cf_pal[CGU_INK_BASE+2]=0xc6acff; /* Layer */
+    cf_pal[CGU_INK_BASE+3]=0xfb878d; /* Drums */
+    cf_pal[CGU_BAND_INK_BASE]=0xb9d97e;   /* Harmony */
+    cf_pal[CGU_BAND_INK_BASE+1]=0xee91cc; /* Shaping */
+    cf_pal[CGU_BAND_INK_BASE+2]=0xf9dc73; /* Genre */
+    cf_pal[CGU_BAND_INK_BASE+3]=0x90abff; /* ARP */
+    if(CF_STUDIO && !CF_SCENES){
+        static const uint32_t metal[]={0x111416,0x202427,0x2d3235,0x3d4346,0x50595d,0x667075,
+            0x838d90,0xa5afb0,0xcbd0cb,0xe7e8dd,0x090b0c,0x181c1f};
+        static const uint32_t grille[]={0x121516,0x1c1f20,0x242829,0x2c3030,0x353939,0x414545,0x4c5050,0x565b59};
+        static const uint32_t plate[]={0x1e2224,0x25292c,0x2b3033,0x31373a,0x383e41,0x3e4548,0x5b6467,0x757f82};
+        memcpy(cf_pal+CGU_METAL,metal,sizeof metal);
+        memcpy(cf_pal+CGU_GRILLE,grille,sizeof grille);
+        memcpy(cf_pal+CGU_AMP_FACE,plate,sizeof plate);
+        for(unsigned part=0;part<4;part++){
+            unsigned base=CGU_PEDAL_BODY+part*CGU_PEDAL_SHADES;
+            for(unsigned shade=0;shade<CGU_PEDAL_SHADES;shade++)
+                cf_pal[base+shade]=cfn_blend(plate[shade],cf_pal[CGU_BAND_INK_BASE+part],35);
+        }
+        for(unsigned surface=0;surface<6;surface++){
+            unsigned bg=surface<4?CGU_PEDAL_BODY+surface*CGU_PEDAL_SHADES+2:surface==4?CGU_METAL+2:CGU_GRILLE+2;
+            for(unsigned ink=0;ink<2;ink++)for(unsigned level=0;level<2;level++)
+                cf_pal[CGU_MATERIAL_AA+surface*4+ink*2+level]=
+                    cfn_blend(cf_pal[bg],cf_pal[ink?FL_INK2:FL_INK],(level+1)*100/3);
+        }
+    }
     static const uint8_t text_ink[]={FL_INK,FL_INK2,48,56,FL_C(FL_R_ROSE,0)};
     static const uint8_t text_bg[]={FL_BG,FL_BG1,48,FL_BG3};
     for(unsigned bg=0;bg<CFN_AA_SURFACES;bg++)for(unsigned ink=0;ink<CFN_AA_ROLES;ink++)

@@ -37,6 +37,9 @@ static void cf_perform_turn(unsigned action)
 }
 static int cf_home_bank_info(int k, cf_knob_t *o)
 {
+    if(cgs_home()){cgu_knob_info(k,o);return 1;}
+    if(cf_home_bank==CF_HB_ENGINE){cge_knob_info(k,o);return 1;}
+    if(cf_home_bank==CF_HB_FLOW){cge_flow_info(k,o);return 1;}
     if (cf_home_bank == CF_HB_CORE) return 0;
     if(cf_home_bank==CF_HB_VARIATION){cvr_knob_info(k,o);return 1;}
     if(cf_home_bank==CF_HB_LOOP || cf_home_bank==CF_HB_MIX) {
@@ -97,6 +100,7 @@ static int cf_home_bank_info(int k, cf_knob_t *o)
 }
 static void cf_home_groove(int k,int d)
 {
+    if(d)cge_direct(CGE_GROOVE);
     if (sqk.on) return;
     unsigned r=cf_home_rhythm();
     if (r>=DM_N) { cf_message("Choose a rhythm in Core"); return; }
@@ -113,6 +117,9 @@ static void cf_home_groove(int k,int d)
 }
 static int cf_home_bank_turn(int k,int d)
 {
+    if(cgs_home()){cgu_knob_turn(k,d);return 1;}
+    if(cf_home_bank==CF_HB_ENGINE){cge_knob_turn(k,d);return 1;}
+    if(cf_home_bank==CF_HB_FLOW){cge_flow_turn(k,d);return 1;}
     if (cf_home_bank==CF_HB_CORE) return 0;
     if(cf_home_bank==CF_HB_VARIATION){cvr_knob_turn(k,d);return 1;}
     if(cf_home_bank==CF_HB_LOOP || cf_home_bank==CF_HB_MIX) {
@@ -126,6 +133,7 @@ static int cf_home_bank_turn(int k,int d)
     }
     if (cf_home_bank==CF_HB_SOUND) {
         if (k<2) {
+            cge_direct(CGE_SOUND);
             if (cf_snd_step((unsigned)k,d)) {
                 if (cs.env_link) cf_env_follow();
                 ui_snd_heard((unsigned)k);
@@ -134,7 +142,7 @@ static int cf_home_bank_turn(int k,int d)
     } else if (cf_home_bank==CF_HB_TEXTURE) {
         static const unsigned fx[]={CFX_REVERB,CFX_DELAY,CFX_CHORUS};
         if (k==3) cpa_glide(d);
-        else { unsigned e=fx[k]; cs.fx.v[e][2]=(uint8_t)clampi(cs.fx.v[e][2]+d,0,100); cf_fx_apply(&cs.fx); }
+        else { cge_direct(CGE_FX); unsigned e=fx[k]; cs.fx.v[e][2]=(uint8_t)clampi(cs.fx.v[e][2]+d,0,100); cf_fx_apply(&cs.fx); }
     } else {
         if (k==0 || k==2) cf_home_groove(k,d);
         else if (k==1) sq_level_set(SQ_DRUMS,cs.level_drums+d*2);

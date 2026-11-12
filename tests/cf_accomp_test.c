@@ -15,7 +15,7 @@ static void ticks(unsigned n) { while (n--) { cpa_tick1(); mo_r = mo_w; } cf_sna
 static void setup(unsigned idea, unsigned rhythm)
 {
     cpa_stop(); sqp_stop(); dmp_stop(); cfp_panic();
-    cu.scr = SCR_HOME; cf_scene_set(CF_SCENE_PROGRESSIONS);
+    cu.scr = SCR_HOME; cf_home_bank=CF_HB_CORE; cf_scene_set(CF_SCENE_PROGRESSIONS);
     cpg.idea = idea; cpg.rhythm = rhythm; cpg.mode = CPA_BOTH;
     const cf_progression_t *p = cf_progression_get(idea);
     cs.chord.tonic = p->tonic; cs.chord.scale = p->scale; cs.beats = p->beats;

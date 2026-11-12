@@ -1,0 +1,131 @@
+classifyFirmware: 41 identity / INFO cases (ChoralRoot's, and CoralFlower over CoralFlower)          ok
+classifyFirmware: CoralFlower is named by its INFO text                                              ok
+classifyFirmware: FM-1_930 without INFO -> allow, "CoralFlower (an early build without backup support)" ok
+refusalText: names CORD, links the recovery tools                                                    ok
+tools/fm1_install.py classify_firmware == fm1ota.js classifyFirmware (verdict, kind, name)           ok
+tools/fm1_install.py family: coralflower, choralroot, felucca, other                                 ok
+CORD alias uses the compatible family and CORD backup filename                                       ok
+fm1backup.js backupFamily: coralflower (cord-backup-YYYYMMDD.json), the others as before             ok
+page: the module script, the Support script, the page script and the .js flag; links only to this site (site.css, the icons, the font) ok
+page: imports ./fm1pkg.js, ./fm1ota.js, ./fm1backup.js (the same folder, relative)                   ok
+page: every imported name is exported by its module                                                  ok
+page: title, lang, one h1                                                                            ok
+site.css: the font fonts/DepartureMono.woff, from this site                                          ok
+site.css: the font fonts/InterTight-400.woff, from this site                                         ok
+site.css: the font fonts/InterTight-600.woff, from this site                                         ok
+page: the CoralFlower name and the same five links on both pages (four sections, Play)               ok
+web/index.html: its look from site.css only (no <style>, no raw colour, style= only sets a token)    ok
+tools/emu/web/index.html: its look from site.css only (no <style>, no raw colour, style= only sets a token) ok
+page: the colour ramp, the same as on the emulator page                                              ok
+page: the Support button, the same as on the emulator page                                           ok
+page: the Support card, the same as on the emulator page                                             ok
+page: the dialog, the same as on the emulator page                                                   ok
+page: the Support script with WALLETS, the same as on the emulator page                              ok
+web/install/index.html: the old address forwards to /#install (a script, a refresh, a link)          ok
+page: no ChoralRoot-only parts (its identity, repo, Sounds, manager, placeholders)                   ok
+page: own risk, the official firmware from m-vave.com, Chrome or Edge, the cable, keep open, do not unplug, about a minute ok
+page: the elements (the backup on by default, the override hidden, the .fwsc picker)                 ok
+texts: a single `en` table                                                                           ok
+texts: every fm1ota.js error code and step has a text (19)                                           ok
+texts: every key the script names has a text (57 keys)                                               ok
+test package (fm1pkg_make.py in JS): 605732 B, FM-1_930, parses as an FM-1 package                   ok
+page: its module script with the three libraries inlined compiles (no name clash)                    ok
+no Web MIDI: the page's top-level code runs                                                          ok
+no Web MIDI: the notice and the status say why; Install, the check and Back up are off               ok
+no Web MIDI: a good file is still checked (ready), Install stays off                                 ok
+no releases.json (404): the file only, Install off and named "Install CoralFlower"                   ok
+no releases.json: the log says so                                                                    ok
+"Choose a .fwsc file" opens the file picker                                                          ok
+file: a well-formed FM-1_930 package -> ready, checked, its SHA-256 shown                            ok
+file: Install enabled, named after the file                                                          ok
+file refused: another identity (ChoralRoot's FM-1_920) -> pkgIdentity, Install off again             ok
+file refused: the official firmware's identity (FM-1_015) -> pkgStock, Install off again             ok
+file refused: no Felucca loader in ota.bin -> pkgNoLoader, Install off again                         ok
+file refused: a damaged flash.bin (one bit) -> pkgDamaged, Install off again                         ok
+file refused: a damaged ota.bin (one bit) -> pkgDamaged, Install off again                           ok
+file refused: a file cut short -> pkgDamaged, Install off again                                      ok
+file refused: not a package (text) -> pkgNotFm1, Install off again                                   ok
+file refused: an empty file -> pkgNotFm1, Install off again                                          ok
+install over stock: -> loader -> FM-1_930, status Done, bar 100 (11 reads, all bytes right)          ok
+install: Install and the file picker locked, the page guarded against closing while writing          ok
+install over stock: no INFO, so no backup tried -> asked once, as before                             ok
+install over stock: the done panel (no INFO answer afterwards: "CoralFlower is installed"), unlocked ok
+install: the log lists the steps                                                                     ok
+CoralFlower over CoralFlower: backed up first (cord-backup-20261110.json), no question, no restore   ok
+CoralFlower over CoralFlower: the backup holds the sequencer's six parts, named once in the log      ok
+CoralFlower over CoralFlower: installed, and the new version read back ("now runs CoralFlower 0.2")  ok
+CoralFlower over CoralFlower: classified allow (coralflower) in the log                              ok
+over ChoralRoot: backed up, installed, no restore offered                                            ok
+over Felucca: the backup saved first, then the restore offered                                       ok
+over Felucca: settings, banks, FM6 bank restored on CoralFlower, then RESTART; the done panel        ok
+early CoralFlower (FM-1_930, no INFO): allowed and installed                                         ok
+early CoralFlower: the backup step skipped (no LIST, no question, no file), the note shown           ok
+early CoralFlower: the note says the backup is impossible and why the update keeps the saved sounds  ok
+early CoralFlower, backup unticked: installed, no note                                               ok
+FM-1_931 without INFO: still refused (the override box shown, nothing written)                       ok
+backup unticked: installed; only INFO asked (to classify before, to read back after), no backup, no question ok
+no backup, declined: nothing written, unlocked                                                       ok
+guard: over Sloop -> refused (nothing written, no question), the override box appears                ok
+guard: override ticked, the second confirm declined -> nothing written                               ok
+guard: override ticked and confirmed -> installed over Sloop                                         ok
+guard: over FM-1_909 FELUCCA 0.9-BETA -> refused                                                     ok
+guard: over FM-1_000 (no INFO) -> refused                                                            ok
+guard: over FM-1_931 (no INFO) -> refused                                                            ok
+guard: over FELUCCA v1.0.1 -> installed, no override shown                                           ok
+guard: over MELODEE v0.11.1 -> installed, no override shown                                          ok
+guard: over the stock FM-1_015 -> installed, no override shown                                       ok
+resume: update mode -> the write finished, FM-1_930, no question, the version read back              ok
+interrupted: the cable lost while writing -> lost, the guidance shown, bar part way (6)              ok
+interrupted: its link to "Device not found" opens that help (the page script)                        ok
+error: no FM-1 -> notfound, Install unlocked                                                         ok
+error: another device -> model                                                                       ok
+error: another identity after the write -> mismatch + the identity                                   ok
+error: SysEx refused -> denied, Install unlocked                                                     ok
+check: CoralFlower -> its version, an update keeps what is saved                                     ok
+check: ChoralRoot -> CoralFlower can be installed over it                                            ok
+check: Sloop -> the refusal                                                                          ok
+check: an early CoralFlower (no INFO) -> named as such, allowed                                      ok
+check: update mode -> finish the write with Install                                                  ok
+check: no FM-1 -> notfound                                                                           ok
+releases: two chips (the entry without a SHA-256 left out), the newest chosen                        ok
+releases: the newest fetched from firmware/, sha256 and package checked, Install CoralFlower 0.2     ok
+releases: the chosen version's notes, date and download link                                         ok
+releases: an older chip chosen -> its own package, checked                                           ok
+releases: a file chosen instead -> no chip pressed, Install names the file                           ok
+releases: back to 0.2, installed from the site's package                                             ok
+releases: a package whose SHA-256 is not the listed one -> refused, Install off                      ok
+releases: the package missing on the site -> said, Install off                                       ok
+releases: a releases.json that is not JSON -> the file only                                          ok
+no Web MIDI: the newest version named, its package not downloaded, Install off                       ok
+Back up enabled, Restore waits for a file                                                            ok
+Back up: cord-backup-*.json with CoralFlower's objects                                               ok
+Restore: a file that is not a backup is refused, said in its own tool                                ok
+Restore: confirmed, every object back, the settings last, RESTART (CoralFlower restarts)             ok
+a 0.6 backup on 0.5: 31 refused and skipped, the sound bank, settings, patterns and song restored, RESTART ok
+Back up on 0.3.1: the sequencer's six parts in the file (3840 B each at most: accepted)              ok
+Restore on 0.3.1: the patterns and song back, named once                                             ok
+Restore on 0.3: the rest restored, the patterns kept in the file and named once as not used          ok
+objectNames: each name once, in order                                                                ok
+objectNames: the three sounds' edits named once (0.4.2)                                              ok
+stock: a file of the wrong size refused, the V15 (stand-in) accepted, in its own section             ok
+stock: the backup saved first; declined -> nothing written                                           ok
+stock: confirmed -> backup, FM-1_015, the done panel names the backup; the install card left idle    ok
+CORD FM-1_936 package accepted from FM-1_015                                                         ok
+CORD FM-1_936 install/resume from FM-1_015: verified selected package identity                       ok
+CORD FM-1_936 package accepted from FM-1_930                                                         ok
+CORD FM-1_936 install/resume from FM-1_930: verified selected package identity                       ok
+CORD FM-1_936 package accepted from FM-1_936                                                         ok
+CORD FM-1_936 install/resume from FM-1_936: verified selected package identity                       ok
+CORD FM-1_936 package accepted from ota-FM-1_936                                                     ok
+CORD FM-1_936 install/resume from ota-FM-1_936: verified selected package identity                   ok
+CORD FM-1_26730001 package accepted from FM-1_015                                                    ok
+CORD FM-1_26730001 install/resume from FM-1_015: verified selected package identity                  ok
+CORD FM-1_26730001 package accepted from FM-1_930                                                    ok
+CORD FM-1_26730001 install/resume from FM-1_930: verified selected package identity                  ok
+CORD FM-1_26730001 package accepted from FM-1_936                                                    ok
+CORD FM-1_26730001 install/resume from FM-1_936: verified selected package identity                  ok
+CORD FM-1_26730001 package accepted from ota-FM-1_26730001                                           ok
+CORD FM-1_26730001 install/resume from ota-FM-1_26730001: verified selected package identity         ok
+tools/fm1pkg_make.py package (the real builder, tools/sdk): 605988 B, accepted by the page           ok
+
+all passed

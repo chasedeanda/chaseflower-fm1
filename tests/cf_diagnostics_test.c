@@ -6,6 +6,8 @@ static uint8_t reply[512];static uint32_t reply_n;
 #define CRB_SEND(p,n) do {memcpy(reply,(p),(n));reply_n=(n);}while(0)
 #define FELUCCA_UAC 1
 #define FELUCCA_CDC 1
+/* Exercise classic HOME bank navigation. Native Studio routes have their own suite. */
+#define CF_STUDIO 0
 #include "../tools/emu/emu_fw.c"
 static void ua_service_paced(uint32_t t,int isr){(void)t;(void)isr;ua_service();}
 static unsigned checks,fails;

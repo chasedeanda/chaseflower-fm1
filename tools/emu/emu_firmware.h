@@ -1,3 +1,4 @@
+#define CF_ENGINE 1
 /* SPDX-License-Identifier: GPL-3.0-only */
 /* The firmware the emulator runs: the ONE include list (included once, by emu_fw.c).
  * The sound side through tests/hostsim.c (engines, voices, FX, usb.c MIDI queues; FELUCCA_SEQ 0: without

@@ -9,6 +9,7 @@ from html.parser import HTMLParser
 from pathlib import Path
 import re
 import subprocess
+from build import release_brand
 
 root = Path(__file__).resolve().parents[1]
 parser = argparse.ArgumentParser()
@@ -28,7 +29,9 @@ check('"Chase FM-1"' not in read('firmware/src/cf_boot.c'), 'Optional legacy boo
 check('"coralflower-fm1"' in read('tools/emu/web/emu.js'), 'Existing browser save namespace is retained')
 check('file.format !== "felucca-backup"' in read('web/fm1backup.js'), 'Legacy backup envelope is retained')
 check('PRODUCT = "FM-1_26730001"' in read('tools/build.py'), 'CORD has its own update package identity')
-check('#define FELUCCA_VERSION "CoralFlower ' in read('firmware/src/coralflower.c'), 'Legacy firmware INFO family remains updater-compatible')
+check('#define FELUCCA_VERSION "CORD ' in read('firmware/src/coralflower.c') and
+      release_brand('1.0.3-dev.studio') == 'CORD' and release_brand('1.0.3') == 'CoralFlower',
+      'Development INFO uses CORD and release INFO retains the legacy family')
 for path in ['web/fm1backup.js', 'tools/fm1_install.py']:
     check('cord' in read(path) and '-backup-' in read(path), path + ': CORD backup filename is present')
     check(not re.search(r'(?:return |return f)["\`](?:ChaseFlower|CoralFlower) (?:settings|saved Song|working draft|recording|favorites|FX|Auto|loop|patterns|unsaved|pattern)', read(path)), path + ': owned backup labels use the public product name')

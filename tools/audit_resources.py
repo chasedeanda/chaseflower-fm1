@@ -211,7 +211,7 @@ def main():
                            env={**os.environ, 'PYTHON': os.sys.executable}, stdout=f, stderr=subprocess.STDOUT, check=True)
         if before != {x: sha(ROOT / x) for x in paths}:
             raise ValueError('Firmware/build source changed during build; capture discarded')
-        if args.release:build.VERSION='CoralFlower '+args.release.lower()
+        if args.release:build.VERSION=build.release_brand(args.release)+' '+args.release.lower()
         flags = capture(output)
         deps = shlex.split((output / 'dependencies.d').read_text().replace('\\\n', ' ').split(':', 1)[1])
         identity = {'revision': revision, 'source_status': git('status', '--porcelain'), 'compiler_flags': flags,

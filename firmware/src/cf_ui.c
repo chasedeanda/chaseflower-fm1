@@ -40,6 +40,23 @@ static uint8_t sq_live_part(void);              /* (cf_sequi.c) */
 static uint8_t sq_live_bass(void);              /* (cf_sequi.c) */
 static uint8_t sq_keys_arp(void);               /* (cf_sequi.c: the keys' ARP, a track's own while it is open) */
 static void cpa_ui_dirty(void);
+static int cgu_play_part(void);
+static int cgu_keys_arp(void);
+static void cf_key_config(void)
+{
+    int part=cgu_play_part();
+    cfp_cfg.studio_keys=part>=0;
+    cfp_cfg.cpart=part<0?sq_live_part():part==CF_PART_BASS?CF_PART_CHORD:(uint8_t)part;
+    cfp_cfg.bass_only=part<0?sq_live_bass():part==CF_PART_BASS;
+    cfp_cfg.arp_on=part<0?sq_keys_arp():cgu_keys_arp();
+}
+static void cf_keys_changed(void)
+{
+    fm1_irq_off();
+    cf_key_config();
+    fm1_irq_on();
+    cf_post(CFE_CONFIG,0,0,0);
+}
 static void cf_send_config(void)                 /* the chord settings -> the audio side */
 {
     cs.chord.algo = CF_ALG_TOP_LOCK;
@@ -63,7 +80,6 @@ static void cf_send_config(void)                 /* the chord settings -> the au
     cfp_cfg.retrig = cs.retrig;
     cfp_cfg.notes_in = cs.notes_in;
     cfp_cfg.in_ch = (uint8_t)(cs.in_ch > CF_INCH_ALL ? cs.in_ch - CF_INCH_ALL : 0u);
-    cfp_cfg.arp_on = sq_keys_arp();              /* (a track open: the keys play as it plays, its own ARP) */
     cfp_cfg.arp = cs.arp;
     cfp_cfg.bpm = cs.bpm;
     cfp_cfg.clock_in = cs.clock_in == 1u;
@@ -72,8 +88,7 @@ static void cf_send_config(void)                 /* the chord settings -> the au
     trk[CF_PART_CHORD].p[P_LEVEL] = cs.level_chord;
     trk[CF_PART_LAYER].p[P_LEVEL] = cs.level_layer;
     trk[CF_PART_DRUMS].p[P_LEVEL] = cs.level_drums;
-    cfp_cfg.cpart = sq_live_part();              /* (the keys play the LAYER's sound while it is open) */
-    cfp_cfg.bass_only = sq_live_bass();          /* (.. the bass alone in the frame's BASS) */
+    cf_key_config();
     fm1_irq_on();
     cf_fx_apply(&cs.fx);
     cf_post(CFE_CONFIG, 0, 0, 0);
@@ -137,7 +152,14 @@ static const char *const ALG_NAME[CF_NALGS] = {"Top", "Top Lock", "Side", "Side 
 #define CF_GLO_BROWSE 10u
 #define CF_GLO_RECORDINGS 11u
 #define CF_GLO_LEGACY 12u
-#define CF_GLO_NPAGES 13u
+#define CF_GLO_ENGINE_LOCKS 13u
+#define CF_GLO_NPAGES 14u
+static int cge_prepare(cpa_plan_t *,cf_chord_cfg_t,unsigned,unsigned);
+static int cge_snapshot(cf_song_t *);
+static void cge_direct(unsigned),cge_sound_poll(void),cge_poll(void),cge_init(void);
+static int cge_load(void);
+static void cge_key_edit(void);
+
 static const char *const CF_LEGACY_NAME[]={"Recordings","Metronome","Drum grid"};
 
 static const cf_progression_t *cf_progression_current(void)
@@ -176,7 +198,7 @@ static void kint(char *b, int v, const char *unit)
  * HV_FLOWER retains its legacy numeric identity for saved records; it now means the selected scene. */
 enum { HV_FLOWER, HV_CHORD, HV_KEYS, HV_DIAG, HV_N };
 #define HV_SHIFT 6u
-static uint8_t home_boot_main; /* session-only: scene-free boot starts at Progressions */
+static uint8_t home_boot_main; /* session-only: bypass the saved alternate HOME view */
 static uint32_t home_view(void)
 {
     if (home_boot_main) return HV_FLOWER;
@@ -220,6 +242,9 @@ static void cpa_ui_record(void);
 #include "cf_draft_ui.c"
 #include "cf_lab_ui.c"
 #include "cf_library_ui.c"
+#include "cf_engine_ui.c"
+#include "cf_studio_ui.c"
+#include "cf_workspace.c"
 #include "cf_variation.c"                         /* one-page variation and undo */
 
 /* SELECT on Progressions: apply the idea's setup, without touching sounds,
@@ -227,6 +252,10 @@ static void cpa_ui_record(void);
 static void cf_progression_choose(unsigned next)
 {
     next=cf_progression_pick(next,0);
+    if(cge_active() && next<cf_progression_count()){
+        if(!cge_choose_progression(next) && cge_notice)cf_message(cge_notice);
+        return;
+    }
     if (sqk.on || cf_sn.sq_rec != 0xFFu) {
         cf_message("Finish recording to browse");
         return;
@@ -296,6 +325,44 @@ static cf_form_t *sel_form(void)
 static int cf_home_bank_info(int k, cf_knob_t *o);
 static int cf_home_bank_turn(int k, int d);
 static void cf_acc_knob_info(int k,cf_knob_t *o);
+static void cf_arp_controls_info(int k,cf_knob_t *o,int timing,int studio)
+{
+    int strum=CF_ARP_STRUMMING(cs.arp.mode);
+    if(timing){
+        switch(k){
+        case 0: kfmt(o->name,12,"GATE"); kint(o->val,cs.arp.gate,"%"); o->dis=(uint8_t)strum; o->bar=cs.arp.gate*255/100; break;
+        case 1: kfmt(o->name,12,"SWING"); kint(o->val,cs.arp.swing,"%"); o->dis=(uint8_t)strum; o->bar=(cs.arp.swing-50)*255/25; break;
+        case 2: kfmt(o->name,12,"LATCH"); kfmt(o->val,14,cs.arp.latch?"On":"Off"); o->bar=cs.arp.latch?255:0; break;
+        default: kfmt(o->name,12,"GLIDE"); kint(o->val,cfe_glide_ms(trk[CF_PART_CHORD].p[P_GLIDE]),"ms");
+            o->bar=trk[CF_PART_CHORD].p[P_GLIDE]*255/127;
+        }
+        return;
+    }
+    switch(k){
+    case 0:
+        if(studio){
+            kfmt(o->name,12,"ARP FOR");
+            kfmt(o->val,14,CGU_ARP_NAMES[cgu_arp_mode()]);
+            o->bar=cgu_arp_mode()*255/CGU_ARP_BAND;
+            o->dis=cgs.focus!=CGS_CHORDS && cgs.focus!=CGS_LAYER;
+        } else {
+            kfmt(o->name,12,cge_selected()?(cu.page[SCR_ARP]==0?"PLAY IT":"LIVE KEYS"):"ON/OFF");
+            kfmt(o->val,14,cge_selected() && cu.page[SCR_ARP]==0?CGE_ARP_NAMES[cge.arp_request]:cu.arp_on?"On":"Off");
+        }
+        break;
+    case 1: kfmt(o->name,12,"MODE"); kfmt(o->val,14,CF_ARP_SHORT[cs.arp.mode % CF_ARP_NMODES]);
+        o->bar=cs.arp.mode*255/(CF_ARP_NMODES-1); break;
+    case 2: kfmt(o->name,12,"OCTAVE"); kint(o->val,cs.arp.oct,0); o->bar=(cs.arp.oct-1)*255/3; break;
+    default:
+        kfmt(o->name,12,"RATE");
+        if(strum){
+            kint(o->val,cs.arp.strum_ms," ms"); o->bar=(cs.arp.strum_ms-5)*255/245;
+        } else {
+            kfmt(o->val,14,CF_ARP_RATE[cs.arp.rate % CF_ARP_NRATES]); o->bar=cs.arp.rate*255/(CF_ARP_NRATES-1);
+        }
+    }
+}
+
 static void ui_knob_info(int k, cf_knob_t *o)
 {
     o->bar = -1;
@@ -413,30 +480,7 @@ static void ui_knob_info(int k, cf_knob_t *o)
             o->dis = 1;
         break;
     }
-    case SCR_ARP:
-        if (cu.page[SCR_ARP] == 0) {             /* Pattern: ON/OFF MODE OCTAVE RATE */
-            switch (k) {
-            case 0: kfmt(o->name, 12, "ON/OFF"); kfmt(o->val, 14, cu.arp_on ? "On" : "Off"); break;
-            case 1: kfmt(o->name, 12, "MODE"); kfmt(o->val, 14, CF_ARP_SHORT[cs.arp.mode % CF_ARP_NMODES]); break;
-            case 2: kfmt(o->name, 12, "OCTAVE"); kint(o->val, cs.arp.oct, 0); break;
-            default:
-                kfmt(o->name, 12, "RATE");
-                if (CF_ARP_STRUMMING(cs.arp.mode))   /* (Strum: the time between its notes) */
-                    kint(o->val, cs.arp.strum_ms, " ms");
-                else
-                    kfmt(o->val, 14, CF_ARP_RATE[cs.arp.rate % CF_ARP_NRATES]);
-                break;
-            }
-        } else {                                 /* Timing & hold: GATE SWING LATCH GLIDE */
-            int strum = CF_ARP_STRUMMING(cs.arp.mode);
-            switch (k) {
-            case 0: kfmt(o->name,12,"GATE");kint(o->val,cs.arp.gate,"%");o->dis=(uint8_t)strum;break;
-            case 1: kfmt(o->name,12,"SWING");kint(o->val,cs.arp.swing,"%");o->dis=(uint8_t)strum;break;
-            case 2: kfmt(o->name,12,"LATCH");kfmt(o->val,14,cs.arp.latch?"On":"Off");break;
-            default:kfmt(o->name,12,"GLIDE");kint(o->val,cfe_glide_ms(trk[CF_PART_CHORD].p[P_GLIDE]),"ms");break;
-            }
-        }
-        break;
+    case SCR_ARP: cf_arp_controls_info(k,o,cu.page[SCR_ARP]==1,0); break;
     case SCR_PEDIT: cfd_knob_info(k,o); break;
     case SCR_ACC: cf_acc_knob_info(k,o); break;
     case SCR_SEQ: metro_knob_info(k, o); break;
@@ -445,6 +489,10 @@ static void ui_knob_info(int k, cf_knob_t *o)
     case SCR_SQED: sq_knob_info(k, o); break;
     case SCR_GLO:
         switch (cu.page[SCR_GLO]) {
+        case CF_GLO_ENGINE_LOCKS: {
+            static const char *const names[]={"HARMONY","SOUND","GROOVE","FX"};
+            kfmt(o->name,12,names[k]);kfmt(o->val,14,cge.locks&(1u<<k)?"Locked":"Open");break;
+        }
         case CF_GLO_RECORDINGS:
             if (!k) { kfmt(o->name,12,"AUTO DEL"); kfmt(o->val,14,sq_pref.protect?"Off":"On"); }
             break;
@@ -581,8 +629,35 @@ static void cf_harmony_turn(int k, int d)
 #include "cf_home_banks.c"
 #include "cf_acc_ui.c"
 
+static void cf_arp_controls_turn(int k,int d,int timing,int studio)
+{
+    if (!timing) {
+        if (k == 0){
+            if(studio)cgu_arp_turn(d);
+            else if(cge_selected() && cu.page[SCR_ARP]==0)cge_play_it((unsigned)clampi(cge.arp_request+(d>0?1:-1),0,2));
+            else cu.arp_on = (uint8_t)(d > 0);
+        }
+        else if (k == 1)
+            cs.arp.mode = (uint8_t)clampi(cs.arp.mode + d, 0, CF_ARP_NMODES - 1);
+        else if (k == 2)
+            cs.arp.oct = (uint8_t)clampi(cs.arp.oct + d, 1, 4);
+        else if (CF_ARP_STRUMMING(cs.arp.mode))
+            cs.arp.strum_ms = (uint8_t)clampi(cs.arp.strum_ms + d * (cs.arp.strum_ms < 40 ? 1 : 5), 5, 250);
+        else
+            cs.arp.rate = (uint8_t)clampi(cs.arp.rate + d, 0, (int)CF_ARP_NRATES - 1);
+    } else {
+        if (k == 0 && !CF_ARP_STRUMMING(cs.arp.mode)) cs.arp.gate=(uint8_t)clampi(cs.arp.gate+d*5,20,100);
+        else if (k == 1 && !CF_ARP_STRUMMING(cs.arp.mode)) cs.arp.swing=(uint8_t)clampi(cs.arp.swing+d,50,75);
+        else if (k == 2) cs.arp.latch=(uint8_t)(d>0);
+        else if (k == 3) { cpa_glide(d); return; }
+    }
+    cf_send_config();
+}
+
 static void ui_knob_turn(int k, int d)
 {
+    if(d && cu.scr==SCR_HOME && cf_home_bank==CF_HB_CORE && (k==1 || k==2))cge.key_pin=1;
+    if(d && (cu.scr==SCR_ENV || cu.scr==SCR_EDIT || cu.scr==SCR_BASS))cge_direct(CGE_SOUND);
     if(cu.scr==SCR_LAB){cfl_turn(k,d);return;}
     cu.knob_ms[k] = cu.now ? cu.now : 1u;
     cu.knob_last = (uint8_t)k;
@@ -695,26 +770,7 @@ static void ui_knob_turn(int k, int d)
         }
         break;
     }
-    case SCR_ARP:
-        if (cu.page[SCR_ARP] == 0) {
-            if (k == 0)
-                cu.arp_on = (uint8_t)(d > 0);
-            else if (k == 1)
-                cs.arp.mode = (uint8_t)clampi(cs.arp.mode + d, 0, CF_ARP_NMODES - 1);
-            else if (k == 2)
-                cs.arp.oct = (uint8_t)clampi(cs.arp.oct + d, 1, 4);
-            else if (CF_ARP_STRUMMING(cs.arp.mode))
-                cs.arp.strum_ms = (uint8_t)clampi(cs.arp.strum_ms + d * (cs.arp.strum_ms < 40 ? 1 : 5), 5, 250);
-            else
-                cs.arp.rate = (uint8_t)clampi(cs.arp.rate + d, 0, (int)CF_ARP_NRATES - 1);
-        } else {
-            if (k == 0 && !CF_ARP_STRUMMING(cs.arp.mode)) cs.arp.gate=(uint8_t)clampi(cs.arp.gate+d*5,20,100);
-            else if (k == 1 && !CF_ARP_STRUMMING(cs.arp.mode)) cs.arp.swing=(uint8_t)clampi(cs.arp.swing+d,50,75);
-            else if (k == 2) cs.arp.latch=(uint8_t)(d>0);
-            else if (k == 3) { cpa_glide(d); return; }
-        }
-        cf_send_config();
-        break;
+    case SCR_ARP: cf_arp_controls_turn(k,d,cu.page[SCR_ARP]==1,0); break;
     case SCR_PEDIT: cfd_turn(k,d); break;
     case SCR_SONGS: csl_turn(k,d); break;
     case SCR_ACC: cf_acc_knob_turn(k,d); break;
@@ -724,6 +780,7 @@ static void ui_knob_turn(int k, int d)
     case SCR_SQED: sq_knob_turn(k, d); break;
     case SCR_GLO:
         switch (cu.page[SCR_GLO]) {
+        case CF_GLO_ENGINE_LOCKS: if(d && (d&1))cge.locks^=1u<<k; break;
         case CF_GLO_RECORDINGS:
             if (!k && d) { sq_pref.protect=d<0; sq_pref_dirty=1;
                 cf_message(sq_pref.protect?"Full: new takes are refused":"New takes replace the oldest"); }
@@ -873,6 +930,15 @@ static void cv_turned(int d)
 
 static void ui_select(int d)                     /* SELECT: the bass sound, or a screen's page */
 {
+    if(cgs_home()){cgu_select(d);return;}
+    if(home_stage() && cf_home_bank==CF_HB_FLOW){
+        if(cge_pins_open)cge_pin_move(d);
+        return;
+    }
+    if(home_stage() && (cge_selected() || (cf_home_bank==CF_HB_ENGINE && !cpa_running()))){
+        cge_preview_turn(d);
+        return;
+    }
     if(cu.scr==SCR_LAB){cfl_select(d);return;}
     cf_nav_dir=d<0?-1:1;
     if(cu.scr==SCR_SONGS){csl_select(d);return;}
@@ -941,6 +1007,7 @@ static void ui_select(int d)                     /* SELECT: the bass sound, or a
         cu.sel_btn = (uint8_t)wrapi(cu.sel_btn + d, nb);
         return;
     }
+    if(d)cge_direct(CGE_SOUND);
     if (!cf_snd_step(CF_PART_BASS, d)) return;
     if (cs.env_link)
         cf_env_follow();
@@ -949,6 +1016,15 @@ static void ui_select(int d)                     /* SELECT: the bass sound, or a
 }
 static void ui_presets(int d)                    /* PRESETS: the chord sound (a sequencer's track open: its sound) */
 {
+    if(cgs_home()){
+        if(cgu.mixer || (cgu.tab==CGU_STUDIO && cgs.zoom && !cgu.band_panel && cgs.focus==CGS_DRUMS))cgu_perform_turn(d);
+        else if(cgu.tab==CGU_SOUND){
+            if(cgs.zoom && cgu.sound_page==CGU_PRESETS)cfx_select(d);
+            else cgu_sound_step(cgs.focus,d);
+        }
+        else if(cgu.tab==CGU_STUDIO)cgs_genre_turn(d);
+        return;
+    }
     if (dm_holding()) {                          /* (EDIT held in DRUMS: a rhythm for them, cf_dmui.c) */
         dm_hold_turn(d);
         return;
@@ -957,6 +1033,7 @@ static void ui_presets(int d)                    /* PRESETS: the chord sound (a 
         sq_presets(d);                           /* (the pattern's own sound for the frame's track: 0.5) */
         return;
     }
+    if(d)cge_direct(CGE_SOUND);
     if (!cf_snd_step(CF_PART_CHORD, d)) return;
     if (cs.env_link)                             /* linked: the bass takes the new sound's envelope */
         cf_env_follow();
@@ -966,8 +1043,10 @@ static void ui_presets(int d)                    /* PRESETS: the chord sound (a 
 static void ui_algo(int d)                       /* ALGORITHM: scene, effect, or workspace tab */
 {
 #if !CF_SCENES
+    if(cgs_home()){cgu_focus(d);return;}
     if(home_stage()) {
         if(!d)return;
+        if(cge_pins_open){cge_pin_move(d);return;}
         cf_nav_dir=d<0?-1:1;
         cf_home_bank=(uint8_t)wrapi((int)cf_home_bank+d%CF_HB_N,CF_HB_N);
         cf_home_bank_ms=cf_motion?(cu.now?cu.now:1u):0;
@@ -976,7 +1055,7 @@ static void ui_algo(int d)                       /* ALGORITHM: scene, effect, or
     }
 #endif
     if(cu.scr==SCR_LAB){cfl_tab(d);return;}
-    if(cu.scr==SCR_ARP){cu.page[SCR_ARP]=(uint8_t)wrapi(cu.page[SCR_ARP]+d,2);return;}
+    if(cu.scr==SCR_ARP){cu.page[SCR_ARP]=(uint8_t)wrapi(cu.page[SCR_ARP]+d,cge_selected()?3:2);return;}
     cf_nav_dir=d<0?-1:1;
     if(cu.scr==SCR_SONGS)return;
     if(cu.scr==SCR_PEDIT){if(!cfdu.conflict&&!cfdu.confirm)cu.page[SCR_PEDIT]=wrapi(cu.page[SCR_PEDIT]+d,CFD_NTAB);return;}
@@ -1024,11 +1103,23 @@ static void ui_ctx_from_track(uint32_t trk)
 static void ui_open(uint32_t scr)
 {
     uint32_t was = cu.scr;
+    int was_studio=cgu_play_part()>=0;
     if(was==SCR_LAB)cla_request(0);
     if (sq_screen(was) && !sq_screen(scr) && scr != SCR_SEQ)
         ui_ctx_from_track(squ.trk);
     cu.scr = (uint8_t)(scr == was && scr != SCR_HOME ? SCR_HOME : scr);
-    if (cu.scr == SCR_HOME && was != SCR_HOME) { cf_home_bank = CF_HB_CORE; cf_home_bank_ms = 0; }
+    if(cu.scr!=SCR_HOME){cge_pins_open=0;cge_preview=255;}
+    if (cu.scr == SCR_HOME && was != SCR_HOME) {
+        int from_jam=cf_home_bank==CF_HB_ENGINE || cf_home_bank==CF_HB_FLOW;
+        if(CF_STUDIO && !CF_SCENES){
+            cf_home_bank=CF_HB_ENGINE;
+            home_boot_main=1;
+            cf_scene_set(CF_SCENE_PROGRESSIONS);
+        } else cf_home_bank=from_jam && (was==SCR_ARP || was==SCR_LAB)?CF_HB_ENGINE:CF_HB_CORE;
+        cf_home_bank_ms=0;
+    }
+    if(cu.scr!=SCR_HOME && cgu.mixer)cgu_mixer_open(0);
+    if(cu.scr!=SCR_FX)cgu.fx_return=0;
     if(cu.scr==SCR_ACC && was!=SCR_ACC)cf_acc_page_ms=0;
     if (cu.scr == SCR_SEQ && was != SCR_SEQ)
         dm_seq_to = 0;                           /* (the carousel starts on the SEQUENCER: SEQ twice opens it, as before) */
@@ -1040,6 +1131,7 @@ static void ui_open(uint32_t scr)
         cu.scr == SCR_ENV || was == SCR_SAVE || cu.scr == SCR_SAVE)   /* (the LAYER open or left: where the keys play,
                                                   * cf_send_config) */
         cf_send_config();
+    else if(was_studio || cgu_play_part()>=0)cf_keys_changed();
     squ.help = squ.help_hold = 0;
     if (cu.scr != was) {                         /* a hold begun on one screen does nothing on the next: OCT+ held in a
                                                   * track and let go on the SEQUENCER copied a pattern, SEL held cleared
@@ -1129,6 +1221,76 @@ static void ui_button(uint32_t b)
         if(b==B_PLAY){cla_request(0);cpa_ui_play();return;}
         if(b==B_SAVE){cla_request(0);csl_open();return;}
         cla_request(0);
+    }
+    if(cgs_home()){
+        if(b==B_GLO || (cgu.mixer && b==B_HOME)){
+            cgu_mixer_open(!cgu.mixer);return;
+        }
+        if(cgu.mixer){
+            unsigned bit=1u<<cgs.focus;
+            if(b==B_SCL){cgs.solo^=(uint8_t)bit;return;}
+            if(b==B_EDIT){cgs.muted^=(uint8_t)bit;return;}
+            if(b==B_SAVE){cgu_mixer_open(0);cvr_context_from_screen();ui_open(SCR_GLO);return;}
+            if(b==B_REC)cgu_mixer_open(0);
+            else if(b!=B_PLAY)return;
+        }
+        if(!cgu.mixer && b==B_SEQ && cgu.tab==CGU_STUDIO){
+            cgu_studio_page_turn(1);return;
+        }
+        if(b==B_SAVE && cgu.tab==CGU_RECORD && !cgs.zoom){
+            if(sqk.on || cf_sn.sq_on || cf_sn.sq_rec!=255)cf_message("Stop the take before clearing");
+            else if(sq_has(cgu.take_slot) || (sq_unavailable&(1u<<cgu.take_slot)))cgu.clear_down=cu.now?cu.now:1u;
+            return;
+        }
+        if(!cgu.mixer && b==B_ARP){
+            cgu_open_arp();return;
+        }
+        if(!cgu.mixer && b==B_SEQ && cgu.tab==CGU_SOUND){
+            if(cgs.zoom)cgu_sound_page_turn(1);
+            else cgu.all_sounds^=1u;
+            return;
+        }
+        if(!cgu.mixer && (cgu.tab==CGU_STUDIO || cgu.tab==CGU_SOUND)){
+            if(b==B_FX && cgs.zoom && cgu.tab==CGU_SOUND && cgu.sound_page==CGU_PRESETS){
+                cfx_sync();fxpu.mode=FXP_EDIT;cfxu.view=CFX_INDIVIDUAL;
+                cu.fx_pos=0;
+                for(unsigned i=0;i<CFX_N;i++)if(cs.fx.order[i]==CFX_FILTER)cu.fx_pos=(uint8_t)i;
+                cgu.fx_return=1;ui_open(SCR_FX);return;
+            }
+            if(b==B_FX || (b==B_ENV && cgs.zoom)){
+                unsigned page=b==B_ENV?(cgu.sound_page==CGU_ENVELOPE?CGU_TONE:CGU_ENVELOPE):
+                    (!cgs.zoom || cgu.sound_page==CGU_SENDS?CGU_PRESETS:CGU_SENDS);
+                cgu.band_panel=0;cgu.tab=CGU_SOUND;cgu_set_zoom(1);cgu_sound_page(page);
+                return;
+            }
+            if(b==B_SAVE && cgs.zoom && cgu.tab==CGU_SOUND && cgu.sound_page==CGU_PRESETS){
+                cgu.fx_return=1;fxp_manage_open();ui_open(SCR_FX);return;
+            }
+            if(b==B_LFO && cgs.zoom && !cgu.band_panel && cgs.focus!=CGS_DRUMS){
+                cu.edit_part=cgs.focus;ui_open(SCR_EDIT);return;
+            }
+        }
+        if(b==B_SCL){
+            if(cgu.tab==CGU_SOUND && cgs.zoom && cgu.sound_page==CGU_PRESETS)cfx_recall();
+            else cgu_set_zoom(!cgs.zoom);
+            return;
+        }
+        if(b==B_HOME){cgu_home();return;}
+        if(b==B_EDIT){cgu_edit();return;}
+        if(b==B_REC && cgu.tab!=CGU_RECORD)cgu_tab_turn(CGU_RECORD-cgu.tab);
+    }
+    if(cgs_home() && b==B_PLAY && !cpa_running() && !cpa_commanded && !sqp.on && !sqk.on){
+        cgs_new_take(1);
+        return;
+    }
+    if(b==B_SCL && home_stage() && cf_home_bank==CF_HB_FLOW){cge_pin_select();return;}
+    if(b==B_SCL && home_stage() && (cge_selected() || cf_home_bank==CF_HB_ENGINE) && cge_preview_apply())return;
+    if(b==B_SCL && home_stage() && cf_home_bank==CF_HB_ENGINE){cfl_open();return;}
+    if(b==B_PLAY && home_stage() && (cf_home_bank==CF_HB_ENGINE || cf_home_bank==CF_HB_FLOW) &&
+       !cpa_running() && !cpa_commanded && !sqp.on && !sqk.on){
+        cge_notice=0;
+        if((cge_selected() && cge.vibe_request==cge.current.vibe) || cge_load())cpa_ui_play();
+        return;
     }
     if(b==B_SCL && cpb_home()){cfl_open();return;}
     if(b==B_SCL && cu.scr==SCR_GLO && cu.page[SCR_GLO]==CF_GLO_HARMONY){ui_open(SCR_SEL);return;}
@@ -1235,15 +1397,26 @@ static void ui_button(uint32_t b)
     }
     switch (b) {
     case B_HOME:
+        if(CF_STUDIO && !CF_SCENES){
+            ui_open(SCR_HOME);
+            home_boot_main=1;
+            cf_home_bank=CF_HB_ENGINE;
+            cf_scene_set(CF_SCENE_PROGRESSIONS);
+            cgu_home();
+            cf_keys_changed();
+            break;
+        }
         if (home_stage()) {
+            if(cge_pins_open){cge_pins_open=0;break;}
             cf_nav_dir=1;
             cf_home_bank = (uint8_t)((cf_home_bank + 1u) % CF_HB_N);
             cf_home_bank_ms = cf_motion ? (cu.now ? cu.now : 1u) : 0u;
             if (cu.pop == POP_SOUND_CHORD || cu.pop == POP_SOUND_BASS) cu.pop = POP_NONE;
         } else {
+            if(cu.scr==SCR_HOME)cf_home_bank=CF_HB_CORE;
             ui_open(SCR_HOME); home_boot_main = 1;
             cf_scene_set(CF_SCENE_PROGRESSIONS);
-            cf_home_bank = CF_HB_CORE; cf_home_bank_ms = 0;
+            cf_home_bank_ms = 0;
         }
         break;
     case B_SCL:                                  /* (the drum machine: SEL takes the rhythm's own KIT and SWING back) */
@@ -1264,7 +1437,9 @@ static void ui_button(uint32_t b)
         else if (cu.scr == SCR_FX) ui_open(SCR_HOME);
         else { cfx_sync(); fxpu.mode = FXP_BROWSE; cfxu.view = CFX_MACROS; ui_open(SCR_FX); }
         break;
-    case B_ARP: ui_open(SCR_ARP); break;         /* (its ON/OFF is K1 there, as an effect's: the owner's) */
+    case B_ARP:
+        if(home_stage() && (cf_home_bank==CF_HB_ENGINE || cf_home_bank==CF_HB_FLOW))cu.page[SCR_ARP]=0;
+        ui_open(SCR_ARP); break;
     case B_SEQ:                                  /* METRONOME, again the SEQUENCER (or the drum machine: the METRONOME's
                                                   * carousel), again HOME */
         if(cu.scr==SCR_ACC) {ui_open(SCR_HOME);home_boot_main=1;}
@@ -1513,6 +1688,7 @@ static void ui_note_key_aged(int key, int down, int age_ms);
 /* HOME's PRESETS / SELECT changed the sound you hear (0.5): the current pattern's own, if it has one, else HOME's */
 static void ui_snd_heard(uint32_t part)
 {
+    if(part<2)cge_direct(CGE_SOUND);
     uint32_t cur = sq_cur_pat();
     if (cur < SQ_NPAT && cfps.r[cur][part].own) {
         cfps_set(cur, part, &cf_snd[part]);
@@ -1531,9 +1707,18 @@ static void ui_note_key(int key, int down) { ui_note_key_aged(key, down, -1); }
 static void ui_note_key_aged(int key, int down, int age_ms)   /* age_ms: -1 the scan's (CF_KEY_T0) */
 {
     int idx;
+    if(cgu_mixer_key((unsigned)key,down))return;
     if (sq_key(key, down))                       /* (DRUMS: the keys pick the drum and set the steps) */
         return;
-    if (down && key >= 0 && key < CF_NKEYS && home_stage() && cf_home_bank == CF_HB_LEARN)
+    if(down && key>=0 && key<CF_NKEYS && cgu_play_part()==CGS_DRUMS){
+        int lane=0;
+        for(int i=0;i<key;i++)lane+=cf_key_is_upper(i)==cf_key_is_upper(key);
+        sq_eaten|=1u<<key;
+        cf_post(CFE_SEQ,2,(unsigned)lane%SQ_NLANE,(int)(cgu_kit()|100u<<8));
+        return;
+    }
+    if (down && key >= 0 && key < CF_NKEYS && home_stage() &&
+        (cf_home_bank==CF_HB_LEARN || (cgs_home() && cgu.tab==CGU_HELP && cgu.topic==CGU_HARMONY)))
         cf_learn_focus = (uint8_t)key; /* observe the normal play path; never consume the key */
     if (cu.scr == SCR_EDIT && cf_key_is_upper(key)) {   /* EDIT: OP1..OP6 PIT GLO pick, MONO / POLY: bass / chords */
         int u = 0, k;
@@ -1614,11 +1799,7 @@ static void cf_xq_drain(void)
                 cf_post(CFE_ROOT, n, age <= 250u ? age : 0u, 1);
                 continue;
             }
-            for (k = n; k < 53u; k += 12u)
-                ;
-            while (k > 79u)
-                k -= 12u;
-            k -= 53u;
+            k = cf_panel_pitch_key(n);
             cu.xnote[n] = (uint8_t)(k + 1u);
             if (cu.xcnt[k]++ == 0u) {
                 cu.xkeys |= 1u << k;
@@ -1680,6 +1861,7 @@ static void cf_ui_input(void)
     sq_edit_poll();
     sq_save_poll();
     sq_clear_poll();
+    cgu_clear_poll();
     dm_poll();                                   /* (the drum machine: what was chosen last, its settings kept) */
     for (i = 0; i < 14u; i++)
         if ((pr >> i) & 1u) {
@@ -1948,6 +2130,39 @@ static int sq_key_led(uint32_t k, uint8_t *lit, uint8_t *mid, uint8_t *dim, uint
     return 0;
 }
 
+/* Fade across the panel's four PWM brightness levels. The foreground owns
+ * these envelopes; the audio snapshot contributes only held notes and hits. */
+static struct {
+    uint32_t at;
+    uint8_t part, level[CF_NKEYS];
+} cgu_key_fade;
+
+static void cgu_led_update(int part)
+{
+    if(part<0){cgu_key_fade.part=0;return;}
+    unsigned dt=cu.now-cgu_key_fade.at;
+    cgu_key_fade.at=cu.now;
+    if(cgu_key_fade.part!=part+1){
+        cgu_key_fade.part=(uint8_t)(part+1);
+        memset(cgu_key_fade.level,0,sizeof cgu_key_fade.level);
+        dt=16;
+    }
+    if(dt>255u)dt=255u;
+    unsigned lane=0;
+    for(unsigned k=0;k<CF_NKEYS;k++){
+        unsigned on=(cf_sn.studio_keys>>k)&1u;
+        if(part==CGS_DRUMS){
+            on=0;
+            if(cf_key_is_upper(k) && lane<SQ_NLANE){
+                unsigned hit=cf_sn.sq_lane_t[lane++];
+                on=hit && cf_sn.now_ms-hit<80u;
+            }
+        }
+        int step=on?(int)dt*3:-(int)dt;
+        cgu_key_fade.level[k]=(uint8_t)clampi(cgu_key_fade.level[k]+step,0,255);
+    }
+}
+
 /* PLAY has a second physical emitter, outside the button's orange matrix cell. */
 #ifndef LED_PLAY_GREEN
 #define LED_PLAY_GREEN ((8u << 3) | 1u)
@@ -2013,15 +2228,31 @@ static void cf_leds(void)
     int playing=cf_sn.running && !(cf_sn.ac_on && (cf_sn.ac_paused || waiting));
     if(playing)lit[LED_PLAY_GREEN>>3]|=(uint8_t)(1u<<(LED_PLAY_GREEN&7u));
     else cf_led(waiting && !blink ? faint : lit,panel.btn[B_PLAY],1);
-    if (cu.arp_on && !sq && !rm)                        /* the arpeggiator plays: ARP lit wherever it opens (not on the
+    if (cgs_home() && cgu.mixer)cf_led(lit,panel.btn[B_GLO],1);
+    if ((cgu_play_part()>=0 ? cgu_arp_mode()!=CGU_ARP_OFF : cu.arp_on) && !sq && !rm)                        /* the arpeggiator plays: ARP lit wherever it opens (not on the
                                                   * sequencer: it does nothing there) */
         cf_led(lit, panel.btn[B_ARP], 1);
     cf_led(cs.chord.octave < 0 ? (cs.chord.octave < -1 ? lit : mid) : faint, panel.btn[B_OCTDN], 1);
     cf_led(cs.chord.octave > 0 ? (cs.chord.octave > 1 ? lit : mid) : faint, panel.btn[B_OCTUP], 1);
     /* keys: held and Auto chord tones lit; effective chord buttons lit, the others faint;
      * the chord's root mid otherwise; the scale dim */
+    int studio=cgu_play_part();
+    cgu_led_update(studio);
+    unsigned pads=0;
     for (k = 0; k < CF_NKEYS; k++) {
         int idx, role = cf_key_role(cs.chord.algo, (int)k, &idx), id = (int)(14u + k);
+        if(cgu.mixer && cgs_home() && cf_key_is_upper(k)){
+            if(pads++<8u)cf_led(cgu.pad_down&(1u<<k)?lit:mid,(uint32_t)id,1);
+            continue;
+        }
+        if(studio>=0){
+            unsigned level=cgu_key_fade.level[k];
+            if(level)cf_led(level>=192u?lit:level>=112u?mid:level>=48u?dim:faint,(uint32_t)id,1);
+            else if(studio!=CGS_DRUMS && role==CF_ROLE_BUTTON &&
+                    (cf_is_off(&cs.chord,idx)?out->hold:(out->buttons>>idx)&1u))
+                cf_led(dim,(uint32_t)id,1);
+            continue;
+        }
         if (sq_key_led(k, lit, mid, dim, faint))
             continue;
         int next_root=role==CF_ROLE_ROOT && ((guide_next>>(cf_key_root_note(&cs.chord,(int)k)%12))&1u);
@@ -2200,7 +2431,14 @@ static void cf_edited(uint32_t part)
 /* ------------------------------------------------------------------ init --- */
 static void cf_ui_init(void)
 {
-    cf_sound_browse_defaults();
+    cf_sound_browse_defaults();cge_init();
+    if(CF_STUDIO){
+        cgs_init((uint32_t)fm1_ticks());
+        cgu_home();
+        cgu.topic=0;
+        cgu.zoom_ms=0;
+        cgu.action=0;
+    }
     cpg.idea = CF_P_NONE; cpg.repeat_off=0; cpg.click_generation=cpa.click_generation;
     cpb_load();
     if (!cfs_loaded)                             /* (cf_splash read the settings record: they stay) */
@@ -2209,7 +2447,7 @@ static void cf_ui_init(void)
     csl_load();
     cvr_init();
     home_boot_main = !CF_SCENES;
-    cf_home_bank = CF_HB_CORE; cf_home_bank_ms = 0;
+    cf_home_bank = CF_SCENES?CF_HB_CORE:CF_HB_ENGINE; cf_home_bank_ms = 0;
     cu.scr = SCR_HOME;
     cu.sel_btn = sel_first();
     cf_led_init();
@@ -2264,6 +2502,7 @@ static void cf_ui_init(void)
     if (!flo.nseg)
         flora_init(&flo, 0xC0A1F10Eu, FLW / 2, FLH + 1);   /* (the stem comes up from the bottom edge) */
 #else
+    if(CF_STUDIO && !cr_safe)cgs_prepare_start();
     /* Start the visible intro after sound/store loading, not before hardware initialization. */
     cf_cord_begin();
     cf_boot_pending = cs.boot_sound && !cr_safe;
@@ -2290,7 +2529,8 @@ static void cf_ui_frame(void)                    /* ui_leds: the snapshot, the p
     cu.frames++;
     cf_diag_poll(now);
     cf_snapshot();
-    cpa_ui_poll();
+    cpa_ui_poll();cge_poll();
+    if(CF_STUDIO)cgs_poll();
     cfd_ui_poll();
     cfl_poll();
     sq_tempo_poll();

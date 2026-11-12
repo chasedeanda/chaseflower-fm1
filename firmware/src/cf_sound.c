@@ -73,6 +73,7 @@ static int cf_fac_part(uint32_t e, uint32_t f)   /* factory preset f of engine e
 #if CHASE_LIBRARY
     if (e == ENGI_FM6 && f >= CHASE_FM_BASE) return 0;
 #if FELUCCA_VA
+    if (e == ENGI_VA && f >= STUDIO_VA_BASE) return VA_PRESETS[f].mono;
     if (e == ENGI_VA && f >= SIG8_VA_BASE) return 0;
     if (e == ENGI_VA && f >= CHASE_VA_BASE) return CHASE_VA_BASS[f - CHASE_VA_BASE];
 #endif
@@ -96,9 +97,10 @@ static int cf_ent_part(uint32_t e, uint32_t pos)
 }
 
 /* the lists, rebuilt when the user's sounds change (up_gen): (engine, pool position) per place */
-#define CF_LIST_MAX 224u
+#define CF_LIST_MAX 256u
+enum { CF_STUDIO_SOUND_PASS = 11 };
 typedef struct { uint8_t e, pos; } cf_ent_t;
-static struct { uint32_t gen; uint8_t ok; uint16_t n[2]; cf_ent_t at[2][CF_LIST_MAX]; } cf_lst;
+static struct { uint32_t gen; uint8_t ok; uint16_t n[2], before_studio[2]; cf_ent_t at[2][CF_LIST_MAX]; } cf_lst;
 /* The old row first, across all engines; all additions and restored hidden presets follow.
  * This keeps chase1/chase2's saved global indices without a settings-format migration. */
 static int cf_ent_extra(uint32_t e, uint32_t pos)
@@ -107,7 +109,10 @@ static int cf_ent_extra(uint32_t e, uint32_t pos)
     if (en.fk == PF_NONE) return 0;
 #if CHASE_LIBRARY
     if (e == ENGI_FM6 && en.fk >= SIG8_FM_BASE) return 2u + SIG8_FM_BANK[en.fk - SIG8_FM_BASE];
+#if FELUCCA_VA
+    if (e == ENGI_VA && en.fk >= STUDIO_VA_BASE) return CF_STUDIO_SOUND_PASS;
     if (e == ENGI_VA && en.fk >= SIG8_VA_BASE) return 2u + SIG8_VA_BANK[en.fk - SIG8_VA_BASE];
+#endif
     /* Append later FM voices after the original FM and VA additions: saved global indices stay put. */
     if (e == ENGI_FM6 && en.fk >= CHASE_FM_BASE + CHASE_FM_LEGACY_N) return 2;
 #endif
@@ -129,6 +134,7 @@ static uint32_t cf_entry_bank(uint32_t e, uint32_t pos)
         if (e == ENGI_FM6 && en.fk >= SIG8_FM_BASE) return SIG8_FM_BANK[en.fk - SIG8_FM_BASE];
         if (e == ENGI_FM6 && en.fk >= CHASE_FM_BASE) return CHASE_FM_BANK[en.fk - CHASE_FM_BASE];
 #if FELUCCA_VA
+        if (e == ENGI_VA && en.fk >= STUDIO_VA_BASE) return 9;
         if (e == ENGI_VA && en.fk >= SIG8_VA_BASE) return SIG8_VA_BANK[en.fk - SIG8_VA_BASE];
         if (e == ENGI_VA && en.fk >= CHASE_VA_BASE) return CHASE_VA_BANK[en.fk - CHASE_VA_BASE];
 #endif
@@ -171,18 +177,21 @@ static void cf_list_build(void)
     cf_lst.ok = 1;
     cf_lst.gen = up_gen;
     cf_lst.n[0] = cf_lst.n[1] = 0;
-    for (pass = 0; pass < 11u; pass++)
-    for (i = 0; i < CF_NENG; i++) {
-        uint32_t e = CF_ENGINES[i], np = pool_count(e);
-        for (pos = 0; pos < np && pos < 256u; pos++) {
-            int w = cf_ent_part(e, pos);
-            if ((uint32_t)cf_ent_extra(e, pos) != pass) continue;
-            for (p = 0; p < 2u; p++)
-                if ((w == 2 || w == (int)p) && cf_lst.n[p] < CF_LIST_MAX) {
-                    cf_lst.at[p][cf_lst.n[p]].e = (uint8_t)e;
-                    cf_lst.at[p][cf_lst.n[p]].pos = (uint8_t)pos;
-                    cf_lst.n[p]++;
-                }
+    for (pass = 0; pass <= CF_STUDIO_SOUND_PASS; pass++) {
+        if (pass == CF_STUDIO_SOUND_PASS)
+            memcpy(cf_lst.before_studio, cf_lst.n, sizeof cf_lst.n);
+        for (i = 0; i < CF_NENG; i++) {
+            uint32_t e = CF_ENGINES[i], np = pool_count(e);
+            for (pos = 0; pos < np && pos < 256u; pos++) {
+                int w = cf_ent_part(e, pos);
+                if ((uint32_t)cf_ent_extra(e, pos) != pass) continue;
+                for (p = 0; p < 2u; p++)
+                    if ((w == 2 || w == (int)p) && cf_lst.n[p] < CF_LIST_MAX) {
+                        cf_lst.at[p][cf_lst.n[p]].e = (uint8_t)e;
+                        cf_lst.at[p][cf_lst.n[p]].pos = (uint8_t)pos;
+                        cf_lst.n[p]++;
+                    }
+            }
         }
     }
 }
@@ -635,15 +644,20 @@ static void cf_snd_load_index(uint32_t part, uint32_t idx)
     cf_pool_load(part, e, pos);
 }
 /* Signature 8 leads browsing; canonical pool/global positions stay append-only for storage. */
+static uint32_t cf_snd_signature_span(uint32_t part)
+{
+    cf_list_build();
+    return cf_lst.before_studio[part & 1u];
+}
 static uint32_t cf_snd_browse_index(uint32_t part, uint32_t at)
 {
-    uint32_t n = cf_snd_count(part), lead = (part & 1u) ? 0u : SIG8_FM_N + SIG8_VA_N;
-    return n ? (at + n - lead) % n : 0;
+    uint32_t n=cf_snd_signature_span(part), lead=SIG8_FM_N+SIG8_VA_N;
+    return !(part&1u) && at<n ? (at+n-lead)%n : at;
 }
 static uint32_t cf_snd_browse_rank(uint32_t part, uint32_t index)
 {
-    uint32_t n = cf_snd_count(part), lead = (part & 1u) ? 0u : SIG8_FM_N + SIG8_VA_N;
-    return n ? (index + lead) % n : 0;
+    uint32_t n=cf_snd_signature_span(part), lead=SIG8_FM_N+SIG8_VA_N;
+    return !(part&1u) && index<n ? (index+lead)%n : index;
 }
 static int cf_snd_step(uint32_t part, int32_t d)
 {

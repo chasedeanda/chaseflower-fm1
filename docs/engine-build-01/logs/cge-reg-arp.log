@@ -1,0 +1,7 @@
+boot: normal reset power-on failed 0 pending 1 counted 0 prev_stage 0 (none)
+ARP roll: 125216 checks, 0 failures
+ARP roll: 2 checks, 0 failures
+ARP roll: 2 checks, 0 failures
+ARP roll: 2 checks, 0 failures
+ARP roll: 2 checks, 0 failures
+PASS: all 13 modes, native ARP roll, latch/release, progression takeover and identical physical/USB/MIDI streams while drawing at both capture rates.

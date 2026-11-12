@@ -27,6 +27,7 @@ static void fxp_recall(int announce)
         if (announce) cf_message("Empty FX slot");
         return;
     }
+    cge_direct(CGE_FX);
     fxpu.prev = cs.fx; fxpu.previous = 1; fxpu.prev_bypass = cfx_bypass;
     cs.fx = p->fx; cf_fx_recall(&cs.fx);
     cf_fx_bypass(0);
@@ -45,6 +46,7 @@ static void fxp_previous(void)
     cf_fx_t tmp;
     uint8_t bypass;
     if (!fxpu.previous) { cf_message("No previous FX chain"); return; }
+    cge_direct(CGE_FX);
     tmp = cs.fx; bypass = cfx_bypass; cs.fx = fxpu.prev;
     cf_fx_recall(&cs.fx); cf_fx_bypass(fxpu.prev_bypass);
     fxpu.prev = tmp; fxpu.prev_bypass = bypass;
@@ -52,6 +54,7 @@ static void fxp_previous(void)
 }
 static void fxp_clear(void)
 {
+    cge_direct(CGE_FX);
     if (cs.fx.on) {
         fxpu.prev = cs.fx; fxpu.previous = 1; fxpu.prev_bypass = cfx_bypass;
         cs.fx.on = 0;

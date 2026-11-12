@@ -2,8 +2,8 @@
 # SPDX-License-Identifier: GPL-3.0-only
 # Copyright (C) 2026 Leo Kuroshita (@kurogedelic), Hügelton Instruments; ChoralRoot FM-1 contributors; CoralFlower
 # contributors
-# Build CoralFlower (after ChoralRoot FM-1's build.sh): build/coralflower.fwsc (identity FM-1_26730001).
-#   ./build.sh [--release X.Y]      (a release: build/coralflower-X.Y.fwsc, version "CoralFlower X.Y")
+# Build CORD (after ChoralRoot FM-1's build.sh): build/cord.fwsc (identity FM-1_26730001).
+#   ./build.sh [--release X.Y]      (development versions: build/cord-X.Y-dev.fwsc, version "CORD X.Y-dev")
 #   JIELI_TOOLCHAIN  JieLi Linux toolchain (default: ~/.jieli/toolchain; tools/get_toolchain.sh fetches it)
 #   AC79_SDK         JieLi AC79 SDK checkout (default: ~/fw-AC79_AIoT_SDK if present, else tools/sdk: the three files, vendored)
 # The toolchain is Linux x86-64 only: the release workflow (.github/workflows/release.yml) builds on ubuntu.

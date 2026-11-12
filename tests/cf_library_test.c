@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-3.0-only */
 #include <stdio.h>
+#define CF_STUDIO 0
 #include "../tools/emu/emu_fw.c"
 static unsigned checks,failures;
 #define CHECK(x) do{checks++;if(!(x)){failures++;if(failures<30)printf("FAIL %d: %s\n",__LINE__,#x);}}while(0)
@@ -32,7 +33,7 @@ static void library(void)
     CHECK(cs.bpm==137 && cs.level_chord==87 && cs.level_drums==71 && cs.bass_level==79);
     CHECK(cs.fx.v[CFX_REVERB][1]==31 && cs.accent==skin && cs.clock_in==2);
     CHECK(trk[0].p[P_E0]==31 && cfk_edited(0) && cfwd.song.slot[0].quality==CF_SONG_MINOR);
-    CHECK(!memcmp(&original,&cfwd.song,sizeof original) && cpg.idea==CF_P_DRAFT && cu.scr==SCR_HOME);
+    CHECK(!memcmp(&original,&cfwd.song,sizeof original) && cpg.idea==CF_P_DRAFT && cu.scr==SCR_HOME && cf_home_bank==CF_HB_CORE);
     /* Recall selects editable semantic playback, never the fixed-note recorder. */
     cs.clock_in=0;ui_button(B_PLAY);blocks(2);CHECK(cpa.on && cpa.plan.idea==CF_P_DRAFT);rest();
     /* Dirty working draft and live HOLD survive failed recall unchanged. */

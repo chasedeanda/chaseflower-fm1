@@ -115,6 +115,18 @@ jobs:
       - name: Signature 8 exact patches, stable IDs, filters and real-engine fixtures
         run: sh tools/test_signature8.sh
 
+      - name: CORD Engine arrangement, regeneration and four-cycle real audio trace
+        run: sh tools/test_engine.sh
+
+      - name: G0 scheduled ARP, Feel boundaries, Space and level-matched patch audition
+        run: sh tools/test_g0.sh
+
+      - name: G1 catalog, musical memory, Repeat/Jam and live Vibe switching
+        run: sh tools/test_g1.sh
+
+      - name: Studio generator
+        run: sh tools/test_studio.sh
+
       - name: Contextual variations, undo and safe playback boundaries (host HAL)
         run: sh tools/test_variations.sh
 

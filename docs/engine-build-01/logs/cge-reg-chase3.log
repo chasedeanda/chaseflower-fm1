@@ -1,0 +1,11 @@
+ChaseFlower library: 98 chord/layer, 24 bass, 8 kits; 32 original FM + 34 Aquanode + 56 VA.
+kit CF3-D005 Glass peak -14.1 dBFS clips 0
+kit CF3-D006 Dub peak -13.5 dBFS clips 0
+kit CF3-D007 Wood peak -13.8 dBFS clips 0
+kit CF3-D008 Chill peak -14.8 dBFS clips 0
+kit MEL-D001 M Retro peak -13.7 dBFS clips 0
+kit MEL-D002 M FM peak -14.0 dBFS clips 0
+sound CF3-F065 AQ33 DX SAX  peak -14.3 dBFS rms -26.1 dBFS clips 0
+sound CF3-F066 AQ34 FULLFLU peak -14.4 dBFS rms -26.1 dBFS clips 0
+chase3: 47046684 checks, 0 failures
+cr_va_test: 230966 checks, 0 failed

@@ -18,8 +18,11 @@ static void cpa_explore(void)
     cpg.explored = 1;
 }
 static int cfd_prepare(cpa_plan_t *,cf_chord_cfg_t,unsigned,unsigned,unsigned,unsigned);
+static int cgs_rebuild_harmony(cpa_plan_t *, cf_chord_cfg_t);
 static int cpa_prepare_full(cpa_plan_t *plan, unsigned idea, cf_chord_cfg_t cfg, unsigned rhythm, unsigned mode, unsigned repeat_off, unsigned click_start)
 {
+    if(CF_STUDIO && idea>=CF_P_COMPOSED && idea<CF_P_ENGINE)return cgs_rebuild_harmony(plan,cfg);
+    if(idea==CF_P_ENGINE)return cge_prepare(plan,cfg,rhythm,mode);
     if(idea==CF_P_DRAFT)return cfd_prepare(plan,cfg,rhythm,mode,repeat_off,click_start);
     const cf_progression_t *p = cf_progression_get(idea);
     uint32_t stamp[CF_H_SLOTS]; uint16_t slots;
@@ -76,13 +79,30 @@ static int cpa_prepare_full(cpa_plan_t *plan, unsigned idea, cf_chord_cfg_t cfg,
 }
 static int cpa_prepare(cpa_plan_t *p,unsigned idea,cf_chord_cfg_t cfg,unsigned rhythm,unsigned mode)
 { return cpa_prepare_full(p,idea,cfg,rhythm,mode,0,0); }
+static void cgs_voice_plan(cpa_plan_t *p,cgs_pitches_t *pitch);
 static void cpa_publish(const cpa_plan_t *p, unsigned flags, int setup)
 {
     if (!cpa_valid(p)) return;
+    cpa_plan_t voiced;
+    cgs_pitches_t pitch={0};
+    int studio_notes=CF_STUDIO && (flags&CPA_NOTES) && cgs_active();
+    if(studio_notes){
+        voiced=*p;
+        for(unsigned i=0;i<voiced.n && i<cpa.plan.n;i++)voiced.slot[i].ticks=cpa.plan.slot[i].ticks;
+        cgs_voice_plan(&voiced,&pitch);
+        p=&voiced;
+    }
+    if(p->idea==CF_P_ENGINE){
+        if(flags&CPA_GROOVE)cge_direct(CGE_GROOVE);
+        if((flags&CPA_NOTES) && (p->tonic!=cpa.plan.tonic || p->scale!=cpa.plan.scale))cge_key_edit();
+    }
     fm1_irq_off();
     if (setup) { cpa_setup.plan = *p; cpa_setup.flags = 1; }
-    else if (cpa.on && (p->idea == cpa.plan.idea || (((flags|cpa_edit.flags)&CPA_PHRASE) && p->idea==CF_P_DRAFT))) {
+    if(!setup && cgs_active() && (flags&CPA_NOTES) && cpa_setup.flags && cpa_setup.plan.studio &&
+        (p->tonic!=cpa.plan.tonic || p->scale!=cpa.plan.scale))cpa_setup.flags=0;
+    if (!setup && cpa.on && (p->idea == cpa.plan.idea || (((flags|cpa_edit.flags)&CPA_PHRASE) && p->idea==CF_P_DRAFT))) {
         cpa_edit.plan = *p; cpa_edit.flags |= flags;
+        if(studio_notes)cgs.edit_pitch=pitch;
     }
     fm1_irq_on();
 }
@@ -106,7 +126,8 @@ static void cpa_ui_poll(void)
         cpg.revision = cf_sn.ac_revision;
         if (cf_sn.ac_on) {
             cpa_explore();
-            cpg.idea = cf_sn.ac_idea; cpg.rhythm = cf_sn.ac_rhythm; cpg.mode = cf_sn.ac_mode;
+            if(cf_sn.ac_idea<CF_P_COMPOSED || cf_sn.ac_idea>=CF_P_ENGINE)cpg.idea=cf_sn.ac_idea;
+            cpg.rhythm = cf_sn.ac_rhythm; cpg.mode = cf_sn.ac_mode;
             cs.chord.tonic = cf_sn.ac_tonic; cs.chord.scale = cf_sn.ac_scale;
             cs.chord.quantize = CF_Q_BASIC; cs.beats = cf_sn.ac_beats;
             sq_beats = cs.beats; cu_spell_update();
@@ -118,21 +139,26 @@ static void cpa_ui_poll(void)
     fm1_irq_off(); clock = cfc.clock; fm1_irq_on();
     if (clock != cpg.modifiers) { cpg.modifiers = clock; cpa_ui_dirty(); }
 }
+static uint8_t cpa_scale_step(unsigned scale,int d)
+{
+    static const uint8_t modes[]={CF_SC_MAJOR,CF_SC_DORIAN,CF_SC_PHRYGIAN,CF_SC_LYDIAN,
+        CF_SC_MIXOLYDIAN,CF_SC_MINOR,CF_SC_LOCRIAN};
+    unsigned i=0;
+    while(i+1<NELEM(modes) && modes[i]!=scale)i++;
+    return modes[wrapi((int)i+d%(int)NELEM(modes),NELEM(modes))];
+}
 static void cpa_home_key(int k, int d)
 {
-    static const uint8_t modes[] = {CF_SC_MAJOR, CF_SC_DORIAN, CF_SC_PHRYGIAN, CF_SC_LYDIAN,
-                                   CF_SC_MIXOLYDIAN, CF_SC_MINOR, CF_SC_LOCRIAN};
+    if(!cgs_active())cge_key_edit();
     cpa_plan_t p; cpa_active_request(&p);
     cf_chord_cfg_t cfg = cs.chord; cfg.tonic = p.tonic; cfg.scale = p.scale;
     if (k == 1) cfg.tonic = wrapi(cfg.tonic + d, 12);
-    else {
-        unsigned i = 0; while (i + 1 < NELEM(modes) && modes[i] != cfg.scale) i++;
-        cfg.scale = modes[wrapi((int)i + d, NELEM(modes))];
-    }
+    else cfg.scale=cpa_scale_step(cfg.scale,d);
     if (cpa_prepare_full(&p, p.idea, cfg, p.rhythm, p.mode, p.repeat_off, p.click_start)) cpa_publish(&p, CPA_NOTES, 0);
 }
 static void cpa_ui_rhythm(int d)
 {
+    cge_direct(CGE_GROOVE);
     cpa_plan_t p; unsigned beats = cs.beats, r = cpg.rhythm;
     if (cpa_running()) { cpa_active_request(&p); beats = p.beats; r = p.rhythm; }
     unsigned n = dm_count(beats), pos = r == CPA_OFF ? 0 : r == CPA_CLICK ? 1 : dm_place(r) + 2;
@@ -158,6 +184,7 @@ static void cpa_ui_mode(int d)
 }
 static void cpa_tempo(int d)
 {
+    if(d)cge.tempo_pin=1;
     if (cs.clock_in == 1u) { cf_message("Tempo follows MIDI clock"); return; }
     cs.bpm = clampi(cs.bpm + d, 30, 300); cf_send_metro();
 }

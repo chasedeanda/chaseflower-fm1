@@ -113,6 +113,7 @@ static void cfx_macro_turn(int k, int d)
     cfx_sync();
     int m = clampi(cfxu.value[k] + d, 0, 100), at = cfxu.at[k];
     if (m == cfxu.value[k]) return;
+    cge_direct(CGE_FX);
     const cf_fx_t *a = &cfxu.anchor;
     uint8_t *v;
     if (k <= 1) {
@@ -246,6 +247,7 @@ static void cfx_knob_turn(int knob, int d)
     cfxu.view = fxpu.mode == FXP_BROWSE ? CFX_MACROS : CFX_INDIVIDUAL;
     if (!d) return;
     if (cfxu.view == CFX_MACROS) { cfx_macro_turn(knob, d); return; }
+    cge_direct(CGE_FX);
     uint32_t e = cfx_sel();
     uint8_t *v = cs.fx.v[e];
     int k = knob - 1;

@@ -7,6 +7,9 @@
  * engine or the SAMPLE engine's PERC set (General MIDI map) on any part.
  * Sections: sizes, parameters, voices and engines, tracks and the song, system. */
 #include <stdint.h>
+#if CF_ENGINE
+static uint32_t cge_mix_gain(unsigned part);
+#endif
 
 #ifndef CHASE_LIBRARY
 #if defined(CF_UNIT) || defined(CF_EMU)

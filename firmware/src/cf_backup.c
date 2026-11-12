@@ -590,7 +590,7 @@ static int crb_handle(const uint8_t *f, uint32_t n)
         break;
     }
     case CRB_INFO: {                                 /* Felucca's INFO layout, no editor: 0 engines, 0 tracks */
-        const char *v = FELUCCA_VERSION;             /* ("CoralFlower X.Y": the installers tell CoralFlower by it) */
+        const char *v = FELUCCA_VERSION;             /* installers accept both CORD and the historical INFO prefix */
         uint32_t i;
         if (na)
             return 0;
