@@ -237,11 +237,15 @@ static void workspaces_studio(void)
         ui_algo(1);
         CHECK(cgu.band_panel==panel && cgs.focus==CGS_LAYER && cf_evq_w==pending);
     }
+    cu.now+=CGU_RACK_SCROLL_MS;
     ui_capture("studio-rack-lower");
     CHECK(cgu_workspace_tile(&cf_stage_last)==CGU_RACK_COUNT-1);
     cgu_face_t left=cgu_rack_face(CGU_STUDIO,0,0),right=cgu_rack_face(CGU_STUDIO,1,0);
     cgu_face_t last=cgu_rack_face(CGU_STUDIO,CGU_RACK_COUNT-1,0);
-    CHECK(left.y==right.y && right.x>left.x+left.w && last.y+last.h<=218);
+    cgu_face_t previous_unit=cgu_rack_face(CGU_STUDIO,CGU_RACK_COUNT-2,-1);
+    CHECK(left.y==right.y && right.x>left.x+left.w);
+    CHECK(previous_unit.y+previous_unit.h==last.y && previous_unit.w==last.w);
+    CHECK(last.y-cgu_rack_top(CGU_BAND_PROGRESSION)+last.h==185);
     ui_algo(1);
     CHECK(cgs.focus==CGS_CHORDS && cgu.band_panel==CGU_BAND);
     ui_algo(-1);
@@ -1081,7 +1085,8 @@ static void custom_progression_studio(void)
     ui_capture("studio-custom-progressions");
 
     ui_button(B_HOME);
-    ui_algo(1);
+    CHECK(!cgs.zoom && cgu.band_panel==CGU_BAND_PROGRESSION);
+    ui_algo(2);
     ui_button(B_SCL);
     ui_button(B_EDIT);
     ticks(CGS_TICKS);
@@ -1165,6 +1170,98 @@ static void rack_meter_studio(void)
     cf_ui_draw();
     CHECK(!cf_stage_last.signal_peak);
     cpa_stop();
+}
+
+static void rack_units_studio(void)
+{
+    studio_start(102);
+    cf_motion=cf_visual_want=1;
+    cf_motion_epoch=0;
+    cu.now+=500;
+    unsigned part=cgs.focus;
+    ui_button(B_SEQ);
+    for(unsigned i=0;i<20;i++){
+        cu.now+=40;
+        blocks(FS/(25u*CTL));
+        cf_ui_draw();
+    }
+    unsigned grid=cf_grid.gen;
+    CHECK(cgu.band_panel==CGU_BAND_HARMONY && cf_stage_last.rack_beat>0 && cf_stage_last.rack_level>0);
+    CHECK(cf_stage_last.rack_scroll==0 && fb[65*FB_W+9]==CGU_CABINET_BASE+2);
+    ui_save_frame("rack-walnut");
+
+    ui_algo(2);
+    CHECK(cgu.band_panel==CGU_BAND_GENRE && cgu_rack_scroll()==0);
+    cu.now+=40;
+    CHECK(cgu_rack_scroll()>0 && cgu_rack_scroll()<CGU_UNIT_H);
+    ui_capture("rack-scroll-start");
+    cu.now+=CGU_RACK_SCROLL_MS;
+    CHECK(cgu_rack_scroll()==CGU_UNIT_H);
+    ui_capture("rack-scroll-end");
+    ui_knob_turn(0,CGS_WAVE-CGS_DREAM);
+    cu.now+=210;
+    ui_capture("rack-aluminum");
+    CHECK(cgs.genre==CGS_WAVE && fb[65*FB_W+9]==CGU_CABINET_BASE+7 && cpa_setup.flags);
+    ui_knob_turn(0,CGS_LOFI-CGS_WAVE);
+    cu.now+=210;
+    ui_capture("rack-tolex");
+    CHECK(cgs.genre==CGS_LOFI && fb[65*FB_W+9]==CGU_CABINET_BASE+12);
+    CHECK(!strcmp(cf_stage_last.label[0],"GENRE") && !strcmp(cf_stage_last.label[1],"FAMILY"));
+    ui_knob_turn(1,1);
+    cf_ui_draw();
+    CHECK(cgs.genre==CGS_AMBIENT && !strcmp(cf_stage_last.value[1],"Experimental") &&
+        cf_stage_last.emphasis[1] && !cgs.zoom && cgs.focus==part);
+
+    ui_algo(-1);
+    cu.now+=CGU_RACK_SCROLL_MS;
+    cf_ui_draw();
+    ui_save_frame("rack-zoom-0");
+    ui_button(B_SCL);
+    for(unsigned i=1;i<=6;i++){
+        char name[24];
+        snprintf(name,sizeof name,"rack-zoom-%u",i);
+        cu.now+=30;
+        ui_capture(name);
+    }
+    CHECK(cgu.band_panel==CGU_BAND_SHAPING && cf_stage_last.zoom==100);
+    ui_knob_turn(2,1);
+    for(unsigned i=0;i<6;i++){
+        char name[24];
+        snprintf(name,sizeof name,"rack-lens-%u",i);
+        cu.now+=25;
+        blocks(FS/(40u*CTL));
+        cf_ui_draw();
+        ui_save_frame(name);
+    }
+    CHECK(cf_stage_last.rack_lens==CGU_LENS_SCALE && cf_stage_last.emphasis[2] && cf_stage_last.rack_level>0);
+    cgu_face_t plate={12,53,216,142};
+    cgu_face_t close=cgu_unit_lens(plate,2,4,CGU_LENS_SCALE);
+    CHECK(close.w>plate.w && close.h>plate.h &&
+        abs(cgu_unit_knob_x(plate,2,4)-cgu_unit_knob_x(close,2,4))<=1 &&
+        abs(cgu_unit_knob_y(plate,100)-cgu_unit_knob_y(close,100))<=1);
+    cu.now+=CGU_LENS_HOLD_MS+CGU_LENS_RETURN_MS;
+    cf_ui_draw();
+    CHECK(!cf_stage_last.rack_lens);
+    ui_button(B_SEQ);
+    CHECK(cgs.zoom && cgu.band_panel==CGU_BAND_GENRE && cgs.focus==part && cf_grid.gen==grid);
+    ui_button(B_SEQ);
+    CHECK(cgu.band_panel==CGU_BAND_ARP && !cgu.arp_timing);
+    ui_select(1);
+    CHECK(cgu.arp_timing);
+    ui_button(B_SEQ);
+    CHECK(cgu.band_panel==CGU_BAND_PROGRESSION && cgs.zoom && cf_grid.gen==grid);
+    ui_button(B_HOME);
+    CHECK(!cgs.zoom && cgu.band_panel==CGU_BAND_PROGRESSION);
+
+    cf_motion=0;
+    ui_algo(-4);
+    ui_button(B_SCL);
+    ui_knob_turn(0,1);
+    cf_ui_draw();
+    CHECK(cgu.band_panel==CGU_BAND_HARMONY && cf_stage_last.zoom==100 &&
+        !cf_stage_last.rack_lens && !cf_stage_last.rack_beat && !cf_stage_last.rack_level);
+    cpa_stop();
+    cgu_home();
 }
 
 static void drain(FILE *trace, unsigned sample, uint8_t held[4][128], unsigned *clocks)
@@ -1331,6 +1428,7 @@ int main(int argc,char **argv)
         custom_progression_studio();
         punk_takes_studio();
         rack_meter_studio();
+        rack_units_studio();
     }
     printf("CORD Studio: %u checks, %u failures\n",checks,failures);
     return failures!=0;

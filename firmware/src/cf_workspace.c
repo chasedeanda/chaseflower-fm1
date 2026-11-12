@@ -16,12 +16,13 @@ static const char *const CGU_TABS[]={"Studio","Sound","Record","Help"};
 static const char *const CGU_BAND_NAMES[]={"Harmony","Shaping","Genre","ARP","Progression"};
 static const char *const CGU_TOPICS[]={"Start here","Harmony","Playing","Capture"};
 static struct {
-    uint32_t zoom_ms, turn_ms, clear_down, tab_ms;
+    uint32_t zoom_ms, turn_ms, lens_ms, clear_down, tab_ms, rack_ms;
     uint8_t turn_knob, turn_dir;
     uint32_t sound_seed, action_ms;
     uint8_t tab, topic, zoom_from, action, all_sounds, band_panel, part_harmony;
     uint8_t sound_page, arp_timing, key_arp, fx_return, take_slot, progression_pick, rack_controls;
     int8_t tab_dir;
+    int16_t rack_from;
 } cgu={.sound_seed=0x436f7264u};
 
 enum { CGU_GLO_MAP, CGU_GLO_STATE, CGU_GLO_VIEWS };
@@ -92,6 +93,21 @@ static unsigned cgu_zoom(void)
     return cgs.zoom?100u-(unsigned)remain:(unsigned)remain;
 }
 
+enum { CGU_LENS_HOLD_MS=740, CGU_LENS_RETURN_MS=160, CGU_LENS_SCALE=36 };
+
+static unsigned cgu_rack_lens(void)
+{
+    if(!cf_motion || !cgs.zoom || !cgu.turn_ms || !cgu.lens_ms ||
+        (int32_t)(cgu.lens_ms-cf_motion_epoch)<=0 || cgu_zoom()!=100)return 0;
+    unsigned idle=cu.now-cgu.turn_ms;
+    if(idle>=CGU_LENS_HOLD_MS+CGU_LENS_RETURN_MS)return 0;
+    if(idle>=CGU_LENS_HOLD_MS){
+        unsigned left=CGU_LENS_HOLD_MS+CGU_LENS_RETURN_MS-idle;
+        return CGU_LENS_SCALE*left*left/(CGU_LENS_RETURN_MS*CGU_LENS_RETURN_MS);
+    }
+    return CGU_LENS_SCALE-(unsigned)cf_tween_offset(cgu.lens_ms,115,CGU_LENS_SCALE);
+}
+
 static void cgu_set_zoom(int detail)
 {
     if(cgs.zoom==detail)return;
@@ -111,6 +127,7 @@ static void cgu_open_arp(void)
     cgu.tab=CGU_STUDIO;
     cgu.rack_controls=0;
     cgu.band_panel=CGU_BAND_ARP;
+    cgu.rack_ms=0;
     cgu.arp_timing=0;
     cgs.zoom=0;
     cgu.zoom_ms=0;
@@ -122,7 +139,7 @@ static void cgu_home(void)
     cu.pop=POP_NONE;
     cgu.action=cgu.band_panel=cgu.part_harmony=0;
     cgu.rack_controls=0;
-    cgu.tab_ms=0;
+    cgu.tab_ms=cgu.rack_ms=0;
     cgu.turn_ms=0;
     cgu.sound_page=CGU_TONE;
     if(cgu.tab==CGU_STUDIO)cgu_set_zoom(0);
@@ -154,9 +171,24 @@ static void cgu_tab_turn(int d)
     cu.pop=POP_NONE;
 }
 
+enum { CGU_UNIT_H=66, CGU_RACK_SCROLL_MS=180 };
+
+static int cgu_rack_top(unsigned band)
+{ return clampi((int)band-2,0,CGU_BAND_PANELS-3)*CGU_UNIT_H; }
+
+static int cgu_rack_scroll(void)
+{
+    int delta=cgu.rack_from;
+    int remaining=cf_tween_offset(cgu.rack_ms,CGU_RACK_SCROLL_MS,delta<0?-delta:delta);
+    return cgu_rack_top(cgu.band_panel)+(delta<0?-remaining:remaining);
+}
+
 static void cgu_band_focus(unsigned panel)
 {
     if(panel==cgu.band_panel)return;
+    int scroll=cgu_rack_scroll();
+    cgu.rack_ms=cf_motion && !cgs.zoom && panel && cgu.band_panel?cu.now:0;
+    cgu.rack_from=(int16_t)(scroll-cgu_rack_top(panel));
     cgu.band_panel=(uint8_t)panel;
     cgu.zoom_ms=0;
     cgu.turn_ms=0;
@@ -172,13 +204,27 @@ static void cgu_studio_page_turn(int d)
     cgu.turn_ms=0;
 }
 
+static void cgu_studio_seq(void)
+{
+    if(!cgs.zoom || !cgu.band_panel){cgu_studio_page_turn(1);return;}
+    unsigned next=cgu.band_panel+1u;
+    cgu_band_focus(next==CGU_BAND_PANELS?CGU_BAND_HARMONY:next);
+    cgu.tab_ms=cf_motion?(cu.now?cu.now:1u):0;
+    cgu.tab_dir=1;
+}
+
+static unsigned cgu_band_knob_panel(unsigned band)
+{
+    static const uint8_t panels[]={CGU_KNOB_PART,CGU_KNOB_HARMONY,CGU_KNOB_SHAPING,
+        CGU_KNOB_GENRE,CGU_KNOB_ARP,CGU_KNOB_PROGRESSION};
+    return panels[band];
+}
+
 static unsigned cgu_knob_panel(int detail)
 {
     if(cgu.tab==CGU_STUDIO){
-        static const uint8_t panel[]={CGU_KNOB_PART,CGU_KNOB_HARMONY,CGU_KNOB_SHAPING,
-            CGU_KNOB_GENRE,CGU_KNOB_ARP,CGU_KNOB_PROGRESSION};
         if(!cgu.band_panel && detail && cgu.part_harmony)return CGU_KNOB_HARMONY;
-        return panel[cgu.band_panel];
+        return cgu_band_knob_panel(cgu.band_panel);
     }
     if(cgu.tab==CGU_SOUND){
         if(cgu.rack_controls==CGU_RACK_MIX)return CGU_KNOB_MIX;
@@ -653,6 +699,9 @@ static void cgu_knob_turn(int k,int d)
         (panel==CGU_KNOB_HARMONY && k==1) || (panel==CGU_KNOB_PART && k!=0) ||
         (panel==CGU_KNOB_SOUND && (page==CGU_SENDS || page==CGU_ENVELOPE || (page==CGU_TONE && k!=0)));
     if(continuous)d=cgu_sweep(k,d);
+    if(cgu.tab==CGU_STUDIO && cgu.band_panel && cgs.zoom && cf_motion && !knob.dis &&
+        (!cgu.turn_ms || cgu.turn_knob!=k || cu.now-cgu.turn_ms>=CGU_LENS_HOLD_MS+CGU_LENS_RETURN_MS))
+        cgu.lens_ms=cu.now?cu.now:1u;
     cgu.turn_ms=cu.now?cu.now:1u;
     cgu.turn_knob=(uint8_t)k;
     cgu.turn_dir=(uint8_t)(d>0);
@@ -719,9 +768,9 @@ static void cgu_sound_info(int k,cf_knob_t *o,unsigned p,unsigned page)
     }
 }
 
-static void cgu_knob_view(int k,cf_knob_t *o,int detail)
+static void cgu_knob_read(unsigned panel,int k,cf_knob_t *o,int detail)
 {
-    switch(cgu_knob_panel(detail)){
+    switch(panel){
     case CGU_KNOB_MIX: {
         unsigned p=cgu_part((unsigned)k);
         kfmt(o->name,12,CGS_PART_NAME[p]);
@@ -788,6 +837,9 @@ static void cgu_knob_view(int k,cf_knob_t *o,int detail)
         break;
     }
 }
+
+static void cgu_knob_view(int k,cf_knob_t *o,int detail)
+{ cgu_knob_read(cgu_knob_panel(detail),k,o,detail); }
 
 static void cgu_knob_info(int k,cf_knob_t *o)
 { cgu_knob_view(k,o,cgs.zoom); }

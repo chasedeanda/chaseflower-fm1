@@ -224,11 +224,11 @@ static flc_t fl_cv = {fl_px, FLW, FLH};
 #define C_ACC(s) ((uint8_t)(48 + (s)))
 #define C_SEC(s) ((uint8_t)(52 + (s)))
 #include "cf_mascot_art.h"
-enum { CGU_INK_BASE=57, CFN_HALO_0=64, CFN_HALO_1, CFN_HALO_2, CFN_HALO_3, CFM_PAL_BASE=68,
+enum { CGU_INK_BASE=57, CFN_HALO_0=64, CFN_HALO_1, CFN_HALO_2, CFN_HALO_3, CFM_PAL_BASE=68, CGU_CABINET_BASE=68, CGU_GLASS=83, CGU_GLASS_AA=84,
     CFN_AA_BASE=128, CFN_AA_ROLES=5, CFN_AA_SURFACES=4,
     CGU_BAND_INK_BASE=CFN_AA_BASE+CFN_AA_ROLES*CFN_AA_SURFACES*2,
-    CGU_PEDAL_BODY=CGU_BAND_INK_BASE+4, CGU_PEDAL_SHADES=8,
-    CGU_METAL=CGU_PEDAL_BODY+4*CGU_PEDAL_SHADES,
+    CGU_UNIT_FACE=CGU_BAND_INK_BASE+4, CGU_UNIT_SHADES=8,
+    CGU_METAL=CGU_UNIT_FACE+4*CGU_UNIT_SHADES,
     CGU_GRILLE=CGU_METAL+12, CGU_PROGRESSION_INK=CGU_GRILLE+6, CGU_MATERIAL_AA=CGU_GRILLE+8,
     CGU_AMP_FACE=CGU_MATERIAL_AA+6*4, CFN_PAL_N=256 };
 _Static_assert(CGU_AMP_FACE+8 <= CFN_PAL_N, "Studio material palette fits");
@@ -331,26 +331,44 @@ static void cf_palette_build(void)
     cf_pal[CGU_INK_BASE+1]=0x79d5ea; /* Bass */
     cf_pal[CGU_INK_BASE+2]=0xc6acff; /* Layer */
     cf_pal[CGU_INK_BASE+3]=0xfb878d; /* Drums */
-    cf_pal[CGU_BAND_INK_BASE]=0xb9d97e;   /* Harmony */
-    cf_pal[CGU_BAND_INK_BASE+1]=0xee91cc; /* Shaping */
-    cf_pal[CGU_BAND_INK_BASE+2]=0xf9dc73; /* Genre */
-    cf_pal[CGU_BAND_INK_BASE+3]=0x90abff; /* ARP */
+    cf_pal[CGU_BAND_INK_BASE]=0xb8e59a;   /* Harmony */
+    cf_pal[CGU_BAND_INK_BASE+1]=0x72deda; /* Shaping */
+    cf_pal[CGU_BAND_INK_BASE+2]=0xeac889; /* Genre */
+    cf_pal[CGU_BAND_INK_BASE+3]=0xb7afff; /* ARP */
     if(CF_STUDIO && !CF_SCENES){
         static const uint32_t metal[]={0x111416,0x202427,0x2d3235,0x3d4346,0x50595d,0x667075,
             0x838d90,0xa5afb0,0xcbd0cb,0xe7e8dd,0x090b0c,0x181c1f};
         static const uint32_t grille[]={0x121516,0x1c1f20,0x242829,0x2c3030,0x353939,0x414545,0x4c5050,0x565b59};
         static const uint32_t plate[]={0x1e2224,0x25292c,0x2b3033,0x31373a,0x383e41,0x3e4548,0x5b6467,0x757f82};
+        static const uint32_t finish[][CGU_UNIT_SHADES]={
+            {0x30383e,0x414c53,0x515d65,0x56626b,0x5b6870,0x626f77,0x78858b,0x919da1}, /* Nickel */
+            {0x142c27,0x1a382f,0x214a40,0x275046,0x2b574c,0x305f54,0x3e7566,0x528577}, /* Green */
+            {0x132642,0x193251,0x234467,0x28496d,0x2e5073,0x35577b,0x416b90,0x567da0}, /* Blue */
+            {0x2f1b40,0x3e2550,0x503168,0x56366e,0x5e3c76,0x66427f,0x785299,0x8c6aab}, /* Purple */
+        };
+        static const uint32_t cabinet[][5]={
+            {0x241910,0x38291f,0x534034,0x644e40,0x786050}, /* Walnut */
+            {0x1a1e22,0x303942,0x495660,0x626e77,0x7e8b94}, /* Brushed aluminum */
+            {0x141618,0x212427,0x303437,0x424649,0x55595d}, /* Charcoal tolex */
+        };
+        memcpy(cf_pal+CGU_CABINET_BASE,cabinet,sizeof cabinet);
+        cf_pal[CGU_GLASS]=0x0b1117;
+        for(unsigned unit=0;unit<5;unit++){
+            unsigned ink=unit<4?CGU_BAND_INK_BASE+unit:CGU_PROGRESSION_INK;
+            uint32_t color=unit<4?cf_pal[ink]:0x9dcbed;
+            for(unsigned level=0;level<2;level++)
+                cf_pal[CGU_GLASS_AA+unit*2+level]=cfn_blend(cf_pal[CGU_GLASS],color,(level+1)*100/3);
+        }
         memcpy(cf_pal+CGU_METAL,metal,sizeof metal);
         memcpy(cf_pal+CGU_GRILLE,grille,sizeof grille);
         memcpy(cf_pal+CGU_AMP_FACE,plate,sizeof plate);
-        cf_pal[CGU_PROGRESSION_INK]=0xe9aa86;
-        for(unsigned part=0;part<4;part++){
-            unsigned base=CGU_PEDAL_BODY+part*CGU_PEDAL_SHADES;
-            for(unsigned shade=0;shade<CGU_PEDAL_SHADES;shade++)
-                cf_pal[base+shade]=cfn_blend(plate[shade],cf_pal[CGU_BAND_INK_BASE+part],35);
+        cf_pal[CGU_PROGRESSION_INK]=0x9dcbed;
+        for(unsigned unit=0;unit<NELEM(finish);unit++){
+            unsigned base=CGU_UNIT_FACE+unit*CGU_UNIT_SHADES;
+            memcpy(cf_pal+base,finish[unit],sizeof finish[unit]);
         }
         for(unsigned surface=0;surface<6;surface++){
-            unsigned bg=surface<4?CGU_PEDAL_BODY+surface*CGU_PEDAL_SHADES+2:surface==4?CGU_METAL+2:CGU_GRILLE+2;
+            unsigned bg=surface<4?CGU_UNIT_FACE+surface*CGU_UNIT_SHADES+2:surface==4?CGU_METAL+2:CGU_GRILLE+2;
             for(unsigned ink=0;ink<2;ink++)for(unsigned level=0;level<2;level++)
                 cf_pal[CGU_MATERIAL_AA+surface*4+ink*2+level]=
                     cfn_blend(cf_pal[bg],cf_pal[ink?FL_INK2:FL_INK],(level+1)*100/3);

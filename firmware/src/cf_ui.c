@@ -1269,7 +1269,7 @@ static void ui_button(uint32_t b)
     }
     if(cgs_home()){
         if(b==B_SEQ && cgu.tab==CGU_STUDIO){
-            cgu_studio_page_turn(1);return;
+            cgu_studio_seq();return;
         }
         if(b==B_SAVE && cgu.tab==CGU_RECORD){
             if(!cgu.rack_controls)return;
@@ -1317,7 +1317,7 @@ static void ui_button(uint32_t b)
             return;
         }
         if(b==B_HOME){
-            if(cgs.zoom && (cgu.rack_controls ||
+            if(cgs.zoom && (cgu_progression_panel() || cgu.rack_controls ||
                (cgu.tab==CGU_SOUND && cgu.sound_page==CGU_PRESETS)))cgu_set_zoom(0);
             else cgu_home();
             return;

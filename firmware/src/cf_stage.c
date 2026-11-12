@@ -24,6 +24,10 @@ static void cfn_coverage(int x,int y,unsigned coverage,uint8_t ink)
     unsigned role=ink==FL_INK?0:ink==FL_INK2 || ink==FL_INK3 || ink==50 || ink==53?1:
         ink==48 || ink==49 || ink==52?2:ink==56?3:ink==FL_C(FL_R_ROSE,0)?4:CFN_AA_ROLES;
     uint8_t bg=fb[y*FB_W+x];if(bg==ink)return;
+    if(CF_STUDIO && !CF_SCENES && bg==CGU_GLASS){
+        unsigned unit=ink==CGU_PROGRESSION_INK?4u:(unsigned)ink-CGU_BAND_INK_BASE;
+        if(unit<5u){fb[y*FB_W+x]=(uint8_t)(CGU_GLASS_AA+unit*2+coverage-1);return;}
+    }
     unsigned surface=bg==FL_BG?0:bg==FL_BG1 || bg==FL_BG2?1:bg==48 || bg==49 || bg==52?2:bg==FL_BG3?3:CFN_AA_SURFACES;
     if(bg>=CFN_AA_BASE && bg<CFN_AA_BASE+CFN_AA_ROLES*CFN_AA_SURFACES*2) {
         unsigned entry=(bg-CFN_AA_BASE)/2;
@@ -32,8 +36,8 @@ static void cfn_coverage(int x,int y,unsigned coverage,uint8_t ink)
     if(role<CFN_AA_ROLES && surface<CFN_AA_SURFACES)fb[y*FB_W+x]=(uint8_t)(CFN_AA_BASE+(surface*CFN_AA_ROLES+role)*2+coverage-1);
     else if(CF_STUDIO && !CF_SCENES && role<2 && bg>=CGU_AMP_FACE)
         fb[y*FB_W+x]=(uint8_t)(CGU_MATERIAL_AA+4*4+role*2+coverage-1);
-    else if(CF_STUDIO && !CF_SCENES && role<2 && bg>=CGU_PEDAL_BODY && bg<CGU_MATERIAL_AA){
-        unsigned material=bg<CGU_METAL?(bg-CGU_PEDAL_BODY)/CGU_PEDAL_SHADES:bg<CGU_GRILLE?4:5;
+    else if(CF_STUDIO && !CF_SCENES && role<2 && bg>=CGU_UNIT_FACE && bg<CGU_MATERIAL_AA){
+        unsigned material=bg<CGU_METAL?(bg-CGU_UNIT_FACE)/CGU_UNIT_SHADES:bg<CGU_GRILLE?4:5;
         fb[y*FB_W+x]=(uint8_t)(CGU_MATERIAL_AA+material*4+role*2+coverage-1);
     }
     else if(coverage>=2)fb[y*FB_W+x]=ink; /* retain legacy graph colours */
@@ -129,8 +133,11 @@ typedef struct {
     uint8_t moment,build,bloom,engine_page,engine_bar,beat,focus,level[4],pin_mask;
     uint8_t workspace,zoom,genre,solo,muted,shaping,sound_page,knob[4],part_level[4];
     uint8_t signal_peak;
+    uint8_t rack_knob[CGU_BAND_PANELS-1][4];
+    uint8_t rack_beat, rack_meter, rack_level, rack_arp_step, rack_arp_mode, rack_lens, rack_draft;
     uint16_t steps[4][2],matches;
     int8_t bank_dx,chord_dy;
+    uint16_t rack_scroll;
     cfm_pose_t mascot;
     cf_learn_model_t learn;
 } cf_stage_model_t;

@@ -1,14 +1,34 @@
 # CORD Studio controls
 
-Turn **SELECT** on an overview to slide between the Studio, Sound, Record and Help racks. Turn **ALGORITHM** to select panels left to right across the two-column rack. Every panel is visible on its workspace overview. One panel is always highlighted. K1–K4 edit that panel directly, and its attached strip shows the knob labels and live values in knob order. Pressing SEL to zoom in opens the same controls. Highlighting a musician selects the keyboard instrument, which follows you between workspaces and appears in the colored **KEYS** footer. Highlighting a band control leaves the keyboard instrument in place. Press **SEL** to open a faceplate or apply a highlighted choice. Turn **SELECT** inside a faceplate to change pages. Use **SEL** to zoom back out, or **HOME** when **SEL** is labeled Apply. The output meter follows the mix across all four workspaces.
+Turn **SELECT** on an overview to move between Studio, Sound, Record and Help. Turn **ALGORITHM** to browse the panels. In Studio, it passes from the four musicians to the outboard units. The outboard bay scrolls vertically and shows two units at a time. **SEQ** goes straight to the outboard units from the overview and advances through them while zoomed in.
+
+The highlighted panel's strip shows its K1–K4 labels and values. You can edit from the overview or press **SEL** to move the camera in. Turn a knob on a zoomed outboard unit for a brief close-up of that control. Press **SEL** to move back out, or **HOME** when **SEL** is labeled Apply. **SELECT** changes pages inside a zoomed unit that has multiple pages. The colored **KEYS** footer shows which musician the keyboard is playing.
 
 ## Studio
 
-**PLAY** starts or stops the band. The four color-coded musician amps come first, followed by Harmony, Shaping, Genre, ARP and Progression. The header shows key, scale, meter, tempo, the current chord as a Roman numeral and a needle that responds to the output level. The chord readout follows a held manual chord while you play one.
+**PLAY** starts or stops the band. The header shows key, scale, meter, tempo, the current chord and a segmented output meter. The chord readout follows a held manual chord while you play one.
+
+### Rack design
+
+Use the cabinet for genre and the faceplate for unit identity. Dream Pop, Indie and Pop Punk use walnut. New Wave and Ambient Soundscape use anodized aluminum. Lo-Fi uses charcoal tolex. The finish follows the genre selector immediately. An in-flight genre change still takes effect musically at the next bar.
+
+| Unit | Faceplate and control | Live display |
+| --- | --- | --- |
+| Harmony | Brushed nickel with black inset knobs | Key and beat |
+| Shaping | Green anodized metal with matte black knobs | Energy setting and output level |
+| Genre | Blue enamel with two light stepped selectors | Selected genre and family |
+| ARP | Purple anodized metal with machined silver knobs | Routing mode and played step |
+| Progression | Graphite plate with a two-position switch | Applied source and active chord slot |
+
+Mount plates flush with a seam between them. Use 16 px Inter Tight for names and 12 px mixed-case control labels. Keep values at 14 px when they fit and give long program names the wide display. The small badge, vents and hardware marks belong in the close view. Use recessed dark displays with lit segments for actual values and activity. Knobs keep their horizontal positions and hardware style through the camera move.
+
+The earlier study read as vintage because the cream needle meter, bright wood, brushed texture across the whole surface and dense all-caps legends all drew attention at once. The current pass uses the machined surfaces and compact controls of the TX–6, the status metering of the SSL Pure Drive Octo and the recessed display and perforated fascia of the Symphony I/O. [Teenage Engineering TX–6](https://teenage.engineering/products/tx-6), [SSL Pure Drive Octo](https://solidstatelogic.com/products/puredriveocto), [Apogee Symphony I/O Mk II](https://apogeedigital.com/pdf/Apogee-Symphony-IO-MkII-User-Guide-V2.0.pdf)
+
+Bass Something 2 is the reference for keeping the knob inside the instrument as the camera moves. The user-supplied studio photos informed the flush mounting, varied finishes, and distinct control styles. [Bass Something 2](https://imijes.github.io/bass-something-2/)
 
 ### Genre
 
-Highlight the Genre pedal with **ALGORITHM** or **SEQ** and turn **K1** or **PRESETS** to choose a genre. **PRESETS** also works from the Studio overview. Genre changes the harmonic and rhythmic vocabulary of the whole band, including the two playing styles available for each musician. A genre change queues a new take for the next bar during playback. Your current tempo continues while the band plays. Open **Sound → Sound Library** in Genre mode and press **SEL** to load the curated palette, or press **EDIT** on the Sound overview to cycle through its alternatives.
+Highlight the Genre unit with **ALGORITHM** or **SEQ** and turn **K1** or **PRESETS** to choose a genre. **K2** selects a genre family. **PRESETS** also works from the Studio overview. Genre changes the harmonic and rhythmic vocabulary of the whole band, including the two playing styles available for each musician. A genre change queues a new take for the next bar during playback. Your current tempo continues while the band plays. Open **Sound → Sound Library** in Genre mode and press **SEL** to load the curated palette, or press **EDIT** on the Sound overview to cycle through its alternatives.
 
 | Genre | Playing character |
 | --- | --- |
@@ -76,7 +96,7 @@ Drums has Tone, Sends and FX Presets. **PRESETS** also browses the sound or kit.
 
 ## Arpeggiator
 
-Select Chords or Layer, highlight the ARP pedal with **SEQ**, and press **SEL** to zoom in. The **ARP** button opens the same panel directly. On the Pattern page, **K1 Arp For** chooses Off, Keys or Band. Keys arpeggiates the notes you hold. Band arpeggiates that musician’s generated chord tones with the transport running. **K2 Mode** selects the note order or strum mode, **K3 Octave** sets the range, and **K4 Rate** sets the clock division or the spacing in milliseconds for a strum.
+Select Chords or Layer, highlight the ARP unit with **SEQ**, and press **SEL** to zoom in. The **ARP** button opens the same panel directly. On the Pattern page, **K1 Arp For** chooses Off, Keys or Band. Keys arpeggiates the notes you hold. Band arpeggiates that musician’s generated chord tones with the transport running. **K2 Mode** selects the note order or strum mode, **K3 Octave** sets the range, and **K4 Rate** sets the clock division or the spacing in milliseconds for a strum.
 
 Turn **SELECT** to the timing page. **K1 Gate** sets how much of each step a note occupies, **K2 Swing** shifts alternating steps, **K3 Latch** keeps the arpeggio going after key release, and **K4 Glide** sets the Chords glide time.
 
