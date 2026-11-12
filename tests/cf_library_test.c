@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-3.0-only */
 #include <stdio.h>
+#define CF_STUDIO 0
 #include "../tools/emu/emu_fw.c"
 static unsigned checks,failures;
 #define CHECK(x) do{checks++;if(!(x)){failures++;if(failures<30)printf("FAIL %d: %s\n",__LINE__,#x);}}while(0)

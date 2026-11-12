@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-3.0-only
  * Actual LED matrix levels, manual gestures and accompaniment slot following. */
 #include <stdio.h>
+#define CF_STUDIO 0
 #include "usb_mock.h"
 #define FELUCCA_UAC 1
 #define FELUCCA_CDC 1

@@ -528,7 +528,7 @@ static void play_and_mixer_studio(void)
     ui_note_key_aged(7,0,0);
     blocks(2);
     ui_button(B_HOME);
-    ui_algo(2);
+    ui_algo(-2);
     blocks(1);
     CHECK(cgs.focus==CGS_BASS && cfp_bo);
     ui_note_key_aged(7,1,0);
