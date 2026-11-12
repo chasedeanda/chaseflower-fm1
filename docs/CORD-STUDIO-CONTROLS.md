@@ -1,8 +1,8 @@
 # CORD Studio controls
 
-Turn **SELECT** on an overview to move between Studio, Sound, Record and Help. Turn **ALGORITHM** to browse the panels. In Studio, it passes from the four musicians to the outboard units. The outboard bay scrolls vertically and shows two units at a time. **SEQ** goes straight to the outboard units from the overview and advances through them while zoomed in.
+Turn **SELECT** on an overview to move between Studio, Sound, Record and Help. Turn **ALGORITHM** to browse the panels. Studio and Sound show two full-width units at a time. In Studio, the four amp heads sit above the outboard units. In Sound, the same amp heads sit above Sound Library and Mix. **SEQ** goes straight to the outboard units from the overview and advances through them while zoomed in.
 
-The highlighted panel's strip shows its K1–K4 labels and values. You can edit from the overview or press **SEL** to move the camera in. Turn a knob on a zoomed outboard unit for a brief close-up of that control. Press **SEL** to move back out, or **HOME** when **SEL** is labeled Apply. **SELECT** changes pages inside a zoomed unit that has multiple pages. The colored **KEYS** footer shows which musician the keyboard is playing.
+A bright frame and an arrow mark the active unit. The fixed strip below the rack shows that unit’s K1–K4 labels and values. You can edit from the overview or press **SEL** to move the camera in. Turn a knob on a zoomed outboard unit for a brief close-up of that control. Press **SEL** to move back out, or **HOME** when **SEL** is labeled Apply. **SELECT** changes pages inside a zoomed unit that has multiple pages. The colored **KEYS** footer shows which musician the keyboard is playing.
 
 ## Studio
 
@@ -14,6 +14,8 @@ Use the cabinet for genre and the faceplate for unit identity. Dream Pop, Indie 
 
 | Unit | Faceplate and control | Live display |
 | --- | --- | --- |
+| Chords and Layer | Amp heads with stitched grille cloth | Playing style in Studio and preset in Sound |
+| Bass and Drums | Amp heads with perforated metal grilles | Playing style in Studio and preset or kit in Sound |
 | Harmony | Brushed nickel with black inset knobs | Key and beat |
 | Shaping | Green anodized metal with a perforated grille and matte black knobs | Energy setting and output level |
 | Genre | Blue enamel with two light stepped selectors | Selected genre and family |

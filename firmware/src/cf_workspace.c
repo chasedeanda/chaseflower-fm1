@@ -165,30 +165,56 @@ static void cgu_tab_turn(int d)
     cgu.band_panel=0;
     cgu.rack_controls=0;
     cgu.clear_down=0;
+    cgu.rack_ms=0;
     if(previous>CGU_SOUND || tab>CGU_SOUND)cgs.zoom=0;
     cgu.zoom_ms=0;
     cgu.action=0;
     cu.pop=POP_NONE;
 }
 
+/* The on-screen order swaps the last two audio parts. The mapping is its own inverse. */
+static unsigned cgu_part(unsigned tile)
+{ return tile<2?tile:tile^1u; }
+
+static unsigned cgu_studio_tile(unsigned part,unsigned band_panel)
+{ return band_panel?CGS_NPART+band_panel-1u:cgu_part(part); }
+
 enum { CGU_UNIT_H=66, CGU_RACK_SCROLL_MS=180 };
 
-static int cgu_rack_top(unsigned band)
-{ return clampi((int)band-2,0,CGU_BAND_PANELS-3)*CGU_UNIT_H; }
+static unsigned cgu_rack_tiles(unsigned tab)
+{ return tab==CGU_STUDIO?CGU_RACK_COUNT:CGS_NPART+2; }
+
+static unsigned cgu_rack_tile(unsigned tab,unsigned part,unsigned panel)
+{
+    if(tab==CGU_STUDIO)return cgu_studio_tile(part,panel);
+    return panel?CGS_NPART+panel-1u:cgu_part(part);
+}
+
+static int cgu_rack_top(unsigned tab,unsigned tile)
+{ return clampi((int)tile-1,0,(int)cgu_rack_tiles(tab)-2)*CGU_UNIT_H; }
 
 static int cgu_rack_scroll(void)
 {
+    unsigned panel=cgu.tab==CGU_STUDIO?cgu.band_panel:cgu.rack_controls;
+    int top=cgu_rack_top(cgu.tab,cgu_rack_tile(cgu.tab,cgs.focus,panel));
     int delta=cgu.rack_from;
     int remaining=cf_tween_offset(cgu.rack_ms,CGU_RACK_SCROLL_MS,delta<0?-delta:delta);
-    return cgu_rack_top(cgu.band_panel)+(delta<0?-remaining:remaining);
+    return top+(delta<0?-remaining:remaining);
+}
+
+static void cgu_rack_arrive(int previous)
+{
+    unsigned panel=cgu.tab==CGU_STUDIO?cgu.band_panel:cgu.rack_controls;
+    int delta=previous-cgu_rack_top(cgu.tab,cgu_rack_tile(cgu.tab,cgs.focus,panel));
+    /* Turn-by-turn scrolling follows the selected unit. Shortcuts jump to its bay. */
+    cgu.rack_from=(int16_t)delta;
+    cgu.rack_ms=cf_motion && delta>=-CGU_UNIT_H && delta<=CGU_UNIT_H?cu.now:0;
 }
 
 static void cgu_band_focus(unsigned panel)
 {
     if(panel==cgu.band_panel)return;
-    int scroll=cgu_rack_scroll();
-    cgu.rack_ms=cf_motion && !cgs.zoom && panel && cgu.band_panel?cu.now:0;
-    cgu.rack_from=(int16_t)(scroll-cgu_rack_top(panel));
+    cgu.rack_ms=0;
     cgu.band_panel=(uint8_t)panel;
     cgu.zoom_ms=0;
     cgu.turn_ms=0;
@@ -198,7 +224,11 @@ static void cgu_band_focus(unsigned panel)
 
 static void cgu_studio_page_turn(int d)
 {
-    if(!cgs.zoom)cgu_band_focus((unsigned)wrapi(cgu.band_panel+d%CGU_BAND_PANELS,CGU_BAND_PANELS));
+    if(!cgs.zoom){
+        int scroll=cgu_rack_scroll();
+        cgu_band_focus((unsigned)wrapi(cgu.band_panel+d%CGU_BAND_PANELS,CGU_BAND_PANELS));
+        cgu_rack_arrive(scroll);
+    }
     else if(cgu.band_panel==CGU_BAND_ARP)cgu.arp_timing^=(uint8_t)(d%2!=0);
     else if(!cgu.band_panel)cgu.part_harmony^=(uint8_t)(d%2!=0);
     cgu.turn_ms=0;
@@ -252,38 +282,44 @@ static void cgu_select(int d)
     else cgu_tab_turn(d);
 }
 
-/* The on-screen order swaps the last two audio parts. The mapping is its own inverse. */
-static unsigned cgu_part(unsigned tile)
-{ return tile<2?tile:tile^1u; }
-
-static unsigned cgu_studio_tile(unsigned part,unsigned band_panel)
-{ return band_panel?CGS_NPART+band_panel-1u:cgu_part(part); }
+static void cgu_focus_part(unsigned part)
+{
+    if(part==cgs.focus)return;
+    cgs.focus=(uint8_t)part;
+    if(part==CGS_DRUMS && cgu.sound_page==CGU_ENVELOPE)cgu_sound_page(CGU_SENDS);
+    cf_keys_changed();
+}
 
 static void cgu_focus(int d)
 {
     if(!d)return;
     cgu.turn_ms=0;
     if(!cgs.zoom)cgu.zoom_ms=0;
-    if(cgu.tab==CGU_HELP)cgu.topic=(uint8_t)wrapi(cgu.topic+d%4,4);
-    else {
-        unsigned tile=cgu_part(cgs.focus);
-        if(cgu.tab==CGU_STUDIO && !cgs.zoom){
-            tile=(unsigned)wrapi((int)cgu_studio_tile(cgs.focus,cgu.band_panel)+d%CGU_RACK_COUNT,CGU_RACK_COUNT);
-            cgu_band_focus(tile>=CGS_NPART?tile-CGS_NPART+1u:CGU_BAND);
-            if(cgu.band_panel)return;
-        } else if(!cgs.zoom && (cgu.tab==CGU_SOUND || cgu.tab==CGU_RECORD)){
-            int count=CGS_NPART+(cgu.tab==CGU_SOUND?2:1);
-            if(cgu.rack_controls)tile=CGS_NPART+cgu.rack_controls-1u;
-            tile=(unsigned)wrapi((int)tile+d%count,count);
-            cgu.rack_controls=(uint8_t)(tile>=CGS_NPART?tile-CGS_NPART+1u:0);
-            if(cgu.rack_controls)return;
-        } else tile=(unsigned)wrapi((int)tile+d%CGS_NPART,CGS_NPART);
-        unsigned part=cgu_part(tile);
-        if(part==cgs.focus)return;
-        cgs.focus=(uint8_t)part;
-        if(cgs.focus==CGS_DRUMS && cgu.sound_page==CGU_ENVELOPE)cgu_sound_page(CGU_SENDS);
-        cf_keys_changed();
+    if(cgu.tab==CGU_HELP){
+        cgu.topic=(uint8_t)wrapi(cgu.topic+d%4,4);
+        return;
     }
+    unsigned tile=cgu_part(cgs.focus);
+    if(cgu.tab<=CGU_SOUND && !cgs.zoom){
+        int scroll=cgu_rack_scroll();
+        int count=(int)cgu_rack_tiles(cgu.tab);
+        unsigned panel=cgu.tab==CGU_STUDIO?cgu.band_panel:cgu.rack_controls;
+        tile=(unsigned)wrapi((int)cgu_rack_tile(cgu.tab,cgs.focus,panel)+d%count,count);
+        panel=tile>=CGS_NPART?tile-CGS_NPART+1u:0;
+        if(cgu.tab==CGU_STUDIO)cgu_band_focus(panel);
+        else cgu.rack_controls=(uint8_t)panel;
+        if(!panel)cgu_focus_part(cgu_part(tile));
+        cgu_rack_arrive(scroll);
+        return;
+    }
+    if(cgu.tab==CGU_RECORD && !cgs.zoom){
+        int count=CGS_NPART+1;
+        if(cgu.rack_controls)tile=CGS_NPART;
+        tile=(unsigned)wrapi((int)tile+d%count,count);
+        cgu.rack_controls=(uint8_t)(tile==CGS_NPART);
+        if(cgu.rack_controls)return;
+    } else tile=(unsigned)wrapi((int)tile+d%CGS_NPART,CGS_NPART);
+    cgu_focus_part(cgu_part(tile));
 }
 
 static int cgu_recording_here(void)
@@ -777,8 +813,8 @@ static void cgu_knob_read(unsigned panel,int k,cf_knob_t *o,int detail)
         kint(o->val,cgs.level[p],"%");
         break;
     }
-    case CGU_KNOB_PART: cgs_knob_info(k,o,1);break;
-    case CGU_KNOB_SHAPING: cgs_knob_info(k,o,0);break;
+    case CGU_KNOB_PART: cgs_knob_info(k,o,cgs.focus,1);break;
+    case CGU_KNOB_SHAPING: cgs_knob_info(k,o,cgs.focus,0);break;
     case CGU_KNOB_HARMONY: {
         unsigned notes=cgs_active() && (cpa_edit.flags&CPA_NOTES);
         if(k==0){
