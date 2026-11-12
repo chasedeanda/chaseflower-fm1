@@ -259,13 +259,6 @@ static void cgu_clear_poll(void)
     }
 }
 
-static unsigned cgu_kit_step(unsigned kit,int d)
-{
-    unsigned rank=0;
-    while(rank+1<NELEM(SQ_KIT_ORDER) && SQ_KIT_ORDER[rank]!=kit)rank++;
-    return SQ_KIT_ORDER[wrapi((int)rank+d%(int)NELEM(SQ_KIT_ORDER),NELEM(SQ_KIT_ORDER))];
-}
-
 static unsigned cgu_kit(void)
 {
     if(cgs_active())return cpa_edit.flags&CPA_GROOVE?cpa_edit.plan.kit:cpa.plan.kit;
@@ -291,16 +284,49 @@ static void cgu_set_kit(unsigned kit,int pin)
     }
 }
 
-#if CHASE_LIBRARY && FELUCCA_VA
-static unsigned cgu_palette_rank(unsigned part,const cf_snd_t *sound,unsigned count)
+static unsigned cgu_sound_count(unsigned part,int all)
 {
-    const char *const *tone=CGS_PROFILES[cgs.genre].tone[part];
+#if CHASE_LIBRARY && FELUCCA_VA
+    if(!all){
+        if(part==CGS_DRUMS)return NELEM(CGS_PROFILES[cgs.genre].kit);
+        cgs_palette_build();
+        return cgs_palette.count[part];
+    }
+#endif
+    return part==CGS_DRUMS?SQ_NKIT:cf_snd_count(part);
+}
+
+static cf_ent_t cgu_sound_choice(unsigned part,int all,unsigned rank)
+{
+    if(part==CGS_DRUMS){
+#if CHASE_LIBRARY && FELUCCA_VA
+        if(!all)return (cf_ent_t){ENGI_DRUM,CGS_PROFILES[cgs.genre].kit[rank]};
+#endif
+        return (cf_ent_t){ENGI_DRUM,SQ_KIT_ORDER[rank]};
+    }
+#if CHASE_LIBRARY && FELUCCA_VA
+    if(!all)return cgs_palette.entry[part][rank];
+#endif
+    unsigned engine,pos;
+    cf_snd_at(part,cf_snd_browse_index(part,rank),&engine,&pos);
+    return (cf_ent_t){(uint8_t)engine,(uint8_t)pos};
+}
+
+static cf_ent_t cgu_sound_current(unsigned part)
+{
+    if(part==CGS_DRUMS)return (cf_ent_t){ENGI_DRUM,(uint8_t)cgu_kit()};
+    return (cf_ent_t){cf_snd[part].engine,(uint8_t)cf_snd[part].pos};
+}
+
+static unsigned cgu_sound_rank(unsigned part,int all,unsigned count,cf_ent_t current)
+{
     unsigned rank=0;
-    if(sound->engine!=ENGI_VA || sound->kind!=PK_FACTORY)return count;
-    while(rank<count && !cb_streq(sound->name,tone[rank]))rank++;
+    for(;rank<count;rank++){
+        cf_ent_t choice=cgu_sound_choice(part,all,rank);
+        if(choice.e==current.e && choice.pos==current.pos)break;
+    }
     return rank;
 }
-#endif
 
 static void cgu_load_sound(unsigned part,unsigned engine,unsigned pos)
 {
@@ -316,6 +342,13 @@ static void cgu_load_sound(unsigned part,unsigned engine,unsigned pos)
     if(part==CGS_CHORDS && cs.env_link)cf_env_follow();
 }
 
+static void cgu_sound_load_choice(unsigned part,int all,unsigned rank)
+{
+    cf_ent_t choice=cgu_sound_choice(part,all,rank);
+    if(part==CGS_DRUMS)cgu_set_kit(choice.pos,1);
+    else cgu_load_sound(part,choice.e,choice.pos);
+}
+
 static void cgu_sound_step(unsigned p,int d)
 {
     if(!d)return;
@@ -323,36 +356,50 @@ static void cgu_sound_step(unsigned p,int d)
         cf_message("Release notes to choose sounds");
         return;
     }
-    const cgs_profile_t *profile=&CGS_PROFILES[cgs.genre];
-    if(p==CGS_DRUMS){
-        unsigned kit=cgu_kit();
-        unsigned pick=kit==profile->kit[0] || (kit!=profile->kit[1] && d<0);
-        cgu_set_kit(cgu.all_sounds?cgu_kit_step(kit,d):profile->kit[pick]%SQ_NKIT,1);
-        return;
+    int all=cgu.all_sounds;
+    unsigned count=cgu_sound_count(p,all);
+    if(!count)return;
+    unsigned rank=cgu_sound_rank(p,all,count,cgu_sound_current(p));
+    int from=rank==count?(d>0?-1:0):(int)rank;
+    unsigned pick=(unsigned)wrapi(from+d%(int)count,count);
+    if(pick!=rank)cgu_sound_load_choice(p,all,pick);
+}
+
+/* Each Sound EDIT pass draws without replacement until the role's palette is exhausted. */
+#define CGU_ROLL_WORDS ((CF_LIST_MAX+31u)/32u)
+static struct {
+    uint32_t gen;
+    uint32_t used[CGS_NPART][CGU_ROLL_WORDS];
+    uint8_t scope;
+} cgu_roll;
+
+static unsigned cgu_reroll_rank(unsigned part,int all,unsigned count,unsigned current)
+{
+    unsigned scope=all?CGS_NGENRE+1u:cgs.genre+1u;
+    if(cgu_roll.scope!=scope || cgu_roll.gen!=up_gen){
+        memset(cgu_roll.used,0,sizeof cgu_roll.used);
+        cgu_roll.scope=(uint8_t)scope;
+        cgu_roll.gen=up_gen;
     }
-    unsigned engine, pos;
-#if CHASE_LIBRARY && FELUCCA_VA
-    if(!cgu.all_sounds){
-        unsigned count=cgs_palette_count(p);
-        if(!count)return;
-        unsigned rank=cgu_palette_rank(p,&cf_snd[p],count);
-        int from=rank==count?(d>0?-1:0):(int)rank;
-        unsigned pick=(unsigned)wrapi(from+d%(int)count,count);
-        unsigned voice=cgs_palette_voice(p,pick);
-        if(voice==PF_NONE || pick==rank)return;
-        engine=ENGI_VA;
-        pos=pool_pos_factory(engine,voice);
-    } else
-#endif
-    {
-        unsigned count=cf_snd_count(p);
-        if(!count)return;
-        unsigned rank=(unsigned)wrapi((int)cf_snd_browse_rank(p,cf_snd_pos(p))+d%(int)count,count);
-        unsigned index=cf_snd_browse_index(p,rank);
-        if(index==cf_snd_pos(p))return;
-        cf_snd_at(p,index,&engine,&pos);
+    uint32_t *used=cgu_roll.used[part];
+    if(current<count)used[current/32u]|=1u<<(current%32u);
+    unsigned available=0;
+    for(unsigned i=0;i<count;i++)available+=!(used[i/32u]&(1u<<(i%32u)));
+    if(!available){
+        memset(used,0,sizeof cgu_roll.used[part]);
+        if(current<count)used[current/32u]|=1u<<(current%32u);
+        available=count-(current<count);
     }
-    cgu_load_sound(p,engine,pos);
+    if(!available)return count;
+    unsigned draw=cgs_rand(&cgu.sound_seed,available);
+    for(unsigned i=0;i<count;i++){
+        uint32_t bit=1u<<(i%32u);
+        if(used[i/32u]&bit)continue;
+        if(draw--)continue;
+        used[i/32u]|=bit;
+        return i;
+    }
+    return count;
 }
 
 #if CHASE_LIBRARY && FELUCCA_VA
@@ -365,7 +412,7 @@ static void cgu_apply_palette(void)
     }
     unsigned pos[CGS_DRUMS];
     for(unsigned p=0;p<CGS_DRUMS;p++){
-        unsigned voice=cgs_palette_voice(p,cgs_palette_count(p)-1u);
+        unsigned voice=cgs_profile_voice(p,cgs_profile_tone_count(p)-1u);
         if(voice==PF_NONE)return;
         pos[p]=pool_pos_factory(ENGI_VA,voice);
     }
@@ -387,17 +434,20 @@ static void cgu_roll_studio_sounds(unsigned first,unsigned end)
         }
 #if CHASE_LIBRARY && FELUCCA_VA
         if(cu.edited[p] || cfk_edited(p) || cf_snd[p].kind==PK_USER)continue;
-        unsigned count=cgs_palette_count(p);
+        unsigned count=cgs_profile_tone_count(p);
         if(!count)continue;
         const cf_stage_t *stage=&cf_stage[p];
         fm1_irq_off();
         cf_snd_t sound=stage->pat==CGS_PATCH_ROLL && (stage->ready || stage->taken)?
             stage->meta:cf_snd[p];
         fm1_irq_on();
-        unsigned rank=cgu_palette_rank(p,&sound,count);
+        unsigned rank=count;
+        if(sound.engine==ENGI_VA && sound.kind==PK_FACTORY)
+            for(unsigned i=0;i<count;i++)
+                if(cgs_profile_voice(p,i)==sound.fk){rank=i;break;}
         for(unsigned i=1;i<=count;i++){
             unsigned pick=rank==count?(count-i):(rank+i)%count;
-            unsigned voice=cgs_palette_voice(p,pick);
+            unsigned voice=cgs_profile_voice(p,pick);
             if(voice==PF_NONE || pick==rank)continue;
             unsigned pos=pool_pos_factory(ENGI_VA,voice);
             if(pool_entry(ENGI_VA,pos).kind!=PK_FACTORY)continue;
@@ -545,9 +595,11 @@ static void cgu_edit(void)
                 return;
             }
         for(unsigned p=first;p<end;p++){
-            if(!cgu.all_sounds){cgu_sound_step(p,1);continue;}
-            int step=(int)cgs_rand(&cgu.sound_seed,7)+1;
-            cgu_sound_step(p,cgs_rand(&cgu.sound_seed,2)?step:-step);
+            int all=cgu.all_sounds;
+            unsigned count=cgu_sound_count(p,all);
+            unsigned rank=cgu_sound_rank(p,all,count,cgu_sound_current(p));
+            unsigned pick=cgu_reroll_rank(p,all,count,rank);
+            if(pick<count)cgu_sound_load_choice(p,all,pick);
         }
     } else if(cgu.tab==CGU_HELP && cgu.topic==CGU_HARMONY && cgs.zoom){
         cfl_open();
@@ -614,7 +666,7 @@ static void cgu_knob_turn(int k,int d)
     case CGU_KNOB_PART: cgs_knob_turn(k,d,1);break;
     case CGU_KNOB_HARMONY: cgs_harmony_turn(k,d);break;
     case CGU_KNOB_SHAPING: cgs_knob_turn(k,d,0);break;
-    case CGU_KNOB_GENRE: cgs_genre_turn(d);break;
+    case CGU_KNOB_GENRE: if(k==0)cgs_genre_turn(d);else cgs_family_turn(d);break;
     case CGU_KNOB_ARP: cf_arp_controls_turn(k,d,cgu_arp_page(cgs.zoom),1);break;
     case CGU_KNOB_PROGRESSION: cgu.progression_pick=(uint8_t)(d>0);break;
     case CGU_KNOB_LIBRARY: cgu.all_sounds=(uint8_t)(d>0);break;
@@ -644,19 +696,9 @@ static void cgu_sound_info(int k,cf_knob_t *o,unsigned p,unsigned page)
     } else if(k==0){
         kfmt(o->name,12,p==CGS_DRUMS?"KIT":"PRESET");
         kfmt(o->val,14,p==CGS_DRUMS?SQ_KITS[cgu_kit()%SQ_NKIT].name:cf_snd[p].name);
-        unsigned count=p==CGS_DRUMS?SQ_NKIT:cf_snd_count(p);
-        unsigned pos=p==CGS_DRUMS?cgu_kit():cf_snd_pos(p);
-        o->bar=(int16_t)(count>1?pos*255u/(count-1u):0);
-        if(!cgu.all_sounds){
-            if(p==CGS_DRUMS)o->bar=cgu_kit()==CGS_PROFILES[cgs.genre].kit[1]?255:0;
-#if CHASE_LIBRARY && FELUCCA_VA
-            else {
-                unsigned voices=cgs_palette_count(p);
-                unsigned rank=cgu_palette_rank(p,&cf_snd[p],voices);
-                o->bar=(int16_t)(voices>1 && rank<voices?rank*255u/(voices-1u):0);
-            }
-#endif
-        }
+        unsigned count=cgu_sound_count(p,cgu.all_sounds);
+        unsigned rank=cgu_sound_rank(p,cgu.all_sounds,count,cgu_sound_current(p));
+        o->bar=(int16_t)(count>1u && rank<count?rank*255u/(count-1u):0);
     } else if(k==1){
         kfmt(o->name,12,"LEVEL");kint(o->val,cgs.level[p],"%");
         o->bar=(int16_t)(cgs.level[p]*255u/100u);
@@ -710,6 +752,10 @@ static void cgu_knob_view(int k,cf_knob_t *o,int detail)
         if(k==0){
             kfmt(o->name,12,"GENRE");kfmt(o->val,14,CGS_PROFILES[cgs.genre].name);
             o->bar=(int16_t)(cgs.genre*255u/(CGS_NGENRE-1u));
+        } else if(k==1){
+            unsigned family=CGS_PROFILES[cgs.genre].family;
+            kfmt(o->name,12,"FAMILY");kfmt(o->val,14,CGS_FAMILIES[family]);
+            o->bar=(int16_t)(family*255u/(CGS_NFAMILY-1u));
         }
         break;
     case CGU_KNOB_ARP: cf_arp_controls_info(k,o,cgu_arp_page(detail),1);break;

@@ -92,6 +92,16 @@ The **PLAY** button is green while the transport runs and orange when stopped. O
 
 Changing screens leaves playback running. A selected row, edit focus or chord name is not an audition: use the displayed PLAY or SEL action to hear it.
 
+### Sounds in CORD Studio
+
+In **Studio → Genre**, use **K1** to browse genres or **K2** to jump between Guitar, Electronic and Experimental. In **Sound → Sound Library**, use **K1** to choose **Genre** or **All sounds**. The Genre view shows the current palette and how many presets or kits each part has. **SEL Apply** loads the genre's featured set.
+
+On the **Sound** overview, **EDIT** rerolls the band's presets and drum kit. Zoom into a part's **Tone** page to reroll that part only, or turn **K1** to browse its presets in order. Edit shuffles each part's choices without repeating until that part's palette has been heard.
+
+Each genre also has an original Chords, Bass and Layer trio. The listening pack compares each voice and each full band against the genre's featured set. [CORD Studio Originals](docs/CORD-STUDIO-ORIGINALS.md)
+
+Rerolling keeps the effects chain and the part's drive, chorus, delay and reverb sends. For effects, open **FX Presets**, browse with **K1**, and use **SEL** to recall one or **EDIT** to edit the loaded effect.
+
 ### GLO Live in CORD Studio
 
 Press **GLO** to open the live keyboard controls. Press **GLO** or **HOME** to return to the previous page, or press **SAVE** from GLO for Settings. Turn **ALGORITHM** for **Map** or **State**, and turn **SELECT** for tempo.

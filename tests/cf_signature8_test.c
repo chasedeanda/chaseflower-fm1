@@ -52,7 +52,7 @@ static void invariants(void){
  CHECK(cf_snd_find(0,ENGI_FM6,"ORGAN"));uint32_t old=cf_snd_pos(0);cs.snd[0]=old;cs.snd_layer=cf_snd_pos(2);cfs_loaded=1;
  cf_ui_init();CHECK(!strcmp(cf_snd[0].name,"ORGAN")&&cf_snd_pos(0)==old);
  cfs_loaded=0;
- CHECK(FM6_NSLOT==128);CHECK(NELEM(FM6_PRESETS)==100);CHECK(VA_NPRESETS==131);
+ CHECK(FM6_NSLOT==128);CHECK(NELEM(FM6_PRESETS)==100);CHECK(STUDIO_VA_GLIDE_HAZE==131 && VA_NPRESETS==149);
  cf_bank[0]=SIG8_FILTER;unsigned found=0;
  for(unsigned k=0;k<cf_snd_count(0);k++){uint32_t e,p;cf_snd_at(0,k,&e,&p);if(cf_bank_match(0,e,p)){
  CHECK(found<8);if(found<8){CHECK(e==engines[found]);CHECK(pool_entry(e,p).fk==fac[found]);CHECK(cf_entry_bank(e,p)==found+1);}found++;}}

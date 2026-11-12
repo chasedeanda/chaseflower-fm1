@@ -1,11 +1,13 @@
 /* SPDX-License-Identifier: GPL-3.0-only */
 static const char *const CGS_PART_NAME[]={"Chords","Bass","Layer","Drums"};
+enum { CGS_GUITAR, CGS_ELECTRONIC, CGS_EXPERIMENTAL, CGS_NFAMILY };
+static const char *const CGS_FAMILIES[]={"Guitar","Electronic","Experimental"};
 typedef struct {
     const char *name;
-    uint8_t bpm, primary, secondary, kit[2];
+    uint8_t bpm, primary, secondary, family, kit[6];
     const char *style[CGS_NPART][2];
 #if CHASE_LIBRARY && FELUCCA_VA
-    const char *tone[3][5];  /* The last tone in each row belongs to the curated palette. */
+    const char *tone[3][5];  /* The last tone is loaded by Sound Library > Apply. */
 #endif
 } cgs_profile_t;
 
@@ -15,49 +17,51 @@ typedef struct {
 #define CGS_TONES(...)
 #endif
 static const cgs_profile_t CGS_PROFILES[]={
-    {"Dream Pop",104,CF_P_DREAMY,CF_P_EMOTIONAL,{DMK_AIR,DMK_ROOM},
+    {"Dream Pop",104,CF_P_DREAMY,CF_P_EMOTIONAL,CGS_GUITAR,{DMK_AIR,DMK_ROOM,DMK_XLIVE,DMK_TAPE,DMK_GLASS,DMK_BRUSH},
      {{"Sustain","Soft pulse"},{"Hook","Counterline"},{"Arp","Sparse motif"},{"Soft beat","Open hats"}}
      CGS_TONES({"SOFT LENS","GHOST CHOIR","CABINET PAD"}, {"SILK PICK","TAPE SUB","ROUNDWIRE"},
                {"DREAM PLUCK","DISTANT BELL","GLASS THREAD"})},
-    {"Indie",116,CF_P_FAMILIAR,CF_P_UPLIFTING,{DMK_XLIVE,DMK_ROOM},
+    {"Indie",116,CF_P_FAMILIAR,CF_P_UPLIFTING,CGS_GUITAR,{DMK_XLIVE,DMK_ROOM,DMK_STD,DMK_TIGHT,DMK_WOOD,DMK_TAPE},
      {{"Chop","Ring"},{"Offbeat","Answer"},{"Chime","Counterline"},{"Room beat","Open hats"}}
      CGS_TONES({"ROOM KEYS","FLOATING ORG","CABINET PAD","JANGLE ORGAN"},
                {"FELT PICK","MUTED FINGER","MUTED WIRE","PICKUP BASS"},
                {"GENTLE MALLE","DREAM PLUCK","GLASS THREAD"})},
-    {"New Wave",126,CF_P_DARK,CF_P_ENERGETIC,{DMK_909,DMK_XTECH},
+    {"New Wave",126,CF_P_DARK,CF_P_ENERGETIC,CGS_ELECTRONIC,{DMK_909,DMK_XTECH,DMK_808,DMK_CRUSH,DMK_XCLUB,DMK_MRETRO},
      {{"Stab","Sustain"},{"Octaves","Moving pulse"},{"Steps","Sequenced"},{"Machine","Open hats"}}
      CGS_TONES({"NEON POLY","PWM KEYS","PULSE STACK"}, {"RELAY BASS","DARK PULSE","SYNC RELAY"},
                {"FROSTWIRE","STAR KEYS","CRYSTAL STEP"})},
-    {"Pop Punk",148,CF_P_DARK,CF_P_EMOTIONAL,{DMK_XBREAK,DMK_ROOM},
+    {"Pop Punk",148,CF_P_DARK,CF_P_EMOTIONAL,CGS_GUITAR,{DMK_XBREAK,DMK_ROOM,DMK_XLIVE,DMK_CRUSH,DMK_TIGHT,DMK_BOOM},
      {{"Palm mute","Open wall"},{"Pick drive","Octave hook"},{"Feedback","High hook"},{"Heavy pocket","Double kick"}}
      CGS_TONES({"AMP EDGE","POLY KEYS","AMP STACK","BARBED AMP"},
                {"DOWN PICK","WOOD PLUCK","MUTED WIRE","POWER PICK","RUST PICK"},
                {"FROSTWIRE","ROOM KEYS","WIRE LEAD","FRET HOWL"})},
-    {"Lo-Fi",82,CF_P_JAZZY,CF_P_DREAMY,{DMK_DUST,DMK_TAPE},
+    {"Lo-Fi",82,CF_P_JAZZY,CF_P_DREAMY,CGS_ELECTRONIC,{DMK_DUST,DMK_TAPE,DMK_XLOFI,DMK_BRUSH,DMK_LOFI,DMK_CHILL},
      {{"Soft stabs","Held keys"},{"Late pocket","Walk"},{"Fragments","Soft bell"},{"Half-time","Loose hats"}}
      CGS_TONES({"DUSTED KEYS","VINYL KEYS","TAPE EP"}, {"TAPE FINGER","WARM TRIANGL","FELT SUB"},
                {"DIM CHIME","UNEVEN BELLS","DUST TINES"})},
-    {"Ambient Soundscape",64,CF_P_EXPERIMENTAL,CF_P_DREAMY,{DMK_CHILL,DMK_GLASS},
+    {"Ambient Soundscape",64,CF_P_EXPERIMENTAL,CF_P_DREAMY,CGS_EXPERIMENTAL,{DMK_CHILL,DMK_GLASS,DMK_AIR,DMK_DUB,DMK_WOOD,DMK_HAND},
      {{"Hold","Breathe"},{"Pedal","Slow contour"},{"Swells","Distant notes"},{"Sparse","Texture"}}
      CGS_TONES({"SLOW ORBIT","APOLLO VEIL","PRISM CLOUD"}, {"LOW TIDE","SLOW BLOOM B","FLOOR SWELL"},
                {"MOTION PAD","WATER CHIME","HALO BLOOM"})},
 };
 #undef CGS_TONES
+_Static_assert(NELEM(CGS_PROFILES)==CGS_NGENRE, "one Studio profile per genre");
 
 #if CHASE_LIBRARY && FELUCCA_VA
-static unsigned cgs_palette_count(unsigned part)
+static unsigned cgs_profile_tone_count(unsigned part)
 {
     const cgs_profile_t *profile=&CGS_PROFILES[cgs.genre];
     unsigned n=0;
     while(n<NELEM(profile->tone[part]) && profile->tone[part][n])n++;
     return n;
 }
-static unsigned cgs_palette_voice(unsigned part,unsigned pick)
+static unsigned cgs_profile_voice(unsigned part,unsigned pick)
 {
     const char *name=CGS_PROFILES[cgs.genre].tone[part][pick];
     if(name)for(unsigned i=0;i<VA_NPRESETS;i++)if(cb_streq(VA_PRESETS[i].name,name))return i;
     return PF_NONE;
 }
+#include "cf_studio_palettes.h"
 #endif
 
 static unsigned cgs_near(unsigned pc, unsigned center)
@@ -404,8 +408,8 @@ static void cgs_prepare_sounds(void)
     for(unsigned part=0;part<3;part++){
         if(cgs.boot_sound_gen[part]!=cf_snd_gen[part] || cu.edited[part] || cgs_manual(part) ||
            cf_snd[part].kind==PK_USER)continue;
-        unsigned pick=cgs.genre==CGS_PUNK?cgs_palette_count(part)-1u:0;
-        unsigned voice=cgs_palette_voice(part,pick);
+        unsigned pick=cgs.genre==CGS_PUNK?cgs_profile_tone_count(part)-1u:0;
+        unsigned voice=cgs_profile_voice(part,pick);
         if(voice==PF_NONE)continue;
         cf_stage_t prepared;
         cf_snd_build(part,ENGI_VA,pool_pos_factory(ENGI_VA,voice),&prepared);
@@ -596,17 +600,31 @@ static void cgs_knob_info(int k,cf_knob_t *o,int part_detail)
         }
     }
 }
-static void cgs_genre_turn(int d)
+static void cgs_genre_set(unsigned genre)
 {
     unsigned was=cgs.genre;
-    cgs.genre=(uint8_t)wrapi((int)was+d%CGS_NGENRE,CGS_NGENRE);
-    if(cgs.genre==was)return;
+    if(genre==was)return;
+    cgs.genre=(uint8_t)genre;
     if(cgs_new_take(0)){
         fm1_irq_off();
         cgs_cancel_rolled_sounds();
         fm1_irq_on();
     } else cgs.genre=(uint8_t)was;
 }
+static void cgs_genre_turn(int d)
+{
+    cgs_genre_set((unsigned)wrapi((int)cgs.genre+d%CGS_NGENRE,CGS_NGENRE));
+}
+
+static void cgs_family_turn(int d)
+{
+    unsigned family=CGS_PROFILES[cgs.genre].family;
+    unsigned next=(unsigned)wrapi((int)family+d%CGS_NFAMILY,CGS_NFAMILY);
+    if(next==family)return;
+    for(unsigned genre=0;genre<CGS_NGENRE;genre++)
+        if(CGS_PROFILES[genre].family==next){cgs_genre_set(genre);return;}
+}
+
 static void cgs_energy_turn(int d)
 {
     unsigned value=(unsigned)clampi(cgs.energy+d,0,100);

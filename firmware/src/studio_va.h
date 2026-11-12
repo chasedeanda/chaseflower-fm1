@@ -87,3 +87,92 @@ STUDIO_RECIPE(RUST_PICK, "RUST PICK", 1, 60, 10, 11, 30, 0, 71, 94, 28,
 STUDIO_RECIPE(FRET_HOWL, "FRET HOWL", 0, 75, 22, 2, 17, 21, 88, 81, 75,
     OSC(0, TRI, 52, 0, 0), OSC(1, PWM, 18, 12, 4), O_(1, SHAPE), 72, ENV2(72,94,67,72),
     LFO(0, 89, 0, 99, 75), VA_VEL, 76, M_(0, VS_ENV1 + 1, VD_LVL1 + 1, 38), M_(1, VS_LFO1, VD_PITCH, 5))
+
+
+/* Original Studio genre trios. Append these after the first 33 Studio programs. */
+/* Dream Pop: glide-guitar motion, a centered bass and a swelling upper answer. */
+STUDIO_RECIPE(GLIDE_HAZE, "GLIDE HAZE", 0, 61, 8, 6, 10, 75, 89, 108, 102,
+    OSC(0, PWM, 48, 0, -8), O_(0, SHAPE), 54, OSC(1, SAW, 30, 0, 7), OSC(2, TRI, 32, 12, 1),
+    ENV2(90, 88, 40, 88), LFO(0, 36, 0, 127, 0), LFO(1, 49, 0, 92, 0), VA_VEL, 56,
+    M_(0, VS_LFO1, VD_PIT1, 8), M_(1, VS_LFO1 + 1, VD_PIT1 + 1, -7),
+    M_(2, VS_ENV1 + 1, VD_LVL1 + 2, 24), M_(3, VS_LFO1, VD_SHP1, 18))
+STUDIO_RECIPE(VELVET_PICK, "VELVET PICK", 1, 52, 6, 10, 5, 1, 79, 90, 44,
+    OSC(0, SIN, 87, 0, 0), OSC(1, PWM, 13, 12, 0), O_(1, SHAPE), 35,
+    ENV2(0, 53, 0, 31), VA_VEL, 62, M_(0, VS_ENV1 + 1, VD_LVL1 + 1, 42),
+    M_(1, VS_VEL, VD_CUT, 10))
+STUDIO_RECIPE(SLOW_SPARK, "SLOW SPARK", 0, 73, 13, 0, 0, 56, 95, 43, 90,
+    OSC(0, TRI, 57, 0, 0), OSC(1, SIN, 21, 12, -6), OSC(2, SIN, 9, 19, 4),
+    ENV2(68, 88, 20, 86), LFO(0, 55, 0, 104, 61), VA_VEL, 71,
+    M_(0, VS_ENV1 + 1, VD_LVL1 + 1, 24), M_(1, VS_LFO1, VD_PIT1 + 2, 7))
+
+/* Indie: short rhythm strokes leave gaps for a sharper bridge-pickup register. */
+STUDIO_RECIPE(TWIN_CHOPS, "TWIN CHOPS", 0, 70, 11, 16, 14, 1, 76, 47, 34,
+    OSC(0, SQR, 38, 0, -3), O_(0, SHAPE), 34, OSC(1, TRI, 49, 0, 3),
+    ENV2(0, 51, 0, 28), VA_VEL, 81, M_(0, VS_ENV1 + 1, VD_LVL1, 23),
+    M_(1, VS_VEL, VD_CUT, 16))
+STUDIO_RECIPE(PALM_WIRE, "PALM WIRE", 1, 61, 12, 8, 8, 0, 76, 69, 31,
+    OSC(0, SIN, 81, 0, 0), OSC(1, SQR, 24, 0, 0), O_(1, SHAPE), 29, OSC(2, TRI, 11, 12, 0),
+    ENV2(0, 58, 0, 29), VA_VEL, 69, M_(0, VS_ENV1 + 1, VD_LVL1 + 2, 41),
+    M_(1, VS_ENV1 + 1, VD_FENV, 20))
+STUDIO_RECIPE(BRIDGE_CHIME, "BRIDGE CHIME", 0, 79, 14, 8, 4, 0, 89, 19, 58,
+    OSC(0, TRI, 54, 0, 0), OSC(1, PWM, 20, 12, 0), O_(1, SHAPE), 25, OSC(2, SIN, 9, 19, 0),
+    ENV2(0, 62, 0, 42), VA_VEL, 85, M_(0, VS_ENV1 + 1, VD_LVL1 + 1, 27),
+    M_(1, VS_VEL, VD_CUT, 16))
+
+/* New Wave: oscillator pulse-width motion, an envelope-swept bass and metallic steps. */
+STUDIO_RECIPE(AFTERIMAGE, "AFTERIMAGE", 0, 72, 15, 11, 3, 11, 78, 91, 48,
+    OSC(0, PWM, 55, 0, -4), O_(0, SHAPE), 36, OSC(1, SAW, 31, 0, 4), OSC(2, SIN, 15, -12, 0),
+    LFO(0, 62, 1, 127, 0), LFO(1, 46, 0, 111, 0), VA_VEL, 72,
+    M_(0, VS_LFO1, VD_SHP1, 33), M_(1, VS_LFO1 + 1, VD_CUT, 10), M_(2, VS_LFO1, VD_AMP, 33))
+STUDIO_RECIPE(MONO_SHIFT, "MONO SHIFT", 1, 48, 36, 37, 12, 0, 75, 69, 31,
+    OSC(0, SQR, 62, 0, 0), O_(0, SHAPE), 29, OSC(1, SIN, 45, 0, 0),
+    ENV2(8, 82, 0, 29), VA_VEL, 69, M_(0, VS_ENV1 + 1, VD_SHP1, 39),
+    M_(1, VS_VEL, VD_CUT, 15), M_(2, VS_ENV1 + 1, VD_LVL1, 24))
+STUDIO_RECIPE(CHROME_ARP, "CHROME ARP", 0, 84, 9, 6, 2, 0, 83, 10, 52,
+    OSC(0, TRI, 49, 0, 0), OSC(2, SIN, 28, 0, 0), OSC(3, SIN, 20, 19, 5), VA_RING4, 1,
+    ENV2(0, 55, 0, 31), VA_VEL, 82, M_(0, VS_ENV1 + 1, VD_LVL1 + 3, 32))
+
+/* Pop Punk: short driven strokes, a transient over a stable bass and an octave hook. */
+STUDIO_RECIPE(STACK_BITE, "STACK BITE", 0, 68, 8, 18, 39, 0, 65, 68, 26,
+    OSC(0, SQR, 35, 0, -4), O_(0, SHAPE), 27, OSC(1, SAW, 28, 0, 3),
+    ENV2(0, 48, 0, 26), VA_VEL, 74, M_(0, VS_ENV1 + 1, VD_CUT, 14),
+    M_(1, VS_VEL, VD_DRIVE, 11))
+STUDIO_RECIPE(BREAK_PICK, "BREAK PICK", 1, 66, 9, 17, 18, 0, 70, 57, 31,
+    OSC(0, SIN, 82, 0, 0), OSC(1, SQR, 36, 12, 0), O_(1, SHAPE), 36, ENV2(0, 53, 0, 25), VA_VEL, 66,
+    M_(0, VS_ENV1 + 1, VD_LVL1 + 1, 43), M_(1, VS_ENV1 + 1, VD_DRIVE, 13))
+STUDIO_RECIPE(OCTAVE_CRY, "OCTAVE CRY", 0, 78, 19, 11, 15, 5, 76, 68, 47,
+    OSC(0, TRI, 47, 0, 0), OSC(1, PWM, 27, 12, 3), O_(1, SHAPE), 42,
+    ENV2(19, 60, 16, 38), LFO(0, 80, 0, 118, 72), VA_VEL, 79,
+    M_(0, VS_LFO1, VD_PIT1 + 1, 7), M_(1, VS_ENV1 + 1, VD_LVL1 + 1, 20))
+
+/* Lo-Fi: envelope-shaped overtones, small asynchronous wow and low-level grain. */
+STUDIO_RECIPE(WORN_REED, "WORN REED", 0, 65, 10, 6, 6, 8, 90, 62, 61,
+    OSC(0, TRI, 60, 0, 0), OSC(1, SQR, 20, 0, -2), O_(1, SHAPE), 35, OSC(2, SIN, 12, 19, 4),
+    ENV2(0, 64, 0, 37), LFO(0, 31, 0, 127, 0), LFO(1, 54, 0, 98, 0), VA_VEL, 83,
+    M_(0, VS_ENV1 + 1, VD_LVL1 + 2, 28), M_(1, VS_LFO1, VD_PITCH, 5),
+    M_(2, VS_LFO1 + 1, VD_AMP, 10))
+STUDIO_RECIPE(DUST_ROUND, "DUST ROUND", 1, 49, 8, 12, 7, 4, 84, 70, 36,
+    OSC(0, SIN, 88, 0, 0), OSC(1, TRI, 21, 12, 0), ENV2(15, 70, 0, 29), VA_VEL, 66,
+    M_(0, VS_ENV1 + 1, VD_LVL1 + 1, 22), M_(1, VS_VEL, VD_CUT, 9))
+STUDIO_RECIPE(GRAIN_KEYS, "GRAIN KEYS", 0, 68, 8, 6, 1, 2, 90, 31, 67,
+    OSC(0, SIN, 63, 0, 0), OSC(1, TRI, 19, 12, -4),
+    MODE(2, NOISE), O_(2, WAVE), VN_VINYL, O_(2, LEVEL), 8, O_(2, SHAPE), 26, O_(2, KTRK), 0,
+    ENV2(0, 62, 0, 35), LFO(0, 36, 0, 112, 0), VA_VEL, 85,
+    M_(0, VS_ENV1 + 1, VD_LVL1 + 1, 27), M_(1, VS_LFO1, VD_PIT1 + 1, 9))
+
+/* Ambient: independent movement rates around a stable low sine foundation. */
+STUDIO_RECIPE(TIDAL_DRONE, "TIDAL DRONE", 0, 64, 7, 2, 0, 102, 96, 113, 108,
+    OSC(0, TRI, 39, 0, -4), MODE(0, MORPH), O_(0, SHAPE), 24, OSC(1, SIN, 37, 0, 4),
+    OSC(2, PWM, 15, 12, 0), O_(2, SHAPE), 58, ENV2(104, 102, 52, 105), VA_VEL, 50,
+    LFO(0, 17, 0, 127, 0), LFO(1, 28, 0, 127, 0),
+    M_(0, VS_LFO1, VD_SHP1, 25), M_(1, VS_LFO1 + 1, VD_SHP1 + 2, 23),
+    M_(2, VS_ENV1 + 1, VD_LVL1 + 2, 23))
+STUDIO_RECIPE(DEEP_ANCHOR, "DEEP ANCHOR", 1, 46, 5, 1, 2, 49, 94, 108, 84,
+    OSC(0, SIN, 86, 0, 0), OSC(1, TRI, 15, 12, 0), ENV2(103, 95, 48, 89),
+    LFO(0, 14, 0, 104, 0), VA_VEL, 55,
+    M_(0, VS_ENV1 + 1, VD_LVL1 + 1, 23), M_(1, VS_LFO1, VD_LVL1 + 1, 6))
+STUDIO_RECIPE(AIR_LATTICE, "AIR LATTICE", 0, 81, 12, 0, 0, 85, 99, 65, 104,
+    OSC(0, SIN, 59, 0, 0), OSC(1, SIN, 13, 19, -7), OSC(2, SIN, 10, 24, 5),
+    ENV2(105, 96, 43, 100), LFO(0, 16, 0, 127, 0), LFO(1, 25, 0, 113, 0), VA_VEL, 59,
+    M_(0, VS_ENV1 + 1, VD_LVL1 + 1, 27), M_(1, VS_LFO1, VD_LVL1 + 2, 10),
+    M_(2, VS_LFO1 + 1, VD_PIT1 + 1, 5))
