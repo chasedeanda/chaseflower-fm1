@@ -116,7 +116,7 @@ static void cgu_glow_draw(void)
     m.waiting=cf_sn.ac_waiting || cf_sn.ac_lost;
     m.playing=cf_sn.running;
     m.pending=cf_sn.perf_pending;
-    m.fill=cf_sn.perf_fill || cgs.fill_held;
+    m.fill=cgs.fill_held?CFPERF_FILL_MANUAL:cf_sn.perf_fill;
     m.dropped=cf_sn.perf_dropped;
     if(cu.pop==POP_MSG)str_cpy(m.message,cu.msg,sizeof m.message);
     if(cgu_glow_valid && !fb_full && !memcmp(&m,&last,sizeof m))return;
@@ -127,7 +127,7 @@ static void cgu_glow_draw(void)
     cfn_text(&CFN_14,6,17,value,C_ACC(0));
     const char *status=m.waiting?"CLOCK WAIT":m.paused?"PAUSED":m.pending==CFPERF_FILL?"FILL NEXT":
         m.pending==CFPERF_DROP?"DROP NEXT":m.pending==CFPERF_BACK?"BACK NEXT":m.dropped?"DRUMS OFF":
-        m.fill?"FILL":m.playing?"PLAYING":"STOPPED";
+        m.fill==CFPERF_FILL_AUTO?"TURNAROUND":m.fill?"FILL":m.playing?"PLAYING":"STOPPED";
     cfn_center(&CFN_11,120,16,status,FL_INK2);
     cfn_text(&CFN_12,174,17,"GLO LIVE",C_ACC(0));
     for(unsigned i=0;i<CGU_GLO_VIEWS;i++){

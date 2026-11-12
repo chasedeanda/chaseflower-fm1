@@ -53,8 +53,25 @@ def render(name, seed, regen=0, usb=0, rate=48000, bars=8, wav=True, genre=0, ou
                     "pcm": hashlib.sha256(data).hexdigest()}
 
 
-def main():
+def studio_genres():
+    result = subprocess.run([str(ENGINE), "--list-genres"], cwd=ROOT, capture_output=True, text=True, check=True)
+    genres = {}
+    for line in result.stdout.splitlines():
+        genre_id, name, bars = line.split("\t")
+        genres[genre_id] = (name, int(bars))
+    return genres
+
+
+def main(genre, available_genres):
+
     OUTPUT.mkdir(parents=True, exist_ok=True)
+    if genre is not None:
+        name, bars = available_genres[genre]
+        _, summary = render(genre, 100, bars=bars, genre=genre)
+        (OUTPUT / f"{genre}.json").write_text(json.dumps(summary, indent=2) + "\n")
+        print(f"Rendered {name} to {OUTPUT / (genre + '.wav')}")
+        return
+
     pairs = []
     original_events = {}
     for i, seed in enumerate(SEEDS, 1):
@@ -84,8 +101,8 @@ def main():
     _, long_take = render("long-form", SEEDS[2], bars=24)
     _, rolls = render("dream-pop-three-rolls", 100, regen=5, bars=32)
     genres = {}
-    for genre, label in enumerate(("dream-pop", "indie", "new-wave", "pop-punk", "lo-fi", "ambient")):
-        _, genres[label] = render(label, 100, bars=16 if genre==5 else 8, genre=genre)
+    for genre_id, (_, bars) in available_genres.items():
+        _, genres[genre_id] = render(genre_id, 100, bars=bars, genre=genre_id)
     with zipfile.ZipFile(OUTPUT / "genre-demos.zip", "w", compression=zipfile.ZIP_DEFLATED) as pack:
         for label in genres:
             pack.write(OUTPUT / f"{label}.wav", f"{label}.wav")
@@ -184,9 +201,9 @@ def render_originals():
     genres = ("dream-pop", "indie", "new-wave", "pop-punk", "lo-fi", "ambient")
     evidence = {"solo": [], "band": []}
     files = []
-    for genre, label in enumerate(genres):
-        before, old = render(f"{label}-band-featured", 102, regen=8, bars=4, genre=genre, output=output)
-        after, new = render(f"{label}-band-originals", 102, regen=9, bars=4, genre=genre, output=output)
+    for label in genres:
+        before, old = render(f"{label}-band-featured", 102, regen=8, bars=4, genre=label, output=output)
+        after, new = render(f"{label}-band-originals", 102, regen=9, bars=4, genre=label, output=output)
         assert before == after and before, f"{label} changed the MIDI note schedule"
         assert {row["part"] for row in before} == {"0", "1", "2", "3"}, f"{label} missing a band part"
         for key in ("progression", "bpm", "clocks", "frames"):
@@ -199,8 +216,8 @@ def render_originals():
             files.extend((f"{label}-band-{version}.wav", f"{label}-band-{version}.csv"))
         for part, role in enumerate(("chords", "bass", "layer")):
             stem = f"{label}-{role}"
-            featured = solo(output / f"{stem}-featured", genre, part, False)
-            original = solo(output / f"{stem}-original", genre, part, True)
+            featured = solo(output / f"{stem}-featured", label, part, False)
+            original = solo(output / f"{stem}-original", label, part, True)
             assert original["wav_sha256"] != featured["wav_sha256"], stem
             assert abs(original["peak_dbfs"] - featured["peak_dbfs"]) <= 7, f"{stem} has a level jump"
             features = ("attack_vs_hold_db", "release_vs_hold_db", "upper_energy_db", "sustain_range_db")
@@ -220,9 +237,14 @@ def render_originals():
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--originals", action="store_true", help="compare the original genre trios with the featured sounds")
+    mode = parser.add_mutually_exclusive_group()
+    mode.add_argument("--originals", action="store_true", help="compare the original genre trios with the featured sounds")
+    mode.add_argument("--genre", help="render one Studio genre by its profile ID")
     args = parser.parse_args()
     if args.originals:
         render_originals()
     else:
-        main()
+        available_genres = studio_genres()
+        if args.genre is not None and args.genre not in available_genres:
+            parser.error(f"unknown Studio genre {args.genre!r}. Choose from {', '.join(available_genres)}")
+        main(args.genre, available_genres)

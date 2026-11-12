@@ -97,7 +97,8 @@ static void cpa_stop(void)
 {
     cpa_commanded = 0;cge_stop();
     if(CF_STUDIO){
-        cgs.pending=0;
+        cgs.take_revision++;
+        cgs.pending=cgs.pending_auto=cgs.clear_take_hold=0;
         cgs_cancel_rolled_sounds();
     }
     cla_cancel(0);
@@ -281,7 +282,8 @@ static void cpa_tick1(void)
         if(bar || reset) {
             revoice=cge_bar(onset);
             cpa_groove(reset);
-            if(dmp.on)cf_perf_bar(dmp_fill_style(dmp.r));
+            unsigned automatic_fill=cgs_active()?cgs_section_bar():0;
+            if(dmp.on)cf_perf_bar(dmp_fill_style(dmp.r),automatic_fill!=0);
         }
         if (onset || revoice) {
             /* The scheduled ARP takes its first gate from the onset grid.
@@ -348,7 +350,10 @@ static void cpa_realtime(unsigned status)
 {
     if (!cpa.on) return;
     if(status==0xFAu || status==0xFBu || status==0xFCu)cpa.clock_external=cfp_cfg.clock_in;
-    if (status == 0xFCu) { cpa.clock_wait=cpa.clock_lost=0; cpa_release(); cpa.paused = 1; cfm.running = 0; cf_grid.on = 0; }
+    if (status == 0xFCu) {
+        if(cgs_active()){cgs.take_revision++;cgs_cancel_auto((1u<<CGS_NPART)-1u);}
+        cpa.clock_wait=cpa.clock_lost=0; cpa_release(); cpa.paused = 1; cfm.running = 0; cf_grid.on = 0;
+    }
     if (status == 0xFAu) {
         cpa.clock_wait=cpa.clock_lost=0;cpa.clock_ms=cf_now_ms;
         cpa_release(); cpa.slot = 0; cpa.t = cpa.elapsed = cpa.acc = 0;
@@ -376,6 +381,8 @@ static void cgs_live_transport(unsigned action)
         cpa_realtime(0xFAu);
     } else if(cpa.paused)cpa_realtime(0xFBu);
     else {
+        cgs.take_revision++;
+        cgs_cancel_auto((1u<<CGS_NPART)-1u);
         cpa_release_notes();
         cf_perf_release_drums();
         cpa.paused=1;

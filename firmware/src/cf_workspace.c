@@ -2,6 +2,7 @@
  * Studio workspaces own navigation. The audio engine and stored formats are shared. */
 enum { CGU_STUDIO, CGU_SOUND, CGU_RECORD, CGU_HELP, CGU_NTAB };
 enum { CGU_BAND, CGU_BAND_HARMONY, CGU_BAND_SHAPING, CGU_BAND_GENRE, CGU_BAND_ARP, CGU_BAND_PROGRESSION, CGU_BAND_PANELS };
+enum { CGU_PART, CGU_PART_HARMONY, CGU_PART_EVOLVE, CGU_PART_PAGES };
 enum { CGU_TONE, CGU_ENVELOPE, CGU_SENDS, CGU_PRESETS, CGU_SOUND_PAGES };
 enum { CGU_ARP_OFF, CGU_ARP_KEYS, CGU_ARP_BAND };
 static const char *const CGU_SOUND_NAMES[]={"Tone","Envelope","Sends","FX Presets"};
@@ -9,7 +10,7 @@ static const char *const CGU_ARP_NAMES[]={"Off","Keys","Band"};
 enum { CGU_START, CGU_HARMONY, CGU_PLAYING, CGU_CAPTURE };
 enum { CGU_RACK_LIBRARY=1, CGU_RACK_MIX };
 enum { CGU_KNOB_NONE, CGU_KNOB_PART, CGU_KNOB_HARMONY, CGU_KNOB_SHAPING,
-    CGU_KNOB_GENRE, CGU_KNOB_ARP, CGU_KNOB_PROGRESSION, CGU_KNOB_LIBRARY, CGU_KNOB_SOUND,
+    CGU_KNOB_EVOLVE, CGU_KNOB_GENRE, CGU_KNOB_ARP, CGU_KNOB_PROGRESSION, CGU_KNOB_LIBRARY, CGU_KNOB_SOUND,
     CGU_KNOB_TAKES, CGU_KNOB_LESSON, CGU_KNOB_MIX };
 enum { CGU_RACK_COUNT=CGS_NPART+CGU_BAND_PANELS-1 };
 static const char *const CGU_TABS[]={"Studio","Sound","Record","Help"};
@@ -19,7 +20,7 @@ static struct {
     uint32_t zoom_ms, turn_ms, lens_ms, clear_down, tab_ms, rack_ms;
     uint8_t turn_knob, turn_dir;
     uint32_t sound_seed, action_ms;
-    uint8_t tab, topic, zoom_from, action, all_sounds, band_panel, part_harmony;
+    uint8_t tab, topic, zoom_from, action, all_sounds, band_panel, part_page;
     uint8_t sound_page, arp_timing, key_arp, fx_return, take_slot, progression_pick, rack_controls;
     int8_t tab_dir;
     int16_t rack_from;
@@ -113,7 +114,7 @@ static void cgu_set_zoom(int detail)
     if(cgs.zoom==detail)return;
     cgu.turn_ms=0;
     if(detail){
-        if(cgu.tab==CGU_STUDIO){cgu.part_harmony=0;cgu.arp_timing=0;}
+        if(cgu.tab==CGU_STUDIO){cgu.part_page=0;cgu.arp_timing=0;}
         if(cgu.tab==CGU_SOUND)cgu_sound_page(CGU_TONE);
     }
     cgu.zoom_from=(uint8_t)cgu_zoom();
@@ -137,7 +138,7 @@ static void cgu_open_arp(void)
 static void cgu_home(void)
 {
     cu.pop=POP_NONE;
-    cgu.action=cgu.band_panel=cgu.part_harmony=0;
+    cgu.action=cgu.band_panel=cgu.part_page=0;
     cgu.rack_controls=0;
     cgu.tab_ms=cgu.rack_ms=0;
     cgu.turn_ms=0;
@@ -160,7 +161,7 @@ static void cgu_tab_turn(int d)
     cgu.tab_dir=d<0?-1:1;
     cgu.turn_ms=0;
     cgu.sound_page=CGU_TONE;
-    cgu.part_harmony=0;
+    cgu.part_page=0;
     if(cgu.band_panel || cgu.rack_controls)cgs.zoom=0;
     cgu.band_panel=0;
     cgu.rack_controls=0;
@@ -200,7 +201,7 @@ static void cgu_studio_page_turn(int d)
 {
     if(!cgs.zoom)cgu_band_focus((unsigned)wrapi(cgu.band_panel+d%CGU_BAND_PANELS,CGU_BAND_PANELS));
     else if(cgu.band_panel==CGU_BAND_ARP)cgu.arp_timing^=(uint8_t)(d%2!=0);
-    else if(!cgu.band_panel)cgu.part_harmony^=(uint8_t)(d%2!=0);
+    else if(!cgu.band_panel)cgu.part_page=(uint8_t)wrapi(cgu.part_page+d%CGU_PART_PAGES,CGU_PART_PAGES);
     cgu.turn_ms=0;
 }
 
@@ -223,7 +224,10 @@ static unsigned cgu_band_knob_panel(unsigned band)
 static unsigned cgu_knob_panel(int detail)
 {
     if(cgu.tab==CGU_STUDIO){
-        if(!cgu.band_panel && detail && cgu.part_harmony)return CGU_KNOB_HARMONY;
+        if(!cgu.band_panel && detail){
+            if(cgu.part_page==CGU_PART_HARMONY)return CGU_KNOB_HARMONY;
+            if(cgu.part_page==CGU_PART_EVOLVE)return CGU_KNOB_EVOLVE;
+        }
         return cgu_band_knob_panel(cgu.band_panel);
     }
     if(cgu.tab==CGU_SOUND){
@@ -334,7 +338,7 @@ static unsigned cgu_sound_count(unsigned part,int all)
 {
 #if CHASE_LIBRARY && FELUCCA_VA
     if(!all){
-        if(part==CGS_DRUMS)return NELEM(CGS_PROFILES[cgs.genre].kit);
+        if(part==CGS_DRUMS)return CGS_PROFILES[cgs.genre].kit_count;
         cgs_palette_build();
         return cgs_palette.count[part];
     }
@@ -458,7 +462,9 @@ static void cgu_apply_palette(void)
     }
     unsigned pos[CGS_DRUMS];
     for(unsigned p=0;p<CGS_DRUMS;p++){
-        unsigned voice=cgs_profile_voice(p,cgs_profile_tone_count(p)-1u);
+        unsigned count=cgs_profile_tone_count(p);
+        if(!count)return;
+        unsigned voice=cgs_profile_voice(p,count-1u);
         if(voice==PF_NONE)return;
         pos[p]=pool_pos_factory(ENGI_VA,voice);
     }
@@ -713,6 +719,7 @@ static void cgu_knob_turn(int k,int d)
         break;
     }
     case CGU_KNOB_PART: cgs_knob_turn(k,d,1);break;
+    case CGU_KNOB_EVOLVE: cgs_hold_turn(cgs.focus,d);break;
     case CGU_KNOB_HARMONY: cgs_harmony_turn(k,d);break;
     case CGU_KNOB_SHAPING: cgs_knob_turn(k,d,0);break;
     case CGU_KNOB_GENRE: if(k==0)cgs_genre_turn(d);else cgs_family_turn(d);break;
@@ -778,6 +785,13 @@ static void cgu_knob_read(unsigned panel,int k,cf_knob_t *o,int detail)
         break;
     }
     case CGU_KNOB_PART: cgs_knob_info(k,o,1);break;
+    case CGU_KNOB_EVOLVE:
+        if(k==0){
+            unsigned held=cgs.hold&(1u<<cgs.focus);
+            kfmt(o->name,12,"HOLD");kfmt(o->val,14,held?"Held":"Free");
+            o->bar=held?255:0;
+        }
+        break;
     case CGU_KNOB_SHAPING: cgs_knob_info(k,o,0);break;
     case CGU_KNOB_HARMONY: {
         unsigned notes=cgs_active() && (cpa_edit.flags&CPA_NOTES);

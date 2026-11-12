@@ -325,8 +325,9 @@ static void cf_palette_build(void)
     cf_pal[52] = skin[5]; cf_pal[53] = skin[4]; cf_pal[54] = skin[2]; cf_pal[55] = skin[1];
     cf_pal[56] = skin[6];
     for(unsigned i=0;i<4;i++)cf_pal[CFN_HALO_0+i]=cfn_blend(skin[0],skin[5],12+12*i);
-    if(!CF_STUDIO || CF_SCENES)
-        for(unsigned i=0;i<CFM_ART_COLORS;i++)cf_pal[CFM_PAL_BASE+i]=CFM_ART[cf_skin%CF_SKIN_N].rgb[i];
+    const uint32_t *mascot_rgb=CF_STUDIO && !CF_SCENES?
+        CFM_STICKERS[cf_skin%CF_SKIN_N].rgb:CFM_ART[cf_skin%CF_SKIN_N].rgb;
+    for(unsigned i=0;i<CFM_ART_COLORS;i++)cf_pal[CFM_PAL_BASE+i]=mascot_rgb[i];
     cf_pal[CGU_INK_BASE]=0xffb464;   /* Chords */
     cf_pal[CGU_INK_BASE+1]=0x79d5ea; /* Bass */
     cf_pal[CGU_INK_BASE+2]=0xc6acff; /* Layer */

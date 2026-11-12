@@ -1,51 +1,5 @@
 /* SPDX-License-Identifier: GPL-3.0-only */
 static const char *const CGS_PART_NAME[]={"Chords","Bass","Layer","Drums"};
-enum { CGS_GUITAR, CGS_ELECTRONIC, CGS_EXPERIMENTAL, CGS_NFAMILY };
-static const char *const CGS_FAMILIES[]={"Guitar","Electronic","Experimental"};
-typedef struct {
-    const char *name;
-    uint8_t bpm, primary, secondary, family, kit[6];
-    const char *style[CGS_NPART][2];
-#if CHASE_LIBRARY && FELUCCA_VA
-    const char *tone[3][5];  /* The last tone is loaded by Sound Library > Apply. */
-#endif
-} cgs_profile_t;
-
-#if CHASE_LIBRARY && FELUCCA_VA
-#define CGS_TONES(...) ,{__VA_ARGS__}
-#else
-#define CGS_TONES(...)
-#endif
-static const cgs_profile_t CGS_PROFILES[]={
-    {"Dream Pop",104,CF_P_DREAMY,CF_P_EMOTIONAL,CGS_GUITAR,{DMK_AIR,DMK_ROOM,DMK_XLIVE,DMK_TAPE,DMK_GLASS,DMK_BRUSH},
-     {{"Sustain","Soft pulse"},{"Hook","Counterline"},{"Arp","Sparse motif"},{"Soft beat","Open hats"}}
-     CGS_TONES({"SOFT LENS","GHOST CHOIR","CABINET PAD"}, {"SILK PICK","TAPE SUB","ROUNDWIRE"},
-               {"DREAM PLUCK","DISTANT BELL","GLASS THREAD"})},
-    {"Indie",116,CF_P_FAMILIAR,CF_P_UPLIFTING,CGS_GUITAR,{DMK_XLIVE,DMK_ROOM,DMK_STD,DMK_TIGHT,DMK_WOOD,DMK_TAPE},
-     {{"Chop","Ring"},{"Offbeat","Answer"},{"Chime","Counterline"},{"Room beat","Open hats"}}
-     CGS_TONES({"ROOM KEYS","FLOATING ORG","CABINET PAD","JANGLE ORGAN"},
-               {"FELT PICK","MUTED FINGER","MUTED WIRE","PICKUP BASS"},
-               {"GENTLE MALLE","DREAM PLUCK","GLASS THREAD"})},
-    {"New Wave",126,CF_P_DARK,CF_P_ENERGETIC,CGS_ELECTRONIC,{DMK_909,DMK_XTECH,DMK_808,DMK_CRUSH,DMK_XCLUB,DMK_MRETRO},
-     {{"Stab","Sustain"},{"Octaves","Moving pulse"},{"Steps","Sequenced"},{"Machine","Open hats"}}
-     CGS_TONES({"NEON POLY","PWM KEYS","PULSE STACK"}, {"RELAY BASS","DARK PULSE","SYNC RELAY"},
-               {"FROSTWIRE","STAR KEYS","CRYSTAL STEP"})},
-    {"Pop Punk",148,CF_P_DARK,CF_P_EMOTIONAL,CGS_GUITAR,{DMK_XBREAK,DMK_ROOM,DMK_XLIVE,DMK_CRUSH,DMK_TIGHT,DMK_BOOM},
-     {{"Palm mute","Open wall"},{"Pick drive","Octave hook"},{"Feedback","High hook"},{"Heavy pocket","Double kick"}}
-     CGS_TONES({"AMP EDGE","POLY KEYS","AMP STACK","BARBED AMP"},
-               {"DOWN PICK","WOOD PLUCK","MUTED WIRE","POWER PICK","RUST PICK"},
-               {"FROSTWIRE","ROOM KEYS","WIRE LEAD","FRET HOWL"})},
-    {"Lo-Fi",82,CF_P_JAZZY,CF_P_DREAMY,CGS_ELECTRONIC,{DMK_DUST,DMK_TAPE,DMK_XLOFI,DMK_BRUSH,DMK_LOFI,DMK_CHILL},
-     {{"Soft stabs","Held keys"},{"Late pocket","Walk"},{"Fragments","Soft bell"},{"Half-time","Loose hats"}}
-     CGS_TONES({"DUSTED KEYS","VINYL KEYS","TAPE EP"}, {"TAPE FINGER","WARM TRIANGL","FELT SUB"},
-               {"DIM CHIME","UNEVEN BELLS","DUST TINES"})},
-    {"Ambient Soundscape",64,CF_P_EXPERIMENTAL,CF_P_DREAMY,CGS_EXPERIMENTAL,{DMK_CHILL,DMK_GLASS,DMK_AIR,DMK_DUB,DMK_WOOD,DMK_HAND},
-     {{"Hold","Breathe"},{"Pedal","Slow contour"},{"Swells","Distant notes"},{"Sparse","Texture"}}
-     CGS_TONES({"SLOW ORBIT","APOLLO VEIL","PRISM CLOUD"}, {"LOW TIDE","SLOW BLOOM B","FLOOR SWELL"},
-               {"MOTION PAD","WATER CHIME","HALO BLOOM"})},
-};
-#undef CGS_TONES
-_Static_assert(NELEM(CGS_PROFILES)==CGS_NGENRE, "one Studio profile per genre");
 
 #if CHASE_LIBRARY && FELUCCA_VA
 static unsigned cgs_profile_tone_count(unsigned part)
@@ -121,7 +75,7 @@ static void cgs_voice_plan(cpa_plan_t *p,cgs_pitches_t *pitch)
         notes_by_role[6]=(uint8_t)clampi(scale_approach,0,127);
         if(authored)continue;
 
-        if(cgs.genre==CGS_PUNK && source && !cf_progression_source(source) && fifth>=6u && fifth<=8u){
+        if(CGS_PROFILES[cgs.genre].composer==CGS_COMPOSE_PUNK && source && !cf_progression_source(source) && fifth>=6u && fifth<=8u){
             unsigned root=cgs_near((unsigned)root_pc,51);
             s->note[0]=(uint8_t)root;
             s->note[1]=(uint8_t)(root+fifth);
@@ -264,9 +218,10 @@ static unsigned cgs_weight(unsigned index, unsigned scale)
 static int cgs_pick(cpa_plan_t *plan, cgs_pitches_t *pitch, cf_chord_cfg_t cfg, unsigned exclude)
 {
     if(!cf_harmony_supported(cfg.scale,CF_Q_BASIC))return 0;
+    const cgs_profile_t *profile=&CGS_PROFILES[cgs.genre];
     unsigned total=0, chosen=0, kit_rhythm=dm_nth(4,0);
     for(unsigned i=0;i<DM_N;i++)if(DM_RHY[i].id==56)kit_rhythm=i;
-    if(cgs.genre==CGS_DREAM && cgs.feel<3){
+    if(profile->write_progressions && cgs.feel<3){
         if(!cgs_write_harmony(plan,cfg,kit_rhythm))return 0;
         plan->kit=cgs.feel==0?DMK_AIR:cgs.feel==1?DMK_BRUSH:DMK_TAPE;
         plan->kit%=SQ_NKIT;
@@ -291,10 +246,9 @@ static int cgs_pick(cpa_plan_t *plan, cgs_pitches_t *pitch, cf_chord_cfg_t cfg, 
         int fits=1;
         for(unsigned j=0;j<plan->n;j++)if(plan->slot[j].n>4)fits=0;
         if(!fits)continue;
-        const cgs_profile_t *genre=&CGS_PROFILES[cgs.genre];
-        if(cgs.genre==CGS_AMBIENT)
-            for(unsigned j=0;j<plan->n;j++)plan->slot[j].ticks*=2;
-        if(cgs.genre!=CGS_DREAM)plan->kit=(uint8_t)(genre->kit[0]%SQ_NKIT);
+        if(profile->bank_duration_scale!=1)
+            for(unsigned j=0;j<plan->n;j++)plan->slot[j].ticks*=profile->bank_duration_scale;
+        if(!profile->preserve_bank_kit)plan->kit=(uint8_t)(profile->kit[0]%SQ_NKIT);
         if(cgs_active() && (cgs.genre==cgs.playing_genre || cgs.kit_pinned)){
             const cpa_plan_t *groove=(cpa_edit.flags&CPA_GROOVE)?&cpa_edit.plan:&cpa.plan;
             plan->rhythm=groove->rhythm; plan->kit=groove->kit;
@@ -314,16 +268,18 @@ static void cgs_init(uint32_t seed)
     memcpy(cgs.level,level,sizeof level);
     for(unsigned i=0;i<CGS_NPART;i++){
         cgs.seed[i]=(seed+0x85ebca6bu*(i+1u))|1u;
+        cgs.develop_seed[i]=(cgs.seed[i]^0x9e3779b8u);
         cgs.gain[i]=32768u;
         cgs.touch[i]=50;
     }
     cgs.harmony_seed=seed|1u;
     cgs.space=66;
     cgs.energy=cgs.evolution=50;
+    cgs.genre=CGS_DEFAULT_GENRE;
     cgs.feel=(uint8_t)(seed%4u);
     cgs.meter=cs.beats==3u || cs.beats==6u?cs.beats:4u;
 }
-enum { CGS_REROLL, CGS_DEVELOP, CGS_RESHAPE };
+enum { CGS_REROLL, CGS_DEVELOP, CGS_RESHAPE, CGS_STYLE };
 static const cgs_clip_t *cgs_latest(unsigned p)
 {
     if(cpa_setup.flags && cgs_active())return &cgs.take[p];
@@ -331,61 +287,139 @@ static const cgs_clip_t *cgs_latest(unsigned p)
 }
 static int cgs_same_clip(const cgs_clip_t *a,const cgs_clip_t *b)
 {
-    return !memcmp(a,b,offsetof(cgs_clip_t,seed));
+    return a->responds==b->responds && !memcmp(a,b,offsetof(cgs_clip_t,seed));
 }
-static void cgs_reshape(cgs_clip_t *clip,unsigned p,uint8_t voice,uint32_t seed)
+static void cgs_reshape(cgs_clip_t *clip, unsigned p, const cgs_clip_t *reference, int reset)
 {
     uint8_t feel=cgs.feel;
-    cgs.feel=voice;
+    uint32_t seed=reference->seed;
+    cgs.feel=reference->voice;
     cgs_compose(clip,p,&seed);
     cgs.feel=feel;
+    if(reset)return;
+    clip->edits=reference->edits;
+    unsigned steps=cgs_steps(cgs.meter);
+    for(unsigned i=0;i<clip->edits.count;i++)cgs_apply_edit(clip,p,steps,clip->edits.item[i]);
+    cgs_prepare_response_timing(clip,p);
 }
-static void cgs_publish_clip(unsigned p,const cgs_clip_t *clip)
+
+/* Manual changes can also update the pending band take. */
+static void cgs_publish_clip(unsigned p, const cgs_clip_t *clip, int queued_only)
 {
-    if(!cgs_active()){cgs.active[p]=*clip;return;}
+    if(!cgs_active()){
+        cgs.active[p]=*clip;
+        if(cgs.hold&(1u<<p))cgs_capture_response(p,0);
+        return;
+    }
     if(cpa_setup.flags)cgs.take[p]=*clip;
+    if(queued_only)return;
     if(!cpa_setup.flags || (cgs.queued_genre==cgs.playing_genre && cgs.queued_feel==cgs.playing_feel &&
                            cgs.meter==cpa.plan.beats)){
         cgs.next[p]=*clip;
         cgs.pending|=(uint8_t)(1u<<p);
     }
 }
+
+static int cgs_can_develop(unsigned p)
+{
+    unsigned bit=1u<<p;
+    return cgs_active() && !cpa.paused && !cpa.clock_wait && !cpa_setup.flags &&
+           cgs.meter==cpa.plan.beats && cgs.genre==cgs.playing_genre && cgs.evolution &&
+           !((cgs.pending|cgs.hold|cgs_mute_mask())&bit) && cgs.activity[p]>=35;
+}
+
+static void cgs_develop_part(unsigned p, uint32_t revision)
+{
+    fm1_irq_off();
+    if(revision!=cgs.take_revision || !cgs_can_develop(p)){fm1_irq_on();return;}
+    const unsigned generation=cgs.generation[p], meter=cpa.plan.beats;
+    cgs_clip_t reference=cgs.active[p];
+    uint32_t seed=cgs.develop_seed[p];
+    unsigned kicks=0;
+    if(p==CGS_BASS)
+        for(unsigned step=0;step<cgs_steps(meter);step++)
+            if(cgs.active[CGS_DRUMS].event[1][step]&CGS_KICK)kicks|=1u<<step;
+    fm1_irq_on();
+
+    cgs_clip_t clip=reference;
+    if(reference.edits.count==CGS_MAX_EDITS){
+        for(unsigned i=1;i<CGS_MAX_EDITS;i++)reference.edits.item[i-1]=reference.edits.item[i];
+        reference.edits.count--;
+        cgs_reshape(&clip,p,&reference,0);
+    }
+    cgs_edit_t edit={0};
+    unsigned steps=cgs_steps(meter);
+    if(!cgs_make_edit(&clip,p,steps,kicks,&seed,&edit))return;
+    cgs_apply_edit(&clip,p,steps,edit);
+    cgs_prepare_response_timing(&clip,p);
+    clip.edits.item[clip.edits.count++]=edit;
+
+    fm1_irq_off();
+    if(revision==cgs.take_revision && generation==cgs.generation[p] && meter==cpa.plan.beats &&
+       cgs_can_develop(p) && !cgs_same_clip(&cgs.active[p],&clip)){
+        unsigned bit=1u<<p;
+        cgs.next[p]=clip;
+        cgs.next_develop_seed[p]=seed;
+        cgs.pending_auto|=(uint8_t)bit;
+        cgs.pending|=(uint8_t)bit;
+    }
+    fm1_irq_on();
+}
+
 static void cgs_request(unsigned p, int action)
 {
-    cgs_clip_t clip, reference;
-    fm1_irq_off();
-    reference=*cgs_latest(p);
-    fm1_irq_on();
-    if(action==CGS_DEVELOP){
-        clip=reference;
-        unsigned step=6+cgs_rand(&cgs.seed[p],cgs.meter==4u?9u:5u);
-        if(p==CGS_DRUMS)clip.event[1][step]^=CGS_HAT;
-        else if(p==CGS_BASS)cgs_vary_bass(&clip,&cgs.seed[p]); else if(p==CGS_LAYER){
-            clip.event[1][step]=clip.event[1][step]?0:2u+(6u<<3);
-            clip.feel[1][step]=64;
-        } else if(clip.event[1][0]>1)clip.event[1][cgs.meter==4u?12:9]^=1u;
-        else clip.feel[1][0]=(uint8_t)(70u+step);
-    } else if(action==CGS_RESHAPE){
-        cgs_reshape(&clip,p,reference.voice,reference.seed);
-    } else {
-        uint8_t feel=cgs.feel;
-        if(cgs.genre==CGS_DREAM)cgs.feel=(uint8_t)((reference.voice+1u+cgs_rand(&cgs.seed[p],3))%4u);
-        else if(cgs.genre==CGS_PUNK)cgs.feel=reference.voice;
-        cgs_compose(&clip,p,&cgs.seed[p]);
-        if(cgs_same_clip(&reference,&clip))cgs_compose(&clip,p,&cgs.seed[p]);
-        cgs.feel=feel;
-        if(cgs_same_clip(&reference,&clip)){
-            unsigned step=cgs.meter==4u?13u:10u;
-            if(p==CGS_CHORDS && clip.event[1][0]<=1)clip.feel[1][0]^=8u;
-            else if(p==CGS_DRUMS)clip.event[1][step]^=CGS_HAT;
-            else clip.event[1][step]=clip.event[1][step]?0:
-                (p==CGS_CHORDS?4u:CGS_FIFTH+(3u<<3));
+    if(action==CGS_DEVELOP){cgs_develop_part(p,cgs.take_revision);return;}
+    for(unsigned attempt=0;attempt<2;attempt++){
+        cgs_clip_t clip, reference;
+        fm1_irq_off();
+        cgs_cancel_auto(1u<<p);
+        uint32_t revision=cgs.take_revision, seed=cgs.seed[p];
+        reference=*cgs_latest(p);
+        fm1_irq_on();
+        if(action==CGS_RESHAPE || action==CGS_STYLE){
+            cgs_reshape(&clip,p,&reference,action==CGS_STYLE);
+        } else {
+            uint8_t feel=cgs.feel;
+            const cgs_profile_t *profile=&CGS_PROFILES[cgs.genre];
+            if(profile->composer==CGS_COMPOSE_DREAM)
+                cgs.feel=(uint8_t)((reference.voice+1u+cgs_rand(&seed,profile->feel_count-1u))%profile->feel_count);
+            else if(profile->composer==CGS_COMPOSE_PUNK)cgs.feel=reference.voice;
+            cgs_compose(&clip,p,&seed);
+            if(cgs_same_clip(&reference,&clip))cgs_compose(&clip,p,&seed);
+            cgs.feel=feel;
+            if(cgs_same_clip(&reference,&clip)){
+                unsigned step=cgs.meter==4u?13u:10u;
+                if(p==CGS_CHORDS && clip.event[1][0]<=1)clip.feel[1][0]^=8u;
+                else if(p==CGS_DRUMS)clip.event[1][step]^=CGS_HAT;
+                else clip.event[1][step]=clip.event[1][step]?0:
+                    (p==CGS_CHORDS?4u:CGS_FIFTH+(3u<<3));
+                cgs_prepare_response_timing(&clip,p);
+            }
         }
+        fm1_irq_off();
+        if(revision==cgs.take_revision){
+            cgs.seed[p]=seed;
+            if(!cgs_same_clip(&reference,&clip) || clip.edits.count!=reference.edits.count)
+                cgs_publish_clip(p,&clip,0);
+            fm1_irq_on();
+            return;
+        }
+        fm1_irq_on();
     }
-    if(cgs_same_clip(&reference,&clip))return;
+}
+
+static void cgs_hold_turn(unsigned p, int d)
+{
+    unsigned bit=1u<<p;
     fm1_irq_off();
-    cgs_publish_clip(p,&clip);
+    int reshape=d<0 && (cgs.hold&bit) && cgs_latest(p)->shape_energy!=cgs.energy;
+    if(d>0){
+        if(!(cgs.hold&bit))cgs_capture_response(p,0);
+        cgs.hold|=(uint8_t)bit;
+        cgs_cancel_auto(bit);
+    } else cgs.hold&=(uint8_t)~bit;
     fm1_irq_on();
+    if(reshape)cgs_request(p,CGS_RESHAPE);
 }
 static void cgs_prepare_start(void)
 {
@@ -408,7 +442,9 @@ static void cgs_prepare_sounds(void)
     for(unsigned part=0;part<3;part++){
         if(cgs.boot_sound_gen[part]!=cf_snd_gen[part] || cu.edited[part] || cgs_manual(part) ||
            cf_snd[part].kind==PK_USER)continue;
-        unsigned pick=cgs.genre==CGS_PUNK?cgs_profile_tone_count(part)-1u:0;
+        unsigned count=cgs_profile_tone_count(part);
+        if(!count)continue;
+        unsigned pick=CGS_PROFILES[cgs.genre].start_curated?count-1u:0;
         unsigned voice=cgs_profile_voice(part,pick);
         if(voice==PF_NONE)continue;
         cf_stage_t prepared;
@@ -458,9 +494,11 @@ static int cgs_take_from(int play,int reroll,const cf_song_t *draft)
     unsigned previous_feel=cgs.feel;
     unsigned previous_meter=cgs.meter;
     int switching=(draft!=NULL)!=cgs.custom;
+    int new_draft=draft && draft!=&cgs_custom_harmony;
     if(!draft && cgs.custom)cgs.meter=cgs.bank_meter;
-    if(reroll && (cgs.genre==CGS_DREAM || cgs.genre==CGS_PUNK))
-        cgs.feel=(uint8_t)((cgs.feel+1u+cgs_rand(&cgs.harmony_seed,3))%4u);
+    unsigned feel_count=CGS_PROFILES[cgs.genre].feel_count;
+    if(reroll && feel_count>1)
+        cgs.feel=(uint8_t)((cgs.feel+1u+cgs_rand(&cgs.harmony_seed,feel_count-1u))%feel_count);
     int prepared=1;
     if(draft){
         cf_chord_cfg_t cfg=cs.chord;
@@ -488,6 +526,8 @@ static int cgs_take_from(int play,int reroll,const cf_song_t *draft)
         cgs_clip_t clip[CGS_NPART];
         for(unsigned p=0;p<CGS_NPART;p++)cgs_compose(&clip[p],p,&cgs.seed[p]);
         fm1_irq_off();
+        cgs_cancel_auto((1u<<CGS_NPART)-1u);
+        cgs.clear_take_hold=(uint8_t)(reroll || cgs.genre!=cgs.playing_genre);
         memcpy(cgs.take,clip,sizeof clip);
         cpa_setup.plan=plan;
         cgs.setup_pitch=pitch;
@@ -497,8 +537,10 @@ static int cgs_take_from(int play,int reroll,const cf_song_t *draft)
         fm1_irq_on();
         return 1;
     }
-    if(!cgs.ready || !play || switching || draft || cgs.queued_genre!=cgs.genre){
+    int rebuilt=!cgs.ready || !play || switching || new_draft || cgs.queued_genre!=cgs.genre;
+    if(rebuilt){
         for(unsigned p=0;p<CGS_NPART;p++)cgs_compose(&cgs.active[p],p,&cgs.seed[p]);
+        if(reroll || cgs.genre!=cgs.playing_genre)cgs.hold=0;
         cgs.ready=1;
     }
     fm1_irq_off();
@@ -507,6 +549,8 @@ static int cgs_take_from(int play,int reroll,const cf_song_t *draft)
     cgs.queued_genre=cgs.genre;
     cgs.queued_feel=cgs.feel;
     cpa_setup.flags=(uint8_t)play;
+    if(rebuilt)for(unsigned p=CGS_BASS;p<=CGS_LAYER;p++)
+        if(cgs.hold&(1u<<p))cgs_capture_response(p,0);
     fm1_irq_on();
     if(draft){cs.chord.tonic=plan.tonic;cs.chord.scale=plan.scale;cs.beats=plan.beats;cf_send_config();}
     if(!play){cs.beats=cgs.meter;cf_send_metro();return 1;}
@@ -530,23 +574,42 @@ static int cgs_select_progression(int custom,int play)
 static int cgs_new_take(int play)
 { return cgs_new_take_for(play,!play); }
 
+static unsigned cgs_evolve_period(unsigned genre)
+{
+    unsigned bars=cgs.evolution>=80?2u:cgs.evolution>=50?4u:8u;
+    return bars*CGS_PROFILES[genre].evolve_period_scale;
+}
+
+static void cgs_evolve_turn(int d)
+{
+    fm1_irq_off();
+    unsigned was=cgs.evolution;
+    cgs.evolution=(uint8_t)clampi(cgs.evolution+d,0,100);
+    if(!cgs.evolution)cgs_cancel_auto((1u<<CGS_NPART)-1u);
+    else if(!was && cgs_active())
+        cgs.developed=(cgs.bar-cgs.origin_bar)/cgs_evolve_period(cgs.playing_genre);
+    fm1_irq_on();
+}
+
 static int cgs_home(void);
 static void cgs_poll(void)
 {
     cgs.mix_idle=(uint8_t)(cgs_home() && !cpa.on && !sqp.on && !dmp.on);
-    if(!cgs_active() || cpa.paused || cpa.clock_wait || cpa_setup.flags || cgs.pending)return;
+    fm1_irq_off();
+    if(!cgs_active() || cpa.paused || cpa.clock_wait || cpa_setup.flags || cgs.pending){
+        fm1_irq_on();
+        return;
+    }
     cgs.genre=cgs.playing_genre;
     cgs.feel=cgs.playing_feel;
     cgs.meter=cpa.plan.beats;
     cgs.custom=cpa.plan.idea==CF_P_DRAFT;
-    if(!cgs.evolution)return;
-    unsigned bars=cgs.evolution>=80?2u:cgs.evolution>=50?4u:8u;
-    if(cgs.genre==CGS_AMBIENT)bars*=2;
-    unsigned phrase=(cgs.bar-cgs.origin_bar)/bars;
-    if(!phrase || phrase==cgs.developed)return;
-    cgs.developed=phrase;
-    unsigned part=(phrase-1u)%CGS_NPART;
-    if(!(cgs_mute_mask()&(1u<<part)) && cgs.activity[part]>=35)cgs_request(part,CGS_DEVELOP);
+    unsigned phrase=(cgs.bar-cgs.origin_bar)/cgs_evolve_period(cgs.genre);
+    int due=cgs.evolution && phrase && phrase!=cgs.developed;
+    uint32_t revision=cgs.take_revision;
+    if(due)cgs.developed=phrase;
+    fm1_irq_on();
+    if(due)cgs_develop_part((phrase-1u)%CGS_NPART,revision);
 }
 static int cgs_home(void)
 { return CF_STUDIO && !CF_SCENES && home_stage() && cf_home_bank==CF_HB_ENGINE && !cge_active(); }
@@ -630,19 +693,35 @@ static void cgs_energy_turn(int d)
     unsigned value=(unsigned)clampi(cgs.energy+d,0,100);
     if(value==cgs.energy)return;
     cgs.energy=(uint8_t)value;
-    cgs_clip_t clips[CGS_NPART];
-    unsigned changed=0;
-    for(unsigned p=0;p<CGS_NPART;p++){
+    for(unsigned attempt=0;attempt<2;attempt++){
+        cgs_clip_t clips[CGS_NPART];
+        unsigned all=(1u<<CGS_NPART)-1u, changed=0;
         fm1_irq_off();
-        cgs_clip_t reference=*cgs_latest(p);
+        uint32_t revision=cgs.take_revision;
+        int queued=cgs_active() && cpa_setup.flags;
+        unsigned reshape=queued && cgs.clear_take_hold?all:all&~cgs.hold;
+        cgs_cancel_auto(reshape);
+        for(unsigned p=0;p<CGS_NPART;p++)
+            if(reshape&(1u<<p))clips[p]=*cgs_latest(p);
         fm1_irq_on();
-        cgs_reshape(&clips[p],p,reference.voice,reference.seed);
-        if(!cgs_same_clip(&reference,&clips[p]))changed|=1u<<p;
+        for(unsigned p=0;p<CGS_NPART;p++){
+            if(!(reshape&(1u<<p)))continue;
+            cgs_clip_t clip;
+            cgs_reshape(&clip,p,&clips[p],0);
+            if(!cgs_same_clip(&clips[p],&clip)){
+                clips[p]=clip;
+                changed|=1u<<p;
+            }
+        }
+        fm1_irq_off();
+        if(revision==cgs.take_revision){
+            for(unsigned p=0;p<CGS_NPART;p++)
+                if(changed&(1u<<p))cgs_publish_clip(p,&clips[p],queued);
+            fm1_irq_on();
+            return;
+        }
+        fm1_irq_on();
     }
-    fm1_irq_off();
-    for(unsigned p=0;p<CGS_NPART;p++)
-        if(changed&(1u<<p))cgs_publish_clip(p,&clips[p]);
-    fm1_irq_on();
 }
 static void cgs_knob_turn(int k,int d,int part_detail)
 {
@@ -651,7 +730,7 @@ static void cgs_knob_turn(int k,int d,int part_detail)
         if(k==0)cgs.space=(uint8_t)clampi(cgs.space+d,0,100);
         else if(k==1)cpa_tempo(d);
         else if(k==2)cgs_energy_turn(d);
-        else cgs.evolution=(uint8_t)clampi(cgs.evolution+d,0,100);
+        else cgs_evolve_turn(d);
         return;
     }
     unsigned p=cgs.focus;
@@ -671,6 +750,6 @@ static void cgs_knob_turn(int k,int d,int part_detail)
             if(activity==cgs.activity[p])return;
             cgs.activity[p]=(uint8_t)activity;
         }
-        cgs_request(p,CGS_RESHAPE);
+        cgs_request(p,k==0?CGS_STYLE:CGS_RESHAPE);
     }
 }

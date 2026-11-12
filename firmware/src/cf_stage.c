@@ -131,11 +131,11 @@ typedef struct {
     uint8_t live,hold,slot,first,count,total,skin,motion,battery,halo,rec,bank,disabled[4],emphasis[4],cursor_width;
     uint8_t pulse,halo_ink,activity,activity_step;
     uint8_t moment,build,bloom,engine_page,engine_bar,beat,focus,level[4],pin_mask;
-    uint8_t workspace,zoom,genre,solo,muted,shaping,sound_page,knob[4],part_level[4];
-    uint8_t signal_peak;
+    uint8_t workspace,zoom,genre,solo,muted,held_parts,shaping,sound_page,knob[4],part_level[4];
+    uint8_t signal_peak,phrase_steps,layer_reply,bass_reply,section;
     uint8_t rack_knob[CGU_BAND_PANELS-1][4];
     uint8_t rack_beat, rack_meter, rack_level, rack_arp_step, rack_arp_mode, rack_lens, rack_draft;
-    uint16_t steps[4][2],matches;
+    uint16_t steps[4][2],bass_delays[2],drum_hits,matches;
     int8_t bank_dx,chord_dy;
     uint16_t rack_scroll;
     cfm_pose_t mascot;

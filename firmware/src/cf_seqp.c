@@ -744,7 +744,7 @@ static void sqp_tick1(void)
     }
     if (++sqp.t >= sqp_bar_ticks()) {
         sqp_next_bar();
-        cf_perf_bar(cf_perf_kit_style(sq_st.pat[sqp.pat % SQ_NPAT].kit));
+        cf_perf_bar(cf_perf_kit_style(sq_st.pat[sqp.pat % SQ_NPAT].kit),0);
     }
     sqp_now();
 }

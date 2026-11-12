@@ -41,7 +41,7 @@ Highlight the Genre unit with **ALGORITHM** or **SEQ** and turn **K1** or **PRES
 
 ### Harmony and Shaping
 
-Highlight **Harmony** with **ALGORITHM** or **SEQ** to change key, tempo, scale, or meter. Highlight **Shaping** for Space, Tempo, Energy, and Evolve. Harmony is also available as a named page within a zoomed Studio musician by turning **SELECT**.
+Highlight **Harmony** with **ALGORITHM** or **SEQ** to change key, tempo, scale, or meter. Highlight **Shaping** for Space, Tempo, Energy, and Evolve. Turn **SELECT** within a zoomed musician to move through Part, Harmony, and Evolve.
 
 | Page | Knob | What it changes |
 | --- | --- | --- |
@@ -51,8 +51,8 @@ Highlight **Harmony** with **ALGORITHM** or **SEQ** to change key, tempo, scale,
 | Harmony | K4 Meter | Chooses 3/4, 4/4 or 6/8. During playback it lands at the next bar. |
 | Shaping | K1 Space | Scales the audible chorus, delay and reverb together. Raise the relevant send on Sound → Sends if a part is dry. |
 | Shaping | K2 Tempo | The same tempo control as on Harmony. |
-| Shaping | K3 Energy | Raises or lowers the effective Activity of all four musicians around their current settings. 50% is neutral. Phrases gain or shed events and can change accents within the current take. |
-| Shaping | K4 Evolve | Sets how often one musician automatically varies its phrase. 0% turns it off. 1–49% gives the band one change every 8 bars, 50–79% every 4 bars and 80–100% every 2 bars. Ambient doubles those intervals. Muted musicians and musicians with Activity below 35% are skipped. |
+| Shaping | K3 Energy | Raises or lowers the effective Activity of free musicians around their current settings. 50% is neutral. A phrase can gain or shed events while keeping the edits Evolve has made. |
+| Shaping | K4 Evolve | Sets how often one musician automatically varies its phrase. 0% keeps the current phrases and cancels automatic edits waiting to land. It considers one musician every 8 bars at 1–49%, every 4 bars at 50–79%, and every 2 bars at 80–100%. Ambient doubles those intervals. Held or muted musicians and musicians with Activity below 35% are skipped. |
 
 Press **EDIT** on the Studio overview to generate a new band take for the next bar. Zoom into a musician and press **EDIT** to regenerate only that part on the next sixteenth-note grid point, or eighth-note grid point in 6/8. EDIT also rotates eligible sounds in the genre palette. Pitched patches switch at the musical boundary and drum kits switch at the next bar. Saved user patches, edited patches and sounds you are holding stay selected.
 
@@ -68,18 +68,50 @@ Press **PLAY** in the editor to use the draft for all four musicians. If the ban
 | --- | --- |
 | K1 Style | Chooses between two ways of playing for the selected musician and genre. For example, Indie Bass offers Offbeat and Answer. |
 | K2 Activity | Sets how busy that musician plays. The effect depends on the style and can include extra notes, accents and percussion hits. |
-| K3 Level | Sets the musician’s mix level. This is the same level on Sound → Tone and in the GLO mixer. |
+| K3 Level | Sets the musician’s mix level. This is the same level on Sound → Tone and Sound → Mix. |
 | K4 Sustain on Chords | Sets the envelope level while a chord is held. Sound → Envelope → Release sets how long it rings after note-off. |
 | K4 Touch on Bass and Layer | Sets the velocity of generated notes. 50% leaves the programmed velocity as played. |
 | K4 Punch on Drums | Sets the velocity of generated drum hits. |
 
+In **New Wave**, select **Bass → Moving pulse** to hear it follow Drums. A kick accents a bass note already on that step. An empty kick can pull a nearby bass note up to two steps earlier, leaving anchors and pickups in place. Switch Drums from **Machine** to **Open hats** to shift the kick and bass accent in the second bar. Evolve shows the resulting phrase under **Kick accents**. Bass follows the planned kick pattern through drum mutes and live fills. Hold keeps the current bass pattern when the drum groove changes.
+
+In **Lo-Fi**, **Bass → Late pocket** places notes just behind kicks they share a step with. The delay follows the planned kick timing. The downbeat anchor, pickups, and offbeat notes keep their own timing. In 3/4 and 6/8, the groove carries the same kick and bass accents onto the shorter grid. Evolve labels the phrase **Behind the kick**. Hold keeps the current timing, and **Walk** plays its own phrase.
+
+In **Indie**, select **Layer → Counterline** and **Chords → Chop** to hear the parts interact. Layer can move a note up to three grid steps to find room after a chord. It shortens the reply if the next chord is close. The Evolve page shows the resulting pattern under **Chord gaps**. Hold keeps that pattern while Chords changes. With **Ring**, Chords Band ARP, or a custom progression draft, Counterline plays its independent phrase.
+
+Indie also has an eight-bar form. On bar 5, Layer rests and Drums leave out the hats while Chords, Bass, kick and snare carry the groove. The band comes back in on bar 6, then Drums play a turnaround in the second half of bar 8. The form starts over with each new take. It runs with Evolve at 0% and gives your live Fill, Drop and Return cues priority on Drums.
+
+In **Lo-Fi**, **Layer → Fragments** plays a short reply in the first available space after the planned snare. It leaves the space open when a nearby key stab would crowd the reply. **Soft bell** keeps its own timing.
+
+In **Dream Pop**, **Layer → Sparse motif** answers gaps in **Soft pulse** chords. With **Sustain**, the motif enters half a quarter-note after a harmonic change, on the next playable grid point. **Arp** keeps its own phrase.
+
+In **Ambient Soundscape**, **Layer → Swells** enters after a harmonic change and leaves room for the harmony to settle. The drummer keeps the kick and leaves out optional rim and hat hits through the first two bars of that harmony. **Distant notes** plays its own phrase.
+
+In **Pop Punk**, the last bar's tom turnaround follows the final shared bass-and-kick riff attack. Pickups and extra Double kick hits keep their own rhythm. Live drum cues take priority.
+
 Style and Activity changes take effect on the next playable grid point. Continuous knobs take single steps when turned slowly and five-unit steps when turned quickly.
 
-### GLO mixer
+On the musician’s **Evolve** page, turn **K1 Hold** right to keep its current phrase through Energy and automatic Evolve changes. Turn K1 left to return the musician to **Free** and apply the current Energy setting. The two-bar Phrase display shows the generated pattern and its position in playback. The Studio panel shows **Held** while Hold is on. You can still edit Style or Activity or press **EDIT** to regenerate that musician. Hold then protects the edited phrase. Chord changes, arrangement cues, and live controls continue. Stop and PLAY keep Hold for the same take. A new band take or genre releases the holds when it lands.
 
-Press **GLO** to open or close the mixer. K1–K4 set the levels of Chords, Bass, Drums and Layer in that order. Hold upper keys 1–4 for momentary mute or 5–8 for momentary solo. **EDIT** latches mute and **SEL** latches solo on the selected musician. On the mixer or zoomed Studio Drums panel, turn **PRESETS** left for a fill or right to drop or return the drums at the next bar. **SAVE** from the mixer opens Global settings.
+### GLO Live
+
+Press **GLO** to open the live keyboard controls. **ALGORITHM** switches between Map and State, and **SELECT** adjusts tempo. Press **GLO** or **HOME** to return to the previous panel, or **SAVE** for Settings.
+
+| Keys | Action |
+| --- | --- |
+| First four black keys | Toggle mute for Chords, Bass, Drums and Layer |
+| First four white keys | Solo those musicians while held |
+| Black keys 7–10 | Toggle kick, snare, hats and percussion |
+| C4 / D4 | Pause or resume / restart |
+| E4 / F4 | Unmute all / tap tempo |
+| G4 / A4 | Fill while held / queue a one-bar fill |
+| B4 | Drop or bring back drums at the next bar |
+
+Pause, restart and tempo follow the external clock when MIDI clock input is active. From the zoomed Studio Drums panel, **PRESETS** left queues a fill and right drops or returns the drums at the next bar.
 
 ## Sound
+
+Open **Mix** for Chords, Bass, Drums and Layer levels on K1–K4.
 
 Open **Sound Library** at the end of the Sound rack. **K1 Library** selects the short Genre list or All sounds. Highlight a musician and use **K1 Preset** to browse its tones or kits. With Genre selected, press **SEL** to load the complete palette. Press **EDIT** on the Sound overview or in Sound Library to choose the next tone or kit for each musician. In a musician’s Tone panel, **EDIT** changes that musician only. While playing, the pitched sounds change immediately and the drum kit changes at the next bar. The palette keeps the current levels, pan, sends and shared effects settings.
 

@@ -479,7 +479,7 @@ static void dmp_tick1(void)
     sqp_drum_offs();
     if (++dmp.t >= sqp_bar_ticks()) {
         dmp_next_bar();
-        if (dmp.on) cf_perf_bar(dmp_fill_style(dmp.r));
+        if (dmp.on) cf_perf_bar(dmp_fill_style(dmp.r),0);
     }
     if (dmp.on)
         dmp_now();

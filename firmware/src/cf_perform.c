@@ -4,6 +4,7 @@
  * No pattern, mix level, saved mute or melodic note ownership is changed. */
 enum { CFPERF_NONE, CFPERF_FILL, CFPERF_DROP, CFPERF_BACK };
 enum { CFPERF_LOOSE, CFPERF_TIGHT };
+enum { CFPERF_FILL_MANUAL=1, CFPERF_FILL_AUTO };
 enum { PF_K, PF_S, PF_C, PF_H, PF_O, PF_LT, PF_MT, PF_HT, PF_R, PF_B, PF_X };
 static struct {
     uint8_t pending, fill, dropped, style;
@@ -21,7 +22,7 @@ static void cf_perf_queue(uint32_t action)
     if (action < CFPERF_FILL || action > CFPERF_BACK)
         return;
     /* Repeated turns cannot stack fills or extend one indefinitely. */
-    if (action == CFPERF_FILL && (cf_moment.fill || cf_moment.dropped))
+    if (action == CFPERF_FILL && (cf_moment.fill == CFPERF_FILL_MANUAL || cf_moment.dropped))
         return;
     cf_moment.pending = (uint8_t)action;           /* latest request wins at the next bar */
 }
@@ -35,18 +36,19 @@ static void cf_perf_release_drums(void)
         }
     vsq_drop(&trk[CF_PART_DRUM], 128u);
 }
-static void cf_perf_bar(uint32_t style)
+static void cf_perf_bar(uint32_t style, int automatic_fill)
 {
     uint32_t action = cf_moment.pending;
     int returning = cf_moment.fill || cf_moment.dropped;
+    int auto_turn = automatic_fill && !action && cf_moment.fill != CFPERF_FILL_MANUAL;
     cf_moment.pending = cf_moment.fill = 0;
     if (action == CFPERF_DROP) {
         cf_moment.dropped = 1;
         cf_perf_release_drums();
         return;
     }
-    if (action == CFPERF_FILL && !cf_moment.dropped) {
-        cf_moment.fill = 1;
+    if ((action == CFPERF_FILL || auto_turn) && !cf_moment.dropped) {
+        cf_moment.fill = auto_turn ? CFPERF_FILL_AUTO : CFPERF_FILL_MANUAL;
         cf_moment.style = (uint8_t)style;
         return;
     }

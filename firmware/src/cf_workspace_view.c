@@ -69,6 +69,70 @@ static unsigned cgu_workspace_tile(const cf_stage_model_t *m)
     return m->bank?CGS_NPART+m->bank-1u:cgu_part(m->focus);
 }
 
+static void cgu_phrase_model(cf_stage_model_t *m,unsigned parts,int active)
+{
+    uint8_t cells[CGS_NPART][2][CGS_STEPS], gaps[2][CGS_STEPS];
+    uint8_t kicks[2][CGS_STEPS], bass_feel[2][CGS_STEPS], backbeat[2];
+    int layer_gaps=0;
+    cgs_clip_t layer;
+    fm1_irq_off();
+    uint32_t tick=cpa.t, bar=cgs.bar-cgs.origin_bar;
+    unsigned meter=active?cpa.plan.beats:cgs.meter;
+    for(unsigned i=0;i<CGS_NPART;i++)
+        if(parts&(1u<<i))memcpy(cells[i],cgs.active[i].event,sizeof cells[i]);
+    if((parts&(1u<<CGS_LAYER)) && !(cgs.arp&(1u<<CGS_LAYER)) &&
+       cgs.active[CGS_LAYER].responds){
+        layer=cgs.active[CGS_LAYER];
+        layer_gaps=cgs_layer_gaps(0)!=0;
+        for(unsigned b=0;b<2;b++){
+            if(layer_gaps)memcpy(gaps[b],cgs_layer_gaps(b),sizeof gaps[b]);
+            backbeat[b]=(uint8_t)cgs_layer_backbeat(b,0);
+        }
+        m->layer_reply=layer.responds;
+        if(m->layer_reply==CGS_LAYER_REPLY_GAPS && !layer_gaps)m->layer_reply=0;
+        if(m->layer_reply==CGS_LAYER_REPLY_DREAM && layer_gaps)m->layer_reply=CGS_LAYER_REPLY_GAPS;
+    }
+    if((parts&(1u<<CGS_BASS)) && cgs.active[CGS_BASS].responds){
+        memcpy(bass_feel,cgs.active[CGS_BASS].feel,sizeof bass_feel);
+        for(unsigned b=0;b<2;b++)memcpy(kicks[b],cgs_bass_kicks(b,0),sizeof kicks[b]);
+        m->bass_reply=cgs.active[CGS_BASS].responds;
+    }
+    fm1_irq_on();
+    m->phrase_steps=(uint8_t)cgs_steps(meter);
+    if(active && !cf_sn.ac_paused && !cf_sn.ac_waiting){
+        unsigned tick_step=meter==6u?CGS_TICKS*2u:CGS_TICKS;
+        m->beat=(uint8_t)(1+(bar&1u)*CGS_STEPS+tick/tick_step);
+    }
+    for(unsigned i=0;i<CGS_NPART;i++){
+        if(!(parts&(1u<<i)))continue;
+        for(unsigned b=0;b<2;b++){
+            uint16_t events=i==CGS_CHORDS?1u:0u;
+            if(i==CGS_LAYER && (m->layer_reply==CGS_LAYER_REPLY_HARMONY ||
+                                m->layer_reply==CGS_LAYER_REPLY_DREAM)){
+                unsigned feel=0, delay=(m->layer_reply==CGS_LAYER_REPLY_HARMONY?4u:2u)*CGS_TICKS;
+                m->steps[i][b]=cgs_first_fragment(&layer,b,&feel)?(uint16_t)(1u<<(delay/cgs_step_ticks(meter))):0;
+                continue;
+            }
+            uint8_t pulled=0;
+            for(unsigned j=0;j<m->phrase_steps;j++){
+                unsigned feel=0, note=cells[i][b][j];
+                if(i==CGS_LAYER && m->layer_reply==CGS_LAYER_REPLY_GAPS)
+                    note=cgs_gap_reply(&layer,gaps[b],b,j,&feel);
+                else if(i==CGS_LAYER && m->layer_reply==CGS_LAYER_REPLY_SNARE)
+                    note=cgs_snare_reply(&layer,layer_gaps?gaps[b]:0,backbeat[b],b,j,&feel);
+                else if(i==CGS_BASS && m->bass_reply){
+                    feel=bass_feel[b][j];
+                    note=cgs_kick_bass(m->bass_reply,cells[i][b],bass_feel[b],kicks[b],j,m->phrase_steps,&feel,&pulled);
+                    if(m->bass_reply==CGS_BASS_REPLY_LATE && feel!=bass_feel[b][j])
+                        m->bass_delays[b]|=(uint16_t)(1u<<j);
+                }
+                if(note)events|=(uint16_t)(1u<<j);
+            }
+            m->steps[i][b]=events;
+        }
+    }
+}
+
 static void cgu_model(cf_stage_model_t *m)
 {
     int active=cgs_active();
@@ -81,9 +145,10 @@ static void cgu_model(cf_stage_model_t *m)
     m->signal_peak=(uint8_t)cfn_motion.energy;
     m->bank=cgu.tab==CGU_STUDIO?cgu.band_panel:cgu.rack_controls;
     m->bank_dx=(int8_t)(cf_tween_offset(cgu.tab_ms,185,96)*cgu.tab_dir);
-    m->shaping=cgu.band_panel==CGU_BAND_ARP?cgu_arp_page(detail):detail && cgu.part_harmony;
+    m->shaping=cgu.band_panel==CGU_BAND_ARP?cgu_arp_page(detail):(detail?cgu.part_page:CGU_PART);
     m->sound_page=cgu_tone_page(detail);
     m->genre=cgs.genre;
+    m->held_parts=cgs.hold;
     m->solo=cgs.solo|cgs.held_solo;
     m->muted=cgs.muted;
     m->focus=cgu.tab==CGU_HELP?cgu.topic:cgs.focus;
@@ -122,6 +187,10 @@ static void cgu_model(cf_stage_model_t *m)
             }
         }
         if(m->bank)m->rack_lens=(uint8_t)cgu_rack_lens();
+        if(active && !cf_sn.ac_waiting && !cf_sn.ac_paused){
+            m->section=cgs.section&CGS_FORM_LAYER_REST;
+            if(cf_sn.perf_fill==CFPERF_FILL_AUTO)m->section|=CGS_FORM_FILL;
+        }
         if(m->bank==CGU_BAND_PROGRESSION)
             str_cpy(m->applied,(active?idea==CF_P_DRAFT:cgs.custom)?cgs_custom_harmony.name:"Genre bank",sizeof m->applied);
         if(active && cpa_setup.flags)str_cpy(m->pending,
@@ -139,24 +208,18 @@ static void cgu_model(cf_stage_model_t *m)
         if(!m->bank && m->sound_page==CGU_PRESETS){
             cfx_sync();
             str_cpy(m->applied,cfx_loaded_name(),sizeof m->applied);
+            str_cpy(m->next_setup,fxp_pick_name(),sizeof m->next_setup);
+        } else if(detail && !m->bank && m->sound_page==CGU_TONE && m->focus==CGS_DRUMS){
+            for(unsigned lane=0;lane<SQ_NLANE;lane++)
+                if(cf_sn.sq_lane_t[lane] && cf_sn.now_ms-cf_sn.sq_lane_t[lane]<120u)
+                    m->drum_hits|=(uint16_t)(1u<<lane);
         }
         if(active && (cpa_edit.flags&CPA_GROOVE))str_cpy(m->pending,"Kit queued",sizeof m->pending);
     }
     if(cgu.tab==CGU_RECORD && sqk.on && sqk.pat<SQ_NPAT)cgu_take_model(m);
-    else if(cgu.tab==CGU_RECORD){
-        uint8_t cells[CGS_NPART][2][CGS_STEPS];
-        fm1_irq_off();
-        uint32_t tick=cpa.t, bar=cgs.bar-cgs.origin_bar;
-        unsigned tick_step=cpa.plan.beats==6u?CGS_TICKS*2u:CGS_TICKS;
-        for(unsigned i=0;i<CGS_NPART;i++)memcpy(cells[i],cgs.active[i].event,sizeof cells[i]);
-        fm1_irq_on();
-        m->beat=active?(uint8_t)(1+(bar&1u)*CGS_STEPS+tick/tick_step):0;
-        for(unsigned i=0;i<CGS_NPART;i++)for(unsigned b=0;b<2;b++){
-            uint16_t events=i==CGS_CHORDS?1u:0u;
-            for(unsigned j=0;j<CGS_STEPS;j++)if(cells[i][b][j])events|=(uint16_t)(1u<<j);
-            m->steps[i][b]=events;
-        }
-    }
+    else if(cgu.tab==CGU_RECORD)cgu_phrase_model(m,(1u<<CGS_NPART)-1u,active);
+    else if(cgu.tab==CGU_STUDIO && detail && !m->bank && m->shaping==CGU_PART_EVOLVE)
+        cgu_phrase_model(m,1u<<m->focus,active);
     if(cgu.tab==CGU_HELP && m->focus==CGU_HARMONY && m->zoom>82)cf_learn_model(&m->learn);
     if(cgu.tab==CGU_STUDIO && cgs.focus==CGS_DRUMS){
         m->moment=cf_sn.perf_pending;
@@ -253,13 +316,13 @@ static void cgu_dial(int x,int y,int r,unsigned value,unsigned ink)
 
 static void cgu_pages(int x,int y,int w,unsigned tab,unsigned part,unsigned selected)
 {
-    static const char *const studio[]={"Part","Harmony"};
+    static const char *const studio[]={"Part","Harmony","Evolve"};
     static const uint8_t pitched[]={17,27,21,35}, drums[]={25,0,25,50};
     const uint8_t *width=part==CGS_DRUMS?drums:pitched;
     unsigned accent=CGU_INK_BASE+part;
     unsigned count=tab==CGU_SOUND?CGU_SOUND_PAGES:NELEM(studio);
     for(unsigned i=0;i<count;i++){
-        int cell=tab==CGU_SOUND?w*width[i]/100:w/2;
+        int cell=tab==CGU_SOUND?w*width[i]/100:w/(int)NELEM(studio);
         if(!cell)continue;
         const char *name=tab==CGU_SOUND?CGU_SOUND_NAMES[i]:studio[i];
         fb_rect(x,y,cell-2,16,i==selected?FL_BG3:FL_BG);
@@ -382,8 +445,85 @@ static const char *cgu_module_value(const cf_stage_model_t *m,unsigned band,unsi
     case CGU_BAND_ARP:
         return part==CGS_CHORDS || part==CGS_LAYER?CGU_ARP_NAMES[cgu_arp_mode()]:"Chords / Layer";
     default:
+        if(m->workspace==CGU_STUDIO && (m->held_parts&(1u<<part)))return "Held";
         return m->workspace==CGU_SOUND?m->rail[part]:CGS_PROFILES[m->genre].style[part][cgs.style[part]];
     }
+}
+
+static void cgu_context_plate(int x,int y,int w,int h,unsigned ink)
+{
+    fb_rbox(x,y,w,h,3,CGU_METAL+4);
+    fb_rbox(x+1,y+1,w-2,h-2,2,FL_BG);
+    fb_hline(x+5,y+2,14,ink);
+}
+
+static void cgu_phrase_window(const cf_stage_model_t *m,unsigned part,int x,int y,int w,unsigned ink)
+{
+    cgu_context_plate(x,y,w,54,ink);
+    const char *title="Phrase";
+    if(part==CGS_LAYER && m->layer_reply){
+        title=m->layer_reply==CGS_LAYER_REPLY_GAPS?"Chord gaps":
+            m->layer_reply==CGS_LAYER_REPLY_SNARE?"Snare replies":"Chord-change motif";
+    }
+    else if(part==CGS_BASS && m->bass_reply)
+        title=m->bass_reply==CGS_BASS_REPLY_LATE?"Behind the kick":"Kick accents";
+    cfn_text(&CFN_11,x+8,y+16,title,FL_INK);
+    unsigned steps=m->phrase_steps;
+    if(!steps)return;
+    for(unsigned bar=0;bar<2;bar++){
+        int row=y+23+(int)bar*14;
+        cfn_text(&CFN_11,x+8,row+7,bar?"2":"1",FL_INK2);
+        for(unsigned i=0;i<steps;i++){
+            int left=x+23+(w-31)*(int)i/(int)steps;
+            int right=x+23+(w-31)*(int)(i+1)/(int)steps;
+            int hit=(m->steps[part][bar]>>i)&1u;
+            fb_rect(left,row,right-left-1,7,hit?ink:FL_BG3);
+            if(part==CGS_BASS && (m->bass_delays[bar]&(1u<<i)))fb_vline(right-2,row+1,5,FL_INK);
+            if(m->beat==1+bar*CGS_STEPS+i)fb_hline(left,row+9,right-left-1,FL_INK);
+        }
+    }
+}
+
+static void cgu_knob_caption(const cf_stage_model_t *m,unsigned k,int col,int y,int w,int show_value)
+{
+    int left=col-w/2+4, width=w-6;
+    cfn_fit(&CFN_11,left,y+25,m->label[k],width,FL_INK2);
+    if(show_value){
+        const cfn_font_t *face=cfn_width(&CFN_12,m->value[k])<=width?&CFN_12:&CFN_11;
+        cfn_fit(face,left,y+37,m->value[k],width,m->disabled[k]?FL_INK2:FL_INK);
+    }
+}
+
+static int cgu_musician_context(const cf_stage_model_t *m,unsigned part,int x,int y,int w,unsigned ink)
+{
+    if(!m->label[0][0] || m->label[1][0] || m->label[2][0] || m->label[3][0])return 0;
+    int left=x+w/4+4, width=x+w-6-left;
+    if(m->workspace==CGU_SOUND && m->sound_page==CGU_PRESETS){
+        cgu_context_plate(left,y,width,54,ink);
+        cfn_text(&CFN_11,left+8,y+14,"Preview",FL_INK2);
+        cfn_fit(&CFN_12,left+8,y+28,m->next_setup,width-16,FL_INK);
+        cfn_text(&CFN_11,left+8,y+45,"Loaded",FL_INK2);
+        cfn_fit(&CFN_11,left+53,y+45,m->applied,width-61,ink);
+    } else if(m->workspace==CGU_STUDIO && m->shaping==CGU_PART_EVOLVE){
+        cgu_phrase_window(m,part,left,y,width,ink);
+    } else return 0;
+    return 1;
+}
+
+static void cgu_slot_grille(int col,int y,int width)
+{
+    fb_rbox(col-width/2+6,y-15,width-12,40,3,CGU_METAL+5);
+    cgu_grille(col-width/2+8,y-13,width-16,36);
+}
+
+static void cgu_drum_hit_lights(const cf_stage_model_t *m,int col,int y,unsigned ink)
+{
+    for(unsigned lane=0;lane<SQ_NLANE;lane++){
+        int left=col-17+6*(int)(lane%6), top=y-7+9*(int)(lane/6);
+        unsigned lit=(m->drum_hits>>lane)&1u;
+        fb_rbox(left,top,5,5,1,lit?ink:CGU_METAL+2);
+    }
+    cfn_center(&CFN_11,col,y+21,"Hits",FL_INK2);
 }
 
 static void cgu_musician(const cf_stage_model_t *m,unsigned part,int x,int y,int w,int h,int zoom)
@@ -409,31 +549,34 @@ static void cgu_musician(const cf_stage_model_t *m,unsigned part,int x,int y,int
         int knob_x=x+w-14+(14-w*5/8)*zoom/100;
         cgu_dial(knob_x,knob_y,5+zoom/10,m->knob[1],m->emphasis[1]?accent:FL_INK);
     }
+    if(zoom>57){
     const char *mode=sound && m->sound_page==CGU_PRESETS?"Band FX":value;
     cfn_fit(&CFN_11,x+w-99,y+24,mode,76,ink);
-    if(sound && m->sound_page==CGU_PRESETS && zoom>82){
-        cfn_fit(&CFN_14,x+64,knob_y,m->value[0],w-76,FL_INK);
-        cfn_fit(&CFN_11,x+64,knob_y+18,"Loaded",w-76,FL_INK2);
-        cfn_fit(&CFN_11,x+109,knob_y+18,m->applied,w-121,FL_INK2);
-    }
-    for(int i=0;i<4;i++){
-        int col=x+w*(1+2*i)/8;
-        if(!m->label[i][0])continue;
-        if(sound && m->sound_page==CGU_SENDS && zoom>89)
-            cgu_send_graph((unsigned)i,m->knob[i],col-21,knob_y-39,42,20,accent);
-        if(i!=1)cgu_dial(col,knob_y,zoom*15/100,m->knob[i],m->disabled[i]?FL_INK2:m->emphasis[i]?accent:FL_INK);
-        if(zoom<82)continue;
-        int width=w/4-6;
-        const cfn_font_t *font=cfn_width(&CFN_12,m->value[i])<=width?&CFN_12:&CFN_11;
-        cfn_fit(&CFN_11,col-w/8+4,knob_y+25,m->label[i],width,FL_INK2);
-        cfn_fit(font,col-w/8+4,knob_y+37,m->value[i],width,m->disabled[i]?FL_INK2:FL_INK);
+        int readout=zoom>82 && cgu_musician_context(m,part,x,knob_y-17,w,accent);
+        for(int i=0;i<4;i++){
+            int col=x+w*(1+2*i)/8;
+            if(!m->label[i][0]){
+                if(zoom>82 && !readout){
+                    cgu_slot_grille(col,knob_y,w/4);
+                    if(sound && part==CGS_DRUMS && m->sound_page==CGU_TONE && i==2)
+                        cgu_drum_hit_lights(m,col,knob_y,accent);
+                }
+                continue;
+            }
+            if(sound && m->sound_page==CGU_SENDS && zoom>89)
+                cgu_send_graph((unsigned)i,m->knob[i],col-21,knob_y-39,42,20,accent);
+            if(i!=1)cgu_dial(col,knob_y,zoom*15/100,m->knob[i],m->disabled[i]?FL_INK2:m->emphasis[i]?accent:FL_INK);
+            if(zoom>=82)cgu_knob_caption(m,(unsigned)i,col,knob_y,w/4,
+                !(sound && m->sound_page==CGU_PRESETS));
+        }
     }
 }
 
 static const char *cgu_drum_status(const cf_stage_model_t *m)
 {
     static const char *const queued[]={"","Fill next bar","Drop next bar","Return next bar"};
-    return m->moment?queued[m->moment]:m->build?"Drums dropped":m->bloom?"Fill active":m->status;
+    return m->moment?queued[m->moment]:m->build?"Drums dropped":
+        m->bloom==CFPERF_FILL_AUTO?"Band turnaround":m->bloom?"Fill active":m->status;
 }
 
 static void cgu_output_meter(int x,int y,unsigned peak,unsigned tab)
@@ -491,6 +634,18 @@ static void cgu_keys_footer(void)
     cfn_fit(&CFN_11,188,237,CGS_PART_NAME[part],39,ink);
 }
 
+static void cgu_mascot_sticker(int x,int y)
+{
+    const uint8_t *pixels=CFM_STICKERS[cf_skin%CF_SKIN_N].pixels;
+    fb_rbox(x+1,y+2,36,36,5,CGU_METAL+1);
+    fb_rbox(x,y,36,36,5,CGU_METAL+8);
+    fb_rbox(x+1,y+1,34,34,4,CGU_METAL+9);
+    for(int row=0;row<CFM_STICKER_SIZE;row++)for(int col=0;col<CFM_STICKER_SIZE;col++){
+        unsigned ink=*pixels++;
+        if(ink)fb_pset(x+4+col,y+4+row,(uint8_t)(CFM_PAL_BASE+ink-1));
+    }
+}
+
 static void cgu_library_rack(const cf_stage_model_t *m,int x,int y,int w,int h,int zoom)
 {
     cgu_amp_shell(x,y,w,h,zoom,C_ACC(0));
@@ -499,22 +654,22 @@ static void cgu_library_rack(const cf_stage_model_t *m,int x,int y,int w,int h,i
         cfn_text(&CFN_11,x+10,y+30,m->value[0],C_ACC(0));
         return;
     }
-    int center=x+w-48, knob=y+h-45;
-    if(!m->build){
-        const cgs_profile_t *profile=&CGS_PROFILES[m->genre];
-        cfn_fit(&CFN_11,x+10,y+42,CGS_FAMILIES[profile->family],w-20,C_ACC(0));
-        cfn_fit(&CFN_14,x+10,y+59,profile->name,w-20,FL_INK);
-    }
-    for(unsigned tile=0;tile<CGS_NPART;tile++){
-        unsigned part=cgu_part(tile);
+    int center=x+w/8, knob=y+h-47;
+    cgu_dial(center,knob,zoom*15/100,m->knob[0],m->emphasis[0]?C_ACC(0):FL_INK);
+    if(zoom<=82)return;
+    cgu_knob_caption(m,0,center,knob,w/4,1);
+    int left=x+w/4+4, top=knob-17, width=x+w-6-left;
+    cgu_context_plate(left,top,width,54,C_ACC(0));
+    for(unsigned i=0;i<CGS_NPART;i++){
+        unsigned part=cgu_part(i);
+        int line=top+14+(int)i*11;
         char count[20];
         kint(count,cgu_sound_count(part,m->build)," ");
         cf_stage_append(count,sizeof count,part==CGS_DRUMS?"kits":CGS_PART_NAME[part]);
-        cfn_fit(&CFN_11,x+10+(int)(tile%2u)*65,y+76+(int)(tile/2u)*13,count,63,FL_INK2);
+        fb_rect(left+8,line-5,3,3,CGU_INK_BASE+part);
+        cfn_fit(&CFN_11,left+15,line,count,width-63,FL_INK);
     }
-    cgu_dial(center,knob,15,m->knob[0],m->emphasis[0]?C_ACC(0):FL_INK);
-    cfn_center(&CFN_11,center,knob+24,m->label[0],FL_INK2);
-    cfn_center(&CFN_12,center,knob+36,m->value[0],FL_INK);
+    cgu_mascot_sticker(left+width-44,top+8);
 }
 
 static void cgu_mix_rack(const cf_stage_model_t *m,int x,int y,int w,int h,int zoom)
@@ -536,8 +691,25 @@ static void cgu_record_controls(const cf_stage_model_t *m,int x,int y,int w,int 
 {
     cgu_amp_shell(x,y,w,h,zoom,C_ACC(0));
     cfn_fit(zoom>62?&CFN_16:&CFN_12,x+10,y+(zoom>62?24:18),"Saved Takes",w-20,FL_INK);
+    if(zoom>82){
+        int knob=y+h-47, center=x+w/8, cards=w*3/4;
+        cfn_text(&CFN_11,x+10,y+40,"Hold SAVE 3s to clear",FL_INK2);
+        cgu_dial(center,knob,zoom*15/100,m->knob[0],m->emphasis[0]?C_ACC(0):FL_INK);
+        cgu_knob_caption(m,0,center,knob,w/4,0);
+        for(unsigned slot=0;slot<SQ_NPAT;slot++){
+            int left=x+w/4+cards*(int)slot/SQ_NPAT+3, width=cards/SQ_NPAT-6;
+            unsigned bit=1u<<slot, ink=slot==m->slot?C_ACC(0):CGU_METAL+4;
+            cgu_context_plate(left,knob-17,width,54,ink);
+            char number[8];
+            kint(number,slot+1u,0);
+            cfn_center(&CFN_16,left+width/2,knob+8,number,slot==m->slot?ink:FL_INK);
+            cfn_center(&CFN_11,left+width/2,knob+24,
+                m->total&bit?"Unread":m->count&bit?"Saved":"Empty",FL_INK2);
+            if(slot==m->slot && m->pulse)fb_hline(left+4,knob+32,(width-8)*m->pulse/100,ink);
+        }
+        return;
+    }
     int panel_y=zoom>62?y+61:y+22;
-    if(zoom>62)cfn_text(&CFN_11,x+10,y+40,"K1 Select   Hold SAVE 3s to clear",FL_INK2);
     int slot_w=(w-20)/SQ_NPAT;
     for(unsigned slot=0;slot<SQ_NPAT;slot++){
         unsigned mask=1u<<slot;
@@ -653,8 +825,7 @@ static void cgu_face_controls(const cf_stage_model_t *m,unsigned selected,cgu_fa
 
 static void cgu_cabinet(const cf_stage_model_t *m,int bottom)
 {
-    unsigned base=CGU_CABINET_BASE+5u*(m->genre==CGS_WAVE || m->genre==CGS_AMBIENT?1u:
-        m->genre==CGS_LOFI?2u:0u);
+    unsigned base=CGU_CABINET_BASE+5u*CGS_PROFILES[m->genre].cabinet;
     fb_rect(1,50,238,bottom-50,CGU_METAL+10);
     fb_rect(2,50,236,3,base+2);
     fb_hline(3,50,234,base+4);
@@ -780,6 +951,7 @@ static void cgu_workspace_draw(const cf_stage_model_t *m)
     int apply=fx_presets || palette;
     if(!overview)fb_hline(10,197,220,studio?CGU_METAL+3:FL_BG3);
     const char *hint=m->pending[0]?m->pending:
+        m->section&CGS_FORM_FILL?"Band turnaround":m->section&CGS_FORM_LAYER_REST?"Band breather":
         studio?(m->live && !m->bank?"EDIT New part":"EDIT New take"):
         tab==CGU_SOUND?(mix?"K1-4 Levels":!m->live || m->bank?"EDIT Reroll sounds":m->sound_page==CGU_TONE?"EDIT Reroll part":""):
         tab==CGU_RECORD?(m->rec?"REC Finish take":"REC Manual take"):"";
@@ -805,8 +977,11 @@ static void cgu_workspace_draw(const cf_stage_model_t *m)
         cfn_text(&CFN_11,10,221,"K1 Library   HOME Back",FL_INK2);
     } else if(studio && m->live){
         if(!m->bank){
+            char page[12];
+            kint(page,1u+m->shaping,"/");
+            kint(page+str_len(page),CGU_PART_PAGES,0);
             cfn_text(&CFN_11,10,221,"SELECT Pages",FL_INK);
-            cfn_text(&CFN_11,91,221,m->shaping?"2/2":"1/2",CGU_INK_BASE+m->focus);
+            cfn_text(&CFN_11,91,221,page,CGU_INK_BASE+m->focus);
         }
         if(!m->bank && m->focus==CGS_DRUMS)cfn_fit(&CFN_11,10,237,"PRESETS Fill / Drop / Return",139,FL_INK2);
     } else if(tab==CGU_HELP && m->live && m->focus==CGU_HARMONY){
