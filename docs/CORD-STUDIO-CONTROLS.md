@@ -15,10 +15,10 @@ Use the cabinet for genre and the faceplate for unit identity. Dream Pop, Indie 
 | Unit | Faceplate and control | Live display |
 | --- | --- | --- |
 | Harmony | Brushed nickel with black inset knobs | Key and beat |
-| Shaping | Green anodized metal with matte black knobs | Energy setting and output level |
+| Shaping | Green anodized metal with a perforated grille and matte black knobs | Energy setting and output level |
 | Genre | Blue enamel with two light stepped selectors | Selected genre and family |
 | ARP | Purple anodized metal with machined silver knobs | Routing mode and played step |
-| Progression | Graphite plate with a two-position switch | Applied source and active chord slot |
+| Progression | Graphite plate with stitched grille cloth and a two-position switch | Applied source and active chord slot |
 
 Mount plates flush with a seam between them. Use 16 px Inter Tight for names and 12 px mixed-case control labels. Keep values at 14 px when they fit and give long program names the wide display. The small badge, vents and hardware marks belong in the close view. Use recessed dark displays with lit segments for actual values and activity. Knobs keep their horizontal positions and hardware style through the camera move.
 

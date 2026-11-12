@@ -44,6 +44,41 @@ static void cgu_unit_vents(int x,int y,int w,int h,int pitch)
     }
 }
 
+static void cgu_perforated_metal(int x,int y,int w,int h)
+{
+    static const uint8_t hole[][4]={
+        {3,4,4,3}, {4,10,10,3}, {4,10,10,3}, {3,5,5,3},
+    };
+    int left=clampi(fb_cx0-x,0,w), right=clampi(fb_cx1-x,0,w);
+    if(left>=right)return;
+    for(int row=clampi(fb_cy0-y,0,h),end=clampi(fb_cy1-y,0,h);row<end;row++){
+        const uint8_t *shade=hole[row&3];
+        int stagger=(row&4)?2:0;
+        uint8_t *pixel=fb+(y+row)*FB_W+x+left;
+        for(int col=left;col<right;col++)
+            *pixel++=(uint8_t)(CGU_METAL+shade[(col+stagger)&3]);
+    }
+}
+
+static void cgu_unit_grille(int x,int y,int w,int h,int metal)
+{
+    fb_rbox(x,y,w,h,2,CGU_METAL+10);
+    fb_hline(x+2,y+h-1,w-4,metal?CGU_METAL+5:CGU_METAL+3);
+    if(metal){
+        cgu_perforated_metal(x+2,y+2,w-4,h-4);
+        return;
+    }
+    cgu_grille(x+2,y+2,w-4,h-4);
+    for(int stitch=4;stitch+3<w-4;stitch+=6){
+        fb_hline(x+stitch,y+3,3,CGU_METAL+4);
+        fb_hline(x+stitch,y+h-4,3,CGU_GRILLE+5);
+    }
+    for(int stitch=7;stitch+3<h-4;stitch+=6){
+        fb_vline(x+3,y+stitch,3,CGU_METAL+4);
+        fb_vline(x+w-4,y+stitch,3,CGU_GRILLE+5);
+    }
+}
+
 static void cgu_unit_shell(cgu_face_t f,unsigned band,int zoom)
 {
     int x=f.x,y=f.y,w=f.w,h=f.h;
@@ -191,7 +226,7 @@ static void cgu_band_unit(const cf_stage_model_t *m,unsigned band,cgu_face_t f,i
     int meter_y=y+cgu_unit_blend(30,42,zoom);
     int meter_h=cgu_unit_blend(8,13,zoom);
     cgu_unit_lamps(m,band,meter_x,meter_y,meter_w,meter_h,zoom,ink);
-    if(zoom<=70 && band!=CGU_BAND_HARMONY && band!=CGU_BAND_ARP)
+    if(zoom<=70 && band==CGU_BAND_GENRE)
         cgu_unit_vents(left,meter_y,30,meter_h,5);
 
     if(zoom>70){
@@ -217,10 +252,12 @@ static void cgu_band_unit(const cf_stage_model_t *m,unsigned band,cgu_face_t f,i
     if(cy<clearance)cy=clearance;
     int value_y=cy+radius+29;
     if(value_y>fb_cy1-4)value_y=fb_cy1-4;
-    if(band==CGU_BAND_SHAPING && zoom>70){
-        unsigned finish=CGU_UNIT_FACE+CGU_UNIT_SHADES;
-        fb_rbox(x+14,cy-radius-4,w-28,2*radius+8,2,finish+1);
-        fb_hline(x+16,cy+radius+3,w-32,finish+5);
+    if(band==CGU_BAND_SHAPING){
+        cgu_unit_grille(x+14,cy-radius-2,w-28,2*radius+5,1);
+    } else if(band==CGU_BAND_PROGRESSION){
+        int start=x+w/4+12;
+        cgu_unit_grille(start,cy-radius+1,x+w-start-20,2*radius+2,0);
+        if(zoom>74)cgu_unit_readout(start,value_y,x+w-start-19,m->applied,FL_INK);
     }
     for(int i=0;i<count;i++){
         int cx=cgu_unit_knob_x(f,i,count);
@@ -244,13 +281,6 @@ static void cgu_band_unit(const cf_stage_model_t *m,unsigned band,cgu_face_t f,i
             cfn_center(font,cx,value_y,m->value[i],m->disabled[i]?FL_INK2:FL_INK);
         else if(cell<=available && width>cell)
             cfn_fit(font,cx-cell/2,value_y,m->value[i],cell,FL_INK);
-    }
-    if(zoom>74 && count==1){
-        int top=cy-radius+2, start=x+w/4+12;
-        int width=(x+w-start-22)/2;
-        cgu_unit_vents(start,top,width-3,2*radius-2,7);
-        cgu_unit_vents(start+width+3,top,width-3,2*radius-2,7);
-        cgu_unit_readout(start,value_y,x+w-start-19,m->applied,FL_INK);
     }
     if(selected && zoom<70)fb_vline(x+8,y+2,h-4,ink);
 }
