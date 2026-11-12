@@ -194,8 +194,7 @@ static void hover_controls_studio(void)
     cu.now=1000;
     CHECK(cgs.focus==CGS_CHORDS && !cgs.zoom);
     unsigned key=cs.chord.tonic, scale=cs.chord.scale, bpm=cs.bpm;
-    cgu_face_t face=cgu_rack_face(CGU_STUDIO,0,0);
-    unsigned offset=(unsigned)(face.y+face.h)*FB_W;
+    unsigned offset=CGU_RACK_CONTROLS_Y*FB_W;
     cf_ui_draw();
     uint32_t before=cfs_fnv(fb+offset,CGU_FACE_CONTROLS_H*FB_W);
     ui_knob_turn(0,1);
@@ -204,6 +203,9 @@ static void hover_controls_studio(void)
     CHECK(!strcmp(cf_stage_last.value[0],"Soft pulse") && cf_stage_last.emphasis[0] &&
         cfs_fnv(fb+offset,CGU_FACE_CONTROLS_H*FB_W)!=before);
     ui_algo(1);
+    cf_ui_draw();
+    CHECK(cf_stage_last.focus==CGS_BASS && cf_stage_last.rack_scroll==0 &&
+        fb[(53+CGU_UNIT_H+CGU_UNIT_H/2)*FB_W+4]==CGU_INK_BASE+CGS_BASS);
     unsigned activity=cgs.activity[CGS_BASS], chords=cgs.activity[CGS_CHORDS];
     ui_knob_turn(1,1);
     CHECK(cgs.activity[CGS_BASS]==activity+1 && cgs.activity[CGS_CHORDS]==chords);
@@ -238,6 +240,12 @@ static void hover_controls_studio(void)
     CHECK(trk[CGS_BASS].p[P_E0]!=cutoff && !strcmp(cf_stage_last.value[0],cf_snd[CGS_BASS].name) &&
         !strcmp(cf_stage_last.label[0],"PRESET") && !strcmp(cf_stage_last.label[1],"LEVEL") &&
         cf_stage_last.emphasis[2]);
+    ui_algo(1);
+    cf_ui_draw();
+    CHECK(cf_stage_last.focus==CGS_DRUMS && cf_stage_last.rack_scroll==CGU_UNIT_H &&
+        fb[(53+CGU_UNIT_H+CGU_UNIT_H/2)*FB_W+4]==CGU_INK_BASE+CGS_DRUMS &&
+        fb[(CGU_RACK_CONTROLS_Y+5)*FB_W+10]==CGU_INK_BASE+CGS_DRUMS);
+    ui_algo(-1);
     ui_button(B_SCL);
     ui_select(1);
     CHECK(cgu.sound_page==CGU_ENVELOPE);
@@ -285,6 +293,8 @@ static void workspaces_studio(void)
     CHECK(cgs.focus==CGS_DRUMS && cgu.band_panel==CGU_BAND);
     ui_algo(1);
     CHECK(cgs.focus==CGS_LAYER && cgu.band_panel==CGU_BAND);
+    cu.now+=CGU_RACK_SCROLL_MS;
+    ui_capture("studio-amps-lower");
     unsigned pending=cf_evq_w;
     for(unsigned panel=CGU_BAND_HARMONY;panel<CGU_BAND_PANELS;panel++){
         ui_algo(1);
@@ -293,12 +303,13 @@ static void workspaces_studio(void)
     cu.now+=CGU_RACK_SCROLL_MS;
     ui_capture("studio-rack-lower");
     CHECK(cgu_workspace_tile(&cf_stage_last)==CGU_RACK_COUNT-1);
-    cgu_face_t left=cgu_rack_face(CGU_STUDIO,0,0),right=cgu_rack_face(CGU_STUDIO,1,0);
+    cgu_face_t top=cgu_rack_face(CGU_STUDIO,0,0),bottom=cgu_rack_face(CGU_STUDIO,1,0);
     cgu_face_t last=cgu_rack_face(CGU_STUDIO,CGU_RACK_COUNT-1,0);
     cgu_face_t previous_unit=cgu_rack_face(CGU_STUDIO,CGU_RACK_COUNT-2,-1);
-    CHECK(left.y==right.y && right.x>left.x+left.w);
+    CHECK(top.y+top.h==bottom.y && top.x==bottom.x && top.w==bottom.w);
+    CHECK(cgu_rack_face(CGU_SOUND,1,0).y==bottom.y && cgu_rack_face(CGU_SOUND,1,0).w==bottom.w);
     CHECK(previous_unit.y+previous_unit.h==last.y && previous_unit.w==last.w);
-    CHECK(last.y-cgu_rack_top(CGU_BAND_PROGRESSION)+last.h==185);
+    CHECK(last.y-cgu_rack_top(CGU_STUDIO,CGU_RACK_COUNT-1)+last.h==185);
     ui_algo(1);
     CHECK(cgs.focus==CGS_CHORDS && cgu.band_panel==CGU_BAND);
     ui_algo(-1);
@@ -1869,16 +1880,20 @@ static void rack_units_studio(void)
     }
     unsigned grid=cf_grid.gen;
     CHECK(cgu.band_panel==CGU_BAND_HARMONY && cf_stage_last.rack_beat>0 && cf_stage_last.rack_level>0);
-    CHECK(cf_stage_last.rack_scroll==0 && fb[65*FB_W+9]==CGU_CABINET_BASE+2);
+    int harmony_top=cgu_rack_top(CGU_STUDIO,CGS_NPART);
+    CHECK(cf_stage_last.rack_scroll==harmony_top && fb[65*FB_W+9]==CGU_CABINET_BASE+2);
     ui_save_frame("rack-walnut");
 
-    ui_algo(2);
-    CHECK(cgu.band_panel==CGU_BAND_GENRE && cgu_rack_scroll()==0);
+    ui_algo(1);
+    CHECK(cgu.band_panel==CGU_BAND_SHAPING && cgu_rack_scroll()==harmony_top);
     cu.now+=40;
-    CHECK(cgu_rack_scroll()>0 && cgu_rack_scroll()<CGU_UNIT_H);
+    CHECK(cgu_rack_scroll()>harmony_top && cgu_rack_scroll()<harmony_top+CGU_UNIT_H);
     ui_capture("rack-scroll-start");
     cu.now+=CGU_RACK_SCROLL_MS;
-    CHECK(cgu_rack_scroll()==CGU_UNIT_H);
+    CHECK(cgu_rack_scroll()==harmony_top+CGU_UNIT_H);
+    ui_algo(1);
+    cu.now+=CGU_RACK_SCROLL_MS;
+    CHECK(cgu.band_panel==CGU_BAND_GENRE && cgu_rack_scroll()==harmony_top+2*CGU_UNIT_H);
     ui_capture("rack-scroll-end");
     ui_knob_turn(0,studio_genre_index("new-wave")-studio_genre_index("dream-pop"));
     cu.now+=210;

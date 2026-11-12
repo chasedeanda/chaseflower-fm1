@@ -641,9 +641,8 @@ static void cgs_tempo_info(cf_knob_t *o)
     o->bar=(int16_t)(clampi(bpm-30,0,270)*255/270);
 }
 
-static void cgs_knob_info(int k,cf_knob_t *o,int part_detail)
+static void cgs_knob_info(int k,cf_knob_t *o,unsigned p,int part_detail)
 {
-    unsigned p=cgs.focus;
     if(part_detail){
         kfmt(o->name,12,k==0?"STYLE":k==1?"ACTIVITY":k==2?"LEVEL":p==CGS_CHORDS?"SUSTAIN":p==CGS_DRUMS?"PUNCH":"TOUCH");
         if(k==0){
