@@ -164,6 +164,7 @@ static const ds_kit_t DS_KITS[] = {
 #if CHASE_LIBRARY
 #include "chase_drum_rows.h"
 #include "melodee_drum_rows.h"
+#include "studio_drum_rows.h"
 #endif
 };
 #define DS_NKIT ((uint32_t)(sizeof DS_KITS / sizeof DS_KITS[0]))

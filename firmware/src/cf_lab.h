@@ -12,6 +12,7 @@ typedef struct {
 } cf_lab_info_t;
 typedef struct { uint8_t n,tonic,scale; cf_lab_chord_t chord[CF_LAB_HISTORY]; } cf_lab_history_t;
 typedef struct { uint8_t degree; uint32_t mask; const char *reason; } cf_lab_choice_t;
+void cf_lab_numeral(int scale,int tonic,int root,uint32_t mask,char out[8]);
 void cf_lab_describe(const cf_lab_chord_t *c,int scale,int tonic,cf_lab_info_t *out);
 /* Only caller-identified committed harmonies belong here, never arp/audition events. */
 int cf_lab_remember(cf_lab_history_t *h,int scale,int tonic,const cf_lab_chord_t *c);

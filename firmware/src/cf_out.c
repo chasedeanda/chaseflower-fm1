@@ -160,12 +160,14 @@ static void cr_mcontrol(uint32_t p, uint32_t cc, uint32_t v)
     default: break;
     }
 }
+static void cgs_midi_takeover(unsigned part);
 /* st: the status' high nibble (0x80..0xE0); p: the part 0 / 1 (cr_midi.c crm_map) */
 static void __attribute__((noinline)) midi_event(uint32_t st, uint32_t p, uint32_t d1, uint32_t d2)
 {
     if (p >= 2u)
         return;
     if (st == 0x90u && d2) {
+        if (!cr_mheld[p])cgs_midi_takeover(p);
         if (cr_mnote[p][d1])                     /* a repeated note replaces the previous press (a pedal-held one too) */
             cr_mrelease(p, d1);
         cr_mbend(p);
@@ -559,7 +561,14 @@ static void cf_apply(const cf_ev_in_t *e)
         break;
     case CFE_CONFIG: cfp_config(); cpa_arp_config(); break;
     case CFE_ACCOMP:
-        if (e->a) cpa_start(); else cpa_stop();
+        if (e->a) cpa_start();
+        else {
+            if(cgs_active() && cpa_setup.flags && cpa_setup.plan.studio){
+                cpa_setup.plan=cpa.plan;
+                cgs.setup_pitch=cgs.pitch;
+            }
+            cpa_stop();
+        }
         break;
     case CFE_PANIC:
         cpa_stop();
@@ -679,6 +688,7 @@ static void cf_audio_block(uint32_t n)
         cf_evq_r++;
     }
     cf_midi_in();
+    if(cgs_active())cgs_apply_mute();
     cla_process(n);
     cf_ms_rem += n * 1000u;
     while (cf_ms_rem >= FS) {
@@ -747,6 +757,7 @@ typedef struct {
     uint32_t root_press; /* gesture count for the foreground LED guide */
     uint8_t beat, metro_on, running, metro_level;
     uint32_t beats_done, beat_ms, beat_acc, now_ms;
+    uint32_t studio_keys;        /* the highlighted pitched part, folded onto the panel */
     uint32_t keys_held;          /* bit k: key k is down in the chord model's view */
     uint8_t arp_on, arp_latched, arp_steps, arp_note, arp_n, arp_note_list[CF_MAX_NOTES];
     uint32_t arp_idx;            /* the arpeggiator: steps played, the last note, the chord it plays */
@@ -778,6 +789,24 @@ typedef struct {
 } cf_sn_t;
 static cf_sn_t cf_sn;
 
+/* The panel spans MIDI F3 through G5. Fold outside pitches to its nearest octave. */
+static unsigned cf_panel_pitch_key(unsigned note)
+{
+    while(note<53u)note+=12u;
+    while(note>79u)note-=12u;
+    return note-53u;
+}
+
+static uint32_t cf_sounding_panel_keys(unsigned part)
+{
+    uint32_t keys=0;
+    for(unsigned i=0;i<NVOICE;i++){
+        const voice_t *v=&trk[part].v[i];
+        if(v->active && v->gate && v->stage!=4u)keys|=1u<<cf_panel_pitch_key(v->note);
+    }
+    return keys;
+}
+
 static void cf_snapshot(void)
 {
     uint32_t i;
@@ -801,6 +830,7 @@ static void cf_snapshot(void)
     cf_sn.ac_next_tonic=next->tonic; cf_sn.ac_next_scale=next->scale; cf_sn.ac_next_rhythm=next->rhythm;
     cf_sn.ac_next_beats=next->beats; cf_sn.ac_next_mode=next->mode;
     cf_sn.ac_next_kit=next->kit; cf_sn.ac_next_swing=next->swing; cf_sn.ac_next_repeat_off=next->repeat_off;
+    cf_sn.studio_keys=CF_STUDIO && cgs.focus<CGS_DRUMS?cf_sounding_panel_keys(cgs.focus):0;
     cf_sn.out = cfc.out;
     cf_sn.n = cfp.n;
     for (i = 0; i < cfp.n; i++)

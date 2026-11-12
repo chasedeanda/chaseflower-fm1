@@ -1,5 +1,7 @@
 /* SPDX-License-Identifier: GPL-3.0-only */
 #include <stdio.h>
+/* Exercise classic HOME bank navigation. Native Studio routes have their own suite. */
+#define CF_STUDIO 0
 #include "../tools/emu/emu_fw.c"
 static unsigned checks,failures;
 #define CHECK(x) do {checks++;if(!(x)){failures++;printf("FAIL %d: %s\n",__LINE__,#x);}}while(0)
@@ -52,7 +54,16 @@ static void shared_toolbars(void)
 {
     setup();
     unsigned page=cu.page[SCR_ACC]=CF_ACC_CLICK,queue=cf_evq_w;
-    for(unsigned i=0;i<CF_HB_N*3;i++){ui_algo(1);CHECK(cf_home_bank==(i+1)%CF_HB_N);}
+    cgs.zoom=0;
+    for(unsigned i=0;i<CF_HB_N*3;i++){
+        if(cgs_home()){
+            unsigned focus=cgs.focus;
+            ui_algo(1);
+            CHECK(cf_home_bank==CF_HB_ENGINE && cgs.focus!=focus);
+            ui_button(B_HOME);
+        } else ui_algo(1);
+        CHECK(cf_home_bank==(i+1)%CF_HB_N);
+    }
     CHECK(CF_HB_LEARN+1==CF_HB_N);
     ui_algo(-1);CHECK(cf_home_bank==CF_HB_LEARN && cf_nav_dir==-1);
     ui_algo(-CF_HB_N);CHECK(cf_home_bank==CF_HB_LEARN);

@@ -69,6 +69,7 @@ const GUARD_CASES = [
   ["FM-1_910", "SOMETHING 3.0", "refuse", "unknown"], ["ota-FM-1_920", null, "loader", "loader"],
   ["FM-1_930", "CoralFlower 0.1", "allow", "coralflower"], ["FM-1_930", "CoralFlower 1.0-rc1", "allow", "coralflower"],
   ["FM-1_930", "CORD 1.0", "allow", "coralflower"], ["FM-1_930", "CORDX 1.0", "refuse", "unknown"],
+  ["FM-1_26730001", "CORD 1.0.3-dev.studio", "allow", "coralflower"],
   ["FM-1_930", "CORALFLOWER 0.2", "allow", "coralflower"], ["FM-1_930", "CoralFlowerX 1", "refuse", "unknown"],
   ["FM-1_930", null, "allow", "coralflower"], ["FM-1_930", "", "allow", "coralflower"],   // an early CoralFlower: no INFO
   ["FM-1_931", null, "refuse", "unknown"], ["FM-1_9300", null, "refuse", "unknown"], ["FM-1_929", null, "refuse", "unknown"],

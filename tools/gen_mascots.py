@@ -58,6 +58,10 @@ def generate(out):
         prefix = "CFM_" + name.upper()
         lines += [array("uint32_t", prefix + "_RGB", rgb), array("uint16_t", prefix + "_ROWS", offsets),
                   array("uint8_t", prefix + "_DATA", data)]
+        if name == "devil":
+            lines += [array("uint16_t", "CFM_BOOT_ROWS", offsets[:SIZE]),
+                      array("uint8_t", "CFM_BOOT_DATA", data[:offsets[SIZE]]),
+                      "static const cfm_art_t CFM_BOOT_ART = {CFM_DEVIL_RGB, CFM_BOOT_DATA, CFM_BOOT_ROWS};"]
         total += len(data) + 2 * len(offsets) + 4 * len(rgb)
         print(f"Mascot {name}: {len(data)} row-span bytes, {len(offsets) * 2} row-offset bytes, {COLORS} colours")
     lines.append("static const cfm_art_t CFM_ART[] = {\n"

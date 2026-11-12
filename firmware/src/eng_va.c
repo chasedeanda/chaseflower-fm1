@@ -508,6 +508,25 @@ static const uint8_t VAP_REESE[] = {OSC(0, SAW, 70, 0, -14), OSC(1, SAW, 70, 0, 
 #include "chase_va_defs.h"
 #include "signature8_va_defs.h"
 #endif
+#if CHASE_LIBRARY
+enum { STUDIO_VA_BASE = SIG8_VA_BASE + SIG8_VA_N, STUDIO_VA_FIRST = STUDIO_VA_BASE - 1,
+#define STUDIO_VOICE(id, ...) STUDIO_VA_##id,
+#define STUDIO_RECIPE STUDIO_VOICE
+#include "studio_va.h"
+#undef STUDIO_RECIPE
+#undef STUDIO_VOICE
+    STUDIO_VA_END
+};
+#define STUDIO_VOICE(id, name, bass, w1, l1, w2, l2, oct, det, cut, res, fe, drv, a, d, s, r, motion, rev) \
+    static const uint8_t SV_##id[] = { OSC(0, w1, l1, 0, 0), OSC(1, w2, l2, oct, det), \
+        FLT(LP, cut, res, fe), VA_DRIVE, drv, ENV1(a,d,s,r), ENV2(0,72,0,64), VA_VEL, 62, \
+        LFO(0, 23, 0, 127, 0), M_(0, VS_LFO1, VD_CUT, motion), 0xFF };
+#define STUDIO_RECIPE(id, name, bass, cut, res, fe, drv, a, d, s, r, ...) \
+    static const uint8_t SV_##id[] = { FLT(LP, cut, res, fe), VA_DRIVE, drv, ENV1(a,d,s,r), __VA_ARGS__, 0xFF };
+#include "studio_va.h"
+#undef STUDIO_RECIPE
+#undef STUDIO_VOICE
+#endif
 static const preset_t VA_PRESETS[] = {
     {"LUSH PAD", {70, 14, 10, 0, 64, 0, 86, 98}, {86, 90, 120, 98}, 0, 0, FX(0, 60, 20, 70), PAT(5)},
     {"WARM PAD", {62, 10, 6, 0, 64, 0, 80, 92}, {80, 90, 115, 92}, 0, 0, FX(0, 50, 20, 65), PAT(5)},
@@ -549,6 +568,13 @@ static const preset_t VA_PRESETS[] = {
 #if CHASE_LIBRARY
 #include "chase_va_rows.h"
 #include "signature8_va_rows.h"
+#define STUDIO_VOICE(id, name, bass, w1, l1, w2, l2, oct, det, cut, res, fe, drv, a, d, s, r, motion, rev) \
+    {name, {cut,res,fe,drv,64,0,a,r}, {a,d,s,r}, 0, bass, FX(0,0,0,rev)},
+#define STUDIO_RECIPE(id, name, bass, cut, res, fe, drv, a, d, s, r, ...) \
+    {name, {cut,res,fe,drv,64,0,a,r}, {a,d,s,r}, 0, bass},
+#include "studio_va.h"
+#undef STUDIO_RECIPE
+#undef STUDIO_VOICE
 #endif
 };
 static const uint8_t *const VA_PRESET_EDITS[] = {VAP_LUSH, VAP_WARM, VAP_GLASS, VAP_SLOWSTR, VAP_ENSEMBLE, VAP_BRASS,
@@ -559,12 +585,17 @@ static const uint8_t *const VA_PRESET_EDITS[] = {VAP_LUSH, VAP_WARM, VAP_GLASS, 
 #if CHASE_LIBRARY
 #include "chase_va_ptrs.h"
 #include "signature8_va_ptrs.h"
+#define STUDIO_VOICE(id, ...) SV_##id,
+#define STUDIO_RECIPE STUDIO_VOICE
+#include "studio_va.h"
+#undef STUDIO_RECIPE
+#undef STUDIO_VOICE
 #endif
 };
 _Static_assert(NELEM(VA_PRESETS) == NELEM(VA_PRESET_EDITS), "a patch per VA preset");
 #if CHASE_LIBRARY
 _Static_assert(SIG8_VA_BASE == CHASE_VA_BASE + CHASE_VA_N, "Signature VA IDs append after legacy");
-_Static_assert(NELEM(VA_PRESETS) == SIG8_VA_BASE + SIG8_VA_N, "append-only VA factory IDs");
+_Static_assert(NELEM(VA_PRESETS) == STUDIO_VA_END, "append-only VA factory IDs");
 #endif
 #define VA_NPRESETS ((uint32_t)NELEM(VA_PRESETS))
 #undef O_

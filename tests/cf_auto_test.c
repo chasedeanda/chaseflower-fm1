@@ -2,6 +2,7 @@
  * Actual UI -> ISR player -> MIDI / DSP / recording / flash on host HAL. */
 #include <stdio.h>
 #include "usb_mock.h"
+#define CF_STUDIO 0
 #define FELUCCA_UAC 1
 #define FELUCCA_CDC 1
 #include "../tools/emu/emu_fw.c"

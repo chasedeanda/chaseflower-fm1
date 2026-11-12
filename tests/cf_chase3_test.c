@@ -7,6 +7,8 @@
 #include "usb_mock.h"
 #define FELUCCA_UAC 1
 #define FELUCCA_CDC 1
+/* Exercise classic HOME bank navigation. Native Studio routes have their own suite. */
+#define CF_STUDIO 0
 #include "../tools/emu/emu_fw.c"
 static void ua_service_paced(uint32_t t0, int isr) { (void)t0; (void)isr; ua_service(); }
 static unsigned checks, failures;
@@ -101,6 +103,11 @@ static void legacy_rows(void)
                 uint32_t f=bank==1?97:bank==2?93:bank==3?98:bank==4?94:bank==5?95:bank==6?96:bank==7?99:97;
                 uint32_t ne,np; cf_snd_at(part,at++,&ne,&np);
                 CHECK(ne==e && pool_entry(ne,np).fk==f);
+            }
+            for(uint32_t f=STUDIO_VA_BASE;f<STUDIO_VA_END;f++){
+                if(VA_PRESETS[f].mono!=part)continue;
+                uint32_t e,pos;cf_snd_at(part,at++,&e,&pos);
+                CHECK(e==ENGI_VA && pool_entry(e,pos).fk==f);
             }
             CHECK(at == cf_snd_count(part));
         }
@@ -323,7 +330,7 @@ static void audition_drums(const char *dir)
 {
     int32_t out[CTL*2]; uint32_t r=dm_nth(6,2), i, b;
     cf_fx_t fx=CFX_DEFAULT; fx.on=0; cf_fx_apply(&fx);
-    CHECK(SQ_NKIT==24 && DS_NKIT==16);
+    CHECK(SQ_NKIT==25 && DS_NKIT==17 && SQ_KITS[DMK_ROOM].ds==17);
     for (uint32_t a=0;a<SQ_NKIT;a++) {
         uint32_t n=0;
         for(b=0;b<SQ_NKIT;b++) n+=SQ_KIT_ORDER[b]==a;

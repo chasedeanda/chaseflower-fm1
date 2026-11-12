@@ -23,7 +23,7 @@ static void inventory(const char *path){
  for(unsigned k=0;k<97;k++){uint8_t pk[128];fm6_slot_get((unsigned)FM6_PRESETS[k].e[7],pk);fwrite(pk,1,128,f);}
  for(unsigned k=0;k<93;k++){int8_t p[VA_NP];va_preset_patch(k,p);fwrite(p,1,sizeof p,f);}
  for(unsigned part=0;part<2;part++){
- unsigned n=cf_snd_count(part);
+ unsigned n=cf_snd_signature_span(part);
 #ifdef SIG8_FILTER
  if(!part)n-=8;
 #endif
@@ -52,7 +52,7 @@ static void invariants(void){
  CHECK(cf_snd_find(0,ENGI_FM6,"ORGAN"));uint32_t old=cf_snd_pos(0);cs.snd[0]=old;cs.snd_layer=cf_snd_pos(2);cfs_loaded=1;
  cf_ui_init();CHECK(!strcmp(cf_snd[0].name,"ORGAN")&&cf_snd_pos(0)==old);
  cfs_loaded=0;
- CHECK(FM6_NSLOT==128);CHECK(NELEM(FM6_PRESETS)==100);CHECK(VA_NPRESETS==98);
+ CHECK(FM6_NSLOT==128);CHECK(NELEM(FM6_PRESETS)==100);CHECK(VA_NPRESETS==128);
  cf_bank[0]=SIG8_FILTER;unsigned found=0;
  for(unsigned k=0;k<cf_snd_count(0);k++){uint32_t e,p;cf_snd_at(0,k,&e,&p);if(cf_bank_match(0,e,p)){
  CHECK(found<8);if(found<8){CHECK(e==engines[found]);CHECK(pool_entry(e,p).fk==fac[found]);CHECK(cf_entry_bank(e,p)==found+1);}found++;}}

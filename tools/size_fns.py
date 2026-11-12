@@ -21,7 +21,14 @@ SIZE_FILES = ["ui.c", "favorites.c", "icons.c", "ui_graph.c", "ui_draw.c", "ui_m
               "editor.c", "editor_preferences.c", "editor_backup.c", "console.c",
               # ChoralRoot's UI, screens and stores (not cr_engine.c, cr_out.c, cr_loop.c: they tick in the audio ISR)
               "cr_ui.c", "cr_edit.c", "cr_draw.c", "cr_gfx.c", "cr_pages.c", "cr_bank.c", "cr_name.c", "cr_settings.c",
-              "cr_anim.c", "cr_shim.c"]
+              "cr_anim.c", "cr_shim.c",
+              "cf_stage.c", "cf_screens.c", "cf_native_pages.c", "cf_lab_screen.c", "cf_draft_screen.c",
+              "cf_acc_screen.c", "cf_workspace.c", "cf_workspace_view.c", "cf_studio_ui.c",
+              "cf_accomp_ui.c", "cf_home_banks.c", "cf_ui.c", "cf_acc_ui.c",
+              "cf_edit.c", "cf_fxui.c", "cf_fx_presets_ui.c", "cf_lab_ui.c",
+              "cf_browser_ui.c", "cf_draft_ui.c"]
+SIZE_EXCLUDE = {"cf_ui_pump", "cf_ui_input", "cf_ui_frame", "ui_note_key", "ui_note_key_aged",
+                "cf_xnote_up", "cf_xq_drain", "cf_xnotes_up_all"}
 DEF = re.compile(r"^(?:static|void|int|uint\w*|int\w*|const)\b[^;=(]*?\b([A-Za-z_]\w*)\s*\(", re.M)
 IR_DEF = re.compile(r"^(define [^\n]*?@\"?([\w.]+)\"?\([^\n]*\)(?: unnamed_addr| local_unnamed_addr)?)( #\d+[^\n]*\{)$",
                     re.M)
@@ -49,7 +56,7 @@ def size_names():
     for f in SIZE_FILES:
         if (SRC / f).is_file():
             names.update(definitions((SRC / f).read_text()))
-    return names
+    return names - SIZE_EXCLUDE
 
 
 def main(src, dst):

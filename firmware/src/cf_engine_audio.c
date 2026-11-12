@@ -38,7 +38,13 @@ static unsigned cge_change(unsigned flags)
 static cpa_plan_t cge_prepared_plan;
 static int cge_active(void){return cpa.on && cpa.plan.idea==CF_P_ENGINE;}
 static void cge_live_takeover(void)
-{if(cge_active()){cpa_arp_off();sqp_chord_off();sqp_bass_off();}}
+{
+    if(cge_active() && cfp_cp==0 && !cfp_bo){cpa_arp_off();sqp_chord_off();sqp_bass_off();}
+    if(cgs_active()){
+        if(!cfp_bo)cgs_release(cfp_cp);
+        if(cfp_bo || (cfp_cp==CGS_CHORDS && !cfp_studio_keys))cgs_release(CGS_BASS);
+    }
+}
 static int cge_arp_wanted(void){return cge_active()?cge.arp:cfp_cfg.arp_on;}
 /* Only the scheduled owner consumes this state, at a two-bar chord onset. */
 static void cge_articulation(void)
@@ -68,7 +74,7 @@ static void cge_tick1(void)
     }
 }
 static int cge_bass_enabled(void){return !cge_active() || cge.bass_gate;}
-static int cge_drums_enabled(void){return !cge_active() || cge.drum_gate;}
+static int cge_drums_enabled(void){return !cgs_active() && (!cge_active() || cge.drum_gate);}
 static unsigned cge_phase(void)
 {return cge.bar/4u;}
 static void cge_targets(void)
@@ -139,6 +145,11 @@ static int cge_bar(int onset)
 }
 static void cge_block(uint32_t n)
 {
+    if(cgs_mix_live()){
+        cfx_space=cgs.space*32768u/100u;
+        cgs_audio_block(n);
+        return;
+    }
     cfx_space=cge_active()?cge.space*32768u/100u:32768u;
     if(cge_active())cge_targets();else for(unsigned k=0;k<3;k++)cge.target[k]=32768;
     /* Every changed target gets its own linear 50ms control-rate ramp. */
@@ -151,6 +162,7 @@ static void cge_block(uint32_t n)
 }
 static uint32_t cge_mix_gain(unsigned part)
 {
+    if(part<CGS_NPART && cgs_mix_live())return cgs.gain[part];
     if(part==0 || part==1)return cge.gain[part];
     if(part==CF_PART_DRUM)return cge.gain[2];
     return 32768;

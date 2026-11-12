@@ -1112,6 +1112,7 @@ static void sq_hint_once(uint32_t bit)
     cu.pop_until = cu.now + 1500u;
     sqh_scr = cu.scr;
 }
+static int cgu_recording_here(void);
 static void sq_home_rec_r(uint32_t r, int counted);
 static void sq_home_rec(void)                    /* REC tapped */
 {
@@ -1173,9 +1174,7 @@ static void sq_home_rec_r(uint32_t r, int counted)
     sqk.nbar = sqk.t = sqk.bt = 0;
     sqk.from = (uint8_t)cu.scr;
     squ.bar = squ.step = 0;
-    if (sq_open())                               /* the track it writes opens first, then the count-in (the owner,
-                                                  * 2026-10-20: "На клик записи лучше сразу открывать окно секвенсора
-                                                  * и потом отсчёт давать") */
+    if (sq_open() && !cgu_recording_here())       /* classic recording opens its track before count-in */
         ui_open(SCR_SQED);
     squ.nofr = 1;                                /* (after it the keys only sound: sq_select brings the frame) */
     if (live)
@@ -1397,6 +1396,10 @@ static void sq_snd_poll(void)
             cfk_full[part] = 0;
             if (s->tw)
                 cu.edited[part] = 1;
+            if(CF_STUDIO && s->pat==CGS_PATCH_STAGE){
+                if(part==CF_PART_LAYER)cs.snd_layer=(uint16_t)cf_snd_pos(part);
+                else cs.snd[part]=(uint16_t)cf_snd_pos(part);
+            }
             follow |= part < 2u;
         }
         sq_snd_want(cur, part, &e, &pos);

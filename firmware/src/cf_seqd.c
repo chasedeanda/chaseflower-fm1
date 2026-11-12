@@ -160,6 +160,7 @@ static const sq_kit_t SQ_KITS[] = {
     {"Wood", {0,64,64,64,64,100,0,0}, 13}, {"Chill", {0,64,64,64,64,100,0,0}, 14},
     /* Melodee recipe adaptations, appended so saved kits 0..21 retain their sounds. */
     {"M Retro", {0,64,64,64,64,100,0,0}, 15}, {"M FM", {0,64,64,64,64,100,0,0}, 16},
+    {"Room", {0,64,64,64,64,100,0,0}, 17},
 #endif
 };
 #define SQ_NKIT ((uint32_t)(sizeof SQ_KITS / sizeof SQ_KITS[0]))
@@ -168,7 +169,7 @@ static const sq_kit_t SQ_KITS[] = {
  * eight before them. Only the order the knob walks: a pattern keeps its kit's number, as stored since 0.3 */
 static const uint8_t SQ_KIT_ORDER[] = {10, 8, 9, 11, 12, 13, 0, 1, 2, 3, 4, 5, 6, 7
 #if CHASE_LIBRARY
-    ,14,15,16,17,18,19,20,21,22,23
+    ,14,15,16,17,18,19,20,21,22,23,24
 #endif
 };
 typedef char sq_kit_order_all[sizeof SQ_KIT_ORDER == sizeof SQ_KITS / sizeof SQ_KITS[0] ? 1 : -1];

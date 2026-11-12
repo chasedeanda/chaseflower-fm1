@@ -2,6 +2,9 @@
 #include <stdio.h>
 #include <time.h>
 #include "usb_mock.h"
+#ifndef CF_STUDIO
+#define CF_STUDIO 0
+#endif
 #define FELUCCA_UAC 1
 #define FELUCCA_CDC 1
 #include "../tools/emu/emu_fw.c"

@@ -4,6 +4,8 @@
 #include "usb_mock.h"
 #define FELUCCA_UAC 1
 #define FELUCCA_CDC 1
+/* Exercise classic HOME bank navigation. Native Studio routes have their own suite. */
+#define CF_STUDIO 0
 #include "../tools/emu/emu_fw.c"
 static void ua_service_paced(uint32_t t0,int isr) { (void)t0;(void)isr;ua_service(); }
 static unsigned checks,failures;

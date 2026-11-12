@@ -37,6 +37,7 @@ static void cf_perform_turn(unsigned action)
 }
 static int cf_home_bank_info(int k, cf_knob_t *o)
 {
+    if(cgs_home()){cgu_knob_info(k,o);return 1;}
     if(cf_home_bank==CF_HB_ENGINE){cge_knob_info(k,o);return 1;}
     if(cf_home_bank==CF_HB_FLOW){cge_flow_info(k,o);return 1;}
     if (cf_home_bank == CF_HB_CORE) return 0;
@@ -116,6 +117,7 @@ static void cf_home_groove(int k,int d)
 }
 static int cf_home_bank_turn(int k,int d)
 {
+    if(cgs_home()){cgu_knob_turn(k,d);return 1;}
     if(cf_home_bank==CF_HB_ENGINE){cge_knob_turn(k,d);return 1;}
     if(cf_home_bank==CF_HB_FLOW){cge_flow_turn(k,d);return 1;}
     if (cf_home_bank==CF_HB_CORE) return 0;

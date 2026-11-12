@@ -1,4 +1,5 @@
 /* SPDX-License-Identifier: GPL-3.0-only */
+#define CF_STUDIO 0
 #include <stdio.h>
 #include "../tools/emu/emu_fw.c"
 static unsigned checks,failures;

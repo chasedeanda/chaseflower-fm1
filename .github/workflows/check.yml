@@ -124,6 +124,9 @@ jobs:
       - name: G1 catalog, musical memory, Repeat/Jam and live Vibe switching
         run: sh tools/test_g1.sh
 
+      - name: Studio generator
+        run: sh tools/test_studio.sh
+
       - name: Contextual variations, undo and safe playback boundaries (host HAL)
         run: sh tools/test_variations.sh
 

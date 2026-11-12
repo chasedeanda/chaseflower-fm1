@@ -8,20 +8,25 @@
 #endif
 static const char *const CFL_INTERVAL[24]={"1","b2","2","b3","3","4","b5","5","#5","6","b7","7",
     "8","b9","9","#9","10","11","#11","12","b13","13","b14","14"};
+/* The degree follows the root and its case follows the chord being played. */
+void cf_lab_numeral(int scale,int tonic,int root,uint32_t mask,char out[8])
+{
+    cf_numeral(scale,tonic,root,out);
+    int type=cf_mask_type(mask);
+    for(unsigned i=0;out[i];i++){
+        char v=out[i];
+        if((uint8_t)v==0xB0 || v=='+'){out[i]=0;break;}
+        if(v=='i'||v=='v')v-=32;
+        if((type==CF_T_MIN || type==CF_T_DIM) && (v=='I'||v=='V'))v+=32;
+        out[i]=v;
+    }
+}
 void cf_lab_describe(const cf_lab_chord_t *c,int scale,int tonic,cf_lab_info_t *o)
 {
     memset(o,0,sizeof *o);if(!c || !c->n || scale<0 || scale>=CF_NSCALES)return;
     cf_spell_t sp;cf_key_spell(tonic,scale,&sp);cf_pc_name(tonic,&sp,o->key);
     cf_chord_name(c->root%12,c->mask,c->bass>=0 && c->bass!=c->root%12?c->bass:-1,&sp,o->name);
-    /* Degree number follows the root; case follows the actual third, not a
-     * strict diatonic stack (Auto deliberately uses complete major/minor). */
-    cf_numeral(scale,tonic,c->root%12,o->degree);
-    for(unsigned i=0;o->degree[i];i++) {
-        char v=o->degree[i];if(v=='i'||v=='v')v-=32;
-        if(cf_mask_type(c->mask)==CF_T_MIN || cf_mask_type(c->mask)==CF_T_DIM){if(v=='I'||v=='V')v+=32;}
-        o->degree[i]=v;
-        if((uint8_t)v==0xB0 || v=='+'){o->degree[i]=0;break;}
-    }
+    cf_lab_numeral(scale,tonic,c->root%12,c->mask,o->degree);
     o->n=c->n>CF_MAX_NOTES?CF_MAX_NOTES:c->n;
     for(unsigned i=0;i<o->n;i++) {
         int pc=c->note[i]%12,rel=(pc+12-c->root%12)%12,iv=rel;

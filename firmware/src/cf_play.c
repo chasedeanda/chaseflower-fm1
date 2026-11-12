@@ -75,6 +75,7 @@ typedef struct {
                                  * its take), HOME's bass switch or not; no chord */
     uint8_t notes_in;           /* GLO > MIDI > NOTES IN (CF_NI_*): notes in play the parts directly
                                  * (Direct), else they go to the UI as the FM-1's keys or as roots (cf_out.c cf_xq) */
+    uint8_t studio_keys;         /* Studio plays only its selected instrument. */
     uint8_t in_ch;              /* .. the channel those two take notes from: 0 every one, 1..16 (GLO > MIDI > IN CH) */
 } cf_play_cfg_t;
 
@@ -91,6 +92,7 @@ static uint8_t cfsrc_n;
 static cf_play_cfg_t cfp_cfg = {0, 0, 100, 1, 0, 0, 1, 0, 1, 0, 0, CF_ARP_DEFAULT, 120, CF_LOOP_DEFAULT, 0};
 static uint8_t cfp_cp;                               /* the part the keys' chords sound on now (cfp_cfg.cpart, taken
                                                      * at a CFE_CONFIG with the notes let go) */
+static uint8_t cfp_studio_keys;
 static uint8_t cfp_bo;                               /* .. the bass alone (cfp_cfg.bass_only, taken likewise) */
 
 static struct {
@@ -453,9 +455,10 @@ static void cfp_sync(int how)
 {
     const cf_chord_out_t *o = &cfc.out;
     uint8_t nb[2];
-    int m = o->sounding && !cfp_bo ? o->n : 0;   /* (the bass alone: no chord) */
-    if(m && !cfp.n && cfp_cp==0)cge_live_takeover();
-    int mb = cfp_cp ? 0 : cfp_bo ? cfp_bass_alone(nb) : cfp_bass_notes(nb);   /* (the LAYER: no bass) */
+    int m = o->sounding && !cfp_bo && cfp_cp!=3u ? o->n : 0;   /* (the bass alone: no chord) */
+    int mb = cfp_cp ? 0 : cfp_bo ? cfp_bass_alone(nb) : cfp_studio_keys ? 0 : cfp_bass_notes(nb);   /* (the LAYER: no bass) */
+    if((m && !cfp.n && (cfp_cp==0 || CF_STUDIO)) || (CF_STUDIO && cfp_bo && mb && !cfp.nb))
+        cge_live_takeover();
     /* RETRIG Off: a chord changed while the last one still sounds under held keys (another chord button, another
      * root) moves its voices there with no new attack, at the Glide time (0: at once) */
     int glide = (cfp_glide_g() || cfp_cfg.retrig != CF_RT_STRIKE) && cfp.n && m;
@@ -535,7 +538,7 @@ static void cfp_key(int key, int down)
 static void cfp_config(void)                         /* CFE_CONFIG: the UI's settings */
 {
     uint8_t was = cfa.on, latched = cfa.latched, i, moved = 0;
-    if (cfp_cfg.cpart != cfp_cp || cfp_cfg.bass_only != cfp_bo) {   /* the keys move to another part: what they
+    if (cfp_cfg.cpart != cfp_cp || cfp_cfg.bass_only != cfp_bo || cfp_cfg.studio_keys != cfp_studio_keys) {   /* the keys move to another part: what they
                                                      * sound there goes */
         moved = 1;
         cfa_stop();
@@ -545,8 +548,9 @@ static void cfp_config(void)                         /* CFE_CONFIG: the UI's set
             cfp_off(1, cfp.bass[i]);
         cfp.n = cfp.nb = 0;
         cfp.slast = 0;                               /* (another part: no slide from the old one's note) */
-        cfp_cp = (uint8_t)(cfp_cfg.cpart == 2u ? 2u : 0u);
+        cfp_cp = cfp_cfg.cpart;
         cfp_bo = cfp_cfg.bass_only;
+        cfp_studio_keys = cfp_cfg.studio_keys;
     }
     cfc.keep = cfp_cfg.retrig == CF_RT_WAIT;
     cfc.source = cfsrc_shadow; cfc.source_n = cfsrc_n;

@@ -30,14 +30,47 @@ static void cfn_coverage(int x,int y,unsigned coverage,uint8_t ink)
         if(entry%CFN_AA_ROLES==role){surface=entry/CFN_AA_ROLES;unsigned old=(bg-CFN_AA_BASE)%2+1;if(old>coverage)coverage=old;}
     }
     if(role<CFN_AA_ROLES && surface<CFN_AA_SURFACES)fb[y*FB_W+x]=(uint8_t)(CFN_AA_BASE+(surface*CFN_AA_ROLES+role)*2+coverage-1);
+    else if(CF_STUDIO && !CF_SCENES && role<2 && bg>=CGU_AMP_FACE)
+        fb[y*FB_W+x]=(uint8_t)(CGU_MATERIAL_AA+4*4+role*2+coverage-1);
+    else if(CF_STUDIO && !CF_SCENES && role<2 && bg>=CGU_PEDAL_BODY && bg<CGU_MATERIAL_AA){
+        unsigned material=bg<CGU_METAL?(bg-CGU_PEDAL_BODY)/CGU_PEDAL_SHADES:bg<CGU_GRILLE?4:5;
+        fb[y*FB_W+x]=(uint8_t)(CGU_MATERIAL_AA+material*4+role*2+coverage-1);
+    }
     else if(coverage>=2)fb[y*FB_W+x]=ink; /* retain legacy graph colours */
 }
+static void cfn_large_glyph(const cfn_glyph_t *g,int x,int y,uint8_t ink)
+{
+    const uint8_t *data=CFN_64_BITS+g->off;
+    unsigned run=0, repeated=0, byte=0, bit=0;
+    for(unsigned j=0;j<g->h;j++){
+        for(unsigned i=0;i<g->w;i++,bit++){
+            if(!(bit&3u)){
+                if(!run){
+                    unsigned code=*data++;
+                    repeated=code&128u;
+                    run=(code&127u)+1u;
+                    if(repeated)byte=*data++;
+                }
+                if(!repeated)byte=*data++;
+                run--;
+            }
+            cfn_coverage(x+(int)i,y+(int)j,(byte>>(6u-2u*(bit&3u)))&3u,ink);
+        }
+        if((j&7u)==7u)CF_PUMP();
+    }
+}
+
 static void cfn_text(const cfn_font_t *f,int x,int baseline,const char *s,uint8_t ink)
 {
     f=cfn_face(f,s);
     for(;*s;s++) {
         unsigned c=cfn_code((uint8_t)*s);
         const cfn_glyph_t *g=&f->g[c-32];
+        if(f==&CFN_64){
+            cfn_large_glyph(g,x+g->x,baseline+g->y,ink);
+            x+=g->adv;
+            continue;
+        }
         for(unsigned j=0;j<g->h;j++) {
             for(unsigned i=0;i<g->w;i++) {
                 unsigned bit=j*g->w+i;
@@ -89,11 +122,13 @@ static void cfn_shift_panel(int dx,int y0,int y1)
 typedef struct {
     char chord[24],degree[12],notes[48],idea[40],sound[16],context[48],status[24],pending[48],next_setup[48],applied[64];
     char rail[4][24],numeral[4][12];
+    char theory[48];
     char value[4][14],label[4][12];
     uint8_t live,hold,slot,first,count,total,skin,motion,battery,halo,rec,bank,disabled[4],emphasis[4],cursor_width;
     uint8_t pulse,halo_ink,activity,activity_step;
     uint8_t moment,build,bloom,engine_page,engine_bar,beat,focus,level[4],pin_mask;
-    uint16_t matches;
+    uint8_t workspace,zoom,mixer,genre,solo,muted,shaping,sound_page,knob[4],part_activity[4],part_level[4];
+    uint16_t steps[4][2],matches;
     int8_t bank_dx,chord_dy;
     cfm_pose_t mascot;
     cf_learn_model_t learn;
@@ -239,10 +274,12 @@ static void cf_stage_engine_model(cf_stage_model_t *m)
         str_cpy(m->next_setup,"SELECT browse / SEL Chord Lab",sizeof m->next_setup);
     }
 }
+#include "cf_workspace_view.c"
 static void cf_stage_model(cf_stage_model_t *m)
 {
     memset(m,0,sizeof *m);
     m->bank=cf_home_bank;
+    if(CF_STUDIO && !CF_SCENES){cgu_model(m);return;}
     if(m->bank==CF_HB_FLOW && cge_pins_open) {
         m->engine_page=2;m->focus=cge.pin;m->pin_mask=cge.locks;m->skin=cf_skin;
         str_cpy(m->status,cf_acc_transport(),sizeof m->status);
@@ -471,6 +508,11 @@ static void cf_stage_draw(void)
     if(cf_stage_valid && !fb_full && !memcmp(&m,&cf_stage_last,sizeof m))return;
     cf_stage_last=m;cf_stage_valid=1;cf_stage_draws++;
     fb_unclip();fb_fill(FL_BG);
+    if(CF_STUDIO && !CF_SCENES){
+        cgu_workspace_draw(&m);
+        if(!cu.pop)cf_present();
+        return;
+    }
     if(m.bank==CF_HB_LEARN) {
         char heading[24]="KEYBOARD ";kint(heading+9,m.bank+1,"/");
         kint(heading+str_len(heading),CF_HB_N,0);
