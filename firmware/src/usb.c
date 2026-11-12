@@ -159,7 +159,7 @@ static void midi_out_event(uint32_t pkt)            /* from the audio ISR */
 #include "usb_audio_stream.c"
 #define CFG_LEN 211
 static const uint8_t DEV_DESC[18] = {18, 1, 0x00, 0x02, 0xEF, 0x02, 0x01, 64, 0x09, 0x12, FELUCCA_USB_PID & 0xFF,
-                                     FELUCCA_USB_PID >> 8, 0x26, 0x03, 1, 2, 0, 1};   /* CORD 3.26: new public USB strings */
+                                     FELUCCA_USB_PID >> 8, 0x27, 0x03, 1, 2, 0, 1};   /* RAKT 3.27: public USB strings */
 static const uint8_t DEV_DESC44[18] = {18, 1, 0x00, 0x02, 0xEF, 0x02, 0x01, 64, 0x09, 0x12, FELUCCA_USB_PID & 0xFF,
                                        FELUCCA_USB_PID >> 8, 0x25, 0x03, 1, 2, 0, 1};  /* CORD 3.25: 44.1 kHz only */
 static const uint8_t CFG_DESC[] = {
@@ -310,7 +310,7 @@ static int get_desc(uint32_t wvalue, const uint8_t **d, uint16_t *l)
 /* the device's strings: 1 the maker, 2 the product (the MIDI port's name: tools/fm1_install.py and web/fm1ota.js
  * match "FM-1"; 16 characters at most: usb_str), 3 the recording device, 4..9 its channel names
  * (usb_audio_desc.h). Built from ASCII into usb_str on request (one control transfer at a time) */
-static const char *const USB_STRS[] = {0, "CORD", "CORD FM-1", "CORD In",
+static const char *const USB_STRS[] = {0, "RAKT", "RAKT FM-1", "RAKT In",
                                        "Master L", "Master R", "Chord L", "Chord R", "Bass L", "Bass R"};
 #define USB_NSTR (FELUCCA_UAC ? sizeof USB_STRS / sizeof USB_STRS[0] : 3u)
 static uint8_t usb_str[2 + 2 * 16];

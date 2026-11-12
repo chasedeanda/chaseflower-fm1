@@ -1,8 +1,8 @@
-# CORD Studio controls
+# RAKT Studio controls
 
-Turn **SELECT** on an overview to move between Studio, Sound, Record and Help. Turn **ALGORITHM** to browse the panels. Studio and Sound show two full-width units at a time. In Studio, the four amp heads sit above the outboard units. In Sound, the same amp heads sit above Sound Library and Mix. **SEQ** goes straight to the outboard units from the overview and advances through them while zoomed in.
+Turn **SELECT** on an overview to switch between Studio, Sound, Record and Help. Turn **ALGORITHM** to move between units. Each tab keeps two neighboring full-width units in view and scrolls when the selection moves past an edge. Switching tabs recalls the rack position. **SEQ** jumps to the outboard gear in Studio and steps through its units.
 
-A bright frame and an arrow mark the active unit. The fixed strip below the rack shows that unit’s K1–K4 labels and values. You can edit from the overview or press **SEL** to move the camera in. Turn a knob on a zoomed outboard unit for a brief close-up of that control. Press **SEL** to move back out, or **HOME** when **SEL** is labeled Apply. **SELECT** changes pages inside a zoomed unit that has multiple pages. The colored **KEYS** footer shows which musician the keyboard is playing.
+The arrow and the light strip on the right show the selected unit and its position in the rack. The control strip below the bay shows K1–K4. Press **SEL** to zoom in. In detail, **SELECT** turns pages when a unit has them and switches tabs when it has one page. **ALGORITHM** moves between units, with the ARP panel using it to choose the keyboard part. **HOME** backs out to the same unit. Press **HOME** again from the overview to return to Studio. **SEL** applies the shown choice on panels that say **SEL Apply**.
 
 ## Studio
 
@@ -10,23 +10,19 @@ A bright frame and an arrow mark the active unit. The fixed strip below the rack
 
 ### Rack design
 
-Use the cabinet for genre and the faceplate for unit identity. Dream Pop, Indie and Pop Punk use walnut. New Wave and Ambient Soundscape use anodized aluminum. Lo-Fi uses charcoal tolex. The finish follows the genre selector immediately. An in-flight genre change still takes effect musically at the next bar.
+The rack shares the startup screen's graphite rails, slotted screws, recessed displays, and four-pixel gaps. The units have their own faceplate heights, finishes, and controls.
 
-| Unit | Faceplate and control | Live display |
+| Unit | Hardware | Readout |
 | --- | --- | --- |
-| Chords and Layer | Amp heads with stitched grille cloth | Playing style in Studio and preset in Sound |
-| Bass and Drums | Amp heads with perforated metal grilles | Playing style in Studio and preset or kit in Sound |
-| Harmony | Brushed nickel with black inset knobs | Key and beat |
-| Shaping | Green anodized metal with a perforated grille and matte black knobs | Energy setting and output level |
-| Genre | Blue enamel with two light stepped selectors | Selected genre and family |
-| ARP | Purple anodized metal with machined silver knobs | Routing mode and played step |
-| Progression | Graphite plate with stitched grille cloth and a two-position switch | Applied source and active chord slot |
+| Chords | Bronze face, stitched grille, polished rotary caps | Style or patch and an amber signal lamp |
+| Bass | Dark slate face and inset rubber knobs | Style or patch and a green activity display |
+| Drums | Taller steel-grey face with a row of trigger lamps | Style or kit, plus Kick, Snare, Hats and Percussion hits |
+| Layer | Slim plum face with horizontal faders | Style or patch and the part's level |
+| Harmony, Shaping, Genre, ARP and Progression | Separate nickel, green, blue, violet and graphite plates | Beat, output, program, arpeggiator step and chord slot |
+| Mix | Four-channel fader bank from the startup rack | Set levels and muted channels |
+| Record | Full-width, two-bar lanes and a Saved Takes unit | Notes, hits, playhead and take slots |
 
-Mount plates flush with a seam between them. Use 16 px Inter Tight for names and 12 px mixed-case control labels. Keep values at 14 px when they fit and give long program names the wide display. The small badge, vents and hardware marks belong in the close view. Use recessed dark displays with lit segments for actual values and activity. Knobs keep their horizontal positions and hardware style through the camera move.
-
-The earlier study read as vintage because the cream needle meter, bright wood, brushed texture across the whole surface and dense all-caps legends all drew attention at once. The current pass uses the machined surfaces and compact controls of the TX–6, the status metering of the SSL Pure Drive Octo and the recessed display and perforated fascia of the Symphony I/O. [Teenage Engineering TX–6](https://teenage.engineering/products/tx-6), [SSL Pure Drive Octo](https://solidstatelogic.com/products/puredriveocto), [Apogee Symphony I/O Mk II](https://apogeedigital.com/pdf/Apogee-Symphony-IO-MkII-User-Guide-V2.0.pdf)
-
-Bass Something 2 is the reference for keeping the knob inside the instrument as the camera moves. The user-supplied studio photos informed the flush mounting, varied finishes, and distinct control styles. [Bass Something 2](https://imijes.github.io/bass-something-2/)
+The right-side rack index shows which units are visible. Tabs slide into the cabinet. A detail page slides its controls beneath the fixed faceplate. Motion Off settles the layout immediately.
 
 ### Genre
 

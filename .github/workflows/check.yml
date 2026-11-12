@@ -47,7 +47,7 @@ jobs:
       - name: Device resource audit parser and build-flag consistency
         run: python3 tests/resource_audit_test.py
 
-      - name: CORD public branding and release provenance
+      - name: RAKT public branding and release provenance
         run: |
           python3 tools/audit_public_release.py
           python3 tools/test_hub_submission.py
@@ -157,8 +157,8 @@ jobs:
       - name: Mascot artwork bounds, motion and character preference migration
         run: sh tools/test_mascots.sh
 
-      - name: Cord devil boot, white lettering, startup timing and sparse font fallback
-        run: sh tools/test_cord_boot.sh
+      - name: RAKT boot, rack and meter animation, startup timing and sparse font fallback
+        run: sh tools/test_rakt_boot.sh
 
       - name: CORD chime, finite fade, preference and first-key physical/USB/MIDI priority
         run: sh tools/test_boot_sound.sh

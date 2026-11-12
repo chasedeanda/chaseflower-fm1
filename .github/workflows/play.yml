@@ -2,7 +2,7 @@
 name: Browser playground
 on:
   push:
-    branches: [main, codex/browser-playground]
+    branches: [main]
   workflow_dispatch:
   release:
     types: [published]
@@ -35,8 +35,8 @@ jobs:
           CR_VERSION="dev-${GITHUB_SHA::7}" sh tools/emu/web/build_web.sh
           node tools/emu/web/smoke_play.mjs
           python tools/make_play_site.py
-          python tools/test_package_cord_release.py
-          python tools/package_cord_release.py
+          python tools/test_package_rakt_release.py
+          python tools/package_rakt_release.py
           python tools/audit_public_release.py --site build/play-site
         env:
           GITHUB_TOKEN: ${{ github.token }}
@@ -44,6 +44,7 @@ jobs:
         with:
           path: build/play-site
   deploy:
+    if: github.repository == 'chasedeanda/rakt-fm1'
     needs: build
     runs-on: ubuntu-latest
     timeout-minutes: 10

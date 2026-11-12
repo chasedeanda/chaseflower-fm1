@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-3.0-only
  * G1 foreground selection, preparation, history and live controls. No catalog
  * walk, PRNG draw, sound preparation, allocation or flash write in the ISR. */
-static cf_progression_t cge_view={"CORD","Engine / SAVE is a static snapshot",0,0,CF_SC_MAJOR,0,4,8,{0}};
+static cf_progression_t cge_view={"RAKT","Engine / SAVE is a static snapshot",0,0,CF_SC_MAJOR,0,4,8,{0}};
 static cf_source_chord_t cge_source[8];
 static uint8_t cge_sound_engine[2][2][3],cge_sound_factory[2][2][3],cge_rhythm[2][4],cge_fx_id[2][3],cge_resolved;
 static cf_chord_cfg_t cge_seen_cfg;

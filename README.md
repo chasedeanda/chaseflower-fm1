@@ -1,20 +1,16 @@
-# CORD · FM-1
+# RAKT · FM-1
 
-**CORD 1.0.3** · [Install the latest release](https://chasedeanda.github.io/cord-fm1/install/) · [1.0.3 release notes](docs/releases/1.0.3.md)
+**A rack-style chord instrument and groovebox for the M-VAVE FM-1.**
 
-**A chord instrument, groovebox and songwriting companion for the M-VAVE FM-1.**
-
-Start with a progression, choose a sound and press PLAY. Add drums, shape the bass, turn a chord into an arpeggio, or take over with your own playing. CORD puts the controls you reach for on the HOME screen, with a live chord display and a little Devil or Cat keeping you company.
-
-**[▶ Play in your browser](https://chasedeanda.github.io/cord-fm1/play/)** · **[Download firmware](https://github.com/chasedeanda/cord-fm1/releases)** · **[Install now](https://chasedeanda.github.io/cord-fm1/install/)** · **[Quick start](#make-your-first-loop)**
+RAKT puts a four-part band in a studio rack. Play chords over bass, drums and a
+Layer voice, then move through the outboard units to shape harmony, arpeggios,
+sounds and effects. The Studio interface comes from CORD's `main-beta`.
 
 <p align="center">
-  <img src="docs/images/house-style/mascots-playing.gif" width="640" alt="Actual firmware playback: Devil in Ember and Cat in Plum, with changing chords, phrase playheads and animated beat rings">
+  <img src="docs/images/rakt-boot/boot.gif" width="360" alt="RAKT power-on rack with a mixer lamp sweep and a READY output">
 </p>
 
-This guide documents **current `main`**, including the nine HOME pages, Variations, visual ARP, FX presets and Songs. A downloaded release contains the features listed in its own release notes; the browser player shows its exact source revision in the footer. The newest published hardware package is available on the [releases page](https://github.com/chasedeanda/cord-fm1/releases).
-
-Screenshots are captures of the real 240 × 240 firmware renderer. Playback GIFs show the engine running in the computer emulator. They illustrate the interface; browser speed does not measure the physical FM-1's CPU headroom.
+[Studio controls](docs/CORD-STUDIO-CONTROLS.md) · [Build the firmware](#build-the-firmware) · [Firmware Hub release preparation](docs/RAKT-HUB-SUBMISSION.md)
 
 ## What you can do
 
@@ -35,18 +31,17 @@ Screenshots are captures of the real 240 × 240 firmware renderer. Playback GIFs
 
 ## Make your first loop
 
-1. **Choose an idea.** On HOME → **Core**, turn **SELECT**. The idea supplies a starting key, scale and metre. Bring MASTER up gently.
-2. **Add a beat.** Turn **K1 Rhythm** to a named groove. **K4 Tempo** sets the pace. Press **PLAY** to hear the progression and drums; press it again to stop.
-3. **Pick your sounds.** Turn **ALGORITHM** one page to **Sound**. K1 chooses the chord sound, K2 the bass sound; K3/K4 balance them.
-4. **Add some space.** Press **FX**, browse a preset with SELECT and press **SEL** to load it. Try Velvet, Slap or Deep Space. HOME returns to Core.
-5. **Play over it.** The lower keys play roots; the upper keys choose chord types and colors. Live playing takes over the harmony while the groove and phrase cursor keep moving. Release your roots and HOLD to return to the scheduled progression.
-6. **Keep the idea.** Press **SAVE**, select **+ Save current idea**, then press **SEL**. Stop playback, release held notes and let the tails fade. Wait for **Saved** before powering off.
+1. **Start the band.** Bring MASTER up and press **PLAY**.
+2. **Browse the rack.** Turn **ALGORITHM** to highlight a musician or outboard unit. Press **SEL** to zoom in, then turn K1–K4 using the labels on screen.
+3. **Choose a genre.** Turn **PRESETS** from the Studio overview, or open the **Genre** unit.
+4. **Shape the mix.** Turn **SELECT** on the overview to switch to **Sound**. Open **Mix** for the four levels, or zoom into a part to edit its tone and sends.
+5. **Write your progression.** Open the **Progression** unit and press **EDIT**. Press **PLAY** from the draft editor to use the draft with the band.
 
-For **drums with your own chords**, set **HOME → Loop → K1 Mode → Drums only**, return to Core and press PLAY. No trip into the sequencer is needed.
+See the [Studio controls](docs/CORD-STUDIO-CONTROLS.md) for the beta layout. The deeper sections below also document the inherited HOME and sequencer views.
 
 ## Play without an FM-1
 
-**[Open the CORD browser instrument](https://chasedeanda.github.io/cord-fm1/play/)** and press **Start** for sound. It runs the firmware compiled to WebAssembly, with the screen, panel, knobs and key LEDs. Settings and saved sounds stay in that browser.
+Build the browser player with `sh tools/emu/web/build_web.sh` and `python3 tools/make_play_site.py`. Serve `build/play-site` over HTTP, open `/play/` and press **Start** for sound. It runs the firmware compiled to WebAssembly, with the screen, panel, knobs and key LEDs. Settings and saved sounds stay in that browser.
 
 Click or tap the panel, drag or scroll knobs, or use these computer keys:
 
@@ -92,17 +87,17 @@ The **PLAY** button is green while the transport runs and orange when stopped. O
 
 Changing screens leaves playback running. A selected row, edit focus or chord name is not an audition: use the displayed PLAY or SEL action to hear it.
 
-### Sounds in CORD Studio
+### Sounds in RAKT Studio
 
 In **Studio → Genre**, use **K1** to browse genres or **K2** to jump between Guitar, Electronic and Experimental. In **Sound → Sound Library**, use **K1** to choose **Genre** or **All sounds**. The Genre view shows the current palette and how many presets or kits each part has. **SEL Apply** loads the genre's featured set.
 
 On the **Sound** overview, **EDIT** rerolls the band's presets and drum kit. Zoom into a part's **Tone** page to reroll that part only, or turn **K1** to browse its presets in order. Edit shuffles each part's choices without repeating until that part's palette has been heard.
 
-Each genre also has an original Chords, Bass and Layer trio. The listening pack compares each voice and each full band against the genre's featured set. [CORD Studio Originals](docs/CORD-STUDIO-ORIGINALS.md)
+Each genre also has an original Chords, Bass and Layer trio. The listening pack compares each voice and each full band against the genre's featured set. [Studio Originals listening pack](docs/CORD-STUDIO-ORIGINALS.md)
 
 Rerolling keeps the effects chain and the part's drive, chorus, delay and reverb sends. For effects, open **FX Presets**, browse with **K1**, and use **SEL** to recall one or **EDIT** to edit the loaded effect.
 
-### GLO Live in CORD Studio
+### GLO Live in RAKT Studio
 
 Press **GLO** to open the live keyboard controls. Press **GLO** or **HOME** to return to the previous page, or press **SAVE** from GLO for Settings. Turn **ALGORITHM** for **Map** or **State**, and turn **SELECT** for tempo.
 
@@ -228,7 +223,7 @@ Start a real drum groove, then go to **HOME → Perform**:
 
 ## Choose and shape your sounds
 
-CORD includes FM and virtual-analog sounds, chord and linked bass parts, and eight style banks. **HOME → Sound** is the quickest way to choose and balance chord/bass sounds. PRESETS also changes the chord patch from HOME.
+RAKT includes FM and virtual-analog sounds, chord and linked bass parts, and eight style banks. **HOME → Sound** is the quickest way to choose and balance chord/bass sounds. PRESETS also changes the chord patch from HOME.
 
 | Bank | Starting direction | Matching kit |
 | --- | --- | --- |
@@ -426,7 +421,7 @@ Record the full live mix to a computer over USB when you want the exact heard co
 
 ### USB audio
 
-Connect the FM-1 with a data-capable USB cable. Select its audio device in your DAW; the device names are **CORD FM-1** (MIDI) and **CORD In** (audio). Older installed releases can retain their previous names until updated.
+Connect the FM-1 with a data-capable USB cable. Select its audio device in your DAW; the device names are **RAKT FM-1** (MIDI) and **RAKT In** (audio). Older installed releases can retain their previous names until updated.
 
 | DAW input pair | What you record |
 | --- | --- |
@@ -447,24 +442,17 @@ Choose **1/2** for a normal stereo recording. USB capture supports **44.1 and 48
 
 ## Make it yours
 
-Choose **GLO → Display → K1 Character**: **Devil / Ember** or **Cat / Plum**. The palette follows you through HOME, drums, the editor, Lab, effects and Songs.
-
-<p align="center">
-  <img src="docs/images/house-style/devil-home.png" width="240" alt="Devil character and Ember palette on HOME">
-  <img src="docs/images/house-style/cat-home.png" width="240" alt="Cat character and Plum palette on HOME">
-  <img src="docs/images/house-style/cat-display.png" width="240" alt="Display settings: character, HOME view, boot sound and motion">
-</p>
+In Studio, press **GLO**, then **SAVE** to open Settings. On **Display**, choose **Amber** or **Plum** with **K1 Accent**. The module finishes and channel colors identify the units in either setting.
 
 **Motion On** responds to real playback and output; **Motion Off** settles animation while chord names, controls, transport and save status keep updating. **K2 Home View** selects the retained HOME visualization; the native progression workspace is the normal starting screen.
 
-### The CORD startup
+### The RAKT startup
 
-<p align="center">
-  <img src="docs/images/cord-boot/boot.gif" width="280" alt="Native compact CORD Devil boot animation">
-  <img src="docs/images/cord-boot/final.png" width="280" alt="Final CORD boot composition with white logo lettering">
-</p>
-
-The compact Devil boot ends with **white CORD lettering** and opens Core. A key, button or encoder skips it. Motion Off shows the finished composition. The optional warm six-note **D3–F3–A3–C4–F4–A4** strum rises over 620 ms and fades by 2.2 seconds.
+The mixer and main output slide into the rack. The four channel meters sweep,
+then MAIN OUT displays **READY**. Press any key or button, or turn an encoder, to
+skip the intro. Motion Off shows the finished rack during startup. The optional
+Dm7 boot strum uses the existing Boot sound preference.
+[Boot animation and capture instructions](docs/RAKT-BOOT.md)
 
 **GLO → Display → K3 Boot Snd** turns the chime On/Off; turning it On previews it. MASTER controls its level, and playing takes priority. [Listen to the firmware chime](docs/audio/cord-boot-chime.wav)
 
@@ -511,13 +499,15 @@ Turn SELECT in GLO to select a page. K1–K4 edit the labels shown underneath.
 
 ## Install on your FM-1
 
+The public release and installer links below apply once RAKT is published. You can build a local candidate from this tree.
+
 1. **Back up first.** Keep a current backup of sounds, settings and recordings, and a known-working firmware package.
-2. Download the **`.fwsc`** asset from the [CORD releases page](https://github.com/chasedeanda/cord-fm1/releases). Read that release's notes for its exact features.
-3. Open the [CORD installer](https://chasedeanda.github.io/cord-fm1/install/) in Chrome or Edge on a computer. Connect the FM-1 with a USB data cable.
-4. The page selects the latest published CORD release and verifies its checksum. Press **Install CORD … now**, or expand **Another version, or a build of your own** to select your own `.fwsc`. Check the selected version/filename before installing.
+2. Download the **`.fwsc`** asset from the [RAKT releases page](https://github.com/chasedeanda/rakt-fm1/releases). Read that release's notes for its exact features.
+3. Open the [RAKT installer](https://chasedeanda.github.io/rakt-fm1/install/) in Chrome or Edge on a computer. Connect the FM-1 with a USB data cable.
+4. The page selects the latest published RAKT release and verifies its checksum. Press **Install RAKT … now**, or expand **Another version, or a build of your own** to select your own `.fwsc`. Check the selected version/filename before installing.
 5. Keep the cable connected and the page open until the updater finishes and the FM-1 restarts.
 
-A `.bin` app image or GitHub source ZIP is not an installer package. The compatible `CoralFlower` INFO prefix remains in use. CORD 1.0.3 and later use `FM-1_26730001`, checked against the Hub’s live reserved-range checker. CORD 1.0.2 used `FM-1_936` (inside sloopDX’s reserved range); earlier releases used CoralFlower’s `FM-1_930`. Use the updated backup tools for recent recordings and FX data; older clients may not recognize newer backup objects.
+Install the `.fwsc` package. RAKT uses identity `FM-1_57258001` and reports `RAKT` in firmware INFO. Back up before switching from CORD or another firmware. RAKT retains CORD's backup format, and other firmware may overwrite data in the shared flash.
 
 ## When something isn't working
 
@@ -556,7 +546,7 @@ JIELI_TOOLCHAIN="$PWD/../fm1-build/jieli/toolchain" \
 ./build.sh
 ```
 
-The installable output is **`build/cord.fwsc`**. Fonts and tables generate as part of the build. Keep the source revision and build checksums with your package. [Mac toolchain details](docs/CHASEFLOWER.md#build-on-an-apple-silicon-mac)
+The installable output is **`build/rakt.fwsc`**. Fonts and tables generate as part of the build. Keep the source revision and build checksums with your package. [Mac toolchain details](docs/CHASEFLOWER.md#build-on-an-apple-silicon-mac)
 
 The **Browser playground** GitHub Actions workflow builds and publishes main to [GitHub Pages](https://chasedeanda.github.io/cord-fm1/play/). Its footer links the deployed revision. For local WebAssembly work, install Emscripten and follow the [emulator guide](tools/emu/README.md). `tools/make_play_site.py` packages the custom browser site.
 
@@ -566,12 +556,14 @@ GitHub Actions runs host regressions. Generate headers with `python tools/build.
 
 Feature guides sometimes retain historical build notes or older page numbers. This README's nine-page HOME table describes current main; release notes describe packaged versions. Design boards and implementation plans are proposals, not a list of shipped features. Full arranged recording, A/B song arrangement and a separate chord-library picker are not current features.
 
-[All releases](https://github.com/chasedeanda/cord-fm1/releases) · [Screenshots in both themes](docs/images/house-style) · [House style](docs/HOUSE-STYLE.md) · [Boot implementation](docs/CORD-BOOT.md) · [Chord/drum budget](docs/CHORD-DRUM-BUDGET.md) · [Licensing](LICENSING.md) · [Public-release audit](docs/PUBLIC-RELEASE-AUDIT.md)
+[RAKT releases](https://github.com/chasedeanda/rakt-fm1/releases) · [Screenshots in both themes](docs/images/house-style) · [House style](docs/HOUSE-STYLE.md) · [Boot implementation](docs/RAKT-BOOT.md) · [Chord/drum budget](docs/CHORD-DRUM-BUDGET.md) · [Licensing](LICENSING.md) · [Public-release audit](docs/PUBLIC-RELEASE-AUDIT.md)
 
-CORD builds on [CoralFlower](https://github.com/FicusFicusov/CoralFlower), [ChoralRoot FM-1](https://github.com/Quixotic7/ChoralRootFM1) by Quixotic7, and [Felucca](https://github.com/hugelton/Felucca) by Leo Kuroshita / Hügelton Instruments. The FM engine comes from [Melodee](https://github.com/keremimo/melodee) by Kerem Kilic. Imported Aquanode voices retain their CC0 attribution in the sound catalogue. The interface uses Inter Tight and inherited Departure Mono assets; see [licensing and acknowledgements](LICENSING.md).
+RAKT builds on [CORD](https://github.com/chasedeanda/cord-fm1), [CoralFlower](https://github.com/FicusFicusov/CoralFlower), [ChoralRoot FM-1](https://github.com/Quixotic7/ChoralRootFM1) by Quixotic7, and [Felucca](https://github.com/hugelton/Felucca) by Leo Kuroshita / Hügelton Instruments. The FM engine comes from [Melodee](https://github.com/keremimo/melodee) by Kerem Kilic. Imported Aquanode voices retain their CC0 attribution in the sound catalogue. The interface uses Inter Tight and inherited Departure Mono assets; see [licensing and acknowledgements](LICENSING.md).
 
 Free software under **GPL-3.0**; see [LICENSE](LICENSE). M-VAVE and FM-1 belong to their respective owners. This project is not affiliated with M-VAVE, Cuvave or Telepathic Instruments.
 
 ## Firmware Hub listing
 
-The repository’s `fmhub.json` supplies the CORD card, browser link and quick-start guide. [Submission preparation and hardware acceptance](docs/FIRMWARE-HUB-SUBMISSION.md) records the current identity, flash support and remaining device tests. Back up before switching firmware: CORD cannot read every other firmware’s projects or samples, and installing or using another firmware may overwrite saved data.
+The root [fmhub.json](fmhub.json) supplies the RAKT card text and native screen
+capture. See [submission preparation and hardware acceptance](docs/RAKT-HUB-SUBMISSION.md)
+for the identity, supported flash chips and release checklist.

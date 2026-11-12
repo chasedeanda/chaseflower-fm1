@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: GPL-3.0-only
-# Build the CoralFlower package (after ChoralRoot FM-1's release.yml).
-#   workflow_dispatch (version)  -> build only; the package is a workflow artifact (coralflower-X.Y): a candidate to
+# Build the RAKT package (after ChoralRoot FM-1's release.yml).
+#   workflow_dispatch (version)  -> build only; the package is a workflow artifact (rakt-X.Y): a candidate to
 #                                   test on a unit (the web installer's "Choose a .fwsc file")
 #   push of a tag vX.Y           -> build, create the GitHub release vX.Y with the assets, then run pages.yml
 # On ubuntu (x86-64) tools/build.py runs the JieLi toolchain natively, no Docker.
@@ -109,7 +109,7 @@ jobs:
           ulimit -n 8192 || true          # the JieLi linker opens many files (the toolchain's README)
           ./build.sh --release "$VERSION"
           rel="build/release-$VERSION"
-          for f in "coralflower-$VERSION.fwsc" "coralflower-$VERSION-app.bin" SHA256SUMS LICENSE LICENSING.md; do
+          for f in "rakt-$VERSION.fwsc" "rakt-$VERSION-app.bin" SHA256SUMS LICENSE LICENSING.md; do
             if [ ! -s "$rel/$f" ]; then
               echo "::error::$rel/$f is missing"
               exit 1
@@ -120,13 +120,13 @@ jobs:
 
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: coralflower-${{ env.VERSION }}
+          name: rakt-${{ env.VERSION }}
           path: build/release-${{ env.VERSION }}/
           if-no-files-found: error
 
   release:
     needs: build
-    if: github.event_name == 'push' && github.ref_type == 'tag'
+    if: github.repository == 'chasedeanda/rakt-fm1' && github.event_name == 'push' && github.ref_type == 'tag'
     runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:
@@ -142,19 +142,19 @@ jobs:
 
       - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
-          name: coralflower-${{ needs.build.outputs.version }}
+          name: rakt-${{ needs.build.outputs.version }}
           path: release
 
       - name: Collect the release assets
         run: |
           set -euo pipefail
           mkdir assets
-          cp "release/coralflower-$VERSION.fwsc" "assets/cord-$VERSION.fwsc"
-          cp "release/coralflower-$VERSION-app.bin" "assets/cord-$VERSION-app.bin"
+          cp "release/rakt-$VERSION.fwsc" "assets/rakt-$VERSION.fwsc"
+          cp "release/rakt-$VERSION-app.bin" "assets/rakt-$VERSION-app.bin"
           for f in LICENSE LICENSING.md LICENSES.zip; do
             cp "release/$f" assets/
           done
-          (cd assets && sha256sum "cord-$VERSION.fwsc" "cord-$VERSION-app.bin" > SHA256SUMS)
+          (cd assets && sha256sum "rakt-$VERSION.fwsc" "rakt-$VERSION-app.bin" > SHA256SUMS)
           ls -l assets
 
       - name: Release notes (docs/releases/<version>.md, then the install text)
@@ -163,9 +163,9 @@ jobs:
           {
             if [ -f "docs/releases/$VERSION.md" ]; then cat "docs/releases/$VERSION.md"; echo; echo "---"; echo; fi
             sed "s/@VERSION@/$VERSION/g" <<'EOT'
-          CORD @VERSION@ for the M-VAVE FM-1, based on CoralFlower (package identity FM-1_26730001).
+          RAKT @VERSION@ for the M-VAVE FM-1, built from CORD and CoralFlower (package identity FM-1_57258001).
 
-          Use the [CORD installer](https://chasedeanda.github.io/cord-fm1/install/) in Chrome or Edge on a computer, connect the FM-1 directly by USB, and save a current backup. It offers the latest published CORD release. You can also download `cord-@VERSION@.fwsc` here and choose it under **Another version, or a build of your own**. The separate app `.bin` and source archives are not installer packages.
+          Use the [RAKT installer](https://chasedeanda.github.io/rakt-fm1/install/) in Chrome or Edge on a computer, connect the FM-1 directly by USB, and save a current backup. It offers the latest published RAKT release. You can also download `rakt-@VERSION@.fwsc` here and choose it under **Another version, or a build of your own**. The separate app `.bin` and source archives are not installer packages.
 
           `SHA256SUMS` lists the package and the app. The package holds three JieLi AC79 SDK files (Apache-2.0); `LICENSE`, `LICENSING.md` and `LICENSES.zip` carry every licence. Installing firmware is at your own risk; the official M-VAVE firmware can always be reinstalled.
           EOT
@@ -175,18 +175,18 @@ jobs:
         uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64 # v3.0.3
         with:
           tag_name: ${{ github.ref_name }}
-          name: CORD ${{ needs.build.outputs.version }}
+          name: RAKT ${{ needs.build.outputs.version }}
           make_latest: ${{ !contains(needs.build.outputs.version, '-rc') && !contains(needs.build.outputs.version, '-alpha') && !contains(needs.build.outputs.version, '-beta') }}
           prerelease: ${{ contains(needs.build.outputs.version, '-rc') || contains(needs.build.outputs.version, '-alpha') || contains(needs.build.outputs.version, '-beta') }}
           fail_on_unmatched_files: true
           files: assets/*
           body_path: release-body.md
 
-      - name: Refresh the CORD player and installer
+      - name: Refresh the RAKT player and installer
         env:
           GH_TOKEN: ${{ github.token }}
           DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
         run: |
           set -euo pipefail
           gh workflow run play.yml --repo "$GITHUB_REPOSITORY" --ref "$DEFAULT_BRANCH"
-          echo "::notice::CORD player and latest-release installer deployment started"
+          echo "::notice::RAKT player and latest-release installer deployment started"

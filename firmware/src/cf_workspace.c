@@ -17,13 +17,14 @@ static const char *const CGU_TABS[]={"Studio","Sound","Record","Help"};
 static const char *const CGU_BAND_NAMES[]={"Harmony","Shaping","Genre","ARP","Progression"};
 static const char *const CGU_TOPICS[]={"Start here","Harmony","Playing","Capture"};
 static struct {
-    uint32_t zoom_ms, turn_ms, lens_ms, clear_down, tab_ms, rack_ms;
+    uint32_t zoom_ms, turn_ms, lens_ms, clear_down, tab_ms, rack_ms, page_ms;
     uint8_t turn_knob, turn_dir;
     uint32_t sound_seed, action_ms;
     uint8_t tab, topic, zoom_from, action, all_sounds, band_panel, part_page;
-    uint8_t sound_page, arp_timing, key_arp, fx_return, take_slot, progression_pick, rack_controls;
-    int8_t tab_dir;
+    uint8_t sound_page, arp_timing, key_arp, return_screen, take_slot, progression_pick, rack_controls;
+    int8_t tab_dir, page_dir;
     int16_t rack_from;
+    uint8_t rack_first[CGU_NTAB], rack_panel[CGU_NTAB];
 } cgu={.sound_seed=0x436f7264u};
 
 enum { CGU_GLO_MAP, CGU_GLO_STATE, CGU_GLO_VIEWS };
@@ -44,7 +45,7 @@ static void ui_open(uint32_t scr);
 static int cgu_play_part(void)
 {
     if(!CF_STUDIO || CF_SCENES || sqk.on || cf_sn.sq_rec!=255)return -1;
-    return cgs_home() || cgu.fx_return ? cgs.focus : -1;
+    return cgs_home() || cgu.return_screen==SCR_FX ? cgs.focus : -1;
 }
 static int cgu_keys_arp(void)
 { return (cgu.key_arp>>cgs.focus)&1u; }
@@ -77,12 +78,26 @@ static unsigned cgu_sound_page_count(unsigned part)
 static unsigned cgu_sound_page_rank(unsigned part,unsigned page)
 { return page-(part==CGS_DRUMS && page>CGU_ENVELOPE); }
 
+static void cgu_slide_view(int direction)
+{
+    cgu.tab_ms=cf_motion?(cu.now?cu.now:1u):0;
+    cgu.tab_dir=direction<0?-1:1;
+}
+
+static void cgu_slide_controls(int direction)
+{
+    cgu.page_ms=cf_motion?(cu.now?cu.now:1u):0;
+    cgu.page_dir=direction<0?-1:1;
+}
+
 static void cgu_sound_page_turn(int d)
 {
     int count=(int)cgu_sound_page_count(cgs.focus);
     int rank=(int)cgu_sound_page_rank(cgs.focus,cgu.sound_page);
     unsigned next=(unsigned)wrapi(rank+d%count,count);
+    if(next==(unsigned)rank)return;
     cgu_sound_page(next+(cgs.focus==CGS_DRUMS && next>=CGU_ENVELOPE));
+    cgu_slide_controls(d);
 }
 
 static unsigned cgu_zoom(void)
@@ -112,11 +127,7 @@ static unsigned cgu_rack_lens(void)
 static void cgu_set_zoom(int detail)
 {
     if(cgs.zoom==detail)return;
-    cgu.turn_ms=0;
-    if(detail){
-        if(cgu.tab==CGU_STUDIO){cgu.part_page=0;cgu.arp_timing=0;}
-        if(cgu.tab==CGU_SOUND)cgu_sound_page(CGU_TONE);
-    }
+    cgu.turn_ms=cgu.page_ms=0;
     cgu.zoom_from=(uint8_t)cgu_zoom();
     cgu.zoom_ms=cf_motion?cu.now:0;
     cgs.zoom=(uint8_t)detail;
@@ -140,8 +151,10 @@ static void cgu_home(void)
     cu.pop=POP_NONE;
     cgu.action=cgu.band_panel=cgu.part_page=0;
     cgu.rack_controls=0;
-    cgu.tab_ms=cgu.rack_ms=0;
-    cgu.turn_ms=0;
+    memset(cgu.rack_first,0,sizeof cgu.rack_first);
+    memset(cgu.rack_panel,0,sizeof cgu.rack_panel);
+    cgu.tab_ms=cgu.rack_ms=cgu.page_ms=0;
+    cgu.turn_ms=cgu.return_screen=0;
     cgu.sound_page=CGU_TONE;
     if(cgu.tab==CGU_STUDIO)cgu_set_zoom(0);
     else {
@@ -155,19 +168,19 @@ static void cgu_tab_turn(int d)
 {
     unsigned tab=(unsigned)wrapi(cgu.tab+d%CGU_NTAB,CGU_NTAB);
     if(tab==cgu.tab)return;
-    unsigned previous=cgu.tab;
+    cgu.rack_panel[cgu.tab]=cgu.tab==CGU_STUDIO?cgu.band_panel:cgu.rack_controls;
     cgu.tab=(uint8_t)tab;
-    cgu.tab_ms=cf_motion?(cu.now?cu.now:1u):0;
-    cgu.tab_dir=d<0?-1:1;
+    cgu_slide_view(d);
+    cgu.page_ms=0;
     cgu.turn_ms=0;
     cgu.sound_page=CGU_TONE;
-    cgu.part_page=0;
-    if(cgu.band_panel || cgu.rack_controls)cgs.zoom=0;
-    cgu.band_panel=0;
-    cgu.rack_controls=0;
+    cgu.part_page=cgu.arp_timing=0;
+    cgu.band_panel=tab==CGU_STUDIO?cgu.rack_panel[CGU_STUDIO]:0;
+    cgu.rack_controls=tab==CGU_STUDIO || tab==CGU_HELP?0:cgu.rack_panel[tab];
+    if(cgu.band_panel==CGU_BAND_PROGRESSION)cgu.progression_pick=cgs.custom;
     cgu.clear_down=0;
     cgu.rack_ms=0;
-    if(previous>CGU_SOUND || tab>CGU_SOUND)cgs.zoom=0;
+    cgs.zoom=0;
     cgu.zoom_ms=0;
     cgu.action=0;
     cu.pop=POP_NONE;
@@ -180,36 +193,71 @@ static unsigned cgu_part(unsigned tile)
 static unsigned cgu_studio_tile(unsigned part,unsigned band_panel)
 { return band_panel?CGS_NPART+band_panel-1u:cgu_part(part); }
 
-enum { CGU_UNIT_H=66, CGU_RACK_SCROLL_MS=180 };
+enum { CGU_RACK_Y=53, CGU_BAY_H=132, CGU_RACK_SCROLL_MS=RAKT_SLIDE_STEP_MS*RAKT_SLIDE_STEPS };
+
+static int cgu_rack_height(unsigned tab,unsigned tile)
+{
+    /* The tallest neighboring units, including their seam, fit the bay. */
+    static const uint8_t studio[]={68,54,72,56,64,64,60,68,56};
+    static const uint8_t record[]={62,60,68,58,64};
+    static const uint8_t help[]={60,64,58,62};
+    if(tab==CGU_RECORD)return record[tile];
+    if(tab==CGU_HELP)return help[tile];
+    _Static_assert(NELEM(studio)==CGU_RACK_COUNT,"Height for each Studio rack unit");
+    if(tab==CGU_SOUND && tile>=CGS_NPART)return tile==CGS_NPART?62:RAKT_UNIT_H;
+    return studio[tile];
+}
+
+static int cgu_rack_offset(unsigned tab,unsigned tile)
+{
+    int y=0;
+    for(unsigned i=0;i<tile;i++)y+=cgu_rack_height(tab,i)+RAKT_GUTTER;
+    return y;
+}
 
 static unsigned cgu_rack_tiles(unsigned tab)
-{ return tab==CGU_STUDIO?CGU_RACK_COUNT:CGS_NPART+2; }
+{
+    static const uint8_t count[]={CGU_RACK_COUNT,CGS_NPART+2,CGS_NPART+1,CGU_CAPTURE+1};
+    return count[tab];
+}
 
 static unsigned cgu_rack_tile(unsigned tab,unsigned part,unsigned panel)
 {
     if(tab==CGU_STUDIO)return cgu_studio_tile(part,panel);
+    if(tab==CGU_HELP)return part;
     return panel?CGS_NPART+panel-1u:cgu_part(part);
 }
 
+static unsigned cgu_rack_first(unsigned tab,unsigned tile)
+{
+    int first=clampi(cgu.rack_first[tab],(int)tile-1,(int)tile);
+    return (unsigned)clampi(first,0,(int)cgu_rack_tiles(tab)-2);
+}
+
 static int cgu_rack_top(unsigned tab,unsigned tile)
-{ return clampi((int)tile-1,0,(int)cgu_rack_tiles(tab)-2)*CGU_UNIT_H; }
+{ return cgu_rack_offset(tab,cgu_rack_first(tab,tile)); }
+
+static unsigned cgu_active_rack_tile(void)
+{
+    unsigned panel=cgu.tab==CGU_STUDIO?cgu.band_panel:cgu.rack_controls;
+    return cgu_rack_tile(cgu.tab,cgu.tab==CGU_HELP?cgu.topic:cgs.focus,panel);
+}
 
 static int cgu_rack_scroll(void)
 {
-    unsigned panel=cgu.tab==CGU_STUDIO?cgu.band_panel:cgu.rack_controls;
-    int top=cgu_rack_top(cgu.tab,cgu_rack_tile(cgu.tab,cgs.focus,panel));
-    int delta=cgu.rack_from;
-    int remaining=cf_tween_offset(cgu.rack_ms,CGU_RACK_SCROLL_MS,delta<0?-delta:delta);
-    return top+(delta<0?-remaining:remaining);
+    int top=cgu_rack_top(cgu.tab,cgu_active_rack_tile());
+    return top+cf_rack_arrival(cgu.rack_ms,cgu.rack_from);
 }
 
-static void cgu_rack_arrive(int previous)
+static void cgu_rack_arrive(int previous,int direction)
 {
-    unsigned panel=cgu.tab==CGU_STUDIO?cgu.band_panel:cgu.rack_controls;
-    int delta=previous-cgu_rack_top(cgu.tab,cgu_rack_tile(cgu.tab,cgs.focus,panel));
-    /* Turn-by-turn scrolling follows the selected unit. Shortcuts jump to its bay. */
+    unsigned first=cgu_rack_first(cgu.tab,cgu_active_rack_tile());
+    int delta=previous-cgu_rack_offset(cgu.tab,first);
+    cgu.rack_first[cgu.tab]=(uint8_t)first;
     cgu.rack_from=(int16_t)delta;
-    cgu.rack_ms=cf_motion && delta>=-CGU_UNIT_H && delta<=CGU_UNIT_H?cu.now:0;
+    int jump=cgs.zoom || delta>CGU_BAY_H || delta<-CGU_BAY_H;
+    cgu.rack_ms=cf_motion && !jump && delta?(cu.now?cu.now:1u):0;
+    if(jump)cgu_slide_view(direction);
 }
 
 static void cgu_band_focus(unsigned panel)
@@ -225,23 +273,23 @@ static void cgu_band_focus(unsigned panel)
 
 static void cgu_studio_page_turn(int d)
 {
-    if(!cgs.zoom){
-        int scroll=cgu_rack_scroll();
-        cgu_band_focus((unsigned)wrapi(cgu.band_panel+d%CGU_BAND_PANELS,CGU_BAND_PANELS));
-        cgu_rack_arrive(scroll);
+    if(cgu.band_panel==CGU_BAND_ARP){
+        if(!(d%2))return;
+        cgu.arp_timing^=1u;
+    } else {
+        if(!(d%CGU_PART_PAGES))return;
+        cgu.part_page=(uint8_t)wrapi(cgu.part_page+d%CGU_PART_PAGES,CGU_PART_PAGES);
     }
-    else if(cgu.band_panel==CGU_BAND_ARP)cgu.arp_timing^=(uint8_t)(d%2!=0);
-    else if(!cgu.band_panel)cgu.part_page=(uint8_t)wrapi(cgu.part_page+d%CGU_PART_PAGES,CGU_PART_PAGES);
     cgu.turn_ms=0;
+    cgu_slide_controls(d);
 }
 
 static void cgu_studio_seq(void)
 {
-    if(!cgs.zoom || !cgu.band_panel){cgu_studio_page_turn(1);return;}
+    int previous=cgu_rack_scroll();
     unsigned next=cgu.band_panel+1u;
     cgu_band_focus(next==CGU_BAND_PANELS?CGU_BAND_HARMONY:next);
-    cgu.tab_ms=cf_motion?(cu.now?cu.now:1u):0;
-    cgu.tab_dir=1;
+    cgu_rack_arrive(previous,1);
 }
 
 static unsigned cgu_band_knob_panel(unsigned band)
@@ -278,12 +326,18 @@ static unsigned cgu_arp_page(int detail)
 static int cgu_progression_panel(void)
 { return cgu.tab==CGU_STUDIO && cgs.zoom && cgu.band_panel==CGU_BAND_PROGRESSION; }
 
+static int cgu_has_detail_pages(void)
+{
+    return (cgu.tab==CGU_SOUND && !cgu.rack_controls) ||
+           (cgu.tab==CGU_STUDIO && (!cgu.band_panel || cgu.band_panel==CGU_BAND_ARP));
+}
+
 static void cgu_select(int d)
 {
     if(!d)return;
-    if(cgs.zoom && cgu.tab==CGU_SOUND){if(!cgu.rack_controls)cgu_sound_page_turn(d);}
-    else if(cgs.zoom && cgu.tab==CGU_STUDIO)cgu_studio_page_turn(d);
-    else cgu_tab_turn(d);
+    if(!cgs.zoom || !cgu_has_detail_pages()){cgu_tab_turn(d);return;}
+    if(cgu.tab==CGU_SOUND)cgu_sound_page_turn(d);
+    else cgu_studio_page_turn(d);
 }
 
 static void cgu_focus_part(unsigned part)
@@ -297,33 +351,29 @@ static void cgu_focus_part(unsigned part)
 static void cgu_focus(int d)
 {
     if(!d)return;
-    cgu.turn_ms=0;
+    cgu.turn_ms=cgu.page_ms=0;
     if(!cgs.zoom)cgu.zoom_ms=0;
-    if(cgu.tab==CGU_HELP){
-        cgu.topic=(uint8_t)wrapi(cgu.topic+d%4,4);
+    if(cgs.zoom && cgu.tab==CGU_STUDIO && cgu.band_panel==CGU_BAND_ARP){
+        /* This unit routes its pattern to the part played by the keys. */
+        int current=(int)cgu_part(cgs.focus);
+        cgu_focus_part(cgu_part((unsigned)wrapi(current+d%CGS_NPART,CGS_NPART)));
         return;
     }
-    unsigned tile=cgu_part(cgs.focus);
-    if(cgu.tab<=CGU_SOUND && !cgs.zoom){
-        int scroll=cgu_rack_scroll();
-        int count=(int)cgu_rack_tiles(cgu.tab);
-        unsigned panel=cgu.tab==CGU_STUDIO?cgu.band_panel:cgu.rack_controls;
-        tile=(unsigned)wrapi((int)cgu_rack_tile(cgu.tab,cgs.focus,panel)+d%count,count);
-        panel=tile>=CGS_NPART?tile-CGS_NPART+1u:0;
+    int scroll=cgu_rack_scroll(), count=(int)cgu_rack_tiles(cgu.tab);
+    unsigned current=cgu_active_rack_tile();
+    unsigned tile=(unsigned)wrapi((int)current+d%count,count);
+    if(tile==current)return;
+    if(cgu.tab==CGU_HELP)cgu.topic=(uint8_t)tile;
+    else {
+        unsigned panel=tile>=CGS_NPART?tile-CGS_NPART+1u:0;
         if(cgu.tab==CGU_STUDIO)cgu_band_focus(panel);
-        else cgu.rack_controls=(uint8_t)panel;
+        else {
+            if(cgu.tab==CGU_SOUND && panel!=cgu.rack_controls)cgu_sound_page(CGU_TONE);
+            cgu.rack_controls=(uint8_t)panel;
+        }
         if(!panel)cgu_focus_part(cgu_part(tile));
-        cgu_rack_arrive(scroll);
-        return;
     }
-    if(cgu.tab==CGU_RECORD && !cgs.zoom){
-        int count=CGS_NPART+1;
-        if(cgu.rack_controls)tile=CGS_NPART;
-        tile=(unsigned)wrapi((int)tile+d%count,count);
-        cgu.rack_controls=(uint8_t)(tile==CGS_NPART);
-        if(cgu.rack_controls)return;
-    } else tile=(unsigned)wrapi((int)tile+d%CGS_NPART,CGS_NPART);
-    cgu_focus_part(cgu_part(tile));
+    cgu_rack_arrive(scroll,d);
 }
 
 static int cgu_recording_here(void)
@@ -658,7 +708,10 @@ static void cgu_edit(void)
 {
     if(cgu.tab==CGU_STUDIO){
         if(cgu_progression_panel()){
-            if(cfd_open_studio(cgs.meter))ui_open(SCR_PEDIT);
+            if(cfd_open_studio(cgs.meter)){
+                cgu.return_screen=SCR_PEDIT;
+                ui_open(SCR_PEDIT);
+            }
             return;
         }
         if(cgs.zoom && !cgu.band_panel){
@@ -691,6 +744,7 @@ static void cgu_edit(void)
         }
     } else if(cgu.tab==CGU_HELP && cgu.topic==CGU_HARMONY && cgs.zoom){
         cfl_open();
+        cgu.return_screen=SCR_LAB;
         cf_keys_changed();
     }
 }

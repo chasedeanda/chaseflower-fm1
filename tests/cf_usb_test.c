@@ -55,9 +55,9 @@ static void descriptors(int cdc_on)
     CHECK(midi == 1u && capture == (cdc_on ? 0u : 2u) && format == (cdc_on ? 0u : 1u));
     CHECK((eps & (1u << 1)) && (eps & (1u << 17)) && (eps & (1u << 18)));
     CHECK(get_desc(0x0302u, &d, &len) && len == 20u);
-    for (i = 0; i < 9u; i++) CHECK(d[2u + i * 2u] == (uint8_t)"CORD FM-1"[i] && d[3u + i * 2u] == 0);
+    for (i = 0; i < 9u; i++) CHECK(d[2u + i * 2u] == (uint8_t)"RAKT FM-1"[i] && d[3u + i * 2u] == 0);
     CHECK(get_desc(0x0303u, &d, &len) && len == 16u);
-    for (i = 0; i < 7u; i++) CHECK(d[2u + i * 2u] == (uint8_t)"CORD In"[i]);
+    for (i = 0; i < 7u; i++) CHECK(d[2u + i * 2u] == (uint8_t)"RAKT In"[i]);
 }
 
 static void protocol(void)

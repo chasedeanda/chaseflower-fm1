@@ -1012,7 +1012,7 @@ static void cf_ui_draw(void)
     else if(!cu.upd_left && cu.scr==SCR_ARP){cf_stage_valid=cf_acc_valid=cfd_valid=cfn_page_valid=0;cfarp_draw();}
     else {cf_stage_valid=cf_acc_valid=cfd_valid=0;cfn_page_draw();}
     if(!pop.kind || (!changed && before==cf_stage_draws+cf_acc_draws+cfd_draws+cfn_page_draws+cfarp_draws))return;
-    fb_unclip();fb_rect(8,55,224,131,FL_BG);fb_frame(8,55,224,131,pop.warn?FL_C(FL_R_ROSE,0):FL_BG3);
+    fb_unclip();cfn_dialog(8,55,224,131,pop.warn?FL_C(FL_R_ROSE,0):FL_BG3);
     if(pop.n) {
         cfn_text(&CFN_12,16,74,pop.text[0],FL_INK2);
         for(unsigned i=0;i<3;i++){if(i==1){fb_rect(12,109,216,29,FL_BG1);fb_rect(12,109,2+pop.focus,29,C_ACC(0));}cfn_fit(&CFN_16,20,100+i*30,pop.name[i],200,i==1?C_ACC(0):FL_INK2);}

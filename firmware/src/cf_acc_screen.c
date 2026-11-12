@@ -66,8 +66,8 @@ static void cf_acc_draw(void)
 {
     cf_acc_model_t m;cf_acc_model(&m);cf_stage_valid=0;
     if(cf_acc_valid && !fb_full && !memcmp(&m,&cf_acc_last,sizeof m))return;
-    cf_acc_last=m;cf_acc_valid=1;cf_acc_draws++;fb_unclip();fb_fill(FL_BG);
-    cfn_text(&CFN_16,10,20,m.title,FL_INK);cfn_text(&CFN_12,230-cfn_width(&CFN_12,m.status),20,m.status,C_ACC(0));fb_hline(10,28,220,FL_BG3);
+    cf_acc_last=m;cf_acc_valid=1;cf_acc_draws++;
+    cfn_page_header(m.title,m.status,C_ACC(0));
     if(m.tab==CF_ACC_N) {
         cfn_text(&CFN_12,10,49,"K1 selects / SEL opens",FL_INK2);
         for(unsigned i=0;i<3;i++){if(m.focus==i){fb_rect(10,64+i*38,220,32,FL_BG1);fb_rect(10,64+i*38,2+m.focus_weight,32,C_ACC(0));}cfn_text(&CFN_16,20,86+i*38,CF_LEGACY_NAME[i],m.focus==i?C_ACC(0):FL_INK);}
@@ -100,7 +100,7 @@ static void cf_acc_draw(void)
         fb_unclip();
     }
     if(m.message[0]) {
-        fb_rect(8,75,224,80,FL_BG);fb_frame(8,75,224,80,FL_BG3);
+        cfn_dialog(8,75,224,80,FL_BG3);
         char b[64];str_cpy(b,m.message,sizeof b);unsigned n=0;while(b[n] && b[n]!='\n')n++;
         char *next=b[n]?b+n+1:0;b[n]=0;cfn_fit(&CFN_12,16,109,b,208,FL_INK);if(next)cfn_fit(&CFN_12,16,130,next,208,FL_INK);
     }

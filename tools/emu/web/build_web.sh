@@ -1,14 +1,12 @@
 #!/bin/sh
 # SPDX-License-Identifier: GPL-3.0-only
-# CoralFlower in the browser: the emulator's firmware side as a standalone WebAssembly module, and its page.
+# RAKT in the browser: the emulator's firmware side as a standalone WebAssembly module, and its page.
 #   [CR_VERSION=1.0] sh tools/emu/web/build_web.sh
 #   -> build/emu-web/{index.html, emu.js, keymap.js, worklet.js, coralflower.wasm}
 # The page takes its look from the site around it (../site.css): tools/make_site.sh OUT puts it in OUT/play/.
 # Needs emcc (the Emscripten SDK: ~/emsdk/emsdk_env.sh is sourced when emcc is not on the PATH) and the firmware's
 # generated headers (build/gen: the generate step of tools/build.py runs when they are missing, as build.sh does).
-# CR_VERSION: the version the firmware shows ("1.0" -> "CoralFlower 1.0", as tools/build.py --release); default
-# the newest release in web/releases.json (the installer's list, written at every release: the site's emulator said
-# 0.1 after 0.2 was out, from coralflower.c's FELUCCA_VERSION, the last fallback).
+# CR_VERSION: the display version ("0.1" -> "RAKT 0.1"). The default comes from FELUCCA_VERSION.
 set -e
 ROOT=$(cd "$(dirname "$0")/../../.." && pwd)
 cd "$ROOT"
@@ -28,8 +26,8 @@ for h in ui_fonts.h ui_icons.h ui_keycaps.h ui_palettes.h felucca_tables.h feluc
 done
 if [ -n "${CR_VERSION:-}" ]; then
     case "$CR_VERSION" in
-        CoralFlower*) VER=$CR_VERSION ;;
-        *) VER="CoralFlower $(printf %s "$CR_VERSION" | tr A-Z a-z)" ;;
+        RAKT\ *) VER=$CR_VERSION ;;
+        *) VER="RAKT $(printf %s "$CR_VERSION" | tr A-Z a-z)" ;;
     esac
 else
     VER=$(sed -n 's/^#define FELUCCA_VERSION "\(.*\)".*/\1/p' firmware/src/coralflower.c | head -1)

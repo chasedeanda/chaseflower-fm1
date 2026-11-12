@@ -23,14 +23,14 @@ function backupSide(version, ids, objs = [], refuse = []) {   // refuse: ids who
       if (op === 2) { const v = Uint8Array.from(b.staged.bytes); const rc = bkCrc(v) === b.staged.crc && !refuse.includes(id) ? 0 : 2; if (!rc) { b.objs.set(id, v); b.log.push(id); } return [op, id, rc]; }
       return [op, id, 0];
     }
-    if (cmd === 72 && /^(ChoralRoot|CoralFlower|CORD)/.test(version)) { b.restarts++; return [0]; }
+    if (cmd === 72 && /^(ChoralRoot|CoralFlower|CORD|RAKT)/.test(version)) { b.restarts++; return [0]; }
     return null;
   };
   return b;
 }
 // A backup's object order is not a storage transaction order: archived chunks must
 // precede independent takes, even when the JSON objects have been rearranged.
-for (const [sourceVersion,targetVersion] of [["CoralFlower dev","CoralFlower dev"],["CoralFlower 1.0","CORD 1.0"],["CORD 1.0","CoralFlower 1.0"],["CORD 1.0","CORD 1.0"]]) {
+for (const [sourceVersion,targetVersion] of [["CoralFlower dev","CoralFlower dev"],["CoralFlower 1.0","CORD 1.0"],["CORD 1.0","CoralFlower 1.0"],["CORD 1.0","CORD 1.0"],["CORD 1.0","RAKT 0.1.0"],["RAKT 0.1.0","CORD 1.0"]]) {
   const ids = CF_BACKUP_IDS;
   const takes = [71,72,73].map((id) => [id,fill(2556,id)]);
   const source = backupSide(sourceVersion,ids,[...cfData(),...takes]);
@@ -64,5 +64,5 @@ assert all(i in d.log for i in (71,72,73))
 }
 
 ok(backupFileName("CORD 1.0",new Date("2026-11-08T00:00:00Z"))==="cord-backup-20261108.json","CORD dated backup filename");
-ok(!/ChaseFlower|CoralFlower/.test(objectNames([30,31,50,56,59,68,69,70,71,74,80,85])),"CORD labels for every fork-owned backup object");
+ok(!/ChaseFlower|CoralFlower/.test(objectNames([30,31,50,56,59,68,69,70,71,74,80,85])),"RAKT labels for every fork-owned backup object");
 if(failed)process.exitCode=1;

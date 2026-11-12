@@ -1,11 +1,7 @@
 {
-  "what": "Pick a chord progression, press Play, and play along with drums, bass and chords. Adjust the progression, sounds and groove to build backing tracks for practicing, jamming and writing songs.",
+  "what": "RAKT turns the FM-1 into a rack-style chord instrument and groovebox. Build progressions, play along with a four-part band, and shape the session from Studio panels for harmony, sounds, mixing and effects.",
   "author": "Chase DeAnda",
-  "kinds": [
-    "chords"
-  ],
-  "play": "https://chasedeanda.github.io/cord-fm1/play/",
-  "cheat": "https://github.com/chasedeanda/cord-fm1#make-your-first-loop",
-  "image": "docs/images/mascots/devil-core.png",
-  "color": "#FF7A00"
+  "kinds": ["groove", "chords"],
+  "image": "docs/images/rakt-boot/ready.png",
+  "color": "#F5B361"
 }

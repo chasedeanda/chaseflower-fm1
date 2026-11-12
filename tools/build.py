@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: GPL-3.0-only
 # Copyright (C) 2026 Leo Kuroshita (@kurogedelic), Hügelton Instruments
-"""Build CORD (after ChoralRoot FM-1): the app, the update loader and an installable .fwsc package.
+"""Build RAKT (after ChoralRoot FM-1): the app, the update loader and an installable .fwsc package.
 
   tools/build.py [--release X.Y[-suffix]]
   tools/build.py --gen-only        (the generated headers alone, into build/gen: no toolchain, no SDK)
@@ -9,7 +9,7 @@
 The unit is firmware/src/coralflower.c (CoralFlower's single compilation unit, after ChoralRoot's choralroot.c, a
 fork of Felucca's felucca.c). Outputs in build/: coralflower.bin (app.bin: the boot stub's 0xEE0 bytes, then the app),
 coralflower.elf, coralflower.dis (the app), stub/stub.{bin,elf,dis} (the boot stub, firmware/stub), loader/ota.bin
-(update loader), cord.fwsc (package, identity FM-1_26730001). Development versions use CORD and cord-X.Y-dev.fwsc.
+(update loader), rakt.fwsc (package, identity FM-1_57258001). Tagged builds use rakt-X.Y.fwsc.
 A production release (--release X.Y) keeps the staging convention used by CI,
 sets the version string to "CoralFlower X.Y" and writes coralflower-X.Y.fwsc and a folder release-X.Y/ with the
 package, the app (coralflower-X.Y-app.bin), SHA256SUMS and the licence files (LICENSE, LICENSING.md, LICENSES/).
@@ -64,7 +64,7 @@ SDK_SHA256 = {
 }
 
 UNIT = "coralflower"                # firmware/src/UNIT.c; outputs build/UNIT.{bin,elf,dis,fwsc}
-PRODUCT = "FM-1_26730001"                # CORD identity; constant across releases
+PRODUCT = "FM-1_57258001"                # RAKT identity; constant across releases
 VERSION = None                      # FELUCCA_VERSION for release builds (default: firmware/src/coralflower.c)
 XIP_LEN, RAM_LEN, POOL_LEN, NOINIT_LEN = fm1pkg_make.BODY_MAX, 96 * 1024, 0x54000, 0x3D30   # firmware/app.ld
 
@@ -447,14 +447,10 @@ def mmio_check():
     return errors
 
 
-def release_brand(version):
-    return "CORD" if re.search(r"-dev(?:[.0-9]|$)", version, re.IGNORECASE) else "CoralFlower"
-
-
 def main():
     global VERSION
     ap = argparse.ArgumentParser()
-    ap.add_argument("--release", metavar="X.Y", help=f"release build: identity {PRODUCT}, CORD branding for -dev versions")
+    ap.add_argument("--release", metavar="X.Y", help=f"release build: identity {PRODUCT}")
     ap.add_argument("--sdk", type=Path, help="JieLi AC79 SDK checkout (default: $AC79_SDK)")
     ap.add_argument("--gen-only", action="store_true",
                     help="only the generated headers, into build/gen (no toolchain, no SDK)")
@@ -463,16 +459,13 @@ def main():
         generate()
         print(f"generated {GEN}: {', '.join(sorted(p.name for p in GEN.glob('*.h')))}")
         return 0
-    name = "cord.fwsc"
-    artifact = UNIT
-    if a.release:                   # the identity stays FM-1_26730001: only the version string and the names change
+    name = "rakt.fwsc"
+    if a.release:                   # the identity stays FM-1_57258001: only the version string and the names change
         m = re.fullmatch(r"\d+\.\d+(?:\.\d+)?(?:-[A-Za-z0-9.]+)?", a.release)   # the identity never encodes it
         if not m:
             raise SystemExit(f"--release {a.release}: use X.Y, X.Y.Z or X.Y-suffix")
-        brand = release_brand(a.release)
-        artifact = brand.lower()
-        VERSION = f"{brand} {a.release.lower()}"
-        name = f"{artifact}-{a.release}.fwsc"
+        VERSION = f"RAKT {a.release.lower()}"
+        name = f"rakt-{a.release}.fwsc"
     fm1pkg_make.SDK = a.sdk
     for rel, sha in SDK_SHA256.items():          # fail early without the SDK
         if hashlib.sha256(fm1pkg_make.sdk_file(rel)).hexdigest() != sha:
@@ -514,7 +507,7 @@ def main():
         rel = OUT / f"release-{a.release}"
         shutil.rmtree(rel, ignore_errors=True)
         (rel / "LICENSES").mkdir(parents=True)
-        app = f"{artifact}-{a.release}-app.bin"
+        app = f"rakt-{a.release}-app.bin"
         (rel / name).write_bytes(pkg)
         (rel / app).write_bytes(img)
         (rel / "SHA256SUMS").write_text("".join(f"{hashlib.sha256(b).hexdigest()}  {n}\n"

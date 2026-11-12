@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: GPL-3.0-only
-"""Repeatable CORD release checks: branding, compatibility, SDK provenance, secrets."""
+"""Repeatable RAKT release checks: branding, compatibility, SDK provenance, secrets."""
 import ast
 import argparse
 import hashlib
@@ -9,7 +9,6 @@ from html.parser import HTMLParser
 from pathlib import Path
 import re
 import subprocess
-from build import release_brand
 
 root = Path(__file__).resolve().parents[1]
 parser = argparse.ArgumentParser()
@@ -24,19 +23,19 @@ def read(path):
     return (root / path).read_text()
 
 usb = read('firmware/src/usb.c')
-check('"CORD", "CORD FM-1", "CORD In"' in usb, 'USB product, maker and audio names are CORD')
-check('"Chase FM-1"' not in read('firmware/src/cf_boot.c'), 'Optional legacy boot does not show the old product name')
-check('"coralflower-fm1"' in read('tools/emu/web/emu.js'), 'Existing browser save namespace is retained')
+check('"RAKT", "RAKT FM-1", "RAKT In"' in usb, 'USB product, maker and audio names are RAKT')
+check('NAME[] = "RAKT"' in read('firmware/src/cf_boot.c'), 'Legacy scene profile shows the RAKT name')
+check('indexedDB.open("rakt-fm1"' in read('tools/emu/web/emu.js'), 'RAKT has its own browser save namespace')
 check('file.format !== "felucca-backup"' in read('web/fm1backup.js'), 'Legacy backup envelope is retained')
-check('PRODUCT = "FM-1_26730001"' in read('tools/build.py'), 'CORD has its own update package identity')
-check('#define FELUCCA_VERSION "CORD ' in read('firmware/src/coralflower.c') and
-      release_brand('1.0.3-dev.studio') == 'CORD' and release_brand('1.0.3') == 'CoralFlower',
-      'Development INFO uses CORD and release INFO retains the legacy family')
+check('PRODUCT = "FM-1_57258001"' in read('tools/build.py'), 'RAKT has its own update package identity')
+check('#define FELUCCA_VERSION "RAKT ' in read('firmware/src/coralflower.c') and
+      'VERSION = f"RAKT ' in read('tools/build.py'),
+      'RAKT uses its own INFO prefix in development and release builds')
 for path in ['web/fm1backup.js', 'tools/fm1_install.py']:
-    check('cord' in read(path) and '-backup-' in read(path), path + ': CORD backup filename is present')
+    check('rakt' in read(path) and '-backup-' in read(path), path + ': RAKT backup filename is present')
     check(not re.search(r'(?:return |return f)["\`](?:ChaseFlower|CoralFlower) (?:settings|saved Song|working draft|recording|favorites|FX|Auto|loop|patterns|unsaved|pattern)', read(path)), path + ': owned backup labels use the public product name')
 check('CoralFlower contributors' in read('firmware/src/coralflower.c'), 'Upstream copyright notice retained')
-check('CORD is a fork of **CoralFlower**' in read('LICENSING.md'), 'Fork and upstream origin disclosed')
+check('RAKT is a fork of **CORD**' in read('LICENSING.md'), 'Fork and upstream origin disclosed')
 for path in ['LICENSE', 'LICENSES/GPL-3.0-only.txt', 'LICENSES/Apache-2.0.txt', 'assets/fonts/OFL.txt', 'web/fonts/OFL-InterTight.txt', 'web/fonts/OFL-DepartureMono.txt', 'assets/sounds/candidates/aquanode/LICENSE-CC0.txt']:
     # The canonical GPL text is LICENSE; some trees do not duplicate it in LICENSES.
     if path == 'LICENSES/GPL-3.0-only.txt' and not (root/path).exists():
@@ -73,8 +72,8 @@ if args.site:
         html=(args.site/name).read_text()
         visible=Visible();visible.feed(html);text=' '.join(visible.parts)
         check(not re.search(r'ChaseFlower|Chase FM-1', text), name+': no retired product labels')
-        check('CORD' in text, name+': public product is CORD')
-        check(not re.search(r'wallets|donateTitle|iambemoli@gmail.com',html), name+': no inherited donation UI or upstream contact presented as CORD')
+        check('RAKT' in text, name+': public product is RAKT')
+        check(not re.search(r'wallets|donateTitle|iambemoli@gmail.com',html), name+': no inherited donation UI or upstream contact presented as RAKT')
         check('CoralFlower' in text, name+': upstream attribution remains visible')
     manifest=json.loads((args.site/'firmware/releases.json').read_text())
     for release in manifest['releases']:

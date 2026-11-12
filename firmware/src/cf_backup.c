@@ -5,7 +5,7 @@
  * which firmware runs (an update of CoralFlower over CoralFlower is allowed by it), LIST / GET make the backup, PUT
  * restores it, RESTART loads what was restored.
  *
- *   1 INFO      "CoralFlower <version>", no editor (0 engines), tags 42 01 03 (backup read + restore), 43 01 02 (RESTART)
+ *   1 INFO      "RAKT <version>", no editor (0 engines), tags 42 01 03 (backup read + restore), 43 01 02 (RESTART)
  *   65 LIST     1, rc, count, per object: id, size u32, crc u32 (CRC-32 zlib of the bytes GET returns)
  *   66 GET      id, offset u32, count (<= 256) -> id, rc, offset u32, count, pack7 data
  *   67 PUT      0 begin (id, size u32, crc u32) / 1 data (id, offset u32, pack7) / 2 commit (id) / 3 abort (id)
@@ -590,7 +590,7 @@ static int crb_handle(const uint8_t *f, uint32_t n)
         break;
     }
     case CRB_INFO: {                                 /* Felucca's INFO layout, no editor: 0 engines, 0 tracks */
-        const char *v = FELUCCA_VERSION;             /* installers accept both CORD and the historical INFO prefix */
+        const char *v = FELUCCA_VERSION;             /* RAKT, CORD and CoralFlower use the same backup protocol */
         uint32_t i;
         if (na)
             return 0;

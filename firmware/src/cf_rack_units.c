@@ -14,7 +14,7 @@ static int cgu_unit_knob_x(cgu_face_t f,int i,int count)
 { return f.x+f.w*(1+2*i)/(count==2?4:8); }
 
 static int cgu_unit_knob_y(cgu_face_t f,int zoom)
-{ return f.y+cgu_unit_blend(50,f.h*64/100,zoom); }
+{ return f.y+cgu_unit_blend(f.h-15,f.h*64/100,zoom); }
 
 static cgu_face_t cgu_unit_lens(cgu_face_t f,int knob,int count,int scale)
 {
@@ -79,42 +79,6 @@ static void cgu_unit_grille(int x,int y,int w,int h,int metal)
     }
 }
 
-static void cgu_unit_shell(cgu_face_t f,unsigned band,int zoom)
-{
-    int x=f.x,y=f.y,w=f.w,h=f.h;
-    unsigned finish=band==CGU_BAND_PROGRESSION?CGU_AMP_FACE:CGU_UNIT_FACE+(band-1u)*CGU_UNIT_SHADES;
-    int ear=cgu_unit_blend(7,8,zoom);
-    fb_rect(x,y,w,h,CGU_METAL+10);
-    fb_rect(x+1,y+1,w-2,h-3,CGU_METAL+1);
-    int plate=x+ear, width=w-ear*2;
-    for(int row=clampi(fb_cy0-y,2,h-3),end=clampi(fb_cy1-y,2,h-3);row<end;row++){
-        int shade=5-row*3/h;
-        fb_hline(plate,y+row,width,finish+shade);
-        if(band==CGU_BAND_HARMONY && (row&7)==3){
-            /* Short reflections along the nickel's machining direction. */
-            int start=10+((row*37)%(width/2));
-            fb_hline(plate+start,y+row,width/5,finish+shade+1);
-        }
-    }
-    fb_hline(plate,y+1,width,finish+6);
-    fb_vline(plate,y+2,h-5,finish+5);
-    fb_vline(plate+width-1,y+2,h-5,finish+1);
-    fb_hline(plate,y+h-3,width,finish+1);
-    fb_hline(plate+1,y+h-2,width-2,CGU_METAL+10);
-    for(int i=0;i<2;i++){
-        int rail=i?x+w-1:x+1, screw=i?x+w-ear/2-2:x+ear/2+1;
-        fb_vline(rail,y+2,h-5,CGU_METAL+4);
-        cgu_unit_screw(screw,y+cgu_unit_blend(5,9,zoom),zoom>35);
-        cgu_unit_screw(screw,y+h-cgu_unit_blend(6,10,zoom),zoom>35);
-    }
-    if(zoom>68){
-        /* A restrained brushed highlight next to the controls and two wear marks. */
-        fb_hline(x+ear+4,y+h*52/100,w-ear*2-8,finish+1);
-        fb_hline(x+w-ear-22,y+h-8,8,finish+4);
-        fb_hline(x+w-ear-14,y+h-7,4,finish+4);
-    }
-}
-
 static void cgu_unit_lamps(const cf_stage_model_t *m,unsigned band,int x,int y,int w,int h,int zoom,unsigned ink)
 {
     static const char *const labels[]={"BEAT","OUTPUT","PROGRAM","STEP","CHORD SLOT"};
@@ -132,14 +96,12 @@ static void cgu_unit_lamps(const cf_stage_model_t *m,unsigned band,int x,int y,i
         on=(on+1u)/2u;
     }
     if(!cells)return;
-    fb_rbox(x-1,y-1,w+2,h+2,1,CGU_METAL+1);
-    fb_hline(x,y+h,w,CGU_METAL+5);
-    fb_rbox(x,y,w,h,1,CGU_GLASS);
+    cf_rack_window(x-1,y-1,w+2,h+2,RAKT_GLASS);
     int step=(w-4)/(int)cells, gap=zoom>50?2:1;
     for(unsigned i=0;i<cells;i++){
         int left=x+(w-step*(int)cells)/2+step*(int)i;
-        unsigned lit=band==CGU_BAND_SHAPING && i>=6?CGU_BAND_INK_BASE+2:ink;
-        fb_rect(left,y+2,step-gap,h-4,(on==i+1u || i<fill)?lit:CGU_METAL+3);
+        unsigned lit=band==CGU_BAND_SHAPING?(i==7?RAKT_RED:i==6?RAKT_AMBER:RAKT_GREEN):ink;
+        fb_rect(left,y+2,step-gap,h-4,(on==i+1u || i<fill)?lit:RAKT_LED_OFF);
     }
     if(zoom>68)cfn_center(&CFN_11,x+w/2,y+h+11,labels[band-1u],FL_INK2);
 }
@@ -198,51 +160,112 @@ static void cgu_unit_readout(int left,int baseline,int width,const char *value,u
     cfn_fit(font,left,baseline,value,width,ink);
 }
 
+static void cgu_amp_dial(unsigned part,int cx,int cy,int r,unsigned pos,unsigned ink)
+{
+    if(part==CGS_LAYER){
+        fb_rbox(cx-r-4,cy-2,2*r+9,5,1,RAKT_GLASS);
+        for(int x=cx-r;x<=cx+r;x+=4)fb_vline(x,cy+4,2,RAKT_EDGE);
+        int cap=cx-r+(int)pos*2*r/100;
+        fb_rbox(cap-3,cy-6,7,12,2,CGU_METAL+3);
+        fb_hline(cap-2,cy-4,5,ink);
+        return;
+    }
+    cgu_metal_disc(cx,cy+1,r+1,10,10,10);
+    if(part==CGS_BASS){
+        cgu_metal_disc(cx,cy,r,4,2,1);
+        cfn_circle(cx,cy,r-1,CGU_METAL+4);
+    } else if(part==CGS_DRUMS){
+        cgu_metal_disc(cx,cy,r,7,5,2);
+        cgu_metal_disc(cx,cy,r-2,4,2,1);
+    } else {
+        cgu_metal_disc(cx,cy,r,9,6,3);
+        cgu_metal_disc(cx,cy,r-2,5,3,2);
+    }
+    cgu_dial_mark(cx,cy,r,pos,ink);
+}
+
+static void cgu_amp_status(const cf_stage_model_t *m,unsigned part,int x,int y,int w)
+{
+    unsigned bit=1u<<part;
+    unsigned on=(m->activity&bit)!=0;
+    if(part==CGS_DRUMS){
+        int width=44;
+        int left=x+(w-4*width)/2;
+        for(unsigned i=0;i<4;i++){
+            int lx=left+(int)i*width;
+            int hit=(m->drum_groups>>i)&1u;
+            cf_rack_window(lx,y,width-3,11,RAKT_GLASS);
+            fb_rect(lx+3,y+4,3,3,hit?RAKT_RED:RAKT_LED_OFF);
+            cfn_fit(&CFN_11,lx+8,y+9,CGU_GLO_DRUMS[i],width-9,hit?FL_INK:FL_INK2);
+        }
+    } else if(part==CGS_CHORDS){
+        cgu_lamp(x+w-22,y+5,on,RAKT_AMBER);
+    } else if(part==CGS_BASS){
+        unsigned level=(m->part_level[part]*4+99)/100;
+        cf_rack_window(x+w-51,y,31,11,RAKT_GLASS);
+        for(unsigned i=0;i<4;i++)
+            fb_rect(x+w-47+6*(int)i,y+4,4,3,on && i<level?RAKT_GREEN:RAKT_LED_OFF);
+    } else {
+        unsigned level=(m->part_level[part]*4+99)/100;
+        cf_rack_window(x+w-47,y,27,11,RAKT_GLASS);
+        for(unsigned i=0;i<4;i++)
+            fb_rect(x+w-43+5*(int)i,y+4,3,3,i<level?CGU_INK_BASE+part:RAKT_LED_OFF);
+    }
+}
+
 static void cgu_amp_head(const cf_stage_model_t *m,unsigned part,cgu_face_t f,int zoom,int selected)
 {
     int x=f.x,y=f.y,w=f.w,h=f.h;
     int sound=m->workspace==CGU_SOUND;
     unsigned accent=CGU_INK_BASE+part;
     unsigned ink=(m->pin_mask&(1u<<part))?FL_INK2:accent;
-    int grille_h=cgu_unit_blend(28,56,zoom);
-    int deck=y+grille_h+5;
-    fb_rbox(x,y,w,h,2,CGU_METAL+10);
-    fb_rbox(x+3,y+2,w-6,h-4,2,CGU_METAL+1);
-    cgu_unit_grille(x+8,y+4,w-16,grille_h,part==CGS_BASS || part==CGS_DRUMS);
-    fb_rect(x+8,deck,w-16,y+h-3-deck,CGU_AMP_FACE+2);
-    fb_hline(x+9,deck,w-18,ink);
-    fb_hline(x+9,y+h-4,w-18,CGU_AMP_FACE+1);
-    for(int side=0;side<2;side++){
-        int screw=side?x+w-5:x+5;
-        cgu_unit_screw(screw,y+8,zoom>50);
-        cgu_unit_screw(screw,y+h-8,zoom>50);
+    int left=x+RAKT_EAR+4;
+    int top=y+5;
+    int drum=part==CGS_DRUMS, layer=part==CGS_LAYER;
+    int deck=y+cgu_unit_blend(drum?44:30,58,zoom);
+    cf_rack_plate(x,y,w,h,RAKT_EAR,(uint8_t)(RAKT_CHORDS+part));
+    if(part==CGS_CHORDS){
+        cgu_unit_grille(x+RAKT_EAR,top-2,w-2*RAKT_EAR,deck-top,0);
+        fb_hline(x+RAKT_EAR,deck,w-2*RAKT_EAR,RAKT_COPPER);
+    } else if(part==CGS_BASS) {
+        fb_rect(x+RAKT_EAR,deck-3,w-2*RAKT_EAR,4,RAKT_VENT);
+        fb_hline(x+RAKT_EAR,deck+1,w-2*RAKT_EAR,RAKT_EDGE);
+    } else if(layer) {
+        fb_hline(x+RAKT_EAR+3,deck-2,w-2*RAKT_EAR-6,RAKT_EDGE);
+        fb_hline(x+RAKT_EAR+3,deck,w-2*RAKT_EAR-6,RAKT_SHADE);
+    } else {
+        fb_rect(x+RAKT_EAR,deck-16,w-2*RAKT_EAR,16,RAKT_RAIL);
+        fb_hline(x+RAKT_EAR,deck,w-2*RAKT_EAR,RAKT_EDGE);
     }
 
     char summary[20];
     const char *value=cgu_module_value(m,0,part,summary);
     const char *title=CGS_PART_NAME[part];
-    int left=x+14, badge=cfn_width(&CFN_16,title)+12;
-    int readout=left+badge+5, width=x+w-24-readout;
-    fb_rbox(left,y+8,badge,20,2,CGU_METAL+10);
-    fb_hline(left+2,y+26,badge-4,CGU_METAL+4);
-    cfn_text(&CFN_16,left+6,y+23,title,FL_INK);
-    fb_rbox(readout,y+8,width,20,2,CGU_GLASS);
-    cgu_unit_readout(readout+5,y+23,width-10,value,ink);
-    cgu_lamp(x+w-16,y+17,(m->activity&(1u<<part))!=0,ink);
+    int title_w=cfn_width(&CFN_16,title);
+    int readout=left+title_w+14;
+    int width=x+w-readout-((drum || part==CGS_CHORDS)?34:55);
+    cfn_text(&CFN_16,left+3,top+15,title,FL_INK);
+    cf_rack_window(readout,top,width,20,CGU_GLASS);
+    cgu_unit_readout(readout+5,top+15,width-10,value,ink);
+    cgu_amp_status(m,part,x,drum?deck-14:top+4,w);
 
-    if(selected && zoom>74)cgu_pages(x+12,y+37,w-24,m->workspace,part,sound?m->sound_page:m->shaping);
+    if(selected && zoom>74)cgu_pages(x+12,drum?y+29:y+37,w-24,m->workspace,part,sound?m->sound_page:m->shaping);
+    int clip_l=fb_cx0, clip_t=fb_cy0, clip_r=fb_cx1, clip_b=fb_cy1;
+    int dx=selected && zoom>74?m->control_dx:0;
+    if(dx)fb_clip(x+RAKT_EAR>clip_l?x+RAKT_EAR:clip_l,clip_t,
+        x+w-RAKT_EAR<clip_r?x+w-RAKT_EAR:clip_r,clip_b);
     int sends=sound && m->sound_page==CGU_SENDS;
     int presets=sound && m->sound_page==CGU_PRESETS;
     int radius=cgu_unit_blend(8,14,zoom);
-    int cy=y+cgu_unit_blend(47,h*(sends?70:65)/100,zoom);
+    int cy=y+cgu_unit_blend(h-15,h*(sends?70:65)/100,zoom);
     for(int i=0;i<4;i++){
         unsigned position=selected?m->knob[i]:m->amp_knob[part][i];
         if(selected?!m->label[i][0]:position==255u)continue;
-        int cx=cgu_unit_knob_x(f,i,4);
+        int cx=cgu_unit_knob_x(f,i,4)+dx;
         unsigned marker=selected && m->emphasis[i]?ink:FL_INK;
         if(selected && m->disabled[i])marker=CGU_METAL+6;
         if(selected && sends && zoom>90)cgu_send_graph((unsigned)i,position,cx-20,cy-36,40,17,ink);
-        cgu_dial(cx,cy,radius,position,marker);
+        cgu_amp_dial(part,cx,cy,radius,position,marker);
         if(!selected || zoom<=74)continue;
         char label[12];
         cfn_center(&CFN_11,cx,cy+radius+11,cgu_unit_label(m->label[i],label),FL_INK2);
@@ -261,11 +284,12 @@ static void cgu_amp_head(const cf_stage_model_t *m,unsigned part,cgu_face_t f,in
     if(selected && zoom>82 && sound && part==CGS_DRUMS && m->sound_page==CGU_TONE)
         cgu_drum_hit_lights(m,cgu_unit_knob_x(f,2,4),cy,ink);
     if(selected && presets && zoom>82){
-        cgu_unit_readout(x+67,cy-1,w-81,m->value[0],ink);
+        cgu_unit_readout(x+67+dx,cy-1,w-81,m->value[0],ink);
         char loaded[64]="Loaded ";
         cf_stage_append(loaded,sizeof loaded,m->applied);
-        cfn_fit(&CFN_11,x+67,cy+16,loaded,w-81,FL_INK2);
+        cfn_fit(&CFN_11,x+67+dx,cy+16,loaded,w-81,FL_INK2);
     }
+    if(dx)fb_clip(clip_l,clip_t,clip_r,clip_b);
 }
 
 static void cgu_band_unit(const cf_stage_model_t *m,unsigned band,cgu_face_t f,int zoom,int selected)
@@ -274,7 +298,7 @@ static void cgu_band_unit(const cf_stage_model_t *m,unsigned band,cgu_face_t f,i
     int count=cgu_unit_controls(band);
     if(selected && m->rack_lens)f=cgu_unit_lens(f,cgu.turn_knob,count,m->rack_lens);
     int x=f.x,y=f.y,w=f.w,h=f.h;
-    cgu_unit_shell(f,band,zoom);
+    cf_rack_plate(x,y,w,h,RAKT_EAR,(uint8_t)(RAKT_HARMONY+band-1u));
 
     const char *title=CGU_BAND_NAMES[band-1u];
     int left=x+16, title_top=y+6;
@@ -286,9 +310,7 @@ static void cgu_band_unit(const cf_stage_model_t *m,unsigned band,cgu_face_t f,i
     const char *value=band==CGU_BAND_PROGRESSION?(m->rack_draft?"Draft":"Bank"):
         cgu_module_value(m,band,m->focus,summary);
     int readout_x=left+title_w, readout_w=x+w-16-readout_x;
-    fb_rbox(readout_x-1,title_top-1,readout_w+2,title_h+2,2,CGU_METAL+1);
-    fb_hline(readout_x+1,title_top+title_h,readout_w-2,CGU_METAL+5);
-    fb_rbox(readout_x,title_top,readout_w,title_h,2,CGU_GLASS);
+    cf_rack_window(readout_x-1,title_top-1,readout_w+2,title_h+2,CGU_GLASS);
     if(title_top+4>=fb_cy0)cgu_unit_readout(readout_x+6,title_top+16,readout_w-12,value,ink);
 
     int meter_w=cgu_unit_blend(67,87,zoom);
@@ -310,7 +332,7 @@ static void cgu_band_unit(const cf_stage_model_t *m,unsigned band,cgu_face_t f,i
             fb_hline(badge+1,meter_y+13,34,CGU_METAL+10);
             cgu_unit_screw(badge+2,meter_y+6,0);
             cgu_unit_screw(badge+33,meter_y+6,0);
-            cfn_center(&CFN_11,badge+18,meter_y+11,"CORD",FL_INK);
+            cfn_center(&CFN_11,badge+18,meter_y+11,"RAKT",FL_INK);
             cgu_unit_vents(vent,meter_y,meter_x-vent-10,14,5);
         }
     }
@@ -320,6 +342,7 @@ static void cgu_band_unit(const cf_stage_model_t *m,unsigned band,cgu_face_t f,i
     int cy=cgu_unit_knob_y(f,zoom);
     int clearance=meter_y+meter_h+(zoom>68?11:0)+radius+4;
     if(cy<clearance)cy=clearance;
+    if(zoom<=38 && cy+radius>y+h-3)cy=y+h-radius-3;
     int value_y=cy+radius+29;
     if(value_y>fb_cy1-4)value_y=fb_cy1-4;
     if(band==CGU_BAND_SHAPING){
@@ -330,7 +353,7 @@ static void cgu_band_unit(const cf_stage_model_t *m,unsigned band,cgu_face_t f,i
         if(zoom>74)cgu_unit_readout(start,value_y,x+w-start-19,m->applied,FL_INK);
     }
     for(int i=0;i<count;i++){
-        int cx=cgu_unit_knob_x(f,i,count);
+        int cx=cgu_unit_knob_x(f,i,count)+(band==CGU_BAND_ARP && selected?m->control_dx:0);
         unsigned pos=selected?m->knob[i]:m->rack_knob[band-1u][i];
         int active=selected && m->emphasis[i] && !m->disabled[i];
         cgu_unit_dial(band,cx,cy,radius,pos,active?ink:selected && m->disabled[i]?CGU_METAL+6:FL_INK);

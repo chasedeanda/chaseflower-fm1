@@ -89,11 +89,13 @@ static void cf_learn_model(cf_learn_model_t *m)
 /* Original 16-lower / 11-staggered-upper physical layout. Full-width key
  * labels use the normal face when they fit, otherwise the existing micro face.
  * Selected key has an outline; held/latched keys retain normal fill semantics. */
-static void cf_learn_keyboard(const cf_learn_model_t *m)
+static void cf_learn_keyboard(const cf_learn_model_t *m,int left,int width)
 {
     for(int key=0;key<CF_NKEYS;key++) {
         const cf_keycap_t *cap=&m->cap[key];
         int x,y,w,h;key_box(key,&x,&y,&w,&h);
+        int right=left+(x+w)*width/FB_W;
+        x=left+x*width/FB_W;w=right-x;
         int upper=cf_key_is_upper(key);y=upper?99:134;h=upper?31:37;
         uint8_t fill=cap->style==KC_DOWN?FL_INK:cap->style==KC_ON?C_ACC(0):cap->style==KC_SOUNDING?FL_BG2:FL_BG1;
         uint8_t ink=cap->style==KC_DOWN || cap->style==KC_ON?FL_BG:FL_INK;

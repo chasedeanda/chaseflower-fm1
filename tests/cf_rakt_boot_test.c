@@ -13,11 +13,11 @@ int main(int argc,char **argv)
 {
     emu_fw_options(0,1,0,1);emu_hal.ready=2;emu_fw_init(0);cf_intro_on=0;cr_safe=0;
     unsigned writes=emu_flash_writes,queued=cf_evq_w;
-    const uint32_t bg[]={0x0C0707,0x0C0707};
+    const uint32_t bg=0x090B0D;
     for(unsigned skin=0;skin<CF_SKIN_N;skin++) {
-        cf_skin=skin;cf_motion=1;cf_cord_last.valid=0;
-        for(unsigned t=0;t<=CF_CORD_BOOT_MS;t+=40) {
-            cf_cord_draw(t);CHECK(cf_pal[FL_BG]==bg[skin]);
+        cf_skin=skin;cf_motion=1;cf_rakt_last=UINT16_MAX;
+        for(unsigned t=0;t<=CF_RAKT_BOOT_MS;t+=40) {
+            cf_rakt_draw(t);CHECK(cf_pal[FL_BG]==bg);
             for(unsigned i=0;i<240;i++) {
                 CHECK(fb[239*240+i]==FL_BG);
                 CHECK(fb[i*240]==FL_BG && fb[i*240+239]==FL_BG);
@@ -25,27 +25,35 @@ int main(int argc,char **argv)
             for(unsigned p=0;p<240*240;p++)CHECK(fb[p]<CFN_PAL_N);
             if(argc==2 && skin==0){char name[32];snprintf(name,sizeof name,"boot-%04u",t);capture(argv[1],name);}
         }
-        CHECK(cf_pal[FL_INK]==0xFFFFFF && fb_lut[FL_INK]==0xFFFF);
-        unsigned white=0;for(unsigned y=178;y<216;y++)for(unsigned x=60;x<180;x++)white+=fb[y*240+x]==FL_INK;CHECK(white>200);
-        cf_motion=0;cf_cord_draw(0);unsigned tiles=fb_tiles_sent,hash=cfs_fnv(fb,240*240);
-        cf_cord_draw(800);cf_cord_draw(1300);CHECK(tiles==fb_tiles_sent && hash==cfs_fnv(fb,240*240));
+        CHECK(cf_pal[FL_INK]==0xF2EBDD);
+        CHECK(fb[60*FB_W+42]==FL_INK && fb[195*FB_W+194]==RAKT_GREEN);
+        CHECK(fb[155*FB_W+39]==RAKT_LED_OFF);
+        unsigned ready=cfs_fnv(fb,FB_W*FB_H);
+        cf_rakt_draw(0);
+        CHECK(fb[60*FB_W+42]==FL_INK && fb[110*FB_W+120]==FL_BLACK);
+        cf_rakt_draw(640);
+        CHECK(fb[155*FB_W+39]==RAKT_GREEN && fb[195*FB_W+194]==RAKT_AMBER);
+        cf_rakt_draw(CF_RAKT_READY_MS);
+        CHECK(cfs_fnv(fb,FB_W*FB_H)==ready);
+        cf_motion=0;cf_rakt_draw(0);unsigned tiles=fb_tiles_sent,hash=cfs_fnv(fb,240*240);
+        cf_rakt_draw(800);cf_rakt_draw(1300);CHECK(tiles==fb_tiles_sent && hash==cfs_fnv(fb,240*240));
         if(argc==2){char name[32];snprintf(name,sizeof name,"theme-%u-static",skin);capture(argv[1],name);}
     }
     CHECK(writes==emu_flash_writes && queued==cf_evq_w);
-    cf_motion=1;cf_intro_on=1;cf_intro_t=0;cf_cord_started=fm1_ms;cu.idle_ms=0x7fffffff;
+    cf_motion=1;cf_intro_on=1;cf_intro_t=0;cf_rakt_started=fm1_ms;cu.idle_ms=0x7fffffff;
     CHECK(cf_intro_draw(40));cu.idle_ms=0;CHECK(!cf_intro_draw(40) && !cf_intro_on);
-    CHECK(cf_pal[FL_BG]==CF_SKIN_RGB[cf_skin][0]);
-    cf_intro_on=1;cf_intro_t=0;cu.idle_ms=0x7fffffff;CHECK(!cf_intro_draw(CF_CORD_BOOT_MS) && !cf_intro_on);
+    CHECK(cf_pal[FL_BG]==(CF_STUDIO?bg:CF_SKIN_RGB[cf_skin][0]));
+    cf_intro_on=1;cf_intro_t=0;cu.idle_ms=0x7fffffff;CHECK(!cf_intro_draw(CF_RAKT_BOOT_MS) && !cf_intro_on);
     cf_intro_on=1;cf_intro_t=0;cf_motion=0;CHECK(!cf_intro_draw(1) && !cf_intro_on);
     cr_safe=1;cf_intro_on=1;cf_intro_t=0;CHECK(!cf_intro_draw(40) && !cf_intro_t);cr_safe=0;
     /* First splash must use persisted appearance, before UI initialization. */
     cf_skin=CF_SKIN_PLUM;cf_motion=0;cpb_dirty=1;cpb_flush();CHECK(!cpb_dirty);
-    cf_skin=0;cf_motion=1;cf_splash();CHECK(cf_skin==CF_SKIN_PLUM && !cf_motion && cf_pal[FL_BG]==bg[CF_SKIN_PLUM] && !cf_intro_on);
+    cf_skin=0;cf_motion=1;cf_splash();CHECK(cf_skin==CF_SKIN_PLUM && !cf_motion && cf_pal[FL_BG]==bg && !cf_intro_on);
     /* A slow device initialization must not consume the visible intro. */
     cf_motion=1;cpb_dirty=1;cpb_flush();cf_splash();
-    for(unsigned i=0;i<FB_W*FB_H;i++)CHECK(fb[i]==FL_BG);
+    CHECK(fb[60*FB_W+42]==FL_INK && fb[110*FB_W+120]==FL_BLACK);
     fm1_ms+=10000;cf_ui_init();
-    CHECK(cf_cord_started==fm1_ms && cf_intro_t==0 && cf_intro_on);
+    CHECK(cf_rakt_started==fm1_ms && cf_intro_t==0 && cf_intro_on);
     CHECK(cf_intro_draw(16) && cf_intro_t==16);
     CHECK(!cf_intro_draw(UINT32_MAX) && !cf_intro_on);
     CHECK(cfn_face(&CFN_64,"C#")==&CFN_64 && cfn_face(&CFN_64,"Bb")==&CFN_64);
@@ -56,5 +64,5 @@ int main(int argc,char **argv)
     unsigned fallback_hash=cfs_fnv(fb,FB_W*FB_H);
     fb_fill(FL_BG);cfn_text(&CFN_32,10,100,"Unexpected text",FL_INK);
     CHECK(fallback_hash==cfs_fnv(fb,FB_W*FB_H));
-    printf("CORD boot: %u checks, %u failures\n",checks,failures);return failures!=0;
+    printf("RAKT boot: %u checks, %u failures\n",checks,failures);return failures!=0;
 }

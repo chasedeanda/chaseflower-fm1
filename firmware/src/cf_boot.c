@@ -100,7 +100,7 @@ static void cf_boot_splash(flc_t *c, uint32_t t, uint32_t start, int cx)
 
 static void cf_boot_draw(uint32_t t)
 {
-    static const char NAME[] = "CORD";
+    static const char NAME[] = "RAKT";
     flc_t canvas = {fb, FB_W, FB_H};
     int i, x;
     if (t > CF_SPLASH_MS) t = CF_SPLASH_MS;

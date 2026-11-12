@@ -34,12 +34,10 @@ static void cfn_coverage(int x,int y,unsigned coverage,uint8_t ink)
         if(entry%CFN_AA_ROLES==role){surface=entry/CFN_AA_ROLES;unsigned old=(bg-CFN_AA_BASE)%2+1;if(old>coverage)coverage=old;}
     }
     if(role<CFN_AA_ROLES && surface<CFN_AA_SURFACES)fb[y*FB_W+x]=(uint8_t)(CFN_AA_BASE+(surface*CFN_AA_ROLES+role)*2+coverage-1);
-    else if(CF_STUDIO && !CF_SCENES && role<2 && bg>=CGU_AMP_FACE)
-        fb[y*FB_W+x]=(uint8_t)(CGU_MATERIAL_AA+4*4+role*2+coverage-1);
-    else if(CF_STUDIO && !CF_SCENES && role<2 && bg>=CGU_UNIT_FACE && bg<CGU_MATERIAL_AA){
-        unsigned material=bg<CGU_METAL?(bg-CGU_UNIT_FACE)/CGU_UNIT_SHADES:bg<CGU_GRILLE?4:5;
-        fb[y*FB_W+x]=(uint8_t)(CGU_MATERIAL_AA+material*4+role*2+coverage-1);
-    }
+    else if(CF_STUDIO && !CF_SCENES && role<2 && bg>=RAKT_CHORDS && bg<=RAKT_PROGRESSION)
+        fb[y*FB_W+x]=(uint8_t)(CGU_FACE_AA+(bg-RAKT_CHORDS)*4+role*2+coverage-1);
+    else if(CF_STUDIO && !CF_SCENES && role<2 && bg>=CGU_METAL && bg<CGU_MATERIAL_AA)
+        fb[y*FB_W+x]=(uint8_t)(CGU_MATERIAL_AA+(bg>=CGU_GRILLE?4:0)+role*2+coverage-1);
     else if(coverage>=2)fb[y*FB_W+x]=ink; /* retain legacy graph colours */
 }
 static void cfn_large_glyph(const cfn_glyph_t *g,int x,int y,uint8_t ink)
@@ -132,11 +130,12 @@ typedef struct {
     uint8_t pulse,halo_ink,activity,activity_step;
     uint8_t moment,build,bloom,engine_page,engine_bar,beat,focus,level[4],pin_mask;
     uint8_t workspace,zoom,genre,solo,muted,held_parts,shaping,sound_page,knob[4],part_level[4];
-    uint8_t signal_peak,phrase_steps,layer_reply,bass_reply,section;
+    uint8_t signal_peak,drum_groups,phrase_steps,layer_reply,bass_reply,section;
     uint8_t rack_knob[CGU_BAND_PANELS-1][4], amp_knob[CGS_NPART][4];
     uint8_t rack_beat, rack_meter, rack_level, rack_arp_step, rack_arp_mode, rack_lens, rack_draft;
     uint16_t steps[4][2],bass_delays[2],drum_hits,matches;
-    int8_t bank_dx,chord_dy;
+    int16_t bank_dx;
+    int8_t chord_dy,control_dx;
     uint16_t rack_scroll;
     cfm_pose_t mascot;
     cf_learn_model_t learn;
@@ -521,7 +520,7 @@ static void cf_stage_draw(void)
         if(!memcmp(&m,&cf_stage_last,sizeof m)){
             cf_stage_last.signal_peak=peak;
             cf_stage_draws++;
-            fb_unclip();cgu_output_meter(156,24,peak,m.workspace);
+            fb_unclip();cgu_output_meter(156,24,peak);
             if(!cu.pop)cf_present();
             return;
         }
@@ -548,7 +547,7 @@ static void cf_stage_draw(void)
         cfn_fit(&CFN_12,10,80,m.notes,220,FL_INK2);
         cfn_text(&CFN_12,10,95,"Chords",FL_INK2);
         cfn_text(&CFN_12,230-cfn_width(&CFN_12,"Roots / degrees"),95,"Roots / degrees",FL_INK2);
-        cf_learn_keyboard(&m.learn);
+        cf_learn_keyboard(&m.learn,0,FB_W);
         cfn_fit(&CFN_16,10,192,m.learn.title,220,FL_INK);
         cfn_fit(&CFN_12,10,208,m.learn.help,220,FL_INK2);
         cfn_fit(&CFN_12,10,222,m.learn.detail,220,FL_INK2);

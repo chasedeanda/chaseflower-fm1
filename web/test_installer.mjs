@@ -49,6 +49,9 @@ async function until(cond, ms = 4000) {         // real time: the page's own wai
 
 /* ------------------------------------------------------ (a) the classification --- */
 const GUARD_CASES = [
+  ["FM-1_57258001", "RAKT 0.1.0", "allow", "coralflower"],
+  ["FM-1_57258001", null, "refuse", "unknown"],
+  ["ota-FM-1_57258001", null, "loader", "loader"],
   ["FM-1_26730001", "CoralFlower 1.0.3", "allow", "coralflower"],
   ["FM-1_26730001", "CORD 1.0.3", "allow", "coralflower"],
   ["FM-1_26730001", null, "refuse", "unknown"],
@@ -81,8 +84,8 @@ const GUARD_CASES = [
   ok(classifyFirmware("FM-1_930", "CoralFlower 0.1").name === "CoralFlower 0.1", "classifyFirmware: CoralFlower is named by its INFO text");
   ok(classifyFirmware("FM-1_930", null).name === "CoralFlower (an early build without backup support)" && CF_EARLY === classifyFirmware("FM-1_930", null).name,
     "classifyFirmware: FM-1_930 without INFO -> allow, \"CoralFlower (an early build without backup support)\"");
-  ok(refusalText("Sloop").includes("then install CORD.") && refusalText("Sloop").includes("https://github.com/Quixotic7/MvaveFM1Unbricker") &&
-     !/ChoralRoot/.test(refusalText("Sloop")), "refusalText: names CORD, links the recovery tools");
+  ok(refusalText("Sloop").includes("then install RAKT.") && refusalText("Sloop").includes("https://github.com/Quixotic7/MvaveFM1Unbricker") &&
+     !/ChoralRoot/.test(refusalText("Sloop")), "refusalText: names RAKT, links the recovery tools");
   const py = spawnSync("python3", ["-c", [
     "import json, sys", `sys.path.insert(0, ${JSON.stringify(join(ROOT, "tools"))})`, "import fm1_install as I",
     "cases = json.loads(sys.argv[1])",
@@ -95,6 +98,7 @@ const GUARD_CASES = [
     ok(JSON.stringify(got) === JSON.stringify(want), "tools/fm1_install.py classify_firmware == fm1ota.js classifyFirmware (verdict, kind, name)");
     ok(fam.join() === "coralflower,choralroot,felucca,other", "tools/fm1_install.py family: coralflower, choralroot, felucca, other");
   }
+  ok(backupFamily("RAKT 0.1.0") === "coralflower" && /^rakt-backup-\d{8}\.json$/.test(backupFileName("RAKT 0.1.0")), "RAKT uses the compatible backup family with a distinct filename");
   ok(backupFamily("CORD 1.0") === "coralflower" && /^cord-backup-\d{8}\.json$/.test(backupFileName("CORD 1.0")), "CORD alias uses the compatible family and CORD backup filename");
   ok(backupFamily("CoralFlower 0.1") === "coralflower" && backupFamily("ChoralRoot 0.21") === "choralroot" && backupFamily("FELUCCA v1.0") === "felucca" &&
      backupFamily("MELODEE v1") === "other" && /^cord-backup-\d{8}\.json$/.test(backupFileName("CoralFlower 0.1")),
@@ -488,7 +492,7 @@ async function readyPage(dev, opts = {}) {
   await p.$.go.fire("click");
   ok(p.downloads.length === 1 && /^cord-backup-\d{8}\.json$/.test(p.downloads[0].name) && !p.confirms.length && !before.log.length && !after.log.length,
     `CoralFlower over CoralFlower: backed up first (${p.downloads[0]?.name}), no question, no restore`);
-  ok(/^backup CoralFlower 0\.3\.1: user sounds 1-16, CORD settings, CORD loop, CORD patterns and song$/m.test(p.$.log.textContent),
+  ok(/^backup CoralFlower 0\.3\.1: user sounds 1-16, RAKT settings, RAKT loop, RAKT patterns and song$/m.test(p.$.log.textContent),
     "CoralFlower over CoralFlower: the backup holds the sequencer's six parts, named once in the log");
   ok(p.$.status.textContent === en.done && dev.identity === "FM-1_930" && dev.bad === 0 && p.$["done-line"].textContent === "Done. Your FM-1 now runs CoralFlower 0.2.",
     "CoralFlower over CoralFlower: installed, and the new version read back (\"now runs CoralFlower 0.2\")");
@@ -750,7 +754,7 @@ async function readyPage(dev, opts = {}) {
   await p.$["restore-go"].fire("click");
   await until(() => p.$["backup-status"].textContent.startsWith(en.restored));
   ok(!on05.objs.has(31) && [6, 30, 50, 51, 52, 53, 54, 55].every((id) => cfData().find(([i]) => i === id)[1].every((b, k) => b === on05.objs.get(id)?.[k])) &&
-     on05.restarts === 1 && p.$["backup-status"].textContent.endsWith("(not used by this firmware, kept in the file: CORD loop)"),
+     on05.restarts === 1 && p.$["backup-status"].textContent.endsWith("(not used by this firmware, kept in the file: RAKT loop)"),
      "a 0.6 backup on 0.5: 31 refused and skipped, the sound bank, settings, patterns and song restored, RESTART");
 }
 {
@@ -775,15 +779,15 @@ async function readyPage(dev, opts = {}) {
   await p.$["restore-file"].fire("change");
   await p.$["restore-go"].fire("click");
   ok(cfData().every(([id, v]) => blank.objs.get(id)?.every((b, i) => b === v[i])) && blank.restarts === 1 &&
-     p.$["backup-status"].textContent.startsWith(en.restored) && p.$["backup-status"].textContent.endsWith("CORD loop, CORD patterns and song"),
+     p.$["backup-status"].textContent.startsWith(en.restored) && p.$["backup-status"].textContent.endsWith("RAKT loop, RAKT patterns and song"),
      "Restore on 0.3.1: the patterns and song back, named once");
   const old = backupSide("CoralFlower 0.3", CF_BACKUP_IDS.filter((id) => id < 50));
   dev.bk = () => old;
   await p.$["restore-go"].fire("click");
-  ok(!old.log.some((id) => id >= 50) && old.objs.get(30) && p.$["backup-status"].textContent.endsWith(en.restoreSkipped + "CORD patterns and song)"),
+  ok(!old.log.some((id) => id >= 50) && old.objs.get(30) && p.$["backup-status"].textContent.endsWith(en.restoreSkipped + "RAKT patterns and song)"),
      "Restore on 0.3: the rest restored, the patterns kept in the file and named once as not used");
-  ok(objectNames([50, 6, 51, 55]) === "CORD patterns and song, user sounds 1-16", "objectNames: each name once, in order");
-  ok(objectNames([57, 30, 56, 58]) === "CORD unsaved sound edits, CORD settings", "objectNames: the three sounds' edits named once (0.4.2)");
+  ok(objectNames([50, 6, 51, 55]) === "RAKT patterns and song, user sounds 1-16", "objectNames: each name once, in order");
+  ok(objectNames([57, 30, 56, 58]) === "RAKT unsaved sound edits, RAKT settings", "objectNames: the three sounds' edits named once (0.4.2)");
 }
 
 // the return to the official V15 (validateStockPackage stands in for the real file, which is not in the repo)
@@ -815,17 +819,20 @@ async function readyPage(dev, opts = {}) {
      "stock: confirmed -> backup, FM-1_015, the done panel names the backup; the install card left idle");
 }
 
-// Current and previous CORD packages: exact target verification, legacy updates and resume.
-for (const product of ["FM-1_936", "FM-1_26730001"]) {
- for (const identity of ["FM-1_015", "FM-1_930", "FM-1_936", `ota-${product}`]) {
-  const cord = makePkg({ product });
-  const dev = new FakeFM1(logicalImage(cord), { identity, loader: `ota-${product}`, final: product,
-    bk: (id) => id === "FM-1_936" ? backupSide("CoralFlower 1.0.2", CR_BACKUP_IDS, crData()) : null });
-  const p = await readyPage(dev, { pkg: cord });
-  ok(p.$.pkg.className === "pkg ok" && !p.$.go.disabled, `CORD ${product} package accepted from ${identity}`);
+// RAKT and legacy packages: exact target verification, firmware switches and resume.
+for (const product of ["FM-1_936", "FM-1_26730001", "FM-1_57258001"]) {
+ for (const identity of ["FM-1_015", "FM-1_930", "FM-1_936", "FM-1_26730001", `ota-${product}`]) {
+  const targetPackage = makePkg({ product });
+  const dev = new FakeFM1(logicalImage(targetPackage), { identity, loader: `ota-${product}`, final: product,
+    bk: (id) => {
+      const version = { "FM-1_936": "CoralFlower 1.0.2", "FM-1_26730001": "CORD 1.0.3", "FM-1_57258001": "RAKT 0.1.0" }[id];
+      return version ? backupSide(version, CR_BACKUP_IDS, crData()) : null;
+    } });
+  const p = await readyPage(dev, { pkg: targetPackage });
+  ok(p.$.pkg.className === "pkg ok" && !p.$.go.disabled, `Package ${product} package accepted from ${identity}`);
   await p.$.go.fire("click");
   ok(p.$.status.textContent === en.done && dev.identity === product && dev.bad === 0,
-     `CORD ${product} install/resume from ${identity}: verified selected package identity`);
+     `Package ${product} install/resume from ${identity}: verified selected package identity`);
  }
 }
 

@@ -25,20 +25,22 @@ static void cgu_glow_text_up(int baseline,int y,const char *name,uint8_t ink)
     }
 }
 
+enum { CGU_GLOW_TOP=94, CGU_GLOW_BOTTOM=222 };
+
 static void cgu_glow_map(const cgu_glow_model_t *m)
 {
     static const char notes[]="FGABCDEFGABCDEFG";
-    static const char *const actions[]={"PAUSE","RESTART","UNMUTE","TAP","FILL HOLD","FILL BAR","DROP"};
+    static const char *const actions[]={"Pause","Restart","Unmute","Tap","Fill hold","Fill bar","Drop"};
     for(int black=0;black<=1;black++){
         for(unsigned key=0;key<CF_NKEYS;key++){
             if(cf_key_is_upper(key)!=black)continue;
             unsigned p=cgu_glow_place(key,black);
             unsigned white=black?cgu_glow_place(key,0):p;
-            int x=4+(int)white*232/16;
-            int width=4+(int)(white+1)*232/16-x-1;
+            int x=8+(int)white*224/16;
+            int width=13;
             int held=(m->keys>>key)&1u;
             int enabled=1, on=held;
-            uint8_t fill=FL_BG2, accent=C_ACC(0), ink=FL_INK;
+            uint8_t fill=CGU_METAL+3, accent=CGU_PROGRESSION_INK, ink=FL_INK;
             char name[16]="";
             if(p<CGS_NPART){
                 unsigned part=cgu_part(p), bit=1u<<part;
@@ -53,27 +55,30 @@ static void cgu_glow_map(const cgu_glow_model_t *m)
                 on=(m->drums>>(p-6u))&1u;
             } else if(!black && p<=CGU_GLO_DROP){
                 const char *label=actions[p-CGU_GLO_PAUSE];
-                if(p==CGU_GLO_PAUSE && m->paused)label="RESUME", on=1;
+                if(p==CGU_GLO_PAUSE && m->paused)label="Resume", on=1;
                 if(p==CGU_GLO_FILL_BAR && m->pending==CFPERF_FILL)on=1;
-                if(p==CGU_GLO_DROP && (m->dropped || m->pending==CFPERF_DROP))label="BRING BACK", on=1;
+                if(p==CGU_GLO_DROP && (m->dropped || m->pending==CFPERF_DROP))label="Bring back", on=1;
                 str_cpy(name,label,sizeof name);
                 enabled=(m->ready>>p)&1u;
             }
             if(black){
                 x-=5;width=10;
-                fb_rect(x-1,84,12,59,FL_BG);
-                fill=name[0]?FL_BG3:FL_BG1;
-            } else if(!name[0])fill=FL_BG1;
-            if(on){fill=black?FL_C(FL_R_ROSE,0):accent;ink=FL_BG;}
-            else if(!enabled)ink=FL_INK3;
-            fb_rect(x,84,width,black?58:138,fill);
+                fb_rbox(x-1,CGU_GLOW_TOP-1,12,60,2,CGU_METAL+10);
+                fill=name[0]?CGU_GLASS:CGU_METAL+1;
+            } else if(!name[0])fill=CGU_METAL+2;
+            if(on){
+                fill=black?CGU_INK_BASE+CGS_DRUMS:accent;
+                ink=CGU_METAL+10;
+            } else if(!enabled)ink=FL_INK2;
+            int height=black?58:CGU_GLOW_BOTTOM-CGU_GLOW_TOP;
+            fb_rbox(x,CGU_GLOW_TOP,width,height,1,fill);
             if(name[0]){
-                if(!on)fb_hline(x,84,width,enabled?accent:FL_BG3);
-                cgu_glow_text_up(x+width/2+4,black?137:208,name,ink);
+                if(!on)fb_hline(x+1,CGU_GLOW_TOP,width-2,enabled?accent:CGU_METAL+5);
+                cgu_glow_text_up(x+width/2+4,black?CGU_GLOW_TOP+53:207,name,ink);
             }
             if(!black){
                 char note[2]={notes[p],0};
-                cfn_center(&CFN_11,x+width/2,219,note,on?ink:FL_INK2);
+                cfn_center(&CFN_11,x+width/2,218,note,on?ink:FL_INK2);
             }
         }
     }
@@ -82,26 +87,59 @@ static void cgu_glow_map(const cgu_glow_model_t *m)
 static const char *cgu_glow_part_state(const cgu_glow_model_t *m,unsigned part)
 {
     unsigned bit=1u<<part;
-    return m->muted&bit?"MUTE":m->solo&bit?"SOLO":m->cut&bit?"CUT":"ON";
+    return m->muted&bit?"Mute":m->solo&bit?"Solo":m->cut&bit?"Cut":"On";
 }
 
 static void cgu_glow_state(const cgu_glow_model_t *m)
 {
+    fb_rbox(4,CGU_GLOW_TOP,232,CGU_GLOW_BOTTOM-CGU_GLOW_TOP,2,CGU_METAL+1);
     for(unsigned i=0;i<NELEM(CGU_GLO_DRUMS);i++){
-        int x=7+i*57, muted=(m->drums>>i)&1u;
-        fb_rect(x,98,54,27,muted?FL_C(FL_R_ROSE,0):FL_BG2);
-        cfn_center(&CFN_11,x+27,115,CGU_GLO_DRUMS[i],muted?FL_BG:FL_INK);
+        int x=9+i*56, muted=(m->drums>>i)&1u;
+        uint8_t ink=muted?CGU_INK_BASE+CGS_DRUMS:FL_INK;
+        fb_rbox(x,101,53,27,2,CGU_GLASS);
+        if(muted)fb_hline(x+3,126,47,ink);
+        cfn_center(&CFN_11,x+26,118,CGU_GLO_DRUMS[i],ink);
     }
-    cfn_text(&CFN_12,9,151,"C4 Pause / resume    D4 Restart",FL_INK2);
-    cfn_text(&CFN_12,9,171,"E4 Unmute all    F4 Tap tempo",FL_INK2);
-    cfn_text(&CFN_12,9,191,"G4 Fill held    A4 Fill next bar",FL_INK2);
-    cfn_text(&CFN_12,9,211,"B4 Drop / bring back drums",FL_INK2);
+    fb_hline(12,136,216,CGU_METAL+4);
+    cfn_text(&CFN_12,13,153,"C4 Pause / resume    D4 Restart",FL_INK2);
+    cfn_text(&CFN_12,13,173,"E4 Unmute all    F4 Tap tempo",FL_INK2);
+    cfn_text(&CFN_12,13,193,"G4 Fill held    A4 Fill next bar",FL_INK2);
+    cfn_text(&CFN_12,13,213,"B4 Drop / bring back drums",FL_INK2);
+}
+
+static void cgu_glow_header(const cgu_glow_model_t *m)
+{
+    static const char *const tabs[]={"Map","State"};
+    const char *status=m->waiting?"Clock wait":m->paused?"Paused":m->pending==CFPERF_FILL?"Fill next":
+        m->pending==CFPERF_DROP?"Drop next":m->pending==CFPERF_BACK?"Back next":m->dropped?"Drums off":
+        m->fill==CFPERF_FILL_AUTO?"Turnaround":m->fill?"Fill":m->playing?"Playing":"Stopped";
+    char tempo[16];
+    kint(tempo,m->bpm,m->ext?" EXT":" BPM");
+    cfn_page_header("GLO Live",tempo,C_ACC(0));
+
+    fb_rbox(4,33,122,18,2,CGU_GLASS);
+    cgu_lamp(14,42,m->playing || m->waiting || m->paused,m->waiting || m->paused?CGU_BAND_INK_BASE+2:CGU_BAND_INK_BASE+1);
+    cfn_fit(&CFN_12,24,46,status,98,FL_INK);
+    for(unsigned i=0;i<CGU_GLO_VIEWS;i++){
+        int x=130+i*54, selected=i==m->view;
+        cfn_center(&CFN_12,x+26,46,tabs[i],selected?FL_INK:FL_INK2);
+        if(selected)fb_hline(x,50,52,CGU_PROGRESSION_INK);
+    }
+    for(unsigned i=0;i<CGS_NPART;i++){
+        unsigned part=cgu_part(i), bit=1u<<part;
+        int x=4+i*58;
+        uint8_t accent=CGU_INK_BASE+part;
+        fb_rbox(x,55,56,33,2,RAKT_CHORDS+part);
+        fb_hline(x+3,56,50,accent);
+        cfn_center(&CFN_11,x+28,69,CGS_PART_NAME[part],FL_INK);
+        cgu_lamp(x+10,79,!(m->cut&bit),accent);
+        cfn_center(&CFN_11,x+32,83,cgu_glow_part_state(m,part),FL_INK2);
+    }
 }
 
 static void cgu_glow_draw(void)
 {
     static cgu_glow_model_t last;
-    static const char *const tabs[]={"MAP","STATE"};
     cgu_glow_model_t m={0};
     m.keys=cgu_glow.keys;
     m.ext=cs.clock_in==1u;
@@ -121,32 +159,11 @@ static void cgu_glow_draw(void)
     if(cu.pop==POP_MSG)str_cpy(m.message,cu.msg,sizeof m.message);
     if(cgu_glow_valid && !fb_full && !memcmp(&m,&last,sizeof m))return;
     last=m;cgu_glow_valid=1;
-    fb_fill(FL_BG);
-    char value[16];
-    kint(value,m.bpm,m.ext?" EXT":" BPM");
-    cfn_text(&CFN_14,6,17,value,C_ACC(0));
-    const char *status=m.waiting?"CLOCK WAIT":m.paused?"PAUSED":m.pending==CFPERF_FILL?"FILL NEXT":
-        m.pending==CFPERF_DROP?"DROP NEXT":m.pending==CFPERF_BACK?"BACK NEXT":m.dropped?"DRUMS OFF":
-        m.fill==CFPERF_FILL_AUTO?"TURNAROUND":m.fill?"FILL":m.playing?"PLAYING":"STOPPED";
-    cfn_center(&CFN_11,120,16,status,FL_INK2);
-    cfn_text(&CFN_12,174,17,"GLO LIVE",C_ACC(0));
-    for(unsigned i=0;i<CGU_GLO_VIEWS;i++){
-        int x=5+i*116;
-        fb_rect(x,24,112,15,i==m.view?FL_BG3:FL_BG1);
-        cfn_center(&CFN_11,x+56,35,tabs[i],i==m.view?C_ACC(0):FL_INK2);
-    }
-    for(unsigned i=0;i<CGS_NPART;i++){
-        unsigned p=cgu_part(i), x=6+i*58;
-        uint8_t accent=CGU_INK_BASE+p;
-        fb_rect(x,47,53,31,FL_BG2);
-        cfn_center(&CFN_11,x+26,59,CGS_PART_NAME[p],accent);
-        cfn_center(&CFN_11,x+26,72,cgu_glow_part_state(&m,p),FL_INK2);
-    }
+    cgu_glow_header(&m);
     if(m.view==CGU_GLO_MAP)cgu_glow_map(&m);
     else cgu_glow_state(&m);
-    if(m.message[0])cfn_fit(&CFN_11,5,236,m.message,209,FL_INK);
-    else cfn_fit(&CFN_11,5,236,"Black Mute   ALGO View   SAVE Settings",209,FL_INK2);
-    kint(value,m.view+1,"/2");
-    cfn_text(&CFN_11,220,236,value,C_ACC(0));
+    fb_hline(8,226,224,CGU_METAL+4);
+    cfn_fit(&CFN_11,10,237,m.message[0]?m.message:"Black mute   ALGO View   SAVE Settings",220,
+        m.message[0]?FL_INK:FL_INK2);
     cf_present();
 }

@@ -1,6 +1,6 @@
-# CORD licensing
+# RAKT licensing
 
-CORD is a fork of **CoralFlower** (<https://github.com/FicusFicusov/CoralFlower>) and is free software under the GNU General Public License, version 3 only (`GPL-3.0-only`; the full text is
+RAKT is a fork of **CORD** (<https://github.com/chasedeanda/cord-fm1>), which is based on **CoralFlower** (<https://github.com/FicusFicusov/CoralFlower>) and is free software under the GNU General Public License, version 3 only (`GPL-3.0-only`; the full text is
 in `LICENSE`). That covers the firmware, the tools, the web pages and the tests in this tree. A few bundled or ported
 parts keep their own licences. They are listed below and in `docs/LICENSING-choralroot.md`, and their licence texts
 are in `LICENSES/`.

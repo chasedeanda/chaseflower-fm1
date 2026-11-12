@@ -206,9 +206,9 @@ CF_EARLY = "CoralFlower (an early build without backup support)"
 # an early CoralFlower build answers no INFO (no backup protocol): the install skips the backup and says why. The update
 # writes only the app area [0x4000, 0x93000) and the staging area at 0xE0000; CoralFlower's saved data lives elsewhere
 # (storage.c: settings 0x9D000, its loop 0xB6000, the user sounds 0xDC000..), so the update does not erase it
-CF_NO_BACKUP = ("This compatible CORD build cannot make a backup, so the backup is skipped. The update does not erase your "
+CF_NO_BACKUP = ("This compatible RAKT build cannot make a backup, so the backup is skipped. The update does not erase your "
                 "sounds and settings: it writes only the firmware area of the flash.")
-REFUSE_REASON = "An install over it has left an FM-1 that no longer starts, and the data it leaves in the flash is not known to be safe for CORD."
+REFUSE_REASON = "An install over it has left an FM-1 that no longer starts, and the data it leaves in the flash is not known to be safe for RAKT."
 
 
 def classify_firmware(identity, info):
@@ -230,7 +230,7 @@ def classify_firmware(identity, info):
         return "refuse", "unknown", f"an unknown firmware ({identity})"
     if m[3] == "930" and not v:                       # CoralFlower's own identity, no INFO: an early CoralFlower build
         return "allow", "coralflower", CF_EARLY       # (any other 9xx without INFO stays refused below)
-    if re.match(r"(?:coralflower|cord)\b", v, re.I):           # an update of CoralFlower
+    if re.match(r"(?:coralflower|cord|rakt)\b", v, re.I):           # an update of CoralFlower
         return "allow", "coralflower", v
     if re.match(r"choralroot\b", v, re.I):
         return "allow", "choralroot", v
@@ -251,7 +251,7 @@ def classify_firmware(identity, info):
 
 def refusal_text(name):
     return (f"Installing over {name} is not supported: {REFUSE_REASON} "
-            f"Return to the official V15 firmware with the installer you used for {name} first, then install CORD. "
+            f"Return to the official V15 firmware with the installer you used for {name} first, then install RAKT. "
             f'If an FM-1 is already dark (black screen, a "WL82 UBOOT1.00" USB disk): {RECOVERY_URL}')
 
 
@@ -1059,29 +1059,29 @@ def object_name(i):
     if 40 <= i <= 49:
         return f"loop slot {i - 39}"
     if i == 30:
-        return "CORD settings"
+        return "RAKT settings"
     if i in CF_SONG_IDS:
-        return f"CORD saved Song {i - 80}"
+        return f"RAKT saved Song {i - 80}"
     if i == CF_DRAFT_ID:
-        return "CORD working draft"
+        return "RAKT working draft"
     if i == CF_REC_PREF_ID:
-        return "CORD recording preferences"
+        return "RAKT recording preferences"
     if i in CF_TAKE_IDS:
-        return "CORD recording " + "ABC"[i - 71]
+        return "RAKT recording " + "ABC"[i - 71]
     if i == CF_PREFS_ID:
-        return "CORD favorites and appearance"
+        return "RAKT favorites and appearance"
     if i == CF_FX_ID:
-        return "CORD FX presets"
+        return "RAKT FX presets"
     if i == CF_HARM_ID:
-        return "CORD Auto harmony"
+        return "RAKT Auto harmony"
     if i == 31:
-        return "CORD loop"
+        return "RAKT loop"
     if i in CF_SEQ_IDS:
-        return "CORD patterns and song"
+        return "RAKT patterns and song"
     if i in CF_EDIT_IDS:
-        return "CORD unsaved sound edits"
+        return "RAKT unsaved sound edits"
     if i == CF_PSND_ID or i in CF_TWK_IDS:
-        return "CORD pattern sounds"
+        return "RAKT pattern sounds"
     return f"object {i}"
 
 
@@ -1092,7 +1092,7 @@ def object_names(ids):                                 # each name once (the seq
 def family(firmware):
     """the backup family (web/fm1backup.js backupFamily): CoralFlower answers ChoralRoot's protocol and objects"""
     f = (firmware or "").lower()
-    if re.match(r"(?:coralflower|cord)\b", f):
+    if re.match(r"(?:coralflower|cord|rakt)\b", f):
         return "coralflower"
     return "choralroot" if f.startswith("choralroot") else "felucca" if f.startswith("felucca") else "other"
 
@@ -1327,7 +1327,12 @@ def restore(bl, f, progress=lambda done, total: None, busy=lambda: None):
 
 def backup_name(firmware):
     fam = family(firmware)
-    return f"{'cord' if fam == 'coralflower' else 'fm1' if fam == 'other' else fam}-backup-{time.strftime('%Y%m%d')}.json"
+    prefix = fam
+    if fam == "coralflower":
+        prefix = "rakt" if re.match(r"rakt\b", firmware, re.I) else "cord"
+    elif fam == "other":
+        prefix = "fm1"
+    return f"{prefix}-backup-{time.strftime('%Y%m%d')}.json"
 
 
 def open_backup(up):
@@ -2515,8 +2520,8 @@ def run(a, backend, out, ask):
         print(f"{dev.id.text}  [{mode}]  port: {dev.name}" + (f"  version: {info[0]}" if info else ""), file=out)
         if not dev.id.loader:
             verdict, _kind, name = classify_firmware(dev.id.text, info and info[0])
-            print(f"CORD can be installed over {name}" if verdict == "allow" else
-                  f"CORD is not installed over {name} (ChoralRoot's docs/INSTALL-COMPAT.md)", file=out)
+            print(f"RAKT can be installed over {name}" if verdict == "allow" else
+                  f"RAKT is not installed over {name} (ChoralRoot's docs/INSTALL-COMPAT.md)", file=out)
         return 0
     if not a.package:                             # backup and / or restore only
         if a.backup:

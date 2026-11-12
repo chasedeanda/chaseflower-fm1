@@ -152,10 +152,15 @@ static unsigned cgs_velocity(unsigned part,unsigned velocity)
     return (unsigned)clamp(velocity,1,127);
 }
 
+static unsigned cgs_drum_group(unsigned lane)
+{
+    if(lane<2)return lane;
+    return lane==3 || lane==4?2u:3u;
+}
+
 static void cgs_drums(unsigned hit, unsigned step,unsigned steps,unsigned accent)
 {
     static const uint8_t lanes[]={0,1,3,4,8,5,6,7};
-    static const uint8_t groups[]={0,1,2,2,3,3,3,3};
     static const uint8_t level[]={105,86,53,47,39,69,63,59};
     if(cf_moment.dropped)return;
     unsigned punch=cgs.fill_held, half=steps/2u;
@@ -163,7 +168,7 @@ static void cgs_drums(unsigned hit, unsigned step,unsigned steps,unsigned accent
     int sparse=CGS_PROFILES[cgs.playing_genre].sparse_drums && !punch && !cf_moment.fill;
     for(unsigned i=0;i<sizeof lanes;i++){
         unsigned l=lanes[i];
-        if((cgs.drum_mutes>>groups[i])&1u)continue;
+        if((cgs.drum_mutes>>cgs_drum_group(l))&1u)continue;
         if(punch ? !cf_perf_fill_hit(style,l,step%half,half) : !cf_perf_hit(l,step,steps,(hit>>i)&1u))continue;
         unsigned original=level[i]+accent+(!(step&3u)?7u:0u);
         unsigned v=punch?cf_perf_fill_level(style,l,step%half+half,steps,original):cf_perf_level(l,step,steps,original);

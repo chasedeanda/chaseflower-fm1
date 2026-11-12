@@ -65,10 +65,6 @@ def generate(out):
         idle_alpha = masks[0].load()
         sticker = [pixels[x, y] + 1 if idle_alpha[x, y] >= 20 else 0 for y in sample for x in sample]
         lines.append(array("uint8_t", prefix + "_STICKER", sticker))
-        if name == "devil":
-            lines += [array("uint16_t", "CFM_BOOT_ROWS", offsets[:SIZE]),
-                      array("uint8_t", "CFM_BOOT_DATA", data[:offsets[SIZE]]),
-                      "static const cfm_art_t CFM_BOOT_ART = {CFM_DEVIL_RGB, CFM_BOOT_DATA, CFM_BOOT_ROWS};"]
         total += len(data) + 2 * len(offsets) + 4 * len(rgb)
         print(f"Mascot {name}: {len(data)} row-span bytes, {len(offsets) * 2} row-offset bytes, {COLORS} colours")
     lines.append("static const cfm_art_t CFM_ART[] = {\n"

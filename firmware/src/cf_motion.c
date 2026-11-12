@@ -67,7 +67,10 @@ static void cfn_motion_frame(void)
     cfx_visual_tick(dt,cfn_motion.energy,cfn_motion.active);
 }
 static int cfn_page_dx(void)
-{ return cf_tween_offset(cfn_motion.page_ms,170,8)*cfn_motion.direction; }
+{
+    if(CF_STUDIO && !CF_SCENES)return cf_rack_arrival(cfn_motion.page_ms,8*cfn_motion.direction);
+    return cf_tween_offset(cfn_motion.page_ms,170,8)*cfn_motion.direction;
+}
 static unsigned cfn_focus(unsigned key)
 {
     if(cfn_motion.focus_key!=key){cfn_motion.focus_key=key;cfn_motion.focus_ms=cf_motion?(cu.now?cu.now:1):0;}

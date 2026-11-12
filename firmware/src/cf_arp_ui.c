@@ -94,15 +94,18 @@ static void cfarp_draw(void)
 {
     cfarp_model_t m;cfarp_model(&m);
     if(cfarp_valid && !fb_full && !memcmp(&m,&cfarp_last,sizeof m))return;
-    cfarp_last=m;cfarp_valid=1;cfarp_draws++;fb_unclip();fb_fill(FL_BG);
-    cfn_text(&CFN_12,10,18,cge_selected()?(m.page==2?"ARP / Live keys 3/3":m.page?"ARP / Timing 2/3":"ARP / Play It 1/3"):m.page?"ARP / Timing 2/2":"ARP / Pattern 1/2",FL_INK2);
+    cfarp_last=m;cfarp_valid=1;cfarp_draws++;
+    const char *title=cge_selected()?(m.page==2?"ARP / Live keys 3/3":m.page?"ARP / Timing 2/3":"ARP / Play It 1/3"):
+        m.page?"ARP / Timing 2/2":"ARP / Pattern 1/2";
     char tempo[16];kint(tempo,m.bpm,m.external?" EXT":" BPM");
-    cfn_text(&CFN_12,230-cfn_width(&CFN_12,tempo),18,tempo,C_ACC(0));
-    cfn_fit(&CFN_32,10,50,m.chord,144,FL_INK);
-    cfn_fit(&CFN_16,176,50,m.now,54,FL_INK);
-    cfn_text(&CFN_12,10,66,m.degree,C_ACC(0));
-    cfn_fit(&CFN_12,10+cfn_width(&CFN_12,m.degree)+10,66,m.context,205-cfn_width(&CFN_12,m.degree),FL_INK2);
-    fb_hline(10,72,220,FL_BG3);
+    cfn_page_header(title,tempo,C_ACC(0));
+    const int rack=CF_STUDIO && !CF_SCENES;
+    cfn_fit(&CFN_32,10,rack?57:50,m.chord,144,FL_INK);
+    cfn_fit(&CFN_16,176,rack?57:50,m.now,54,FL_INK);
+    int degree_width=cfn_width(&CFN_12,m.degree);
+    cfn_text(&CFN_12,10,rack?71:66,m.degree,C_ACC(0));
+    cfn_fit(&CFN_12,20+degree_width,rack?71:66,m.context,205-degree_width,FL_INK2);
+    fb_hline(10,rack?76:72,220,rack?CGU_METAL+4:FL_BG3);
     cfn_text(&CFN_16,10,88,m.mode,FL_INK);
     cfn_text(&CFN_12,230-cfn_width(&CFN_12,m.position),88,m.position,FL_INK2);
     /* Native roll: 192px time axis, 80px pitch axis, four legible pitch labels. */

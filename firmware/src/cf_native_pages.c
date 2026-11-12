@@ -184,7 +184,7 @@ static void cfn_page_model(cfn_page_t *m)
     }
     m->focus_weight=cfn_focus(((unsigned)cu.scr<<16)|m->focus);
     m->cursor_width=cfn_cursor(((unsigned)cu.scr<<24)|((unsigned)m->playrow<<8)|m->playcol);
-    if(cu.upd_left){m->kind=N_RESULT;NP(title,"Firmware update");NP(status,"");NP(section,"Keep holding");kint(m->detail,cu.upd_left," seconds");NP(hint,"Release to cancel");}
+    if(cu.upd_left){m->kind=N_RESULT;m->npages=m->progress=0;NP(title,"Firmware update");NP(status,"");NP(section,"Keep holding");kint(m->detail,cu.upd_left," seconds");NP(hint,"Release to cancel");}
 }
 /* One shared response field: tails, repeats and modulation occupy the same
  * space. Post-MASTER energy controls its breath; this is not an oscilloscope. */
@@ -251,23 +251,27 @@ static void cfn_page_draw(void)
 {
     cfn_page_t m;cfn_page_model(&m);
     if(cfn_page_valid && !fb_full && !memcmp(&m,&cfn_page_last,sizeof m))return;
-    cfn_page_last=m;cfn_page_valid=1;cfn_page_draws++;fb_unclip();fb_fill(FL_BG);
-    cfn_fit(&CFN_16,10,20,m.title,130,FL_INK);cfn_fit(&CFN_12,142,20,m.status,88,m.rec?FL_C(FL_R_ROSE,0):C_ACC(0));fb_hline(10,28,220,FL_BG3);
-    int x=m.dx;fb_clip(0,31,240,184);cfn_fit(&CFN_16,10+x,49,m.section,m.npages>1?180:220,FL_INK);
+    cfn_page_last=m;cfn_page_valid=1;cfn_page_draws++;
+    cfn_page_header(m.title,m.status,m.rec?FL_C(FL_R_ROSE,0):C_ACC(0));
+    const int rack=CF_STUDIO && !CF_SCENES;
+    uint8_t panel=rack?CGU_METAL+1:FL_BG1, rule=rack?CGU_METAL+3:FL_BG3;
+    int x=m.dx, right=230+(rack?0:x);
+    fb_clip(rack?8:0,31,rack?232:240,184);
+    cfn_fit(&CFN_16,10+x,49,m.section,m.npages>1?180:220,FL_INK);
     if(m.kind==N_FX) {
         cfn_fit(&CFN_32,10+x,83,m.row[0],220,FL_INK);
         cfn_fit(&CFN_12,10+x,103,m.row[1],220,FL_INK2);
-        cfn_text(&CFN_12,230+x-cfn_width(&CFN_12,m.right[0]),49,m.right[0],FL_INK2);
+        cfn_text(&CFN_12,right-cfn_width(&CFN_12,m.right[0]),49,m.right[0],FL_INK2);
         cfn_fx_plot(&m,x);
     }
-    if(m.npages>1){char page[16];kint(page,m.page+1,"/");kint(page+str_len(page),m.npages,0);cfn_text(&CFN_12,230+x-cfn_width(&CFN_12,page),49,page,FL_INK2);}
+    if(m.npages>1){char page[16];kint(page,m.page+1,"/");kint(page+str_len(page),m.npages,0);cfn_text(&CFN_12,right-cfn_width(&CFN_12,page),49,page,FL_INK2);}
     if(m.kind==N_PARAMS)for(unsigned k=0;k<4;k++) {
         int y=76+29*k;cfn_fit(&CFN_12,10+x,y,m.label[k],103,FL_INK2);
-        cfn_fit(&CFN_16,116+x,y,m.value[k],114,m.disabled[k]?FL_INK2:FL_INK);fb_hline(10+x,y+7,220,FL_BG1);
+        cfn_fit(&CFN_16,116+x,y,m.value[k],114,m.disabled[k]?FL_INK2:FL_INK);fb_hline(10+x,y+7,220,panel);
     }
     if(m.kind==N_LINES)for(unsigned r=0;r<m.rows;r++)cfn_fit(m.rows>4?&CFN_12:&CFN_16,10+x,69+r*(m.rows>4?15:28),m.row[r],220,r?FL_INK2:FL_INK);
     if(m.kind==N_LIST)for(unsigned r=0;r<m.rows;r++) {
-        int y=65+r*27;if(r==m.focus){fb_rect(10+x,y-1,220,25,FL_BG1);fb_rect(10+x,y-1,2+m.focus_weight,25,C_ACC(0));}
+        int y=65+r*27;if(r==m.focus){fb_rect(10+x,y-1,220,25,panel);fb_rect(10+x,y-1,2+m.focus_weight,25,C_ACC(0));}
         cfn_text(&CFN_16,20+x,y+17,m.row[r],FL_INK);cfn_fit(&CFN_12,116+x,y+17,m.right[r],107,FL_INK2);
     }
     if(m.kind==N_ENV) {
@@ -281,7 +285,7 @@ static void cfn_page_draw(void)
         int left=13+m.grid_label_width,width=230-left;
         for(unsigned c=0;c<columns;c++) {
             int gx=left+x+c*width/columns,w=width/columns-2;
-            fb_rect(gx,y,w,m.rows>4?8:12,(m.bits[r]>>c)&1?C_ACC(0):(m.ends[r]>>c)&1?FL_BG3:FL_BG1);
+            fb_rect(gx,y,w,m.rows>4?8:12,(m.bits[r]>>c)&1?C_ACC(0):(m.ends[r]>>c)&1?rule:panel);
             if(r==m.focus && c==m.cursor)fb_frame(gx-1,y-2,w+2,16,FL_INK);
             if((r==m.playrow || m.playrow==254) && c==m.playcol)fb_hline(gx,y+(m.rows>4?10:18),w*m.cursor_width/100,C_ACC(0));
         }

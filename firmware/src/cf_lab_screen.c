@@ -58,9 +58,9 @@ static void cfl_draw(void)
 {
     cfl_model_t m;cfl_model(&m);cf_stage_valid=cf_acc_valid=cfd_valid=0;
     if(cfl_valid && !fb_full && !memcmp(&m,&cfl_last,sizeof m))return;
-    cfl_valid=1;cfl_last=m;cfl_draws++;fb_unclip();fb_fill(FL_BG);
-    cfn_fit(&CFN_16,10,20,m.title,170,FL_INK);
-    char tab[12];kint(tab,m.tab+1,"/4");cfn_text(&CFN_12,230-cfn_width(&CFN_12,tab),20,tab,C_ACC(0));fb_hline(10,28,220,FL_BG3);
+    cfl_valid=1;cfl_last=m;cfl_draws++;
+    char tab[12];kint(tab,m.tab+1,"/4");
+    cfn_page_header(m.title,tab,C_ACC(0));
     cfn_fit(&CFN_12,10,45,m.target,220,C_ACC(0));
     cfn_fit(&CFN_12,10,62,m.key,220,FL_INK2);
     if(m.tab==CFL_NEXT) {
@@ -103,6 +103,6 @@ static void cfl_draw(void)
     }
     const uint8_t emphasis[4]={0};
     cfn_controls(m.label,m.value,m.disabled,emphasis);
-    if(m.message[0]){fb_rect(8,85,224,63,FL_BG);fb_frame(8,85,224,63,FL_BG3);cfn_fit(&CFN_12,16,113,m.message,208,FL_INK);}
+    if(m.message[0]){cfn_dialog(8,85,224,63,FL_BG3);cfn_fit(&CFN_12,16,113,m.message,208,FL_INK);}
     cf_present();
 }

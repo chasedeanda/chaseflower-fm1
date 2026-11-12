@@ -87,7 +87,7 @@ export function classifyFirmware(identity, info) {
   // CoralFlower's own identity without an INFO answer: an early CoralFlower build, before its backup protocol (any
   // other 9xx without INFO stays refused below)
   if (m[3] === "930" && !v) return { verdict: "allow", kind: "coralflower", name: CF_EARLY };
-  if (/^(?:coralflower|cord)\b/i.test(v)) return { verdict: "allow", kind: "coralflower", name: v };   // an update of CoralFlower
+  if (/^(?:coralflower|cord|rakt)\b/i.test(v)) return { verdict: "allow", kind: "coralflower", name: v };   // an update of CoralFlower
   if (/^choralroot\b/i.test(v)) return { verdict: "allow", kind: "choralroot", name: v };
   if (/^melodee\b/i.test(v)) return { verdict: "allow", kind: "melodee", name: `Melodee (${v.slice(8)})` };
   if (/sloop/i.test(v)) return { verdict: "refuse", kind: "sloop", name: "Sloop" };
@@ -100,10 +100,10 @@ export function classifyFirmware(identity, info) {
 }
 export function refusalText(name) {
   return `Installing over ${name} is not supported: ${REFUSE_REASON} ` +
-    `Return to the official V15 firmware with the installer you used for ${name} first, then install CORD. ` +
+    `Return to the official V15 firmware with the installer you used for ${name} first, then install RAKT. ` +
     `If an FM-1 is already dark (black screen, a "WL82 UBOOT1.00" USB disk): ${RECOVERY_URL}`;
 }
-export const REFUSE_REASON = "An install over it has left an FM-1 that no longer starts, and the data it leaves in the flash is not known to be safe for CORD.";
+export const REFUSE_REASON = "An install over it has left an FM-1 that no longer starts, and the data it leaves in the flash is not known to be safe for RAKT.";
 
 // one MIDI in/out pair with a SysEx queue
 class Link {

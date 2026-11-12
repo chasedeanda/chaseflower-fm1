@@ -1,5 +1,5 @@
 #if !CF_SCENES
-static void cf_cord_begin(void);
+static void cf_rakt_begin(void);
 #endif
 /* SPDX-License-Identifier: GPL-3.0-only
  * CoralFlower: the UI - the keys, buttons and knobs, the screens, the key lights, the plant's food.
@@ -529,7 +529,7 @@ static void ui_knob_info(int k, cf_knob_t *o)
             }
             break;
         case 0: /* Display */
-            if (k == 0) { kfmt(o->name, 12, "CHARACTER"); kfmt(o->val, 14, CF_SKIN_NAME[cf_skin%CF_SKIN_N]); }
+            if (k == 0) { kfmt(o->name, 12, CF_STUDIO && !CF_SCENES?"ACCENT":"CHARACTER"); kfmt(o->val, 14, CF_SKIN_NAME[cf_skin%CF_SKIN_N]); }
             if (k == 3) { kfmt(o->name, 12, "MOTION"); kfmt(o->val, 14, cf_motion ? "On" : "Off"); }
             if (k == 1) { kfmt(o->name, 12, "HOME VIEW"); kfmt(o->val, 14, HOME_VIEW_NAME[home_view()]); }
             if (k == 2) { kfmt(o->name, 12, "BOOT SND"); kfmt(o->val, 14, cs.boot_sound ? "On" : "Off"); }
@@ -1141,8 +1141,8 @@ static void ui_open(uint32_t scr)
         cf_home_bank_ms=0;
     }
     if(cgu_glow.active)cgu_glow_open(0);
-    if(cu.scr==SCR_HOME && was==SCR_FX && cgu.fx_return)cgu_sound_page(CGU_PRESETS);
-    if(cu.scr!=SCR_FX)cgu.fx_return=0;
+    if(cu.scr==SCR_HOME && was==SCR_FX && cgu.return_screen==SCR_FX)cgu_sound_page(CGU_PRESETS);
+    if(cu.scr!=cgu.return_screen)cgu.return_screen=0;
     if(cu.scr==SCR_ACC && was!=SCR_ACC)cf_acc_page_ms=0;
     if (cu.scr == SCR_SEQ && was != SCR_SEQ)
         dm_seq_to = 0;                           /* (the carousel starts on the SEQUENCER: SEQ twice opens it, as before) */
@@ -1249,7 +1249,10 @@ static void ui_button(uint32_t b)
         if(b==B_EDIT){cgs.muted^=(uint8_t)bit;return;}
         if(b==B_SAVE){
             cgu_glow_open(0);
-            if(cu.scr!=SCR_GLO){cvr_context_from_screen();ui_open(SCR_GLO);}
+            if(cu.scr!=SCR_GLO){
+                if(cgs_home())cgu.return_screen=SCR_GLO;
+                cvr_context_from_screen();ui_open(SCR_GLO);
+            }
             return;
         }
         if(b==B_PLAY && !sqp.on && !sqk.on && cf_sn.sq_rec==255 && (!cpa.on || cgs_active())){
@@ -1291,7 +1294,7 @@ static void ui_button(uint32_t b)
                 cfx_sync();fxpu.mode=FXP_EDIT;cfxu.view=CFX_INDIVIDUAL;
                 cu.fx_pos=0;
                 for(unsigned i=0;i<CFX_N;i++)if(cs.fx.order[i]==CFX_FILTER)cu.fx_pos=(uint8_t)i;
-                cgu.fx_return=1;ui_open(SCR_FX);return;
+                cgu.return_screen=SCR_FX;ui_open(SCR_FX);return;
             }
             if(b==B_FX || (b==B_ENV && cgs.zoom)){
                 unsigned page=b==B_ENV?(cgu.sound_page==CGU_ENVELOPE?CGU_TONE:CGU_ENVELOPE):
@@ -1301,10 +1304,10 @@ static void ui_button(uint32_t b)
                 return;
             }
             if(b==B_SAVE && cgs.zoom && cgu.tab==CGU_SOUND && !cgu.rack_controls && cgu.sound_page==CGU_PRESETS){
-                cgu.fx_return=1;fxp_manage_open();ui_open(SCR_FX);return;
+                cgu.return_screen=SCR_FX;fxp_manage_open();ui_open(SCR_FX);return;
             }
             if(b==B_LFO && cgs.zoom && !cgu.band_panel && !cgu.rack_controls && cgs.focus!=CGS_DRUMS){
-                cu.edit_part=cgs.focus;ui_open(SCR_EDIT);return;
+                cu.edit_part=cgs.focus;cgu.return_screen=SCR_EDIT;ui_open(SCR_EDIT);return;
             }
         }
         if(b==B_SCL){
@@ -1317,8 +1320,7 @@ static void ui_button(uint32_t b)
             return;
         }
         if(b==B_HOME){
-            if(cgs.zoom && (cgu_progression_panel() || cgu.rack_controls ||
-               (cgu.tab==CGU_SOUND && cgu.sound_page==CGU_PRESETS)))cgu_set_zoom(0);
+            if(cgs.zoom)cgu_set_zoom(0);
             else cgu_home();
             return;
         }
@@ -1451,12 +1453,12 @@ static void ui_button(uint32_t b)
     switch (b) {
     case B_HOME:
         if(CF_STUDIO && !CF_SCENES){
-            int from_fx=cgu.fx_return;
+            int from_rack=cgu.return_screen && cgu.return_screen==cu.scr;
             ui_open(SCR_HOME);
             home_boot_main=1;
             cf_home_bank=CF_HB_ENGINE;
             cf_scene_set(CF_SCENE_PROGRESSIONS);
-            if(!from_fx)cgu_home();
+            if(!from_rack)cgu_home();
             cf_keys_changed();
             break;
         }
@@ -2578,7 +2580,7 @@ static void cf_ui_init(void)
 #else
     if(CF_STUDIO && !cr_safe)cgs_prepare_start();
     /* Start the visible intro after sound/store loading, not before hardware initialization. */
-    cf_cord_begin();
+    cf_rakt_begin();
     cf_boot_pending = cs.boot_sound && !cr_safe;
     cf_boot_ready_ms = fm1_ms; /* let startup config/overload requests settle */
 #endif

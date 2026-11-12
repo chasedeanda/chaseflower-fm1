@@ -52,8 +52,8 @@ static void csl_draw(void)
 {
     csl_model_t m;csl_model(&m);cf_stage_valid=cf_acc_valid=cfd_valid=0;
     if(csl_screen_valid && !fb_full && !memcmp(&m,&csl_last,sizeof m))return;
-    csl_last=m;csl_screen_valid=1;csl_draws++;fb_unclip();fb_fill(FL_BG);
-    cfn_text(&CFN_16,10,20,m.title,FL_INK);cfn_fit(&CFN_12,145,20,m.status,85,C_ACC(0));fb_hline(10,29,220,FL_BG3);
+    csl_last=m;csl_screen_valid=1;csl_draws++;
+    cfn_page_header(m.title,m.status,C_ACC(0));
     for(unsigned i=0;i<4 && m.first+i<m.n;i++) {
         int y=34+i*37;if(m.row==m.first+i)fb_rect(7,y,226,36,FL_BG2);
         cfn_fit(&CFN_16,12,y+16,m.name[i],216,FL_INK);cfn_fit(&CFN_11,12,y+31,m.meta[i],216,C_ACC(0));
@@ -61,7 +61,7 @@ static void csl_draw(void)
     cfn_hint(m.hint,FL_INK2);
     const uint8_t emphasis[4]={0};cfn_controls(m.label,m.value,m.disabled,emphasis);
     if(m.mode!=CSL_LIST || m.message[0]) {
-        fb_rect(8,70,224,100,FL_BG);fb_frame(8,70,224,100,FL_BG3);
+        cfn_dialog(8,70,224,100,FL_BG3);
         cfn_fit(&CFN_12,16,93,m.message[0]?"Songs":(m.mode==CSL_CONFIRM || m.mode==CSL_MANAGE)?m.name[m.row-m.first]:m.title,208,FL_INK2);
         cfn_fit(&CFN_16,16,120,m.message[0]?m.message:m.detail,208,C_ACC(0));
         if(m.mode==CSL_RENAME){char pos[20];kint(pos,m.cursor+1," / 24");cfn_text(&CFN_12,16,147,pos,FL_INK2);}

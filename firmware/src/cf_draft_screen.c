@@ -51,8 +51,8 @@ static void cfd_draw(void)
 {
     cfd_model_t m;cfd_model(&m);cf_stage_valid=cf_acc_valid=0;
     if(cfd_valid && !fb_full && !memcmp(&m,&cfd_last,sizeof m))return;
-    cfd_last=m;cfd_valid=1;cfd_draws++;fb_unclip();fb_fill(FL_BG);
-    cfn_fit(&CFN_16,10,20,m.title,130,FL_INK);cfn_text(&CFN_12,230-cfn_width(&CFN_12,m.status),20,m.status,m.rec?FL_C(FL_R_ROSE,0):C_ACC(0));fb_hline(10,28,220,FL_BG3);
+    cfd_last=m;cfd_valid=1;cfd_draws++;
+    cfn_page_header(m.title,m.status,m.rec?FL_C(FL_R_ROSE,0):C_ACC(0));
     cfn_fit(&CFN_12,10,45,m.name,220,FL_INK2);
     cfn_text(&CFN_12,10,65,"PLANNED",FL_INK2);cfn_text(&CFN_16,230-cfn_width(&CFN_16,m.degree),65,m.degree,C_ACC(0));
     fb_clip(0,70,240,107);cfn_fit(&CFN_32,10,101+m.chord_dy,m.chord,220,FL_INK);fb_unclip();cfn_fit(&CFN_12,10,119,m.notes,220,FL_INK2);
@@ -60,7 +60,7 @@ static void cfd_draw(void)
     fb_unclip();cfn_text(&CFN_11,10,180,m.position,FL_INK2);cfn_shift_panel(m.dx,31,182);cfn_hint(m.hint,FL_INK2);
     cfn_controls(m.label,m.value,m.disabled,m.emphasis);
     if(m.conflict || m.confirm || m.message[0]) {
-        fb_rect(8,70,224,95,FL_BG);fb_frame(8,70,224,95,FL_BG3);
+        cfn_dialog(8,70,224,95,FL_BG3);
         const char *a=m.message[0]?m.message:m.conflict?"Keep the protected draft?":"Remove this numbered slot?";
         const char *b=m.message[0]?"":m.conflict?(m.choice?"Discard draft and edit new":"Return to draft"):(m.choice?"Remove":"Cancel");
         if(m.message[0]) {
