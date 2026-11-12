@@ -229,7 +229,7 @@ enum { CGU_INK_BASE=57, CFN_HALO_0=64, CFN_HALO_1, CFN_HALO_2, CFN_HALO_3, CFM_P
     CGU_BAND_INK_BASE=CFN_AA_BASE+CFN_AA_ROLES*CFN_AA_SURFACES*2,
     CGU_PEDAL_BODY=CGU_BAND_INK_BASE+4, CGU_PEDAL_SHADES=8,
     CGU_METAL=CGU_PEDAL_BODY+4*CGU_PEDAL_SHADES,
-    CGU_GRILLE=CGU_METAL+12, CGU_MATERIAL_AA=CGU_GRILLE+8,
+    CGU_GRILLE=CGU_METAL+12, CGU_PROGRESSION_INK=CGU_GRILLE+6, CGU_MATERIAL_AA=CGU_GRILLE+8,
     CGU_AMP_FACE=CGU_MATERIAL_AA+6*4, CFN_PAL_N=256 };
 _Static_assert(CGU_AMP_FACE+8 <= CFN_PAL_N, "Studio material palette fits");
 static uint32_t cf_pal[CFN_PAL_N];
@@ -343,6 +343,7 @@ static void cf_palette_build(void)
         memcpy(cf_pal+CGU_METAL,metal,sizeof metal);
         memcpy(cf_pal+CGU_GRILLE,grille,sizeof grille);
         memcpy(cf_pal+CGU_AMP_FACE,plate,sizeof plate);
+        cf_pal[CGU_PROGRESSION_INK]=0xe9aa86;
         for(unsigned part=0;part<4;part++){
             unsigned base=CGU_PEDAL_BODY+part*CGU_PEDAL_SHADES;
             for(unsigned shade=0;shade<CGU_PEDAL_SHADES;shade++)

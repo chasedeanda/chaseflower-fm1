@@ -1396,7 +1396,7 @@ static void sq_snd_poll(void)
             cfk_full[part] = 0;
             if (s->tw)
                 cu.edited[part] = 1;
-            if(CF_STUDIO && s->pat==CGS_PATCH_STAGE){
+            if(CF_STUDIO && (s->pat==CGS_PATCH_STAGE || s->pat==CGS_PATCH_ROLL)){
                 if(part==CF_PART_LAYER)cs.snd_layer=(uint16_t)cf_snd_pos(part);
                 else cs.snd[part]=(uint16_t)cf_snd_pos(part);
             }
@@ -1441,7 +1441,7 @@ static void sq_snd_poll(void)
                 RING_PUBLISH();
                 s->ready = 1;
             }
-        } else {
+        } else if(!CF_STUDIO || (s->pat!=CGS_PATCH_STAGE && s->pat!=CGS_PATCH_ROLL)){
             s->ready = 0;
         }
     }

@@ -942,7 +942,13 @@ static void ui_select(int d)                     /* SELECT: the bass sound, or a
     if(cu.scr==SCR_LAB){cfl_select(d);return;}
     cf_nav_dir=d<0?-1:1;
     if(cu.scr==SCR_SONGS){csl_select(d);return;}
-    if(cu.scr==SCR_PEDIT){if(cfwd.have&&!cfdu.conflict&&!cfdu.confirm)cfdu.focus=wrapi(cfdu.focus+d,cfwd.song.n);return;}
+    if(cu.scr==SCR_PEDIT){
+        if(cfwd.have && !cfdu.conflict && !cfdu.confirm){
+            if(cfdu.studio)cu.page[SCR_PEDIT]=(uint8_t)wrapi(cu.page[SCR_PEDIT]+d,CFD_NTAB);
+            else cfdu.focus=(uint8_t)wrapi(cfdu.focus+d,cfwd.song.n);
+        }
+        return;
+    }
     if(cu.scr==SCR_ACC){cf_acc_select(d);return;}
     if(cpb_page()) { cf_progression_select(d); return; }
     if (cu.scr == SCR_HOME && home_view() == HV_FLOWER && cf_scene() == CF_SCENE_PROGRESSIONS) {
@@ -1019,7 +1025,7 @@ static void ui_presets(int d)                    /* PRESETS: the chord sound (a 
     if(cgs_home()){
         if(cgu.mixer || (cgu.tab==CGU_STUDIO && cgs.zoom && !cgu.band_panel && cgs.focus==CGS_DRUMS))cgu_perform_turn(d);
         else if(cgu.tab==CGU_SOUND){
-            if(cgs.zoom && cgu.sound_page==CGU_PRESETS)cfx_select(d);
+            if(cgs.zoom && !cgu.rack_controls && cgu.sound_page==CGU_PRESETS)cfx_select(d);
             else cgu_sound_step(cgs.focus,d);
         }
         else if(cgu.tab==CGU_STUDIO)cgs_genre_turn(d);
@@ -1058,7 +1064,13 @@ static void ui_algo(int d)                       /* ALGORITHM: scene, effect, or
     if(cu.scr==SCR_ARP){cu.page[SCR_ARP]=(uint8_t)wrapi(cu.page[SCR_ARP]+d,cge_selected()?3:2);return;}
     cf_nav_dir=d<0?-1:1;
     if(cu.scr==SCR_SONGS)return;
-    if(cu.scr==SCR_PEDIT){if(!cfdu.conflict&&!cfdu.confirm)cu.page[SCR_PEDIT]=wrapi(cu.page[SCR_PEDIT]+d,CFD_NTAB);return;}
+    if(cu.scr==SCR_PEDIT){
+        if(cfwd.have && !cfdu.conflict && !cfdu.confirm){
+            if(cfdu.studio)cfdu.focus=(uint8_t)wrapi(cfdu.focus+d,cfwd.song.n);
+            else cu.page[SCR_PEDIT]=(uint8_t)wrapi(cu.page[SCR_PEDIT]+d,CFD_NTAB);
+        }
+        return;
+    }
     if(cu.scr==SCR_ACC){cu.page[SCR_ACC]=(uint8_t)wrapi(cu.page[SCR_ACC]+d,CF_ACC_N);cf_acc_focus=0;cf_acc_page_ms=cf_motion?(cu.now?cu.now:1u):0;return;}
     if (cu.scr == SCR_FX) {
         if (fxpu.mode != FXP_MANAGE) cfx_view(d);
@@ -1108,6 +1120,7 @@ static void ui_open(uint32_t scr)
     if (sq_screen(was) && !sq_screen(scr) && scr != SCR_SEQ)
         ui_ctx_from_track(squ.trk);
     cu.scr = (uint8_t)(scr == was && scr != SCR_HOME ? SCR_HOME : scr);
+    if(cu.scr!=SCR_PEDIT && cu.scr!=SCR_SONGS)cfdu.studio=0;
     if(cu.scr!=SCR_HOME){cge_pins_open=0;cge_preview=255;}
     if (cu.scr == SCR_HOME && was != SCR_HOME) {
         int from_jam=cf_home_bank==CF_HB_ENGINE || cf_home_bank==CF_HB_FLOW;
@@ -1119,6 +1132,7 @@ static void ui_open(uint32_t scr)
         cf_home_bank_ms=0;
     }
     if(cu.scr!=SCR_HOME && cgu.mixer)cgu_mixer_open(0);
+    if(cu.scr==SCR_HOME && was==SCR_FX && cgu.fx_return)cgu_sound_page(CGU_PRESETS);
     if(cu.scr!=SCR_FX)cgu.fx_return=0;
     if(cu.scr==SCR_ACC && was!=SCR_ACC)cf_acc_page_ms=0;
     if (cu.scr == SCR_SEQ && was != SCR_SEQ)
@@ -1237,7 +1251,8 @@ static void ui_button(uint32_t b)
         if(!cgu.mixer && b==B_SEQ && cgu.tab==CGU_STUDIO){
             cgu_studio_page_turn(1);return;
         }
-        if(b==B_SAVE && cgu.tab==CGU_RECORD && !cgs.zoom){
+        if(b==B_SAVE && cgu.tab==CGU_RECORD){
+            if(!cgu.rack_controls)return;
             if(sqk.on || cf_sn.sq_on || cf_sn.sq_rec!=255)cf_message("Stop the take before clearing");
             else if(sq_has(cgu.take_slot) || (sq_unavailable&(1u<<cgu.take_slot)))cgu.clear_down=cu.now?cu.now:1u;
             return;
@@ -1246,12 +1261,12 @@ static void ui_button(uint32_t b)
             cgu_open_arp();return;
         }
         if(!cgu.mixer && b==B_SEQ && cgu.tab==CGU_SOUND){
-            if(cgs.zoom)cgu_sound_page_turn(1);
+            if(cgs.zoom && !cgu.rack_controls)cgu_sound_page_turn(1);
             else cgu.all_sounds^=1u;
             return;
         }
         if(!cgu.mixer && (cgu.tab==CGU_STUDIO || cgu.tab==CGU_SOUND)){
-            if(b==B_FX && cgs.zoom && cgu.tab==CGU_SOUND && cgu.sound_page==CGU_PRESETS){
+            if((b==B_FX || b==B_EDIT) && cgs.zoom && cgu.tab==CGU_SOUND && !cgu.rack_controls && cgu.sound_page==CGU_PRESETS){
                 cfx_sync();fxpu.mode=FXP_EDIT;cfxu.view=CFX_INDIVIDUAL;
                 cu.fx_pos=0;
                 for(unsigned i=0;i<CFX_N;i++)if(cs.fx.order[i]==CFX_FILTER)cu.fx_pos=(uint8_t)i;
@@ -1259,23 +1274,33 @@ static void ui_button(uint32_t b)
             }
             if(b==B_FX || (b==B_ENV && cgs.zoom)){
                 unsigned page=b==B_ENV?(cgu.sound_page==CGU_ENVELOPE?CGU_TONE:CGU_ENVELOPE):
-                    (!cgs.zoom || cgu.sound_page==CGU_SENDS?CGU_PRESETS:CGU_SENDS);
-                cgu.band_panel=0;cgu.tab=CGU_SOUND;cgu_set_zoom(1);cgu_sound_page(page);
+                    (!cgs.zoom || cgu.rack_controls || cgu.sound_page==CGU_SENDS?CGU_PRESETS:CGU_SENDS);
+                if(cgu.tab!=CGU_SOUND)cgu_tab_turn(CGU_SOUND-cgu.tab);
+                cgu.band_panel=cgu.rack_controls=0;cgu_set_zoom(1);cgu_sound_page(page);
                 return;
             }
-            if(b==B_SAVE && cgs.zoom && cgu.tab==CGU_SOUND && cgu.sound_page==CGU_PRESETS){
+            if(b==B_SAVE && cgs.zoom && cgu.tab==CGU_SOUND && !cgu.rack_controls && cgu.sound_page==CGU_PRESETS){
                 cgu.fx_return=1;fxp_manage_open();ui_open(SCR_FX);return;
             }
-            if(b==B_LFO && cgs.zoom && !cgu.band_panel && cgs.focus!=CGS_DRUMS){
+            if(b==B_LFO && cgs.zoom && !cgu.band_panel && !cgu.rack_controls && cgs.focus!=CGS_DRUMS){
                 cu.edit_part=cgs.focus;ui_open(SCR_EDIT);return;
             }
         }
         if(b==B_SCL){
-            if(cgu.tab==CGU_SOUND && cgs.zoom && cgu.sound_page==CGU_PRESETS)cfx_recall();
+#if CHASE_LIBRARY && FELUCCA_VA
+            if(cgu.tab==CGU_SOUND && cgs.zoom && cgu.rack_controls && !cgu.all_sounds){cgu_apply_palette();return;}
+#endif
+            if(cgu.tab==CGU_SOUND && cgs.zoom && !cgu.rack_controls && cgu.sound_page==CGU_PRESETS)cfx_recall();
+            else if(cgu_progression_panel())(void)cgs_select_progression(cgu.progression_pick,0);
             else cgu_set_zoom(!cgs.zoom);
             return;
         }
-        if(b==B_HOME){cgu_home();return;}
+        if(b==B_HOME){
+            if(!cgu.mixer && cgs.zoom && (cgu.rack_controls ||
+               (cgu.tab==CGU_SOUND && cgu.sound_page==CGU_PRESETS)))cgu_set_zoom(0);
+            else cgu_home();
+            return;
+        }
         if(b==B_EDIT){cgu_edit();return;}
         if(b==B_REC && cgu.tab!=CGU_RECORD)cgu_tab_turn(CGU_RECORD-cgu.tab);
     }
@@ -1298,6 +1323,13 @@ static void ui_button(uint32_t b)
         if(cu.scr==SCR_PEDIT){ui_open(SCR_HOME);home_boot_main=1;}else cfd_open();return;
     }
     if(cu.scr==SCR_PEDIT && b==B_SCL){cfd_execute();return;}
+    if(cu.scr==SCR_PEDIT && cfdu.studio && b==B_PLAY){
+        if(!cfdu.confirm && (!cpa_commanded || cpa_running()) && cgs_select_progression(1,!cpa_running())){
+            cgu.progression_pick=1;
+            ui_open(SCR_HOME);
+        }
+        return;
+    }
     if(b==B_SAVE && cvr_page_active()){cvr_save();return;}
     if(b==B_SAVE && (cu.scr==SCR_PEDIT || cu.scr==SCR_ACC || cpb_home())){csl_open();return;}
     if(cu.scr==SCR_SONGS) {
@@ -1398,11 +1430,12 @@ static void ui_button(uint32_t b)
     switch (b) {
     case B_HOME:
         if(CF_STUDIO && !CF_SCENES){
+            int from_fx=cgu.fx_return;
             ui_open(SCR_HOME);
             home_boot_main=1;
             cf_home_bank=CF_HB_ENGINE;
             cf_scene_set(CF_SCENE_PROGRESSIONS);
-            cgu_home();
+            if(!from_fx)cgu_home();
             cf_keys_changed();
             break;
         }

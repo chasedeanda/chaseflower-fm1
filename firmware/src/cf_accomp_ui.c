@@ -21,7 +21,8 @@ static int cfd_prepare(cpa_plan_t *,cf_chord_cfg_t,unsigned,unsigned,unsigned,un
 static int cgs_rebuild_harmony(cpa_plan_t *, cf_chord_cfg_t);
 static int cpa_prepare_full(cpa_plan_t *plan, unsigned idea, cf_chord_cfg_t cfg, unsigned rhythm, unsigned mode, unsigned repeat_off, unsigned click_start)
 {
-    if(CF_STUDIO && idea>=CF_P_COMPOSED && idea<CF_P_ENGINE)return cgs_rebuild_harmony(plan,cfg);
+    if(CF_STUDIO && ((idea>=CF_P_COMPOSED && idea<CF_P_ENGINE) ||
+        (idea==CF_P_DRAFT && cgs_active() && cpa.plan.idea==CF_P_DRAFT)))return cgs_rebuild_harmony(plan,cfg);
     if(idea==CF_P_ENGINE)return cge_prepare(plan,cfg,rhythm,mode);
     if(idea==CF_P_DRAFT)return cfd_prepare(plan,cfg,rhythm,mode,repeat_off,click_start);
     const cf_progression_t *p = cf_progression_get(idea);
@@ -99,7 +100,10 @@ static void cpa_publish(const cpa_plan_t *p, unsigned flags, int setup)
     fm1_irq_off();
     if (setup) { cpa_setup.plan = *p; cpa_setup.flags = 1; }
     if(!setup && cgs_active() && (flags&CPA_NOTES) && cpa_setup.flags && cpa_setup.plan.studio &&
-        (p->tonic!=cpa.plan.tonic || p->scale!=cpa.plan.scale))cpa_setup.flags=0;
+        (p->tonic!=cpa.plan.tonic || p->scale!=cpa.plan.scale)){
+        cpa_setup.flags=0;
+        cgs_cancel_rolled_sounds();
+    }
     if (!setup && cpa.on && (p->idea == cpa.plan.idea || (((flags|cpa_edit.flags)&CPA_PHRASE) && p->idea==CF_P_DRAFT))) {
         cpa_edit.plan = *p; cpa_edit.flags |= flags;
         if(studio_notes)cgs.edit_pitch=pitch;
@@ -114,7 +118,7 @@ static void cpa_active_request(cpa_plan_t *p)
 }
 static void cpa_ui_dirty(void)
 {
-    if (!cpa_running()) return;
+    if (!cpa_running() || (cgs_active() && cpa.plan.idea==CF_P_DRAFT)) return;
     cpa_plan_t p; cpa_active_request(&p);
     cf_chord_cfg_t cfg = cs.chord; cfg.tonic = p.tonic; cfg.scale = p.scale;
     if (cpa_prepare_full(&p, p.idea, cfg, p.rhythm, p.mode, p.repeat_off, p.click_start)) cpa_publish(&p, CPA_NOTES, 0);
@@ -126,7 +130,8 @@ static void cpa_ui_poll(void)
         cpg.revision = cf_sn.ac_revision;
         if (cf_sn.ac_on) {
             cpa_explore();
-            if(cf_sn.ac_idea<CF_P_COMPOSED || cf_sn.ac_idea>=CF_P_ENGINE)cpg.idea=cf_sn.ac_idea;
+            if((cf_sn.ac_idea<CF_P_COMPOSED || cf_sn.ac_idea>=CF_P_ENGINE) &&
+                !(cgs_active() && cf_sn.ac_idea==CF_P_DRAFT))cpg.idea=cf_sn.ac_idea;
             cpg.rhythm = cf_sn.ac_rhythm; cpg.mode = cf_sn.ac_mode;
             cs.chord.tonic = cf_sn.ac_tonic; cs.chord.scale = cf_sn.ac_scale;
             cs.chord.quantize = CF_Q_BASIC; cs.beats = cf_sn.ac_beats;

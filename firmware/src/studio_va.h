@@ -75,3 +75,15 @@ STUDIO_RECIPE(FLOOR_SWELL, "FLOOR SWELL", 1, 46, 8, 0, 2, 76, 96, 114, 82,
 STUDIO_RECIPE(HALO_BLOOM, "HALO BLOOM", 0, 82, 10, 4, 0, 69, 105, 57, 104,
     OSC(0, SIN, 50, 0, 0), OSC(1, SIN, 22, 12, -5), OSC(2, SIN, 11, 19, 4), ENV2(94,104,55,101),
     LFO(0, 19, 0, 127, 0), VA_VEL, 64, M_(0, VS_ENV1 + 1, VD_LVL1 + 2, 34), M_(1, VS_LFO1, VD_PIT1 + 1, 5))
+
+/* Pop Punk follow-up. Fast, dark drive stages and softer upper feedback leave
+ * room around the drum accents. The earlier tones keep their factory IDs. */
+STUDIO_RECIPE(BARBED_AMP, "BARBED AMP", 0, 64, 9, 14, 49, 0, 72, 103, 41,
+    OSC(0, SAW, 23, 0, -3), OSC(1, PWM, 18, 0, 4), O_(1, SHAPE), 43, OSC(2, TRI, 13, 12, 0),
+    ENV2(0,58,0,35), VA_VEL, 69, M_(0, VS_ENV1 + 1, VD_LVL1 + 2, 16), M_(1, VS_VEL, VD_DRIVE, 13))
+STUDIO_RECIPE(RUST_PICK, "RUST PICK", 1, 60, 10, 11, 30, 0, 71, 94, 28,
+    OSC(0, TRI, 79, 0, 0), OSC(1, SAW, 16, 12, 0), ENV2(0,54,0,28), VA_VEL, 67,
+    M_(0, VS_ENV1 + 1, VD_LVL1 + 1, 45), M_(1, VS_ENV1 + 1, VD_CUT, 8))
+STUDIO_RECIPE(FRET_HOWL, "FRET HOWL", 0, 75, 22, 2, 17, 21, 88, 81, 75,
+    OSC(0, TRI, 52, 0, 0), OSC(1, PWM, 18, 12, 4), O_(1, SHAPE), 72, ENV2(72,94,67,72),
+    LFO(0, 89, 0, 99, 75), VA_VEL, 76, M_(0, VS_ENV1 + 1, VD_LVL1 + 1, 38), M_(1, VS_LFO1, VD_PITCH, 5))

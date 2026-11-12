@@ -1,27 +1,27 @@
 # CORD Studio controls
 
-Turn **SELECT** on an overview to switch between Studio, Sound, Record and Help. On the Studio overview, turn **ALGORITHM** to highlight any amp or pedal. Highlighting an amp selects the keyboard instrument, which follows you between workspaces and appears in the colored **KEYS** footer. Highlighting a pedal leaves the keyboard instrument in place. Press **SEL** to zoom in or out. **HOME** returns to the Studio overview.
+Turn **SELECT** on an overview to slide between the Studio, Sound, Record and Help racks. Turn **ALGORITHM** to select panels left to right across the two-column rack. Every panel is visible on its workspace overview. One panel is always highlighted. K1–K4 edit that panel directly, and its attached strip shows the knob labels and live values in knob order. Pressing SEL to zoom in opens the same controls. Highlighting a musician selects the keyboard instrument, which follows you between workspaces and appears in the colored **KEYS** footer. Highlighting a band control leaves the keyboard instrument in place. Press **SEL** to open a faceplate or apply a highlighted choice. Turn **SELECT** inside a faceplate to change pages. Use **SEL** to zoom back out, or **HOME** when **SEL** is labeled Apply. The output meter follows the mix across all four workspaces.
 
 ## Studio
 
-**PLAY** starts or stops the band. The four color-coded musician amps come first, followed by the Harmony, Shaping, Genre and ARP pedals. The header shows the key, scale, meter, tempo and current chord as a Roman numeral. It follows a held manual chord while you play one.
+**PLAY** starts or stops the band. The four color-coded musician amps come first, followed by Harmony, Shaping, Genre, ARP and Progression. The header shows key, scale, meter, tempo, the current chord as a Roman numeral and a needle that responds to the output level. The chord readout follows a held manual chord while you play one.
 
 ### Genre
 
-Highlight the Genre pedal with **ALGORITHM** or **SEQ**, press **SEL** to open it, and turn **K1** or **PRESETS** to choose a genre. **PRESETS** also works from the Studio overview. Genre changes the harmonic and rhythmic vocabulary of the whole band, including the two playing styles available for each musician. A genre change queues a new take for the next bar during playback. Your current tempo continues while the band plays. The matching sounds are available separately through **Sound → EDIT Load palette**.
+Highlight the Genre pedal with **ALGORITHM** or **SEQ** and turn **K1** or **PRESETS** to choose a genre. **PRESETS** also works from the Studio overview. Genre changes the harmonic and rhythmic vocabulary of the whole band, including the two playing styles available for each musician. A genre change queues a new take for the next bar during playback. Your current tempo continues while the band plays. Open **Sound → Sound Library** in Genre mode and press **SEL** to load the curated palette, or press **EDIT** on the Sound overview to cycle through its alternatives.
 
 | Genre | Playing character |
 | --- | --- |
 | Dream Pop | Sustained or pulsing chords, melodic bass, a soft beat and sparse upper figures |
 | Indie | Chopped or ringing chords, offbeat bass, room drums and a chime line |
 | New Wave | Short chord stabs, octave bass, a machine beat and stepped synth figures |
-| Pop Punk | Driving chords and bass, a backbeat and a high answering hook |
+| Pop Punk | Palm-muted attacks, open chords, bass riffs locked to the kick, half-time and straight grooves, and a feedback-like Layer |
 | Lo-Fi | Soft keys, a late bass pocket, half-time drums and short melodic fragments |
 | Ambient Soundscape | Slow harmony, pedal bass, sparse percussion and evolving swells |
 
 ### Harmony and Shaping
 
-Highlight Harmony or Shaping with **ALGORITHM** or **SEQ** and press **SEL** to open its four dials. Harmony is also available within any zoomed Studio musician by turning **SELECT**. Key, tempo, scale and meter can still be changed from the overview with a musician highlighted.
+Highlight **Harmony** with **ALGORITHM** or **SEQ** to change key, tempo, scale, or meter. Highlight **Shaping** for Space, Tempo, Energy, and Evolve. Harmony is also available as a named page within a zoomed Studio musician by turning **SELECT**.
 
 | Page | Knob | What it changes |
 | --- | --- | --- |
@@ -34,7 +34,13 @@ Highlight Harmony or Shaping with **ALGORITHM** or **SEQ** and press **SEL** to 
 | Shaping | K3 Energy | Raises or lowers the effective Activity of all four musicians around their current settings. 50% is neutral. Phrases gain or shed events and can change accents within the current take. |
 | Shaping | K4 Evolve | Sets how often one musician automatically varies its phrase. 0% turns it off. 1–49% gives the band one change every 8 bars, 50–79% every 4 bars and 80–100% every 2 bars. Ambient doubles those intervals. Muted musicians and musicians with Activity below 35% are skipped. |
 
-Press **EDIT** on the Studio overview to generate a new band take for the next bar. Zoom into a musician and press **EDIT** to regenerate only that part on the next sixteenth-note grid point, or eighth-note grid point in 6/8.
+Press **EDIT** on the Studio overview to generate a new band take for the next bar. Zoom into a musician and press **EDIT** to regenerate only that part on the next sixteenth-note grid point, or eighth-note grid point in 6/8. EDIT also rotates eligible sounds in the genre palette. Pitched patches switch at the musical boundary and drum kits switch at the next bar. Saved user patches, edited patches and sounds you are holding stay selected.
+
+### Custom progression
+
+Highlight **Progression** and press **SEL** to open it. Press **EDIT** to open your draft. The first draft starts with a one-bar tonic chord. In the editor, **ALGORITHM** picks a chord slot and **SELECT** changes pages. The chord page edits degree, quality, color and length. The other pages expose timing, inversion, bass and phrase actions. On **Phrase**, choose Insert or Duplicate with **K1** and press **SEL** to add a slot.
+
+Press **PLAY** in the editor to use the draft for all four musicians. If the band is already playing, the new progression starts at the next bar. The band keeps the draft’s chords, durations and meter when you regenerate a part. Drafts support 3/4, 4/4 and 6/8 in Studio and checkpoint using the existing draft storage when the unit is idle. To switch sources, open the **Progression** faceplate, turn **K1** to Bank or My draft, and press **SEL**.
 
 ### Musician panel
 
@@ -55,9 +61,9 @@ Press **GLO** to open or close the mixer. K1–K4 set the levels of Chords, Bass
 
 ## Sound
 
-On the overview, **K1 Library** selects the short Genre list or All sounds. **K2 Preset** browses the selected musician’s tones or kits. With Genre selected, press **EDIT** to load the complete genre palette. While playing, the pitched sounds change immediately and the drum kit changes at the next bar. The palette keeps the current levels, pan, sends and shared effects settings.
+Open **Sound Library** at the end of the Sound rack. **K1 Library** selects the short Genre list or All sounds. Highlight a musician and use **K1 Preset** to browse its tones or kits. With Genre selected, press **SEL** to load the complete palette. Press **EDIT** on the Sound overview or in Sound Library to choose the next tone or kit for each musician. In a musician’s Tone panel, **EDIT** changes that musician only. While playing, the pitched sounds change immediately and the drum kit changes at the next bar. The palette keeps the current levels, pan, sends and shared effects settings.
 
-Zoom into a musician and turn **SELECT** through its named pages. The page counter shows where you are.
+A highlighted Sound musician shows the Tone controls. Zoom in and turn **SELECT** to reach the other named pages. The page counter shows where you are.
 
 | Page | K1 | K2 | K3 | K4 |
 | --- | --- | --- | --- | --- |
@@ -66,7 +72,7 @@ Zoom into a musician and turn **SELECT** through its named pages. The page count
 | Sends | Drive amount | Chorus send | Delay send | Reverb send |
 | FX Presets | Browse shared FX presets | | | |
 
-Drums has Tone, Sends and FX Presets. **PRESETS** also browses the sound or kit. Sends shows a preview of the selected musician’s drive curve, chorus sweep, delay taps and reverb tail. Each graph responds to that musician’s knob. From the Sound overview, press **FX** to jump to FX Presets. Turn **K1** or **PRESETS** to highlight a preset and press **SEL** to apply it to the band. Use **SELECT** to turn to another Sound page. **SAVE** opens preset management, and pressing **FX** again opens the shared EQ and effects editor. **LFO** from a zoomed pitched musician opens its detailed synth editor.
+Drums has Tone, Sends and FX Presets. **PRESETS** also browses the sound or kit. Sends shows a preview of the selected musician’s drive curve, chorus sweep, delay taps and reverb tail. Each graph responds to that musician’s knob. From the Sound overview, press **FX** to jump to FX Presets. Turn **K1** or **PRESETS** to highlight a preset and press **SEL** to apply it to the band. Use **SELECT** to turn to another Sound page. **SAVE** opens preset management, and pressing **EDIT** or **FX** opens the EQ and effects editor for the loaded preset. **LFO** from a zoomed pitched musician opens its detailed synth editor.
 
 ## Arpeggiator
 
@@ -76,6 +82,6 @@ Turn **SELECT** to the timing page. **K1 Gate** sets how much of each step a not
 
 ## Record and Help
 
-**Record** shows the four generated phrases and the playhead. **SEL** opens a two-bar view of the highlighted musician. **REC** starts or finishes a manual take of up to eight bars. In the Saved takes panel, turn **K1** to select one of the three slots and hold **SAVE** for three seconds to clear it. Release early to cancel. Finish recording or stop saved-take playback before clearing. Use USB audio capture to record the full generated mix as audio.
+**Record** shows the four generated phrases and the playhead. **SEL** opens a two-bar view of the highlighted musician. **REC** starts or finishes a manual take of up to eight bars. Highlight **Saved Takes** at the end of the rack, turn **K1** to select one of the three slots, and hold **SAVE** for three seconds to clear it. Release early to cancel. Finish recording or stop saved-take playback before clearing. Use USB audio capture to record the full generated mix as audio.
 
 **Help** contains Start here, Harmony, Playing and Capture. Turn **ALGORITHM** to select a topic and **SEL** to open it. The Harmony lesson shows the role of the note you play. **K1** switches between Auto and Manual harmony. **EDIT** opens Chord Lab.

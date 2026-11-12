@@ -57,7 +57,7 @@ static int cpa_valid(const cpa_plan_t *p)
 static void cpa_overlay_source(void)
 {
     if (!cpa.on) return;
-    if(cpa.plan.idea==CF_P_ENGINE){cfc.source=0;cfc.source_n=0;return;}
+    if(cpa.plan.idea==CF_P_ENGINE || (cpa.plan.studio && cpa.plan.idea==CF_P_DRAFT)){cfc.source=0;cfc.source_n=0;return;}
     if(cpa.plan.idea==CF_P_DRAFT)return;
     const cf_progression_t *p = cf_progression_get(cpa.plan.idea);
     cfc.source = cf_progression_source(p); cfc.source_n = cfc.source ? p->n : 0;
@@ -92,7 +92,10 @@ static void cpa_release(void)
 static void cpa_stop(void)
 {
     cpa_commanded = 0;cge_stop();
-    if(CF_STUDIO)cgs.pending=0;
+    if(CF_STUDIO){
+        cgs.pending=0;
+        cgs_cancel_rolled_sounds();
+    }
     cla_cancel(0);
     if (!cpa.on) return;
     if(cgs_active() && cpa_setup.flags)cgs.ready=0;
@@ -184,7 +187,7 @@ static void cpa_groove(int reset)
 static void cpa_commit(void)
 {
     cfm.beats = sq_beats = cpa.plan.beats;
-    if(cpa.plan.idea==CF_P_DRAFT && cfc.cfg.tonic==cpa.plan.tonic && cfc.cfg.scale==cpa.plan.scale && cfc.cfg.quantize==CF_Q_BASIC){cpa.revision++;return;}
+    if(cpa.plan.idea==CF_P_DRAFT && !cpa.plan.studio && cfc.cfg.tonic==cpa.plan.tonic && cfc.cfg.scale==cpa.plan.scale && cfc.cfg.quantize==CF_Q_BASIC){cpa.revision++;return;}
     cf_chord_cfg_t cfg = cfc.cfg;
     cpa_overlay_source();
     cpa_overlay_cfg(&cfg); cf_chord_config(&cfc, &cfg); cfp_sync(1);
@@ -210,7 +213,7 @@ static void cpa_start(void)
         cgs.playing_genre=cgs.queued_genre;
         cgs.playing_feel=cgs.queued_feel;
         cgs_start();
-        cgs_sound_boundary();
+        cgs_sound_boundary(CGS_PATCH_STAGE);
     }
     cpa_commit();
     cpa.clock_wait=cpa.clock_external=cfp_cfg.clock_in; cpa.clock_lost=0; cpa.clock_ms=cf_now_ms;

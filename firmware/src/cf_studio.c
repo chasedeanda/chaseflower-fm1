@@ -5,8 +5,8 @@
 enum { CGS_CHORDS, CGS_BASS, CGS_LAYER, CGS_DRUMS, CGS_NPART };
 enum { CGS_ANCHOR=1, CGS_THIRD, CGS_FIFTH, CGS_OCTAVE, CGS_PICKUP, CGS_UPPER, CGS_STEP_IN };
 enum { CGS_DREAM, CGS_INDIE, CGS_WAVE, CGS_PUNK, CGS_LOFI, CGS_AMBIENT, CGS_NGENRE };
-enum { CGS_PATCH_STAGE=252, CGS_STEPS=16, CGS_TICKS=SQ_PPQN/4, CGS_BAR=4*SQ_PPQN };
-enum { CGS_KICK=1, CGS_SNARE=2, CGS_HAT=4, CGS_OPEN=8, CGS_RIM=16 };
+enum { CGS_PATCH_ROLL=251, CGS_PATCH_STAGE, CGS_STEPS=16, CGS_TICKS=SQ_PPQN/4, CGS_BAR=4*SQ_PPQN };
+enum { CGS_KICK=1, CGS_SNARE=2, CGS_HAT=4, CGS_OPEN=8, CGS_RIM=16, CGS_LOW_TOM=32, CGS_MID_TOM=64 };
 typedef struct {
     uint8_t event[2][CGS_STEPS]; /* pitch role and gate, or drum lane bits */
     uint8_t voice;
@@ -22,11 +22,13 @@ static struct {
     uint8_t gate[CGS_NPART], muted, mute_applied, focus, zoom, space, ready, mix_idle;
     uint8_t defaults_offered, boot_sound_gen[3];
     uint8_t genre, queued_genre, playing_genre, energy, evolution, solo, kit_pinned, feel, queued_feel, playing_feel, meter;
+    uint8_t custom, bank_meter;
     volatile uint8_t pending;
     uint8_t generation[CGS_NPART], harmony_generation, arp, held_mute, held_solo;
     uint16_t gain[CGS_NPART];
 } cgs;
-static void cgs_sound_boundary(void);
+static void cgs_sound_boundary(unsigned tag);
+static void cgs_cancel_rolled_sounds(void);
 static int cgs_active(void)
 { return CF_STUDIO && cpa.on && cpa.plan.studio; }
 static unsigned cgs_rand(uint32_t *seed, unsigned limit)
@@ -133,9 +135,12 @@ static void cgs_tick(void)
     unsigned steps=cpa.plan.beats==4u?CGS_STEPS:12u;
     unsigned offset=cpa.t%ticks;
     if(offset>5)return;
+    if(!offset && !cpa_setup.flags)cgs_sound_boundary(CGS_PATCH_ROLL);
     unsigned pending=offset?0:cgs.pending;
     unsigned step=cpa.t/ticks, phrase=cgs.bar-cgs.origin_bar, bar=phrase&1u;
     const cpa_slot_t *s=&cpa.plan.slot[cpa.slot];
+    int custom=cpa.plan.idea==CF_P_DRAFT;
+    int slot_closed=custom && !s->tie && s->gate<100 && cpa.elapsed>=(uint32_t)s->ticks*s->gate/100u;
     for(unsigned p=0;p<CGS_NPART;p++){
         unsigned bit=1u<<p, changed=pending&bit, rerolled=0;
         if(changed){
@@ -147,6 +152,10 @@ static void cgs_tick(void)
         }
         if(cgs.mute_applied&bit)continue;
         if(p<CGS_DRUMS && (cpa.plan.mode==CPA_DRUMS || cgs_manual(p)))continue;
+        if((slot_closed && p<CGS_DRUMS) || (custom && p==CGS_BASS && !s->nb)){
+            cgs_release(p);
+            continue;
+        }
         if((p==CGS_CHORDS || p==CGS_LAYER) && !offset){
             if(cgs.arp&bit){
                 if(!(sqp.aon&bit)){cgs_release(p);cgs_arp(s,p);}
@@ -162,6 +171,16 @@ static void cgs_tick(void)
             if((phrase&7u)==4u && p==CGS_LAYER)event=0;
             if((phrase&7u)==4u && p==CGS_DRUMS)event&=~(CGS_HAT|CGS_OPEN);
             if((phrase&7u)==7u && p==CGS_DRUMS && step==steps-2u)event|=CGS_RIM;
+        } else if(cgs.playing_genre==CGS_PUNK){
+            unsigned section=phrase&7u;
+            if(section==4u){
+                if(p==CGS_LAYER || (p==CGS_CHORDS && step && (step&3u)))event=0;
+                if(p==CGS_DRUMS)event&=~(CGS_OPEN|CGS_HAT);
+            }
+            if(p==CGS_CHORDS && (section==6u || section==7u) && event>1 &&
+               (step==0 || step==steps/2))event=16;
+            if(p==CGS_DRUMS && section==7u && step>=steps-3u)
+                event|=step==steps-2u?CGS_MID_TOM:CGS_LOW_TOM;
         }
         if(p==CGS_CHORDS){
             if(offset)continue;
@@ -178,8 +197,12 @@ static void cgs_tick(void)
                 unsigned note=p==CGS_BASS?cgs.pitch.note[cpa.slot][tone]:s->note[tone<s->n?tone:s->n-1];
                 if(p==CGS_BASS && (tone==CGS_PICKUP-1u || tone==CGS_STEP_IN-1u) &&
                     s->ticks-cpa.elapsed>4*CGS_TICKS)note=cgs.pitch.note[cpa.slot][CGS_FIFTH-1u];
-                if(p==CGS_LAYER && note<60)note+=12;
-                if(p==CGS_LAYER && clip->voice==3 && note<70)note+=12;
+                if(p==CGS_LAYER && cgs.playing_genre==CGS_PUNK){
+                    if(tone==1)note=cgs.pitch.note[cpa.slot][CGS_THIRD-1u];
+                    if(tone==3)note=cgs.pitch.note[cpa.slot][CGS_UPPER-1u];
+                    while(note<64)note+=12;
+                } else if(p==CGS_LAYER && note<60)note+=12;
+                if(p==CGS_LAYER && cgs.playing_genre==CGS_DREAM && clip->voice==3 && note<70)note+=12;
                 cgs_line(p,note,cgs_velocity(p,48u+2u*(feel>>3)));
                 cgs.gate[p]=(uint8_t)((event>>3)*6u);
             }
@@ -299,8 +322,8 @@ static const cgs_riff_t CGS_GENRE_RIFFS[][2]={
      {CGS_FOLLOW,{{0,CGS_ANCHOR,7},{4,CGS_THIRD,4},{6,CGS_FIFTH,11},{12,CGS_UPPER,8},{15,CGS_PICKUP,3}}}},
     {{CGS_FOLLOW,{{0,CGS_ANCHOR,5},{2,CGS_OCTAVE,5},{4,CGS_FIFTH,5},{8,CGS_ANCHOR,5},{14,CGS_OCTAVE,4}}},
      {CGS_FOLLOW,{{0,CGS_ANCHOR,6},{2,CGS_FIFTH,6},{6,CGS_OCTAVE,6},{10,CGS_THIRD,6},{15,CGS_PICKUP,3}}}},
-    {{CGS_FOLLOW,{{0,CGS_ANCHOR,6},{2,CGS_ANCHOR,6},{6,CGS_FIFTH,5},{10,CGS_ANCHOR,5},{15,CGS_PICKUP,3}}},
-     {CGS_ANSWER,{{0,CGS_ANCHOR,7},{2,CGS_OCTAVE,6},{6,CGS_FIFTH,7},{10,CGS_THIRD,7},{14,CGS_STEP_IN,5}}}},
+    {{CGS_FOLLOW,{{0,CGS_ANCHOR,7},{2,CGS_ANCHOR,3},{6,CGS_ANCHOR,3},{10,CGS_FIFTH,7},{15,CGS_PICKUP,3}}},
+     {CGS_ANSWER,{{0,CGS_ANCHOR,8},{2,CGS_OCTAVE,4},{6,CGS_FIFTH,5},{10,CGS_THIRD,8},{14,CGS_STEP_IN,5}}}},
     {{CGS_FLOAT,{{0,CGS_ANCHOR,14},{5,CGS_OCTAVE,4},{7,CGS_THIRD,8},{11,CGS_FIFTH,10},{15,CGS_STEP_IN,3}}},
      {CGS_ANSWER,{{0,CGS_ANCHOR,17},{5,CGS_FIFTH,5},{8,CGS_UPPER,8},{13,CGS_THIRD,5},{15,CGS_PICKUP,3}}}},
     {{CGS_FLOAT,{{0,CGS_ANCHOR,31},{6,CGS_FIFTH,31},{9,CGS_FIFTH,29},{12,CGS_ANCHOR,31},{15,CGS_STEP_IN,3}}},
@@ -311,10 +334,85 @@ static const cgs_pocket_t CGS_POCKET[]={
     {0,0,0,0,0,0},
     {0x0449,0x0441,8,4,4,1},
     {0x1111,0x4141,7,4,2,0},
-    {0x5555,0x0545,5,4,2,0},
+    {0}, /* Pop Punk's accents and spaces are composed below. */
     {0x0881,0x0881,11,8,4,4},
     {0,1,0,0,8,5},
 };
+
+/* Each take keeps one kick map across independent musician rolls. */
+static const uint16_t CGS_PUNK_KICK[][2]={
+    {0x0445,0x2441}, /* syncopated chug */
+    {0x2085,0x14a1}, /* late kick and pushed answer */
+    {0x0109,0x4481}, /* half-time breakdown */
+    {0x1541,0x1145}, /* straight drive */
+};
+
+static void cgs_punk_clip(cgs_clip_t *clip,unsigned part,unsigned style,unsigned activity,unsigned shape)
+{
+    unsigned pocket=clip->voice;
+    for(unsigned bar=0;bar<2;bar++){
+        uint8_t *event=clip->event[bar], *feel=clip->feel[bar];
+        uint16_t kicks=CGS_PUNK_KICK[pocket][bar];
+        if(part==CGS_CHORDS){
+            feel[0]=107;
+            if(style){
+                unsigned lift=8u+((shape+bar)&1u)*4u;
+                event[0]=(uint8_t)(activity>=48?24:32);
+                if(activity>=35){event[lift]=20;feel[lift]=98;}
+                if(bar && activity>=72){event[15]=4;feel[15]=92;}
+                continue;
+            }
+            event[0]=(uint8_t)(pocket==2?13u:5u+(shape&1u)*2u);
+            for(unsigned i=1;i<CGS_STEPS;i++){
+                if(!((kicks>>i)&1u) || (activity<32 && i<6))continue;
+                int accent=(i&3u)==0 || (i>=8 && ((i+shape)&3u)>=2u);
+                event[i]=(uint8_t)(accent?8:3);
+                feel[i]=(uint8_t)(accent?103:83);
+            }
+            unsigned push=bar?12u+(shape&1u):5u+(shape&1u);
+            if(activity>=47 && !event[push]){event[push]=3;feel[push]=82;}
+            if(bar && activity>=78){event[15]=3;feel[15]=96;}
+        } else if(part==CGS_BASS){
+            static const uint8_t replies[]={CGS_FIFTH,CGS_THIRD,CGS_OCTAVE,CGS_UPPER};
+            event[0]=CGS_ANCHOR+((pocket==2?13u:7u)<<3);feel[0]=120;
+            for(unsigned i=1;i<CGS_STEPS;i++){
+                if(!((kicks>>i)&1u))continue;
+                unsigned role=style || (i>=7 && activity>=40)?replies[(shape+bar+i/2)%NELEM(replies)]:CGS_ANCHOR;
+                unsigned gate=pocket==2?9u:(i&3u)?3u:6u;
+                event[i]=(uint8_t)(role+(gate<<3));feel[i]=(uint8_t)((i&3u)?104:120);
+            }
+            unsigned answer=bar?11u+(shape&1u):5u+(shape&1u);
+            if(activity>=39 && !event[answer]){
+                event[answer]=(uint8_t)(replies[(shape+bar)%NELEM(replies)]+(4u<<3));
+                feel[answer]=101;
+            }
+            if(activity>=52){event[15]=(uint8_t)((bar?CGS_PICKUP:CGS_STEP_IN)+(3u<<3));feel[15]=96;}
+        } else if(part==CGS_DRUMS){
+            for(unsigned i=0;i<CGS_STEPS;i++){
+                if((kicks>>i)&1u)event[i]|=CGS_KICK;
+                if(activity>=29 && i%(activity>=55?2u:4u)==0)event[i]|=CGS_HAT;
+                if(event[i])feel[i]=(uint8_t)(((i&3u)?(shape+i)%3u:4u)<<3);
+            }
+            event[0]|=CGS_OPEN;
+            if(pocket==2 || (!style && pocket==0)){event[8]|=CGS_SNARE;feel[8]=5u<<3;}
+            else {event[4]|=CGS_SNARE;event[12]|=CGS_SNARE;feel[4]=feel[12]=5u<<3;}
+            if(style && activity>=55)event[bar?11:7]|=CGS_KICK;
+            if(bar && activity>=43){
+                event[13+(shape&1u)]|=(shape&2u)?CGS_SNARE:CGS_MID_TOM;
+                event[15]|=CGS_LOW_TOM;
+            } else if(activity>=48)event[bar?14:10]|=CGS_OPEN;
+        } else {
+            static const uint8_t hooks[][2]={{2,4},{3,2},{4,3},{2,3}};
+            unsigned onset=(bar?9u:4u)+(pocket&1u)+shape%3u;
+            if(((kicks>>onset)&1u) && onset<14u)onset++;
+            event[onset]=(uint8_t)(hooks[shape][bar]+((style?7u:19u)<<3));
+            feel[onset]=style?116:91;
+            if((style && activity>=31) || activity>=55){event[onset-3u]=1u+(5u<<3);feel[onset-3u]=98;}
+            if(bar && activity>=44){event[15]=(uint8_t)(hooks[shape][0]+(5u<<3));feel[15]=101;}
+        }
+    }
+}
+
 static void cgs_genre_clip(cgs_clip_t *clip, unsigned part, unsigned genre, unsigned style,
                            unsigned activity, unsigned shape)
 {
@@ -335,8 +433,7 @@ static void cgs_genre_clip(cgs_clip_t *clip, unsigned part, unsigned genre, unsi
                 continue;
             }
             for(unsigned i=2;i<CGS_STEPS;i+=2){
-                if(!events[i] && ((genre==CGS_PUNK && activity>=40) ||
-                                 (genre==CGS_WAVE && activity>=53 && (i&3u)==2u))){
+                if(!events[i] && genre==CGS_WAVE && activity>=53 && (i&3u)==2u){
                     events[i]=(uint8_t)((genre==CGS_WAVE && (i&3u) ? CGS_OCTAVE : CGS_ANCHOR)+(6u<<3));
                     feel[i]=(uint8_t)((i&3u?13u:18u)<<3);
                 }
@@ -354,7 +451,7 @@ static void cgs_genre_clip(cgs_clip_t *clip, unsigned part, unsigned genre, unsi
                 events[i]=(uint8_t)((style?4u:2u)+(12u<<3));feel[i]=101;
                 if(activity>=45){events[14]=3u+(5u<<3);feel[14]=68;}
             } else {
-                unsigned start=genre==CGS_WAVE?2u:genre==CGS_PUNK?4u:3u;
+                unsigned start=genre==CGS_WAVE?2u:3u;
                 unsigned count=1u+(activity>=30)+(activity>=53)+(activity>=76);
                 for(unsigned j=0;j<count;j++){
                     unsigned i=start+j*(style?3u:2u)+(shape&1u);
@@ -468,11 +565,15 @@ static void cgs_compose(cgs_clip_t *clip, unsigned p, uint32_t *seed)
         return;
     }
     unsigned shape;
-    if(p==CGS_BASS){
+    if(p==CGS_BASS && genre!=CGS_PUNK){
         cgs_bass_clip(clip,&CGS_GENRE_RIFFS[genre][style],activity,seed);
     }
     shape=cgs_rand(seed,4);
-    if(p==CGS_CHORDS && (genre==CGS_AMBIENT || style))
+    if(genre==CGS_PUNK){
+        clip->voice=cgs.feel;
+        cgs_punk_clip(clip,p,style,activity,shape);
+    }
+    else if(p==CGS_CHORDS && (genre==CGS_AMBIENT || style))
         clip->feel[0][0]=clip->feel[1][0]=(uint8_t)(74u+shape*2u+activity/12u+style*7u);
     else cgs_genre_clip(clip,p,genre,style,activity,shape);
     cgs_meter_clip(clip,p,cgs.meter);

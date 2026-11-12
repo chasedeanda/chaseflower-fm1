@@ -33,12 +33,14 @@ static void cfd_model(cfd_model_t *m)
     cpa_plan_t plan;
     if(cfd_prepare(&plan,cfg,CPA_OFF,CPA_BOTH,0,0)) {
         const cpa_slot_t *s=&plan.slot[m->focus];cf_chord_name(s->root%12,s->mask,cfwd.song.slot[m->focus].bass>=0?s->bass_pc:-1,&spell,m->chord);
-        cf_harmony_numeral(cfg.scale,cfg.tonic,s->root%12,m->degree);
+        cf_lab_numeral(cfg.scale,cfg.tonic,s->root%12,s->mask,m->degree);
         for(unsigned i=0;i<s->n;i++){char note[4];cf_pc_name(s->note[i]%12,&spell,note);if(i)str_cpy(m->notes+str_len(m->notes)," ",sizeof m->notes-str_len(m->notes));str_cpy(m->notes+str_len(m->notes),note,sizeof m->notes-str_len(m->notes));}
-        for(unsigned i=0;i<4 && m->first+i<m->n;i++){unsigned at=m->first+i;const cpa_slot_t *v=&plan.slot[at];cf_chord_name(v->root%12,v->mask,cfwd.song.slot[at].bass>=0?v->bass_pc:-1,&spell,m->rail[i]);cf_harmony_numeral(cfg.scale,cfg.tonic,v->root%12,m->numeral[i]);}
+        for(unsigned i=0;i<4 && m->first+i<m->n;i++){unsigned at=m->first+i;const cpa_slot_t *v=&plan.slot[at];cf_chord_name(v->root%12,v->mask,cfwd.song.slot[at].bass>=0?v->bass_pc:-1,&spell,m->rail[i]);cf_lab_numeral(cfg.scale,cfg.tonic,v->root%12,v->mask,m->numeral[i]);}
     }
     for(int k=0;k<4;k++){cf_knob_t o;memset(&o,0,sizeof o);cfd_knob_info(k,&o);str_cpy(m->label[k],o.name,sizeof m->label[k]);str_cpy(m->value[k],o.val,sizeof m->value[k]);m->disabled[k]=o.dis;}
-    str_cpy(m->hint,m->conflict?"SEL confirms / old source stays intact":m->confirm?"SEL confirms / default Cancel":cu.page[SCR_PEDIT]==CFD_PHRASE?"SEL executes action / SELECT slot":"SELECT slot / PLAY hears full draft",sizeof m->hint);
+    str_cpy(m->hint,m->conflict?"SEL confirms / old source stays intact":m->confirm?"SEL confirms / default Cancel":
+        cfdu.studio?(cu.page[SCR_PEDIT]==CFD_PHRASE?"SEL Action   SELECT Pages   PLAY Draft":"ALGO Chord   SELECT Pages   PLAY Draft"):
+        cu.page[SCR_PEDIT]==CFD_PHRASE?"SEL executes action / SELECT slot":"SELECT slot / PLAY hears full draft",sizeof m->hint);
     if(cu.pop==POP_MSG)str_cpy(m->message,cu.msg,sizeof m->message);
     for(unsigned k=0;k<4;k++)m->emphasis[k]=cfn_knob(k);
     m->cursor_width=cfn_cursor(0x30000u|m->slot);m->focus_weight=cfn_focus(0x30000u|m->focus);

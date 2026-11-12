@@ -127,7 +127,8 @@ typedef struct {
     uint8_t live,hold,slot,first,count,total,skin,motion,battery,halo,rec,bank,disabled[4],emphasis[4],cursor_width;
     uint8_t pulse,halo_ink,activity,activity_step;
     uint8_t moment,build,bloom,engine_page,engine_bar,beat,focus,level[4],pin_mask;
-    uint8_t workspace,zoom,mixer,genre,solo,muted,shaping,sound_page,knob[4],part_activity[4],part_level[4];
+    uint8_t workspace,zoom,mixer,genre,solo,muted,shaping,sound_page,knob[4],part_level[4];
+    uint8_t signal_peak;
     uint16_t steps[4][2],matches;
     int8_t bank_dx,chord_dy;
     cfm_pose_t mascot;
@@ -505,6 +506,19 @@ static void cf_stage_engine_draw(const cf_stage_model_t *m)
 static void cf_stage_draw(void)
 {
     cf_stage_model_t m;cf_stage_model(&m);
+    if(CF_STUDIO && !CF_SCENES && cf_stage_valid && !fb_full &&
+        m.signal_peak!=cf_stage_last.signal_peak){
+        uint8_t peak=m.signal_peak;
+        m.signal_peak=cf_stage_last.signal_peak;
+        if(!memcmp(&m,&cf_stage_last,sizeof m)){
+            cf_stage_last.signal_peak=peak;
+            cf_stage_draws++;
+            fb_unclip();cgu_output_meter(156,24,peak,m.workspace);
+            if(!cu.pop)cf_present();
+            return;
+        }
+        m.signal_peak=peak;
+    }
     if(cf_stage_valid && !fb_full && !memcmp(&m,&cf_stage_last,sizeof m))return;
     cf_stage_last=m;cf_stage_valid=1;cf_stage_draws++;
     fb_unclip();fb_fill(FL_BG);

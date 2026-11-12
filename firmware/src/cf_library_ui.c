@@ -50,13 +50,15 @@ static void csl_save_current(void)
     if(cpa_setup.flags || cpa_edit.flags){cf_message("Wait for queued setup to play");return;}
     for(unsigned p=0;p<2;p++)if(trk[p].xf_on || trk[p].eng_req!=trk[p].engine){cf_message("Wait for sound change to finish");return;}
     cfd_ui_poll();cf_song_t song;
-    if(cpg.idea==CF_P_DRAFT && cfwd.have)song=cfwd.song;
+    if((cfdu.studio || cpg.idea==CF_P_DRAFT) && cfwd.have)song=cfwd.song;
     else if(cpg.idea==CF_P_ENGINE){if(!cge_snapshot(&song)){cf_message("Engine snapshot unavailable");return;}}
     else if(!cf_song_clone(&song,cf_progression_current())){cf_message("No progression to save");return;}
-    song.tonic=cs.chord.tonic;song.scale=cs.chord.scale;song.bpm=cs.bpm;
-    song.rhythm=cpg.rhythm<DM_N?DM_RHY[cpg.rhythm].id:cpg.rhythm==CPA_CLICK?65534:65535;
-    if(cpg.rhythm<DM_N){song.kit=dm_kit(cpg.rhythm);song.swing=dm_swing(cpg.rhythm);}
-    song.drums_only=cpg.mode;song.repeat_off=cpg.repeat_off;
+    if(!cfdu.studio){
+        song.tonic=cs.chord.tonic;song.scale=cs.chord.scale;song.bpm=cs.bpm;
+        song.rhythm=cpg.rhythm<DM_N?DM_RHY[cpg.rhythm].id:cpg.rhythm==CPA_CLICK?65534:65535;
+        if(cpg.rhythm<DM_N){song.kit=dm_kit(cpg.rhythm);song.swing=dm_swing(cpg.rhythm);}
+        song.drums_only=cpg.mode;song.repeat_off=cpg.repeat_off;
+    }
     memset(&csl_io,0,sizeof csl_io);csl_io.magic=CSL_MAGIC;csl_io.version=1;csl_io.size=sizeof csl_io;
     csl_io.settings_size=sizeof csl_io.setup;csl_io.sound_size=sizeof csl_io.patch[0];
     if(!cf_song_encode(&song,csl_io.phrase)){cf_message("Song setup cannot be saved");return;}
@@ -89,6 +91,7 @@ static int csl_recall(unsigned slot)
         cf_edited(p);cs.snd[p]=cf_snd_pos(p);
     }
     cf_song_draft_begin(&cfwd,&song);memset(&cfds,0,sizeof cfds);cfd_changed();cfdu.focus=0;
+    if(cfdu.studio){cu.scr=SCR_PEDIT;cu.pop=POP_NONE;return 1;}
     cfd_view_update();cpg.idea=CF_P_DRAFT;cs.chord.tonic=song.tonic;cs.chord.scale=song.scale;
     cfd_select_source();cf_send_config();cu_spell_update();
     cu.scr=SCR_HOME;home_boot_main=1;cf_home_bank=CF_HB_CORE;cf_home_bank_ms=0;cu.pop=POP_NONE;

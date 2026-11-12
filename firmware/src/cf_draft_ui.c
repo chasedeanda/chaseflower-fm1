@@ -5,18 +5,18 @@ enum { CFD_HARMONY,CFD_TIMING,CFD_VOICING,CFD_BASS,CFD_PHRASE,CFD_NTAB };
 static const char *const CFD_TAB[]={"Edit Chord","Timing","Voicing","Bass","Phrase"};
 static const char *const CFD_QUALITY[]={"Follow","Major","Minor","Dim","Aug","Power"};
 static const char *const CFD_ACTION[]={"Insert","Duplicate","Remove","Undo"};
-static struct { uint8_t focus,action,confirm,conflict,choice;unsigned requested; } cfdu;
-static int cfd_prepare(cpa_plan_t *plan,cf_chord_cfg_t cfg,unsigned rhythm,unsigned mode,unsigned repeat_off,unsigned click_start)
+static struct { uint8_t focus,action,confirm,conflict,choice,studio;unsigned requested; } cfdu;
+static int cfd_prepare_song(cpa_plan_t *plan,const cf_song_t *song,cf_chord_cfg_t cfg,unsigned rhythm,unsigned mode,unsigned repeat_off,unsigned click_start)
 {
-    if(!cfwd.have || !cf_song_valid(&cfwd.song))return 0;
-    memset(plan,0,sizeof *plan);plan->idea=CF_P_DRAFT;plan->n=cfwd.song.n;plan->tonic=cfg.tonic;plan->scale=cfg.scale;
-    plan->beats=cfwd.song.beats;plan->rhythm=cpa_compatible(rhythm,plan->beats);plan->mode=mode;plan->repeat_off=repeat_off;plan->click_start=click_start;
+    if(!cf_song_valid(song))return 0;
+    memset(plan,0,sizeof *plan);plan->idea=CF_P_DRAFT;plan->n=song->n;plan->tonic=cfg.tonic;plan->scale=cfg.scale;
+    plan->beats=song->beats;plan->rhythm=cpa_compatible(rhythm,plan->beats);plan->mode=mode;plan->repeat_off=repeat_off;plan->click_start=click_start;
     if(plan->rhythm<DM_N){plan->kit=dm_kit(plan->rhythm);plan->swing=dm_swing(plan->rhythm);}
     for(unsigned i=0;i<plan->n;i++) {
         cf_song_chord_t o;cpa_slot_t *s=&plan->slot[i];const cpa_slot_t *prev=i?&plan->slot[i-1]:0;
-        if(!cf_song_resolve(&cfwd.song,i,&cfg,prev?prev->note:0,prev?prev->n:0,&o))return 0;
+        if(!cf_song_resolve(song,i,&cfg,prev?prev->note:0,prev?prev->n:0,&o))return 0;
         s->root=o.root;s->mask=o.mask;s->n=o.n;s->ticks=o.ticks;s->gate=o.gate;s->tie=o.tie;s->bass_pc=o.bass_pc;
-        memcpy(s->note,o.note,o.n);plan->degree[i]=cfwd.song.slot[i].degree;
+        memcpy(s->note,o.note,o.n);plan->degree[i]=song->slot[i].degree;
         cf_chord_out_t bass={0};bass.sounding=1;bass.root_note=o.root;bass.root_pc=o.root%12;bass.mask=o.mask;bass.bass_pc=o.bass_pc;
         s->nb=o.bass_off?0:cfp_bass_notes_of(&bass,s->bass);
         for(unsigned j=0;j<s->nb;j++)s->bass[j]=(uint8_t)clampi(s->bass[j]+12*o.bass_oct,0,127);
@@ -25,9 +25,14 @@ static int cfd_prepare(cpa_plan_t *plan,cf_chord_cfg_t cfg,unsigned rhythm,unsig
     }
     return cpa_valid(plan);
 }
+static int cfd_prepare(cpa_plan_t *plan,cf_chord_cfg_t cfg,unsigned rhythm,unsigned mode,unsigned repeat_off,unsigned click_start)
+{
+    return cfwd.have && cfd_prepare_song(plan,&cfwd.song,cfg,rhythm,mode,repeat_off,click_start);
+}
 static void cfd_publish(void)
 {
     cfd_changed();
+    if(cfdu.studio)return;
     if(!cpa.on){cpg.idea=CF_P_DRAFT;cs.beats=cfwd.song.beats;cpg.rhythm=cpa_compatible(cpg.rhythm,cs.beats);cf_send_metro();return;}
     cpa_plan_t active,plan;cpa_active_request(&active);cf_chord_cfg_t cfg=cs.chord;cfg.tonic=active.tonic;cfg.scale=active.scale;
     if(cfd_prepare(&plan,cfg,active.rhythm,active.mode,active.repeat_off,active.click_start))
@@ -60,7 +65,25 @@ static void cfd_open(void)
         cfdu.conflict=1;cfdu.choice=0;cfdu.requested=idea;
     } else if(!cfwd.have || (!cfwd.dirty && idea!=CF_P_DRAFT))cfd_clone(idea);
     if(!cfwd.have){cf_message("Draft could not open");return;}
-    cu.scr=SCR_PEDIT;cu.pop=POP_NONE;cfdu.confirm=0;
+    cu.scr=SCR_PEDIT;cu.pop=POP_NONE;cfdu.confirm=cfdu.studio=0;
+}
+static int cfd_open_studio(unsigned meter)
+{
+    if(cr_safe || cfs_restore_lock || cfds.unavailable){cf_message("Draft unavailable: restore backup");return 0;}
+    if(sqk.on || cf_sn.sq_on || cf_sn.sq_rec!=255){cf_message("Finish recording or playback to edit");return 0;}
+    if(!cfwd.have){
+        cf_song_t song={.name="My Progression",.bpm=cs.bpm,.rhythm=65535,.tonic=cs.chord.tonic,
+            .scale=cs.chord.scale,.beats=(uint8_t)meter,.n=1};
+        if(!cf_harmony_supported(song.scale,CF_Q_BASIC))song.scale=CF_SC_MAJOR;
+        song.slot[0]=(cf_song_slot_t){.bars=1,.bass=-1,.gate=100,.quarters=4};
+        if(!cf_song_draft_begin(&cfwd,&song)){cf_message("Cannot start a draft");return 0;}
+        cfd_changed();
+    }
+    cfdu.studio=1;
+    cfdu.conflict=cfdu.confirm=cfdu.action=0;
+    cfdu.focus%=cfwd.song.n;
+    cu.page[SCR_PEDIT]=CFD_HARMONY;
+    return 1;
 }
 static void cfd_select_source(void)
 {
@@ -81,7 +104,15 @@ static void cfd_knob_info(int k,cf_knob_t *o)
     const cf_song_slot_t *v=&cfwd.song.slot[cfdu.focus%cfwd.song.n];unsigned tab=cu.page[SCR_PEDIT];
     if(tab==CFD_HARMONY) {
         static const char *const name[]={"DEGREE","QUALITY","COLOR","BARS"};kfmt(o->name,12,name[k]);
-        if(k==0){if(v->alter){o->val[0]=v->alter<0?'b':'#';kint(o->val+1,v->degree+1,0);}else kint(o->val,v->degree+1,0);}if(k==1)kfmt(o->val,14,!v->quality&&v->mask?"Source":CFD_QUALITY[v->quality]);
+        if(k==0){
+            if(cfdu.studio){
+                const cf_song_t *song=&cfwd.song;
+                unsigned root=(unsigned)(song->tonic+cf_scale_step(song->scale,v->degree)+v->alter+12)%12u;
+                cf_lab_numeral(song->scale,song->tonic,root,cf_song_mask(song,cfdu.focus,song->scale),o->val);
+            } else if(v->alter){o->val[0]=v->alter<0?'b':'#';kint(o->val+1,v->degree+1,0);}
+            else kint(o->val,v->degree+1,0);
+        }
+        if(k==1)kfmt(o->val,14,!v->quality&&v->mask?"Source":CFD_QUALITY[v->quality]);
         if(k==2)kfmt(o->val,14,cf_modifier_label(v->color));if(k==3){if(v->unit){kfmt(o->val,14,"Timing tab");o->dis=1;}else kint(o->val,v->bars,0);}
     } else if(tab==CFD_TIMING) {
         static const char *const name[]={"UNIT","LENGTH","GATE","TIE"};kfmt(o->name,12,name[k]);
@@ -128,7 +159,7 @@ static void cfd_execute(void)
 /* Setup performance belongs to the selected draft; browsing never overwrites it. */
 static void cfd_ui_poll(void)
 {
-    if(!cfwd.have || cpg.idea!=CF_P_DRAFT || cfds.unavailable || cpa_setup.flags || sqk.on || cf_sn.sq_rec!=255)return;
+    if(!cfwd.have || cfdu.studio || cgs_active() || cpg.idea!=CF_P_DRAFT || cfds.unavailable || cpa_setup.flags || sqk.on || cf_sn.sq_rec!=255)return;
     cf_song_t next=cfwd.song;next.tonic=cs.chord.tonic;next.scale=cs.chord.scale;next.bpm=cs.bpm;
     unsigned r=cpg.rhythm;
     if(cf_sn.ac_on && cf_sn.ac_idea==CF_P_DRAFT){r=cf_sn.ac_rhythm;next.kit=cf_sn.ac_kit;next.swing=cf_sn.ac_swing;next.drums_only=cf_sn.ac_mode;next.repeat_off=cf_sn.ac_repeat_off;}
