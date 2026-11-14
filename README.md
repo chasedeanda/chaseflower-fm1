@@ -547,3 +547,5 @@ Free software under **GPL-3.0**; see [LICENSE](LICENSE). M-VAVE and FM-1 belong 
 ## Firmware Hub listing
 
 The repository’s `fmhub.json` supplies the CORD card, browser link and quick-start guide. [Submission preparation and hardware acceptance](docs/FIRMWARE-HUB-SUBMISSION.md) records the current identity, flash support and remaining device tests. Back up before switching firmware: CORD cannot read every other firmware’s projects or samples, and installing or using another firmware may overwrite saved data.
+
+You can also try CORD in the browser, no flashing needed, in the free community [FM-1 Emulator](https://fm1-emulator.atst.tools/).
